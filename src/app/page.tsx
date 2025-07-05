@@ -11,6 +11,7 @@ import AuthModal from '@/components/AuthModal';
 import ToolCard from '@/components/ToolCard';
 import Header from '@/components/Header';
 
+// Test comment for GitHub Actions deployment test
 export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
