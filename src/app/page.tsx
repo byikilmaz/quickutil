@@ -5,16 +5,13 @@ import {
   PhotoIcon, 
   ArrowPathIcon, 
   CubeTransparentIcon,
-  DocumentArrowDownIcon,
-  UserCircleIcon
+  DocumentArrowDownIcon
 } from '@heroicons/react/24/outline';
-import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/AuthModal';
 import ToolCard from '@/components/ToolCard';
 import Header from '@/components/Header';
 
 export default function Home() {
-  const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const tools = [

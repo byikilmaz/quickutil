@@ -1,13 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { DocumentArrowDownIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import FileUpload from '@/components/FileUpload';
 import { compressPDF } from '@/lib/pdfUtils';
 
 export default function PDFCompress() {
-  const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -147,7 +145,7 @@ export default function PDFCompress() {
                   ) : (
                     <>
                       <ArrowUpTrayIcon className="h-5 w-5" />
-                      <span>PDF'i Sıkıştır</span>
+                      <span>PDF&apos;i Sıkıştır</span>
                     </>
                   )}
                 </button>
@@ -184,7 +182,7 @@ export default function PDFCompress() {
                     onClick={handleDownload}
                     className="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
                   >
-                    Sıkıştırılmış PDF'i İndir
+                    Sıkıştırılmış PDF&apos;i İndir
                   </button>
                 </div>
               )}

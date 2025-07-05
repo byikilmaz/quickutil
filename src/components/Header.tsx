@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
@@ -25,25 +26,25 @@ export default function Header({ onAuthClick }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <a href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">Q</span>
               </div>
               <span className="text-xl font-bold text-gray-900">QuickUtil</span>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="/" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">
               Ana Sayfa
-            </a>
-            <a href="/tools" className="text-gray-700 hover:text-blue-600 font-medium">
+            </Link>
+            <Link href="/tools" className="text-gray-700 hover:text-blue-600 font-medium">
               Araçlar
-            </a>
-            <a href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
+            </Link>
+            <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
               Hakkımızda
-            </a>
+            </Link>
           </nav>
 
           {/* User Menu */}
@@ -91,15 +92,15 @@ export default function Header({ onAuthClick }: HeaderProps) {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <nav className="flex flex-col space-y-4">
-              <a href="/" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">
                 Ana Sayfa
-              </a>
-              <a href="/tools" className="text-gray-700 hover:text-blue-600 font-medium">
+              </Link>
+              <Link href="/tools" className="text-gray-700 hover:text-blue-600 font-medium">
                 Araçlar
-              </a>
-              <a href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
+              </Link>
+              <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
                 Hakkımızda
-              </a>
+              </Link>
             </nav>
           </div>
         )}

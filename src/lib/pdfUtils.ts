@@ -1,4 +1,4 @@
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 
 export async function compressPDF(file: File, compressionRatio: number): Promise<File> {
   try {
