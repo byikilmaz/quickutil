@@ -5,13 +5,18 @@ import { getStorage } from 'firebase/storage';
 import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCRDK2r-JKC4L29UlRE-1h1GlbDAGD3j8",
-  authDomain: "quickutil-d2998.firebaseapp.com",
-  projectId: "quickutil-d2998",
-  storageBucket: "quickutil-d2998.firebasestorage.app",
-  messagingSenderId: "768751015182",
-  appId: "1:768751015182:web:ef3472a90fccf57a72335f"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
+
+// Validate Firebase config
+if (!firebaseConfig.apiKey) {
+  throw new Error('Firebase API key is missing. Please check your environment variables.');
+}
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
