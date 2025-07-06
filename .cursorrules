@@ -1135,302 +1135,676 @@ const register = async (email, password, firstName, lastName) => {
 - User feedback'i toplam ve değerlendir
 - Cache management değişikliklerini test et
 - Email deliverability'yi izle (Resend dashboard)
-
-## 🛒 E-Commerce & Cart System Kuralları
-
-### Cart Context Implementation
-```typescript
-// Modern sepet state management
-interface CartItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  period: 'monthly' | 'annual';
-  features: string[];
-  originalPrice?: number;
-}
-
-// CartContext with localStorage persistence
-const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
-  
-  // Sync with localStorage
-  useEffect(() => {
-    const savedItems = localStorage.getItem('quickutil-cart');
-    if (savedItems) {
-      setItems(JSON.parse(savedItems));
-    }
-  }, []);
-  
-  const addItem = (item: CartItem) => {
-    const newItems = [...items, item];
-    setItems(newItems);
-    localStorage.setItem('quickutil-cart', JSON.stringify(newItems));
-  };
-};
-```
-
-### Cart Page Design Patterns
-```typescript
-// Professional cart page structure
-<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-  <Header onAuthClick={() => setIsAuthModalOpen(true)} />
-  
-  {/* Empty State */}
-  {items.length === 0 ? (
-    <div className="text-center py-16">
-      <div className="text-6xl mb-4">🛒</div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Sepetiniz Boş</h2>
-      <Link href="/pricing" className="bg-blue-600 text-white px-6 py-3 rounded-lg">
-        Planları İncele
-      </Link>
-    </div>
-  ) : (
-    /* Cart Items Display */
-  )}
-</div>
-```
-
-### Header Cart Integration
-```typescript
-// Shopping cart badge in header
-const { itemCount } = useCart();
-
-<Link href="/cart" className="relative p-2 rounded-lg hover:bg-gray-100">
-  <ShoppingCartIcon className="h-6 w-6 text-gray-700" />
-  {itemCount > 0 && (
-    <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-      {itemCount > 9 ? '9+' : itemCount}
-    </span>
-  )}
-</Link>
-```
-
-### Pricing Integration Rules
-```typescript
-// Cart button states in pricing
-const handleSubscribe = (plan: 'premium' | 'business') => {
-  const cartItem: CartItem = {
-    id: `${plan}-${selectedPeriod}-${Date.now()}`,
-    name: plan === 'premium' ? 'Premium Plan' : 'Business Plan',
-    price: pricing![plan][billingPeriod],
-    period: billingPeriod,
-    features: planFeatures[plan]
-  };
-  
-  addItem(cartItem);
-  router.push('/cart');
-};
-
-// Button feedback
-<button onClick={() => handleSubscribe('premium')}>
-  {isInCart('premium', billingPeriod) ? 'Sepete Eklendi ✓' : 'Sepete Ekle'}
-</button>
-```
-
-### SSL Security Badge
-```typescript
-// SSL rozeti payment methods yanında
-<div className="flex items-center bg-green-600 rounded-lg px-4 py-3 text-white shadow-sm hover:shadow-md transition-shadow">
-  <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-  </svg>
-  <span className="font-medium">SSL Güvenli</span>
-</div>
-```
-
-### Checkout Authentication Flow
-```typescript
-// Auth-required checkout process
-const handleCheckout = () => {
-  if (!user) {
-    setIsAuthModalOpen(true);
-    return;
-  }
-  
-  // İyzico payment integration burada olacak
-  console.log('Proceeding to checkout with items:', items);
-};
-```
-
-### Cart State Management Rules
-- **Local Storage Sync**: Automatic persistence across browser sessions
-- **Real-time Updates**: Cart badge updates instantly
-- **Cross-tab Sync**: localStorage events for multi-tab synchronization
-- **Item Uniqueness**: Prevent duplicate plan additions
-- **Period Tracking**: Monthly vs Annual plan differentiation
-- **Feature Display**: Complete feature list in cart items
-
-### Mobile Cart Experience
-```typescript
-// Touch-friendly cart interactions
-<div className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-  {/* Large touch targets for mobile */}
-  <button className="w-full h-12 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100">
-    <TrashIcon className="h-5 w-5 inline mr-2" />
-    Sepetten Kaldır
-  </button>
-</div>
-```
-
-### Order Summary Design
-```typescript
-// Professional order summary component
-<div className="bg-gray-50 rounded-xl p-6">
-  <h3 className="text-lg font-semibold text-gray-900 mb-4">Sipariş Özeti</h3>
-  
-  <div className="space-y-3">
-    {items.map(item => (
-      <div key={item.id} className="flex justify-between">
-        <span className="text-gray-700">{item.name}</span>
-        <span className="font-medium">{formatUSDPrice(item.price)}</span>
-      </div>
-    ))}
-  </div>
-  
-  <div className="border-t pt-4 mt-4">
-    <div className="flex justify-between text-lg font-bold">
-      <span>Toplam:</span>
-      <span className="text-blue-600">{formatUSDPrice(totalPrice)}</span>
-    </div>
-  </div>
-</div>
-```
-
-### Payment Security Standards
-- **SSL Certificates**: 256-bit encryption display
-- **3D Secure**: Payment verification process
-- **PCI DSS Compliance**: Security standard adherence
-- **İyzico Integration**: Official payment gateway
-- **Fraud Protection**: Transaction monitoring
-
-### E-Commerce UX Patterns
-- **Loading States**: Clear feedback during cart operations
-- **Success Animations**: Smooth transitions for add/remove actions
-- **Empty State**: Engaging design with clear CTAs
-- **Progress Indicators**: Checkout flow progression
-- **Error Handling**: Graceful cart operation failures
-- **Accessibility**: ARIA labels for screen readers
-
-### Performance Optimization
-- **Bundle Size**: Cart components lazy-loaded
-- **Local Storage**: Efficient serialization/deserialization
-- **Rendering**: Optimized re-renders with React.memo
-- **Mobile**: Touch-optimized interactions
-- **Analytics**: Cart abandonment tracking
-
-### Special Offer System Rules
-```typescript
-// Akıllı özel teklif sistemi - Aylık plandan yıllık plana geçiş teklifi
-interface CartItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  period: 'monthly' | 'annual';
-  features: string[];
-  originalPrice?: number;
-  specialOffer?: boolean; // %10 ekstra indirim flag'i
-  baseAnnualPrice?: number; // Orijinal yıllık fiyat
-}
-
-// Cart context enhanced methods
-const hasMonthlyItems = () => {
-  return items.some(item => item.period === 'monthly');
-};
-
-const applySpecialOffer = (item: CartItem) => {
-  const pricing = getPricing();
-  const planType = item.name.includes('Premium') ? 'premium' : 'business';
-  const baseAnnualPrice = pricing[planType].annual;
-  const specialPrice = baseAnnualPrice * 0.9; // %10 ekstra indirim
-  
-  const specialItem: CartItem = {
-    ...item,
-    id: `${planType}-annual-special-${Date.now()}`,
-    period: 'annual',
-    price: specialPrice,
-    specialOffer: true,
-    baseAnnualPrice,
-    description: `${item.name} - Özel Yıllık Teklif (%10 ekstra indirim)`
-  };
-  
-  // Aylık planı kaldır, özel yıllık planı ekle
-  const newItems = items.filter(i => i.id !== item.id);
-  newItems.push(specialItem);
-  setItems(newItems);
-  localStorage.setItem('quickutil-cart', JSON.stringify(newItems));
-};
-```
-
-### Special Offer Popup Implementation
-```typescript
-// Cart sayfasında 3 saniye sonra özel teklif popup'ı
-useEffect(() => {
-  if (hasMonthlyItems() && !specialOfferShown) {
-    const timer = setTimeout(() => {
-      setShowSpecialOffer(true);
-      setSpecialOfferShown(true);
-      localStorage.setItem('quickutil-special-offer-shown', 'true');
-    }, 3000);
-    
-    return () => clearTimeout(timer);
-  }
-}, [items, hasMonthlyItems, specialOfferShown]);
-
-// Popup UI component
-{showSpecialOffer && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl p-8 max-w-md mx-4 animate-bounce-in">
-      <div className="text-center">
-        <SparklesIcon className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Size Özel Teklif!</h3>
-        <p className="text-gray-600 mb-6">
-          Aylık plan yerine yıllık plana geçin ve <span className="font-bold text-green-600">%10 ekstra indirim</span> kazanın!
-        </p>
-        
-        {/* Savings calculation */}
-        <div className="bg-green-50 rounded-lg p-4 mb-6">
-          <p className="text-sm text-green-700">
-            💰 ${Math.round(savings)} Tasarruf!
-          </p>
-          <p className="text-xs text-green-600">
-            Normal Yıllık: ${baseAnnualPrice} → Sizin Fiyatınız: ${formatUSDPrice(specialPrice)}
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-```
-
-### Pricing Logic Rules
-- **Aylık Plan**: Recurring monthly payment (her ay tahsil edilir)
-- **Yıllık Plan**: Single payment for 12 months (tek seferde 12 aylık ödeme)
-- **Özel Teklif**: Annual price × 0.9 (%10 ekstra indirim)
-- **Timer UX**: 3 saniye optimal user experience timing
-- **One-time Offer**: Flag tracking ile tek seferlik gösterim
-- **LocalStorage Persistence**: Cross-session offer state management
-
-### Business Intelligence Features
-- **Conversion Optimization**: Monthly → Annual plan conversion incentive
-- **Revenue Enhancement**: %10 extra discount for higher lifetime value
-- **User Engagement**: Personalized offer experience
-- **Retention Strategy**: Longer commitment reduces churn rate
-- **Real-time Calculation**: Dynamic savings display
-
-## 📝 Notlar
-
-- Her yeni özellik için Notion'da task oluştur
-- Code review için pull request kullan
-- Documentation'ı güncel tut
-- Performance metrics'leri izle
-- User feedback'i toplam ve değerlendir
-- Cache management değişikliklerini test et
-- Email deliverability'yi izle (Resend dashboard)
 - **Cart System**: E-commerce best practices uygula
 - **Special Offers**: Pricing intelligence ve conversion optimization
+
+## 🏗️ İyzico Abonelik Yönetim Sistemi Kuralları
+
+### İyzico API Integration Pattern
+```typescript
+// İyzico API wrapper class structure
+export class IyzicoService {
+  private readonly apiKey: string;
+  private readonly secretKey: string;
+  private readonly baseURL: string;
+  
+  constructor() {
+    this.apiKey = process.env.IYZICO_API_KEY!;
+    this.secretKey = process.env.IYZICO_SECRET_KEY!;
+    this.baseURL = process.env.NODE_ENV === 'production' 
+      ? 'https://api.iyzipay.com' 
+      : 'https://sandbox-api.iyzipay.com';
+  }
+  
+  // Subscription product creation
+  async createSubscriptionProduct(productData: SubscriptionProduct): Promise<IyzicoResponse> {
+    // Implementation
+  }
+  
+  // Subscription plan management
+  async createSubscriptionPlan(planData: SubscriptionPlan): Promise<IyzicoResponse> {
+    // Implementation
+  }
+  
+  // Customer management
+  async createCustomer(customerData: CustomerData): Promise<IyzicoResponse> {
+    // Implementation
+  }
+  
+  // Card tokenization (secure card storage)
+  async saveCard(cardData: CardData, customerId: string): Promise<IyzicoResponse> {
+    // Implementation
+  }
+  
+  // Subscription lifecycle
+  async createSubscription(subscriptionData: CreateSubscriptionData): Promise<IyzicoResponse> {
+    // Implementation
+  }
+  
+  async cancelSubscription(subscriptionId: string): Promise<IyzicoResponse> {
+    // Implementation
+  }
+  
+  async pauseSubscription(subscriptionId: string): Promise<IyzicoResponse> {
+    // Implementation
+  }
+  
+  async resumeSubscription(subscriptionId: string): Promise<IyzicoResponse> {
+    // Implementation
+  }
+}
+```
+
+### Profile Page Subscription Management
+```typescript
+// Subscription management interface
+interface Subscription {
+  id: string;
+  planName: string;
+  status: 'active' | 'cancelled' | 'paused' | 'past_due';
+  price: number;
+  currency: string;
+  billingPeriod: 'monthly' | 'annual';
+  currentPeriodStart: Date;
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
+  features: string[];
+  iyzicoSubscriptionId?: string; // İyzico subscription reference
+}
+
+// Payment method interface
+interface PaymentMethod {
+  id: string;
+  type: 'card' | 'bank_transfer';
+  brand?: 'visa' | 'mastercard' | 'amex';
+  last4?: string;
+  expiryMonth?: number;
+  expiryYear?: number;
+  holderName: string;
+  isDefault: boolean;
+  createdAt: Date;
+  iyzicoCardToken?: string; // İyzico card token reference
+}
+
+// Invoice interface
+interface Invoice {
+  id: string;
+  number: string;
+  amount: number;
+  currency: string;
+  status: 'paid' | 'pending' | 'failed';
+  dueDate: Date;
+  paidAt?: Date;
+  description: string;
+  downloadUrl?: string;
+  iyzicoPaymentId?: string; // İyzico payment reference
+}
+```
+
+### Profile Page Structure Requirements
+```typescript
+// Tab-based navigation system
+const profileTabs = [
+  { id: 'overview', name: 'Genel Bakış', icon: UserIcon },
+  { id: 'files', name: 'Dosyalarım', icon: DocumentIcon },
+  { id: 'billing', name: 'Faturalama', icon: BanknotesIcon },
+  { id: 'payment-methods', name: 'Ödeme Yöntemleri', icon: CreditCardIcon },
+  { id: 'settings', name: 'Ayarlar', icon: CogIcon }
+];
+
+// Billing tab implementation rules
+const billingTabFeatures = [
+  'Current subscription display with plan details',
+  'Subscription status badges (Active/Cancelled/Paused/Past Due)',
+  'Next billing date and amount information',
+  'Plan features and usage limits',
+  'Subscription management actions (Cancel/Pause/Resume/Change Plan)',
+  'Billing history with invoice downloads',
+  'Usage statistics and quota monitoring'
+];
+
+// Payment methods tab implementation rules
+const paymentMethodsTabFeatures = [
+  'Add new payment method with İyzico secure forms',
+  'Display existing cards with masked numbers',
+  'Set default payment method functionality',
+  'Delete payment methods with confirmation',
+  'Card brand logos (Visa/MasterCard) with proper styling',
+  'Expiry date validation and warnings',
+  'PCI DSS compliance indicators'
+];
+```
+
+### Subscription Lifecycle Management
+```typescript
+// Subscription management functions
+const subscriptionManagement = {
+  // Cancel subscription
+  cancelSubscription: async (subscriptionId: string) => {
+    try {
+      // 1. Call İyzico API to cancel subscription
+      const response = await IyzicoService.cancelSubscription(subscriptionId);
+      
+      // 2. Update Firestore subscription status
+      await updateDoc(doc(firestore, 'subscriptions', subscriptionId), {
+        status: 'cancelled',
+        cancelledAt: new Date(),
+        cancelAtPeriodEnd: true
+      });
+      
+      // 3. Log activity
+      await ActivityTracker.createActivity(userId, {
+        type: 'subscription_cancelled',
+        subscriptionId,
+        planName: subscription.planName
+      });
+      
+      return { success: true, data: response };
+    } catch (error) {
+      console.error('Cancel subscription error:', error);
+      throw error;
+    }
+  },
+  
+  // Pause subscription
+  pauseSubscription: async (subscriptionId: string) => {
+    // Similar implementation pattern
+  },
+  
+  // Resume subscription
+  resumeSubscription: async (subscriptionId: string) => {
+    // Similar implementation pattern
+  },
+  
+  // Change subscription plan
+  changePlan: async (subscriptionId: string, newPlanId: string) => {
+    // Implementation with prorating logic
+  }
+};
+```
+
+### Payment Methods Management
+```typescript
+// Payment method management functions
+const paymentMethodManagement = {
+  // Add new payment method
+  addPaymentMethod: async (cardData: CardFormData) => {
+    try {
+      // 1. Validate card data
+      const validation = validateCardData(cardData);
+      if (!validation.isValid) throw new Error(validation.errors.join(', '));
+      
+      // 2. Tokenize card with İyzico
+      const tokenResponse = await IyzicoService.saveCard(cardData, user.iyzicoCustomerId);
+      
+      // 3. Save payment method to Firestore
+      const paymentMethod: PaymentMethod = {
+        id: generateId(),
+        type: 'card',
+        brand: detectCardBrand(cardData.cardNumber),
+        last4: cardData.cardNumber.slice(-4),
+        expiryMonth: cardData.expiryMonth,
+        expiryYear: cardData.expiryYear,
+        holderName: cardData.holderName,
+        isDefault: paymentMethods.length === 0, // First card is default
+        createdAt: new Date(),
+        iyzicoCardToken: tokenResponse.cardToken
+      };
+      
+      await addDoc(collection(firestore, 'users', user.uid, 'paymentMethods'), paymentMethod);
+      
+      return { success: true, data: paymentMethod };
+    } catch (error) {
+      console.error('Add payment method error:', error);
+      throw error;
+    }
+  },
+  
+  // Set default payment method
+  setDefaultPaymentMethod: async (paymentMethodId: string) => {
+    // Implementation
+  },
+  
+  // Delete payment method
+  deletePaymentMethod: async (paymentMethodId: string) => {
+    // Implementation with İyzico card deletion
+  }
+};
+```
+
+### UI/UX Design Patterns for Subscription Management
+
+### Status Badge System
+```typescript
+// Status badge styling rules
+const getStatusBadge = (status: Subscription['status']) => {
+  const statusConfig = {
+    active: {
+      bg: 'bg-green-100',
+      text: 'text-green-800',
+      label: 'Aktif',
+      icon: CheckCircleIcon
+    },
+    cancelled: {
+      bg: 'bg-red-100',
+      text: 'text-red-800',
+      label: 'İptal Edildi',
+      icon: XCircleIcon
+    },
+    paused: {
+      bg: 'bg-yellow-100',
+      text: 'text-yellow-800',
+      label: 'Durduruldu',
+      icon: PauseCircleIcon
+    },
+    past_due: {
+      bg: 'bg-red-100',
+      text: 'text-red-800',
+      label: 'Vadesi Geçmiş',
+      icon: ExclamationTriangleIcon
+    }
+  };
+  
+  return statusConfig[status];
+};
+```
+
+### Action Button System
+```typescript
+// Subscription action buttons with proper states
+const SubscriptionActions = ({ subscription }: { subscription: Subscription }) => {
+  const [loading, setLoading] = useState<string | null>(null);
+  
+  const actions = {
+    active: [
+      { id: 'pause', label: 'Duraklat', icon: PauseCircleIcon, color: 'yellow' },
+      { id: 'cancel', label: 'İptal Et', icon: XCircleIcon, color: 'red' },
+      { id: 'change', label: 'Plan Değiştir', icon: ArrowPathIcon, color: 'blue' }
+    ],
+    paused: [
+      { id: 'resume', label: 'Yeniden Başlat', icon: ArrowPathIcon, color: 'green' },
+      { id: 'cancel', label: 'İptal Et', icon: XCircleIcon, color: 'red' }
+    ],
+    cancelled: [
+      { id: 'reactivate', label: 'Yeniden Aktifleştir', icon: CheckCircleIcon, color: 'green' }
+    ]
+  };
+  
+  return (
+    <div className="flex flex-wrap gap-3">
+      {actions[subscription.status]?.map(action => (
+        <button
+          key={action.id}
+          onClick={() => handleAction(action.id)}
+          disabled={loading === action.id}
+          className={`btn-${action.color} flex items-center space-x-2`}
+        >
+          <action.icon className="h-4 w-4" />
+          <span>{loading === action.id ? 'Yükleniyor...' : action.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+};
+```
+
+### Payment Method Cards Design
+```typescript
+// Payment method card component
+const PaymentMethodCard = ({ paymentMethod, onSetDefault, onDelete }: PaymentMethodCardProps) => {
+  const cardBrandIcon = {
+    visa: '/images/payment-methods/visa.svg',
+    mastercard: '/images/payment-methods/mastercard.svg',
+    amex: '/images/payment-methods/amex.svg'
+  };
+  
+  return (
+    <div className={`border rounded-xl p-6 transition-all duration-200 ${
+      paymentMethod.isDefault 
+        ? 'border-blue-500 bg-blue-50' 
+        : 'border-gray-200 hover:border-gray-300'
+    }`}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-3">
+          <Image
+            src={cardBrandIcon[paymentMethod.brand]}
+            alt={paymentMethod.brand}
+            width={40}
+            height={25}
+            className="rounded"
+          />
+          <div>
+            <p className="font-medium text-gray-900">
+              •••• •••• •••• {paymentMethod.last4}
+            </p>
+            <p className="text-sm text-gray-500">
+              {paymentMethod.expiryMonth}/{paymentMethod.expiryYear}
+            </p>
+          </div>
+        </div>
+        
+        {paymentMethod.isDefault && (
+          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+            Varsayılan
+          </span>
+        )}
+      </div>
+      
+      <div className="flex space-x-3">
+        {!paymentMethod.isDefault && (
+          <button
+            onClick={() => onSetDefault(paymentMethod.id)}
+            className="btn-secondary-sm"
+          >
+            Varsayılan Yap
+          </button>
+        )}
+        <button
+          onClick={() => onDelete(paymentMethod.id)}
+          className="btn-danger-sm"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+### Billing History Component
+```typescript
+// Invoice history table with download functionality
+const BillingHistory = ({ invoices }: { invoices: Invoice[] }) => {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">Fatura Geçmişi</h3>
+      
+      <div className="space-y-4">
+        {invoices.map(invoice => (
+          <div key={invoice.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center space-x-4">
+              <DocumentTextIcon className="h-8 w-8 text-gray-400" />
+              <div>
+                <p className="font-medium text-gray-900">Fatura #{invoice.number}</p>
+                <p className="text-sm text-gray-500">
+                  {format(invoice.dueDate, 'dd MMM yyyy')} • {formatUSDPrice(invoice.amount)}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <span className={`px-2.5 py-0.5 rounded text-xs font-medium ${
+                invoice.status === 'paid' 
+                  ? 'bg-green-100 text-green-800' 
+                  : invoice.status === 'pending'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {invoice.status === 'paid' ? 'Ödendi' : 
+                 invoice.status === 'pending' ? 'Bekliyor' : 'Başarısız'}
+              </span>
+              
+              {invoice.downloadUrl && (
+                <a
+                  href={invoice.downloadUrl}
+                  download
+                  className="btn-secondary-sm"
+                >
+                  İndir
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+### Security & Compliance Rules
+
+### İyzico Integration Security
+```typescript
+// Security best practices for İyzico integration
+const securityRules = {
+  // API key management
+  apiKeyHandling: [
+    'Store API keys in environment variables only',
+    'Never expose secret keys to client-side code',
+    'Use different keys for sandbox and production',
+    'Implement key rotation strategy'
+  ],
+  
+  // Data encryption
+  dataEncryption: [
+    'All card data must be tokenized via İyzico',
+    'Never store raw card numbers in database',
+    'Use HTTPS for all API communications',
+    'Implement request signing for API calls'
+  ],
+  
+  // PCI DSS compliance
+  pciCompliance: [
+    'Display PCI DSS compliance badges',
+    'Implement secure card data handling',
+    'Regular security audits and updates',
+    'Secure data transmission protocols'
+  ]
+};
+```
+
+### Error Handling & User Feedback
+```typescript
+// Comprehensive error handling for subscription operations
+const errorHandling = {
+  // İyzico API error mapping
+  mapIyzicoError: (error: IyzicoError) => {
+    const errorMap = {
+      'INVALID_CARD_NUMBER': 'Geçersiz kart numarası',
+      'EXPIRED_CARD': 'Kartın süresi dolmuş',
+      'INSUFFICIENT_FUNDS': 'Yetersiz bakiye',
+      'SUBSCRIPTION_NOT_FOUND': 'Abonelik bulunamadı',
+      'CUSTOMER_NOT_FOUND': 'Müşteri bulunamadı'
+    };
+    
+    return errorMap[error.code] || 'Bir hata oluştu. Lütfen tekrar deneyin.';
+  },
+  
+  // User-friendly error display
+  showError: (message: string) => {
+    toast.error(message, {
+      duration: 5000,
+      position: 'top-right',
+      style: {
+        background: '#FEE2E2',
+        color: '#DC2626',
+        border: '1px solid #FECACA'
+      }
+    });
+  },
+  
+  // Success feedback
+  showSuccess: (message: string) => {
+    toast.success(message, {
+      duration: 3000,
+      position: 'top-right',
+      style: {
+        background: '#D1FAE5',
+        color: '#059669',
+        border: '1px solid #A7F3D0'
+      }
+    });
+  }
+};
+```
+
+### Performance & Analytics
+
+### Subscription Analytics Integration
+```typescript
+// Track subscription-related events
+const subscriptionAnalytics = {
+  trackSubscriptionCreated: (planName: string, amount: number) => {
+    logEvent(analytics, 'subscription_created', {
+      plan_name: planName,
+      amount,
+      currency: 'USD'
+    });
+  },
+  
+  trackSubscriptionCancelled: (planName: string, reason?: string) => {
+    logEvent(analytics, 'subscription_cancelled', {
+      plan_name: planName,
+      cancellation_reason: reason
+    });
+  },
+  
+  trackPaymentMethodAdded: (cardBrand: string) => {
+    logEvent(analytics, 'payment_method_added', {
+      card_brand: cardBrand,
+      method_type: 'card'
+    });
+  },
+  
+  trackPlanUpgrade: (fromPlan: string, toPlan: string) => {
+    logEvent(analytics, 'plan_upgraded', {
+      from_plan: fromPlan,
+      to_plan: toPlan
+    });
+  }
+};
+```
+
+### Caching Strategy for Subscription Data
+```typescript
+// Efficient data caching for subscription information
+const subscriptionCache = {
+  // Cache subscription data with 5-minute TTL
+  cacheSubscription: (userId: string, subscription: Subscription) => {
+    const cacheKey = `subscription_${userId}`;
+    const cacheData = {
+      data: subscription,
+      timestamp: Date.now(),
+      ttl: 5 * 60 * 1000 // 5 minutes
+    };
+    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+  },
+  
+  // Retrieve cached subscription with TTL check
+  getCachedSubscription: (userId: string): Subscription | null => {
+    const cacheKey = `subscription_${userId}`;
+    const cached = localStorage.getItem(cacheKey);
+    
+    if (!cached) return null;
+    
+    const { data, timestamp, ttl } = JSON.parse(cached);
+    if (Date.now() - timestamp > ttl) {
+      localStorage.removeItem(cacheKey);
+      return null;
+    }
+    
+    return data;
+  }
+};
+```
+
+### Testing Requirements
+
+### Subscription Management Testing
+```typescript
+// Unit tests for subscription operations
+describe('Subscription Management', () => {
+  test('should cancel subscription successfully', async () => {
+    const mockSubscription = createMockSubscription();
+    const result = await subscriptionManagement.cancelSubscription(mockSubscription.id);
+    
+    expect(result.success).toBe(true);
+    expect(mockSubscription.status).toBe('cancelled');
+  });
+  
+  test('should handle payment method addition', async () => {
+    const mockCardData = createMockCardData();
+    const result = await paymentMethodManagement.addPaymentMethod(mockCardData);
+    
+    expect(result.success).toBe(true);
+    expect(result.data.last4).toBe(mockCardData.cardNumber.slice(-4));
+  });
+  
+  test('should validate card expiry date', () => {
+    const expiredCard = { expiryMonth: 12, expiryYear: 2020 };
+    const validation = validateCardData(expiredCard);
+    
+    expect(validation.isValid).toBe(false);
+    expect(validation.errors).toContain('Kartın süresi dolmuş');
+  });
+});
+```
+
+### Integration Testing with İyzico Sandbox
+```typescript
+// Integration tests with İyzico sandbox environment
+describe('İyzico Integration', () => {
+  beforeAll(() => {
+    // Setup sandbox environment
+    process.env.NODE_ENV = 'test';
+    process.env.IYZICO_API_KEY = 'sandbox_test_key';
+    process.env.IYZICO_SECRET_KEY = 'sandbox_test_secret';
+  });
+  
+  test('should create subscription product', async () => {
+    const productData = createTestSubscriptionProduct();
+    const response = await IyzicoService.createSubscriptionProduct(productData);
+    
+    expect(response.status).toBe('success');
+    expect(response.subscriptionProduct).toBeDefined();
+  });
+  
+  test('should tokenize card securely', async () => {
+    const cardData = createTestCardData();
+    const response = await IyzicoService.saveCard(cardData, 'test_customer_id');
+    
+    expect(response.status).toBe('success');
+    expect(response.cardToken).toBeDefined();
+  });
+});
+```
+
+## 📝 İyzico Entegrasyon Checklist
+
+### Development Phase
+- [ ] İyzico API credentials setup (sandbox)
+- [ ] Subscription product creation
+- [ ] Customer management implementation
+- [ ] Card tokenization system
+- [ ] Subscription lifecycle endpoints
+- [ ] Payment method CRUD operations
+- [ ] Error handling & user feedback
+- [ ] Security implementation (PCI DSS)
+
+### Testing Phase
+- [ ] Unit tests for all subscription functions
+- [ ] Integration tests with İyzico sandbox
+- [ ] UI/UX testing for all user flows
+- [ ] Security testing & vulnerability assessment
+- [ ] Performance testing under load
+- [ ] Mobile responsiveness testing
+
+### Production Deployment
+- [ ] Production API credentials configuration
+- [ ] SSL certificate validation
+- [ ] Security audit completion
+- [ ] Monitoring & alerting setup
+- [ ] Backup & recovery procedures
+- [ ] Documentation completion
+
+### Post-Launch Monitoring
+- [ ] Subscription metrics tracking
+- [ ] Payment success/failure rates
+- [ ] User engagement analytics
+- [ ] Performance monitoring
+- [ ] Security incident response
+- [ ] Customer support integration
 
 ---
 
