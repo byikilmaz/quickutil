@@ -81,6 +81,9 @@ export default function Header({ onAuthClick }: HeaderProps) {
             <Link href="/image-convert" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Görsel Dönüştür
             </Link>
+            <Link href="/pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Fiyatlar
+            </Link>
             {/* Cache Manager - Development Only */}
             {process.env.NODE_ENV === 'development' && (
               <CacheManager className="ml-4" />
@@ -193,6 +196,13 @@ export default function Header({ onAuthClick }: HeaderProps) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Görsel Dönüştür
+              </Link>
+              <Link 
+                href="/pricing" 
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Fiyatlar
               </Link>
               {user && (
                 <div className="pt-4 border-t border-gray-200">
