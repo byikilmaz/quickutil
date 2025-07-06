@@ -81,7 +81,7 @@ export default function ImageConvert() {
           const processingTime = Date.now() - startTime;
 
           await ActivityTracker.createActivity(user.uid, {
-            type: 'image_convert',
+            type: 'image_compress',
             fileName: file.name,
             originalFileName: file.name,
             fileSize: file.size,
@@ -106,7 +106,7 @@ export default function ImageConvert() {
           const processingTime = Date.now() - startTime;
 
           await ActivityTracker.createActivity(user.uid, {
-            type: 'image_convert',
+            type: 'image_compress',
             fileName: file.name,
             originalFileName: file.name,
             fileSize: file.size,

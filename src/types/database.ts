@@ -2,14 +2,14 @@
 export interface UserActivity {
   id?: string;
   userId: string;
-  type: 'pdf_compress' | 'pdf_convert' | 'image_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter';
+  type: 'pdf_compress' | 'pdf_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter' | 'image_batch';
   fileName: string;
   originalFileName: string;
   fileSize: number;
   processedSize?: number;
   timestamp: Date;
   status: 'success' | 'error' | 'processing';
-  category: 'PDF' | 'Image' | 'Document';
+  category: 'PDF' | 'Image' | 'Document' | 'Batch';
   processingTime?: number; // in milliseconds
   compressionRatio?: number; // percentage
   googleDriveFileId?: string; // Google Drive file ID
@@ -30,7 +30,7 @@ export interface FileMetadata {
   originalFileName: string;
   fileSize: number;
   mimeType: string;
-  category: 'PDF' | 'Image' | 'Document';
+  category: 'PDF' | 'Image' | 'Document' | 'Batch';
   uploadedAt: Date;
   expiresAt: Date;
   lastAccessedAt?: Date;
@@ -118,12 +118,12 @@ export interface SystemStats {
   featureUsage: {
     pdfCompress: number;
     pdfConvert: number;
-    imageConvert: number;
     imageCompress: number;
     imageResize: number;
     imageCrop: number;
     imageRotate: number;
     imageFilter: number;
+    imageBatch: number;
   };
   avgProcessingTime: number;
   successRate: number;
@@ -155,7 +155,7 @@ export interface ProcessingQueue {
   userId: string;
   fileName: string;
   fileSize: number;
-  type: 'pdf_compress' | 'pdf_convert' | 'image_convert' | 'image_filter';
+  type: 'pdf_compress' | 'pdf_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter' | 'image_batch';
   priority: 'low' | 'normal' | 'high';
   status: 'queued' | 'processing' | 'completed' | 'failed';
   queuedAt: Date;
@@ -216,7 +216,15 @@ export const COLLECTIONS = {
 } as const;
 
 // Utility Types
-export type ActivityType = UserActivity['type'];
+export type ActivityType = 
+  | 'pdf_compress' 
+  | 'pdf_convert' 
+  | 'image_compress' 
+  | 'image_resize' 
+  | 'image_crop' 
+  | 'image_rotate' 
+  | 'image_filter'
+  | 'image_batch';  // New: Batch processing operations
 export type ActivityStatus = UserActivity['status'];
 export type FileCategory = UserActivity['category'];
 export type NotificationType = EmailNotification['type'];

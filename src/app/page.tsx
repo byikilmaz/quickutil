@@ -9,7 +9,8 @@ import {
   DocumentArrowDownIcon,
   SparklesIcon,
   PencilSquareIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  QueueListIcon
 } from '@heroicons/react/24/outline';
 import ToolCard from '@/components/ToolCard';
 import Header from '@/components/Header';
@@ -110,6 +111,15 @@ export default function Home() {
           icon: SparklesIcon,
           color: 'bg-purple-50 text-purple-600',
           href: '/image-filters',
+          badge: 'YENİ'
+        },
+        {
+          id: 'image-batch',
+          title: 'Batch İşleme',
+          description: 'Birden fazla resmi aynı anda işleyin - sıkıştırma, boyutlandırma, kırpma',
+          icon: QueueListIcon,
+          color: 'bg-purple-50 text-purple-600',
+          href: '/image-batch',
           badge: 'YENİ'
         }
       ]

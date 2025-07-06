@@ -332,12 +332,12 @@ export class ActivityTracker {
       const featureCount: Record<string, number> = {
         pdf_compress: 0,
         pdf_convert: 0,
-        image_convert: 0,
         image_compress: 0,
         image_resize: 0,
         image_crop: 0,
         image_rotate: 0,
-        image_filter: 0
+        image_filter: 0,
+        image_batch: 0
       };
 
       const currentMonth = new Date().getMonth();
@@ -487,7 +487,8 @@ export class ActivityTracker {
       const categoryCounts: Record<FileCategory, number> = {
         'PDF': 0,
         'Image': 0,
-        'Document': 0
+        'Document': 0,
+        'Batch': 0
       };
 
       querySnapshot.forEach((docSnapshot) => {
@@ -565,24 +566,7 @@ export const trackPDFConvert = async (
   });
 };
 
-export const trackImageConvert = async (
-  userId: string,
-  fileName: string,
-  fileSize: number,
-  processedSize?: number,
-  processingTime?: number
-) => {
-  return ActivityTracker.createActivity(userId, {
-    type: 'image_convert',
-    fileName,
-    originalFileName: fileName,
-    fileSize,
-    processedSize,
-    category: 'Image',
-    status: processedSize ? 'success' : 'processing',
-    processingTime
-  });
-};
+
 
 export const trackImageCompress = async (
   userId: string,
@@ -681,17 +665,43 @@ export const trackImageFilter = async (
   });
 };
 
+// NEW: Track image batch processing
+export async function trackImageBatch(
+  userId: string,
+  operation: string,
+  fileCount: number,
+  totalOriginalSize: number,
+  totalProcessedSize: number,
+  processingTime: number
+): Promise<void> {
+  try {
+    await ActivityTracker.createActivity(userId, {
+      type: 'image_batch',
+      fileName: `batch_${operation}_${fileCount}_files`,
+      originalFileName: `${fileCount} files`,
+      fileSize: totalOriginalSize,
+      processedSize: totalProcessedSize,
+      status: 'success',
+      category: 'Batch',
+      processingTime,
+      compressionRatio: fileCount // Use compressionRatio to store file count
+    });
+  } catch (error) {
+    console.error('Batch tracking error:', error);
+  }
+}
+
 // Utility for formatting activity data for UI
 export const formatActivityForUI = (activity: UserActivity) => {
   const typeNames: Record<ActivityType, string> = {
-    pdf_compress: 'PDF Sıkıştırma',
-    pdf_convert: 'PDF Dönüştürme',
-    image_convert: 'Görsel Dönüştürme',
-    image_compress: 'Resim Sıkıştırma',
-    image_resize: 'Resim Boyutlandırma',
-    image_crop: 'Resim Kırpma',
-    image_rotate: 'Resim Döndürme',
-    image_filter: 'Resim Filtreleme'
+    'pdf_compress': 'PDF Sıkıştırma',
+    'pdf_convert': 'PDF Dönüştürme',
+    'image_compress': 'Resim Sıkıştırma',
+    'image_resize': 'Resim Boyutlandırma',
+    'image_crop': 'Resim Kırpma',
+    'image_rotate': 'Resim Döndürme',
+    'image_filter': 'Resim Filtreleme',
+    'image_batch': 'Batch İşleme'
   };
 
   const statusNames: Record<ActivityStatus, string> = {
