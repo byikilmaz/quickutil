@@ -1136,6 +1136,201 @@ const register = async (email, password, firstName, lastName) => {
 - Cache management değişikliklerini test et
 - Email deliverability'yi izle (Resend dashboard)
 
+## 🛒 E-Commerce & Cart System Kuralları
+
+### Cart Context Implementation
+```typescript
+// Modern sepet state management
+interface CartItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  period: 'monthly' | 'annual';
+  features: string[];
+  originalPrice?: number;
+}
+
+// CartContext with localStorage persistence
+const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [items, setItems] = useState<CartItem[]>([]);
+  
+  // Sync with localStorage
+  useEffect(() => {
+    const savedItems = localStorage.getItem('quickutil-cart');
+    if (savedItems) {
+      setItems(JSON.parse(savedItems));
+    }
+  }, []);
+  
+  const addItem = (item: CartItem) => {
+    const newItems = [...items, item];
+    setItems(newItems);
+    localStorage.setItem('quickutil-cart', JSON.stringify(newItems));
+  };
+};
+```
+
+### Cart Page Design Patterns
+```typescript
+// Professional cart page structure
+<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <Header onAuthClick={() => setIsAuthModalOpen(true)} />
+  
+  {/* Empty State */}
+  {items.length === 0 ? (
+    <div className="text-center py-16">
+      <div className="text-6xl mb-4">🛒</div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">Sepetiniz Boş</h2>
+      <Link href="/pricing" className="bg-blue-600 text-white px-6 py-3 rounded-lg">
+        Planları İncele
+      </Link>
+    </div>
+  ) : (
+    /* Cart Items Display */
+  )}
+</div>
+```
+
+### Header Cart Integration
+```typescript
+// Shopping cart badge in header
+const { itemCount } = useCart();
+
+<Link href="/cart" className="relative p-2 rounded-lg hover:bg-gray-100">
+  <ShoppingCartIcon className="h-6 w-6 text-gray-700" />
+  {itemCount > 0 && (
+    <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+      {itemCount > 9 ? '9+' : itemCount}
+    </span>
+  )}
+</Link>
+```
+
+### Pricing Integration Rules
+```typescript
+// Cart button states in pricing
+const handleSubscribe = (plan: 'premium' | 'business') => {
+  const cartItem: CartItem = {
+    id: `${plan}-${selectedPeriod}-${Date.now()}`,
+    name: plan === 'premium' ? 'Premium Plan' : 'Business Plan',
+    price: pricing![plan][billingPeriod],
+    period: billingPeriod,
+    features: planFeatures[plan]
+  };
+  
+  addItem(cartItem);
+  router.push('/cart');
+};
+
+// Button feedback
+<button onClick={() => handleSubscribe('premium')}>
+  {isInCart('premium', billingPeriod) ? 'Sepete Eklendi ✓' : 'Sepete Ekle'}
+</button>
+```
+
+### SSL Security Badge
+```typescript
+// SSL rozeti payment methods yanında
+<div className="flex items-center bg-green-600 rounded-lg px-4 py-3 text-white shadow-sm hover:shadow-md transition-shadow">
+  <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+  <span className="font-medium">SSL Güvenli</span>
+</div>
+```
+
+### Checkout Authentication Flow
+```typescript
+// Auth-required checkout process
+const handleCheckout = () => {
+  if (!user) {
+    setIsAuthModalOpen(true);
+    return;
+  }
+  
+  // İyzico payment integration burada olacak
+  console.log('Proceeding to checkout with items:', items);
+};
+```
+
+### Cart State Management Rules
+- **Local Storage Sync**: Automatic persistence across browser sessions
+- **Real-time Updates**: Cart badge updates instantly
+- **Cross-tab Sync**: localStorage events for multi-tab synchronization
+- **Item Uniqueness**: Prevent duplicate plan additions
+- **Period Tracking**: Monthly vs Annual plan differentiation
+- **Feature Display**: Complete feature list in cart items
+
+### Mobile Cart Experience
+```typescript
+// Touch-friendly cart interactions
+<div className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+  {/* Large touch targets for mobile */}
+  <button className="w-full h-12 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100">
+    <TrashIcon className="h-5 w-5 inline mr-2" />
+    Sepetten Kaldır
+  </button>
+</div>
+```
+
+### Order Summary Design
+```typescript
+// Professional order summary component
+<div className="bg-gray-50 rounded-xl p-6">
+  <h3 className="text-lg font-semibold text-gray-900 mb-4">Sipariş Özeti</h3>
+  
+  <div className="space-y-3">
+    {items.map(item => (
+      <div key={item.id} className="flex justify-between">
+        <span className="text-gray-700">{item.name}</span>
+        <span className="font-medium">{formatUSDPrice(item.price)}</span>
+      </div>
+    ))}
+  </div>
+  
+  <div className="border-t pt-4 mt-4">
+    <div className="flex justify-between text-lg font-bold">
+      <span>Toplam:</span>
+      <span className="text-blue-600">{formatUSDPrice(totalPrice)}</span>
+    </div>
+  </div>
+</div>
+```
+
+### Payment Security Standards
+- **SSL Certificates**: 256-bit encryption display
+- **3D Secure**: Payment verification process
+- **PCI DSS Compliance**: Security standard adherence
+- **İyzico Integration**: Official payment gateway
+- **Fraud Protection**: Transaction monitoring
+
+### E-Commerce UX Patterns
+- **Loading States**: Clear feedback during cart operations
+- **Success Animations**: Smooth transitions for add/remove actions
+- **Empty State**: Engaging design with clear CTAs
+- **Progress Indicators**: Checkout flow progression
+- **Error Handling**: Graceful cart operation failures
+- **Accessibility**: ARIA labels for screen readers
+
+### Performance Optimization
+- **Bundle Size**: Cart components lazy-loaded
+- **Local Storage**: Efficient serialization/deserialization
+- **Rendering**: Optimized re-renders with React.memo
+- **Mobile**: Touch-optimized interactions
+- **Analytics**: Cart abandonment tracking
+
+## 📝 Notlar
+
+- Her yeni özellik için Notion'da task oluştur
+- Code review için pull request kullan
+- Documentation'ı güncel tut
+- Performance metrics'leri izle
+- User feedback'i toplam ve değerlendir
+- Cache management değişikliklerini test et
+- Email deliverability'yi izle (Resend dashboard)
+- **Cart System**: E-commerce best practices uygula
+
 ---
 
 Bu kurallar QuickUtil.app projesinin kalitesini, performansını ve maintainability'sini artırmak için tasarlanmıştır. Her zaman güncel tut ve proje gereksinimlerine göre adapte et. 
