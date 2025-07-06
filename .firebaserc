@@ -1,6 +1,7 @@
 {
   "projects": {
-    "quickutil": "quickutil-d2998"
+    "quickutil": "quickutil-d2998",
+    "default": "quickutil-d2998"
   },
   "targets": {},
   "etags": {}
