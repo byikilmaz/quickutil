@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { StorageProvider } from "@/contexts/StorageContext";
 import StructuredData from "@/components/StructuredData";
+import Footer from "@/components/Footer";
 import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -77,7 +78,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <StorageProvider>
-            {children}
+            <div className="min-h-screen flex flex-col">
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </StorageProvider>
         </AuthProvider>
       </body>

@@ -13,13 +13,18 @@ export default function Header({ onAuthClick }: HeaderProps) {
   const { user, userProfile, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [legalMenuOpen, setLegalMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const legalMenuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setUserMenuOpen(false);
+      }
+      if (legalMenuRef.current && !legalMenuRef.current.contains(event.target as Node)) {
+        setLegalMenuOpen(false);
       }
     };
 
@@ -84,6 +89,51 @@ export default function Header({ onAuthClick }: HeaderProps) {
             <Link href="/pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Fiyatlar
             </Link>
+            
+            {/* Legal Pages Dropdown */}
+            <div className="relative" ref={legalMenuRef}>
+              <button
+                onClick={() => setLegalMenuOpen(!legalMenuOpen)}
+                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                <span>Yasal</span>
+                <ChevronDownIcon className="h-4 w-4" />
+              </button>
+
+              {legalMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 py-1">
+                  <Link
+                    href="/hakkimizda"
+                    onClick={() => setLegalMenuOpen(false)}
+                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    🏢 Hakkımızda
+                  </Link>
+                  <Link
+                    href="/gizlilik-sozlesmesi"
+                    onClick={() => setLegalMenuOpen(false)}
+                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    🔒 Gizlilik Sözleşmesi
+                  </Link>
+                  <Link
+                    href="/teslimat-iade"
+                    onClick={() => setLegalMenuOpen(false)}
+                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    📦 Teslimat ve İade
+                  </Link>
+                  <Link
+                    href="/mesafeli-satis-sozlesmesi"
+                    onClick={() => setLegalMenuOpen(false)}
+                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    ⚖️ Mesafeli Satış Sözleşmesi
+                  </Link>
+                </div>
+              )}
+            </div>
+            
             {/* Cache Manager - Development Only */}
             {process.env.NODE_ENV === 'development' && (
               <CacheManager className="ml-4" />
@@ -204,6 +254,42 @@ export default function Header({ onAuthClick }: HeaderProps) {
               >
                 Fiyatlar
               </Link>
+              
+              {/* Mobile Legal Links */}
+              <div className="pt-2 border-t border-gray-200">
+                <div className="text-sm font-medium text-gray-500 mb-2">Yasal Sayfalar</div>
+                <div className="space-y-2 pl-4">
+                  <Link 
+                    href="/hakkimizda" 
+                    className="block text-gray-600 hover:text-blue-600 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    🏢 Hakkımızda
+                  </Link>
+                  <Link 
+                    href="/gizlilik-sozlesmesi" 
+                    className="block text-gray-600 hover:text-blue-600 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    🔒 Gizlilik Sözleşmesi
+                  </Link>
+                  <Link 
+                    href="/teslimat-iade" 
+                    className="block text-gray-600 hover:text-blue-600 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    📦 Teslimat ve İade
+                  </Link>
+                  <Link 
+                    href="/mesafeli-satis-sozlesmesi" 
+                    className="block text-gray-600 hover:text-blue-600 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    ⚖️ Mesafeli Satış Sözleşmesi
+                  </Link>
+                </div>
+              </div>
+              
               {user && (
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex items-center space-x-3 mb-3">
