@@ -11,18 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    # Checkout the repository code
     - name: Checkout code
       uses: actions/checkout@v4
       
+    # Setup Node.js environment
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '22'
         cache: 'npm'
-        
+    
+    # Install project dependencies (ROOT ONLY - NO FUNCTIONS)
     - name: Install root dependencies
       run: npm ci
         
+    # Build Next.js static export
     - name: Build project
       run: npm run build
       env:
@@ -33,10 +37,12 @@ jobs:
         NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
         NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
         
+    # Install Firebase CLI globally
     - name: Install Firebase CLI
       run: npm install -g firebase-tools
       
+    # Deploy to Firebase Hosting (NO FUNCTIONS)
     - name: Deploy to Firebase
-      run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }} --force
+      run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }} --force
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} 
