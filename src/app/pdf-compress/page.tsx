@@ -244,136 +244,164 @@ export default function PDFCompress() {
               maxSize={50 * 1024 * 1024} // 50MB
               title="PDF Dosyası Yükleyin"
               description="PDF dosyanızı buraya sürükleyin veya seçin"
+              currentFiles={[]}
             />
-          ) : (
-            <div className="space-y-6">
-              {/* File Info & Analysis */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium text-gray-900">Dosya Bilgileri</h3>
-                  {analyzing && (
-                    <div className="flex items-center text-blue-600">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-                      <span className="text-sm">Analiz ediliyor...</span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Dosya Adı:</span>
-                      <span className="text-sm font-medium">{file.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Dosya Boyutu:</span>
-                      <span className="text-sm font-medium">{getFileSize(file)}</span>
-                    </div>
+          ) : !compressedFile ? (
+            <>
+              {/* Success Upload State */}
+              <FileUpload
+                onFileSelect={handleFileSelect}
+                acceptedTypes={['application/pdf']}
+                maxSize={50 * 1024 * 1024}
+                title="PDF Dosyası Yükleyin"
+                description="PDF dosyanızı buraya sürükleyin veya seçin"
+                currentFiles={[file]}
+              />
+              
+              {/* File Processing Section */}
+              <div className="mt-6 space-y-6">
+                {/* File Info & Analysis */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-medium text-gray-900">Dosya Bilgileri</h3>
+                    {analyzing && (
+                      <div className="flex items-center text-blue-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                        <span className="text-sm">Analiz ediliyor...</span>
+                      </div>
+                    )}
                   </div>
                   
-                  {pdfAnalysis && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Sayfa Sayısı:</span>
-                        <span className="text-sm font-medium">{pdfAnalysis.pageCount}</span>
+                        <span className="text-sm text-gray-600">Dosya Adı:</span>
+                        <span className="text-sm font-medium">{file.name}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">İçerik:</span>
-                        <span className="text-sm font-medium">
-                          {pdfAnalysis.hasText && 'Metin'}
-                          {pdfAnalysis.hasText && pdfAnalysis.hasImages && ' + '}
-                          {pdfAnalysis.hasImages && 'Görsel'}
-                        </span>
+                        <span className="text-sm text-gray-600">Dosya Boyutu:</span>
+                        <span className="text-sm font-medium">{getFileSize(file)}</span>
                       </div>
                     </div>
-                  )}
-                </div>
-                
-                <button
-                  onClick={resetForm}
-                  className="mt-3 text-red-600 hover:text-red-800 text-sm font-medium"
-                >
-                  Başka Dosya Seç
-                </button>
-              </div>
-
-              {/* Compression Settings */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900">Sıkıştırma Ayarları</h2>
-                
-                {/* Compression Level Selection */}
-                <div>
-                  <h3 className="text-lg font-medium text-gray-700 mb-3">
-                    Sıkıştırma Seviyesi
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {(Object.keys(compressionLevels) as Array<keyof typeof compressionLevels>).map((level) => (
-                      <button
-                        key={level}
-                        onClick={() => setCompressionLevel(level)}
-                        className={`p-4 border rounded-lg text-left transition-all ${
-                          compressionLevel === level
-                            ? 'bg-blue-50 border-blue-300 text-blue-900'
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        <div className="font-medium mb-1">
-                          {compressionLevels[level].label}
+                    
+                    {pdfAnalysis && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">Sayfa Sayısı:</span>
+                          <span className="text-sm font-medium">{pdfAnalysis.pageCount}</span>
                         </div>
-                        <div className="text-sm opacity-75">
-                          {compressionLevels[level].description}
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">İçerik:</span>
+                          <span className="text-sm font-medium">
+                            {pdfAnalysis.hasText && 'Metin'}
+                            {pdfAnalysis.hasText && pdfAnalysis.hasImages && ' + '}
+                            {pdfAnalysis.hasImages && 'Görsel'}
+                          </span>
                         </div>
-                      </button>
-                    ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-
-                {/* Info about compression */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start space-x-3">
-                    <InformationCircleIcon className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <div className="text-sm text-blue-800">
-                      <p className="font-medium mb-1">Sıkıştırma Hakkında</p>
-                      <p>
-                        PDF sıkıştırma işlemi metadata temizleme, object stream optimizasyonu ve 
-                        dosya yapısını optimize ederek gerçekleşir. Metin kalitesi korunur.
-                      </p>
+                  
+                  <div className="mt-3 flex items-center justify-between">
+                    <button
+                      onClick={resetForm}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      <span>Farklı dosya seç</span>
+                    </button>
+                    
+                    <div className="flex items-center space-x-1 text-sm text-green-600">
+                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>Dosya hazır</span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Compress Button */}
-              <div className="flex justify-center">
-                <button
-                  onClick={handleCompress}
-                  disabled={loading}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Sıkıştırılıyor...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ArrowUpTrayIcon className="h-5 w-5" />
-                      <span>PDFi Sıkıştır</span>
-                    </>
-                  )}
-                </button>
-              </div>
+                {/* Compression Settings */}
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-gray-900">Sıkıştırma Ayarları</h2>
+                  
+                  {/* Compression Level Selection */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-700 mb-3">
+                      Sıkıştırma Seviyesi
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {(Object.keys(compressionLevels) as Array<keyof typeof compressionLevels>).map((level) => (
+                        <button
+                          key={level}
+                          onClick={() => setCompressionLevel(level)}
+                          className={`p-4 border rounded-lg text-left transition-all ${
+                            compressionLevel === level
+                              ? 'bg-blue-50 border-blue-300 text-blue-900'
+                              : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div className="font-medium mb-1">
+                            {compressionLevels[level].label}
+                          </div>
+                          <div className="text-sm opacity-75">
+                            {compressionLevels[level].description}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <InformationCircleIcon className="h-5 w-5" />
-                    <span>{error}</span>
+                  {/* Info about compression */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <InformationCircleIcon className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <div className="text-sm text-blue-800">
+                        <p className="font-medium mb-1">Sıkıştırma Hakkında</p>
+                        <p>
+                          PDF sıkıştırma işlemi metadata temizleme, object stream optimizasyonu ve 
+                          dosya yapısını optimize ederek gerçekleşir. Metin kalitesi korunur.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              )}
 
+                {/* Compress Button */}
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleCompress}
+                    disabled={loading}
+                    className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        <span>Sıkıştırılıyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ArrowUpTrayIcon className="h-5 w-5" />
+                        <span>PDFi Sıkıştır</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <InformationCircleIcon className="h-5 w-5" />
+                      <span>{error}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
               {/* Result */}
               {compressionResult && compressedFile && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -431,7 +459,7 @@ export default function PDFCompress() {
                   </button>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
 

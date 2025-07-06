@@ -62,6 +62,9 @@ const nextConfig: NextConfig = {
         },
       };
     }
+    // Force cache busting for assets
+    config.output.filename = 'static/chunks/[name]-[contenthash].js';
+    config.output.chunkFilename = 'static/chunks/[name]-[contenthash].js';
     return config;
   },
   

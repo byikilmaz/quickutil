@@ -1,7 +1,13 @@
 'use client';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { DocumentArrowUpIcon, ExclamationTriangleIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
+import { 
+  DocumentArrowUpIcon, 
+  ExclamationTriangleIcon, 
+  CloudArrowUpIcon,
+  DocumentCheckIcon,
+  CheckCircleIcon
+} from '@heroicons/react/24/outline';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -9,6 +15,8 @@ interface FileUploadProps {
   maxSize: number;
   title: string;
   description: string;
+  multiple?: boolean;
+  currentFiles?: File[];
 }
 
 export default function FileUpload({
@@ -16,7 +24,9 @@ export default function FileUpload({
   acceptedTypes,
   maxSize,
   title,
-  description
+  description,
+  multiple = false,
+  currentFiles = []
 }: FileUploadProps) {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -35,7 +45,7 @@ export default function FileUpload({
       return acc;
     }, {} as Record<string, string[]>),
     maxSize,
-    maxFiles: 1,
+    maxFiles: multiple ? 10 : 1,
     onDragEnter: () => setIsHovering(true),
     onDragLeave: () => setIsHovering(false),
     onDropAccepted: () => setIsHovering(false),
@@ -68,6 +78,38 @@ export default function FileUpload({
       }
     }).join(', ');
   };
+
+  // Show success state if files are uploaded
+  if (currentFiles.length > 0 && !multiple) {
+    return (
+      <div className="space-y-6">
+        <div className="border-2 border-green-300 bg-green-50 rounded-xl p-8 text-center">
+          <div className="flex flex-col items-center space-y-4">
+            {/* Success Icon */}
+            <div className="p-4 bg-green-100 rounded-full">
+              <CheckCircleIcon className="h-12 w-12 text-green-600" />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold text-green-900">Dosya Başarıyla Yüklendi!</h3>
+              <p className="text-green-700">
+                <span className="font-medium">{currentFiles[0].name}</span> işleme hazır
+              </p>
+              <p className="text-sm text-green-600">
+                Boyut: {formatFileSize(currentFiles[0].size)}
+              </p>
+            </div>
+
+            {/* File ready indicator */}
+            <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 border border-green-200">
+              <DocumentCheckIcon className="h-5 w-5 text-green-600" />
+              <span className="text-green-800 font-medium">Dosya işlemeye hazır</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -108,7 +150,7 @@ export default function FileUpload({
                 type="button"
                 className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
               >
-                Dosya Seç
+                {multiple ? 'Dosyalar Seç' : 'Dosya Seç'}
               </button>
               <span className="text-gray-500 font-medium">veya</span>
               <span className="text-blue-600 font-medium">
@@ -126,6 +168,20 @@ export default function FileUpload({
                 <span className="font-medium">Desteklenen formatlar:</span>
                 <span className="text-gray-800">{getFileTypesDisplay()}</span>
               </div>
+              {multiple && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Maksimum dosya sayısı:</span>
+                  <span className="text-gray-800">10 dosya</span>
+                </div>
+              )}
+            </div>
+
+            {/* Security notice */}
+            <div className="flex items-center space-x-2 text-xs text-gray-500">
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+              <span>Dosyalarınız tarayıcınızda güvenle işlenir</span>
             </div>
           </div>
         </div>

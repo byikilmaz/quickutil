@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { redirect } from 'next/navigation';
 import { ActivityTracker } from '@/lib/activityTracker';
@@ -165,6 +166,22 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <nav className="flex items-center space-x-4 text-sm">
+            <Link 
+              href="/" 
+              className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            >
+              🏠 Ana Sayfa
+            </Link>
+            <span className="text-gray-400">›</span>
+            <span className="text-gray-900 font-medium">Profilim</span>
+          </nav>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

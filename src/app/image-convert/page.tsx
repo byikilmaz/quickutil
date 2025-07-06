@@ -186,170 +186,199 @@ export default function ImageConvert() {
               maxSize={50 * 1024 * 1024} // 50MB
               title="Resim Dosyası Yükleyin"
               description="PNG, JPEG veya WebP formatında resminizi buraya sürükleyin"
+              currentFiles={[]}
             />
-          ) : (
-            <div className="space-y-6">
-              {/* File Info & Preview */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* File Info */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-3">Seçilen Dosya</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Dosya Adı:</span>
-                      <span className="text-sm font-medium">{file.name}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Boyut:</span>
-                      <span className="text-sm font-medium">{formatFileSize(file.size)}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Format:</span>
-                      <span className="text-sm font-medium uppercase">
-                        {file.type.replace('image/', '')}
-                      </span>
-                    </div>
-                    {originalDimensions && (
+          ) : !convertedFile ? (
+            <>
+              {/* Success Upload State */}
+              <FileUpload
+                onFileSelect={handleFileSelect}
+                acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp']}
+                maxSize={50 * 1024 * 1024}
+                title="Resim Dosyası Yükleyin"
+                description="PNG, JPEG veya WebP formatında resminizi buraya sürükleyin"
+                currentFiles={[file]}
+              />
+              
+              {/* File Processing Section */}
+              <div className="mt-6 space-y-6">
+                {/* File Info & Preview */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* File Info */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-medium text-gray-900 mb-3">Seçilen Dosya</h3>
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Boyutlar:</span>
-                        <span className="text-sm font-medium">
-                          {originalDimensions.width} × {originalDimensions.height}
+                        <span className="text-sm text-gray-600">Dosya Adı:</span>
+                        <span className="text-sm font-medium">{file.name}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Boyut:</span>
+                        <span className="text-sm font-medium">{formatFileSize(file.size)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Format:</span>
+                        <span className="text-sm font-medium uppercase">
+                          {file.type.replace('image/', '')}
                         </span>
                       </div>
-                    )}
+                      {originalDimensions && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Boyutlar:</span>
+                          <span className="text-sm font-medium">
+                            {originalDimensions.width} × {originalDimensions.height}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="mt-3 flex items-center justify-between">
+                      <button
+                        onClick={resetForm}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Farklı resim seç</span>
+                      </button>
+                      
+                      <div className="flex items-center space-x-1 text-sm text-green-600">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span>Resim hazır</span>
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={resetForm}
-                    className="mt-3 text-red-600 hover:text-red-800 text-sm font-medium"
-                  >
-                    Başka Dosya Seç
-                  </button>
+
+                  {/* Preview */}
+                  {previewUrl && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="font-medium text-gray-900 mb-3">Önizleme</h3>
+                      <div className="relative w-full h-48 bg-white rounded border flex items-center justify-center overflow-hidden">
+                        <Image
+                          src={previewUrl}
+                          alt={`${file?.name || 'Yüklenen dosya'} resim önizlemesi - ${format} formatına dönüştürülecek`}
+                          fill
+                          className="object-contain"
+                          unoptimized
+                          loading="lazy"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Preview */}
-                {previewUrl && (
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3">Önizleme</h3>
-                    <div className="relative w-full h-48 bg-white rounded border flex items-center justify-center overflow-hidden">
-                      <Image
-                        src={previewUrl}
-                        alt={`${file?.name || 'Yüklenen dosya'} resim önizlemesi - ${format} formatına dönüştürülecek`}
-                        fill
-                        className="object-contain"
-                        unoptimized
-                        loading="lazy"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                {/* Conversion Settings */}
+                <div className="space-y-4">
+                  <h3 className="font-medium text-gray-900">Dönüştürme Ayarları</h3>
+                  
+                  {/* Format Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Hedef Format
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {(['jpeg', 'png', 'webp'] as const).map((formatOption) => (
+                        <button
+                          key={formatOption}
+                          onClick={() => setFormat(formatOption)}
+                          className={`p-3 border rounded-lg text-sm font-medium transition-colors ${
+                            format === formatOption
+                              ? 'bg-purple-50 border-purple-300 text-purple-700'
+                              : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {formatOption.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quality */}
+                  {format !== 'png' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Kalite: {Math.round(quality * 100)}%
+                      </label>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.1"
+                        value={quality}
+                        onChange={(e) => setQuality(parseFloat(e.target.value))}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Düşük Kalite</span>
+                        <span>Yüksek Kalite</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dimensions */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Maksimum Genişlik (px)
+                      </label>
+                      <input
+                        type="number"
+                        value={maxWidth || ''}
+                        onChange={(e) => setMaxWidth(e.target.value ? parseInt(e.target.value) : undefined)}
+                        placeholder="Orijinal"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Maksimum Yükseklik (px)
+                      </label>
+                      <input
+                        type="number"
+                        value={maxHeight || ''}
+                        onChange={(e) => setMaxHeight(e.target.value ? parseInt(e.target.value) : undefined)}
+                        placeholder="Orijinal"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                     </div>
                   </div>
+                </div>
+
+                {/* Convert Button */}
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleConvert}
+                    disabled={loading}
+                    className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        <span>Dönüştürülüyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ArrowPathIcon className="h-5 w-5" />
+                        <span>Resmi Dönüştür</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    {error}
+                  </div>
                 )}
               </div>
-
-              {/* Conversion Settings */}
-              <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">Dönüştürme Ayarları</h3>
-                
-                {/* Format Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hedef Format
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {(['jpeg', 'png', 'webp'] as const).map((formatOption) => (
-                      <button
-                        key={formatOption}
-                        onClick={() => setFormat(formatOption)}
-                        className={`p-3 border rounded-lg text-sm font-medium transition-colors ${
-                          format === formatOption
-                            ? 'bg-purple-50 border-purple-300 text-purple-700'
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        {formatOption.toUpperCase()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quality */}
-                {format !== 'png' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Kalite: {Math.round(quality * 100)}%
-                    </label>
-                    <input
-                      type="range"
-                      min="0.1"
-                      max="1"
-                      step="0.1"
-                      value={quality}
-                      onChange={(e) => setQuality(parseFloat(e.target.value))}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>Düşük Kalite</span>
-                      <span>Yüksek Kalite</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Dimensions */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Maksimum Genişlik (px)
-                    </label>
-                    <input
-                      type="number"
-                      value={maxWidth || ''}
-                      onChange={(e) => setMaxWidth(e.target.value ? parseInt(e.target.value) : undefined)}
-                      placeholder="Orijinal"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Maksimum Yükseklik (px)
-                    </label>
-                    <input
-                      type="number"
-                      value={maxHeight || ''}
-                      onChange={(e) => setMaxHeight(e.target.value ? parseInt(e.target.value) : undefined)}
-                      placeholder="Orijinal"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Convert Button */}
-              <div className="flex justify-center">
-                <button
-                  onClick={handleConvert}
-                  disabled={loading}
-                  className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Dönüştürülüyor...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ArrowPathIcon className="h-5 w-5" />
-                      <span>Resmi Dönüştür</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Error Message */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  {error}
-                </div>
-              )}
-
+            </>
+          ) : (
+            <>
               {/* Result */}
               {conversionResult && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -383,7 +412,7 @@ export default function ImageConvert() {
                   </button>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
 
