@@ -27,9 +27,16 @@ export default function ToolCard({ tool }: ToolCardProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-300 group-hover:scale-105">
         <div className="flex items-start justify-between mb-4">
           <div className={`p-3 rounded-lg ${tool.color}`}>
-            <Icon className="h-8 w-8" />
+            <Icon 
+              className="h-8 w-8" 
+              aria-label={`${tool.title} aracı ikonu`}
+              role="img"
+            />
           </div>
-          <ArrowRightIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+          <ArrowRightIcon 
+            className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" 
+            aria-hidden="true"
+          />
         </div>
         
         <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">

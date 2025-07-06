@@ -184,10 +184,12 @@ export default function ImageConvert() {
                     <div className="relative w-full h-48 bg-white rounded border flex items-center justify-center overflow-hidden">
                       <Image
                         src={previewUrl}
-                        alt="Preview"
+                        alt={`${file?.name || 'Yüklenen dosya'} resim önizlemesi - ${format} formatına dönüştürülecek`}
                         fill
                         className="object-contain"
                         unoptimized
+                        loading="lazy"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
                   </div>

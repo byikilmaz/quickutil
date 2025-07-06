@@ -123,8 +123,8 @@ export const convertPDFToImages = async (
     // Dinamik olarak PDF.js'i import et
     const pdfjsLib = await import('pdfjs-dist');
     
-    // PDF.js worker'ını kur
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    // PDF.js worker'ını local dosyadan kur (ES module için + cache buster)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js?v=5.3.31';
     
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;

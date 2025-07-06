@@ -4,8 +4,9 @@
 ## 🎯 Proje Bağlamı
 - **Proje**: QuickUtil.app - PDF ve dosya işleme web uygulaması
 - **Tech Stack**: Next.js 15, React 19, TypeScript, Firebase, Tailwind CSS
-- **Canlı URL**: https://quickutil.app
+- **Canlı URL**: https://quickutil.app (Default Domain)
 - **Firebase Project**: quickutil-d2998
+- **SEO**: Sitemap, robots.txt, canonical URLs optimize edildi
 
 ## 🛠️ Teknoloji Kuralları
 
@@ -234,10 +235,14 @@ const convertToImages = async (file: File) => {
 
 ### PDF.js Entegrasyon Kuralları
 - Dinamik import kullan: `await import('pdfjs-dist')`
-- Worker CDN'den yükle: `//cdnjs.cloudflare.com/ajax/libs/pdf.js/`
+- Worker LOCAL dosyadan yükle: `/js/pdf.worker.min.js` (CDN değil!)
 - Canvas rendering için 2D context kullan
 - Scale parametresi ile çözünürlük ayarla
 - Error handling detaylı mesajlarla
+- Worker dosyası `public/js/pdf.worker.min.js` olarak serve edilmeli
+- **CRITICAL**: API ve Worker sürümlerinin eşleşmesi gerekli!
+- ES module (.mjs) formatı destekli worker kullan
+- Cache buster kullan: `?v=VERSION_NUMBER` - browser cache sorunlarını önler
 
 ### Dosya İşleme
 - File validation (size, type)
@@ -392,6 +397,55 @@ if (process.env.NODE_ENV === 'development') {
 - Reduced animations
 - Efficient rendering
 
+## 🔍 SEO Kuralları
+
+### Structured Data (Schema.org)
+```typescript
+// JSON-LD structured data kullan
+import StructuredData from '@/components/StructuredData';
+
+// WebSite, WebApplication, HowTo, FAQ schemas
+<StructuredData type="website" />
+<StructuredData type="howto" data={{ title: "...", steps: [...] }} />
+```
+
+### Meta Tags Optimization
+```typescript
+// Sayfa özelinde meta tags
+import { generatePageMetadata, getPageSEOData } from '@/lib/seoUtils';
+
+export const metadata = generatePageMetadata(getPageSEOData('page-name'));
+```
+
+### Header Hierarchy
+- **H1**: Tek ve benzersiz sayfa başlığı
+- **H2**: Ana bölüm başlıkları
+- **H3**: Alt bölüm başlıkları
+- Logical hierarchy: H1 > H2 > H3 sırası
+
+### Image SEO
+```typescript
+// Context-aware alt text
+<Image 
+  alt={generateImageAlt('pdf-compress', 'Dosya yükleme alanı')}
+  loading="lazy"
+  sizes="(max-width: 768px) 100vw, 50vw"
+/>
+```
+
+### Breadcrumbs
+```typescript
+// Auto-generated breadcrumbs
+import Breadcrumb from '@/components/Breadcrumb';
+<Breadcrumb /> // pathname bazlı otomatik
+```
+
+### Performance SEO
+- **Core Web Vitals**: LCP, FID, CLS optimize et
+- **Bundle splitting**: Vendor chunks ayrı
+- **Dynamic imports**: Non-critical components lazy load
+- **Compression**: gzip/brotli aktif
+
 ## 🎨 Design System
 
 ### Color Palette
@@ -462,11 +516,11 @@ logEvent(analytics, 'pdf_compressed', {
 ## 🎯 Öncelik Sırası
 
 1. **Güvenlik**: Input validation, authentication
-2. **Performance**: Loading times, optimization
-3. **Accessibility**: WCAG compliance
+2. **Performance**: Loading times, optimization, Core Web Vitals
+3. **Accessibility**: WCAG compliance, ARIA labels, semantic HTML
 4. **User Experience**: Intuitive interface
 5. **Mobile Experience**: Touch-friendly design
-6. **SEO**: Meta tags, structured data
+6. **SEO**: Meta tags, structured data, rich snippets, breadcrumbs, header hierarchy
 7. **Analytics**: User behavior tracking
 8. **Testing**: Unit & integration tests
 

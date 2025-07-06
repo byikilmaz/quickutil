@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { 
   DocumentIcon, 
   PhotoIcon, 
@@ -7,9 +8,14 @@ import {
   CubeTransparentIcon,
   DocumentArrowDownIcon
 } from '@heroicons/react/24/outline';
-import AuthModal from '@/components/AuthModal';
 import ToolCard from '@/components/ToolCard';
 import Header from '@/components/Header';
+
+// Lazy load non-critical components
+const AuthModal = dynamic(() => import('@/components/AuthModal'), {
+  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-96 w-96"></div>,
+  ssr: false,
+});
 
 export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);

@@ -2,27 +2,13 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import StructuredData from "@/components/StructuredData";
+import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "QuickUtil - PDF Sıkıştırma ve Dosya Dönüştürme",
-  description: "PDF sıkıştırma, format dönüştürme, fotoğraf sıkıştırma ve arka plan kaldırma araçları",
-  keywords: "PDF sıkıştırma, PDF dönüştürme, fotoğraf sıkıştırma, PNG JPEG, arka plan kaldırma",
-  authors: [{ name: "QuickUtil" }],
-  openGraph: {
-    title: "QuickUtil - PDF ve Dosya İşleme Araçları",
-    description: "Ücretsiz PDF sıkıştırma, format dönüştürme ve fotoğraf işleme araçları",
-    url: "https://quickutil.app",
-    siteName: "QuickUtil",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "QuickUtil - PDF ve Dosya İşleme Araçları",
-    description: "Ücretsiz PDF sıkıştırma, format dönüştürme ve fotoğraf işleme araçları",
-  },
-};
+// Dynamic metadata based on page
+export const metadata: Metadata = generatePageMetadata(getPageSEOData('home'));
 
 export default function RootLayout({
   children,
@@ -31,6 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
+      <head>
+        <StructuredData type="website" />
+        <StructuredData type="webapp" />
+      </head>
       <body className={inter.className}>
         <AuthProvider>
           {children}

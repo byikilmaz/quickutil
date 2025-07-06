@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { DocumentArrowDownIcon, ArrowUpTrayIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import Header from '@/components/Header';
 import FileUpload from '@/components/FileUpload';
+import Breadcrumb from '@/components/Breadcrumb';
+import StructuredData from '@/components/StructuredData';
 import { 
   compressPDF, 
   analyzePDF,
@@ -114,9 +116,19 @@ export default function PDFCompress() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <StructuredData 
+        type="howto" 
+        data={{
+          title: 'PDF Dosyası Nasıl Sıkıştırılır',
+          description: 'PDF dosyalarınızı kaliteden ödün vermeden nasıl sıkıştıracağınızı öğrenin'
+        }}
+      />
+      <StructuredData type="faq" />
+      
       <Header onAuthClick={() => {}} />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumb />
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -196,13 +208,13 @@ export default function PDFCompress() {
 
               {/* Compression Settings */}
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">Sıkıştırma Ayarları</h3>
+                <h2 className="text-xl font-semibold text-gray-900">Sıkıştırma Ayarları</h2>
                 
                 {/* Compression Level Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <h3 className="text-lg font-medium text-gray-700 mb-3">
                     Sıkıştırma Seviyesi
-                  </label>
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {(Object.keys(compressionLevels) as Array<keyof typeof compressionLevels>).map((level) => (
                       <button
