@@ -153,11 +153,68 @@ const compressPDF = async (file: File, quality: number) => {
 };
 ```
 
+### PDF Dönüştürme
+```typescript
+// PDF'yi sayfalara ayırma
+import { PDFDocument, degrees, rgb } from 'pdf-lib';
+
+const splitPDF = async (file: File): Promise<ConversionResult[]> => {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+  const pages = pdfDoc.getPages();
+  
+  const results: ConversionResult[] = [];
+  for (let i = 0; i < pages.length; i++) {
+    const newDoc = await PDFDocument.create();
+    const [copiedPage] = await newDoc.copyPages(pdfDoc, [i]);
+    newDoc.addPage(copiedPage);
+    
+    const pdfBytes = await newDoc.save();
+    results.push({
+      name: file.name.replace('.pdf', `_sayfa_${i + 1}.pdf`),
+      url: URL.createObjectURL(new Blob([pdfBytes])),
+      size: pdfBytes.length,
+      type: 'application/pdf'
+    });
+  }
+  return results;
+};
+
+// PDF birleştirme
+const mergePDFs = async (files: File[]): Promise<ConversionResult> => {
+  const mergedDoc = await PDFDocument.create();
+  
+  for (const file of files) {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const pages = await mergedDoc.copyPages(pdfDoc, pdfDoc.getPageIndices());
+    pages.forEach(page => mergedDoc.addPage(page));
+  }
+  
+  const pdfBytes = await mergedDoc.save();
+  return {
+    name: 'birlestirilmis_dokuman.pdf',
+    url: URL.createObjectURL(new Blob([pdfBytes])),
+    size: pdfBytes.length,
+    type: 'application/pdf'
+  };
+};
+```
+
+### PDF Özellikleri
+- Text extraction (OCR ready)
+- Page splitting ve merging
+- Watermark ekleme
+- Page rotation
+- Metadata editing
+- PDF to Images conversion
+
 ### Dosya İşleme
 - File validation (size, type)
 - Progress tracking
 - Memory optimization
 - Error recovery
+- Batch processing
 
 ## 🎯 UI/UX Kuralları
 
