@@ -10,6 +10,8 @@ export interface CartItem {
   period: 'monthly' | 'annual';
   features: string[];
   originalPrice?: number; // Aylık fiyatı göstermek için
+  specialOffer?: boolean; // Özel %10 ekstra indirim flag'i
+  baseAnnualPrice?: number; // Orijinal yıllık fiyat (indirim öncesi)
 }
 
 interface CartContextType {
@@ -21,6 +23,8 @@ interface CartContextType {
   updateItem: (id: string, updates: Partial<CartItem>) => void;
   clearCart: () => void;
   isInCart: (planName: string, period: string) => boolean;
+  hasMonthlyItems: () => boolean;
+  applySpecialOffer: (itemId: string, baseAnnualPrice: number) => void;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -98,6 +102,33 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     );
   };
 
+  // Aylık item var mı kontrol et
+  const hasMonthlyItems = () => {
+    return items.some(item => item.period === 'monthly');
+  };
+
+  // Özel teklif uygula - Yıllık plana geçir + %10 ekstra indirim
+  const applySpecialOffer = (itemId: string, baseAnnualPrice: number) => {
+    setItems(prevItems => 
+      prevItems.map(item => {
+        if (item.id === itemId) {
+          // %10 ekstra indirim uygula
+          const specialPrice = baseAnnualPrice * 0.9; // %10 indirim
+          
+          return {
+            ...item,
+            period: 'annual',
+            price: specialPrice,
+            specialOffer: true,
+            baseAnnualPrice: baseAnnualPrice,
+            description: 'Özel Yıllık Teklif - Size özel %10 ekstra indirim!'
+          };
+        }
+        return item;
+      })
+    );
+  };
+
   const itemCount = items.length;
   const totalPrice = items.reduce((total, item) => total + item.price, 0);
 
@@ -110,7 +141,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       removeItem,
       updateItem,
       clearCart,
-      isInCart
+      isInCart,
+      hasMonthlyItems,
+      applySpecialOffer
     }}>
       {children}
     </CartContext.Provider>

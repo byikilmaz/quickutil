@@ -1,19 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/AuthModal';
 import Header from '@/components/Header';
 import Link from 'next/link';
-import { TrashIcon } from '@heroicons/react/24/outline';
-import { formatUSDPrice, calculateSavingsPercentage } from '@/lib/pricingUtils';
+import { TrashIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { formatUSDPrice, getPricing } from '@/lib/pricingUtils';
 import Image from 'next/image';
 
 export default function CartPage() {
-  const { items, totalPrice, removeItem, clearCart } = useCart();
+  const { items, totalPrice, removeItem, clearCart, hasMonthlyItems, applySpecialOffer } = useCart();
   const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [showSpecialOffer, setShowSpecialOffer] = useState(false);
+  const [specialOfferShown, setSpecialOfferShown] = useState(false);
+
+  // 3 saniye sonra aylık plan varsa özel teklif göster
+  useEffect(() => {
+    if (hasMonthlyItems() && !specialOfferShown && items.length > 0) {
+      const timer = setTimeout(() => {
+        setShowSpecialOffer(true);
+        setSpecialOfferShown(true);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasMonthlyItems, specialOfferShown, items.length]);
 
   const handleCheckout = () => {
     if (!user) {
@@ -26,55 +40,58 @@ export default function CartPage() {
     // İyzico payment integration burada olacak
   };
 
-  const getTotalSavings = () => {
-    return items.reduce((total, item) => {
-      if (item.period === 'annual' && item.originalPrice) {
-        const annualPrice = item.originalPrice * 12;
-        return total + (annualPrice - item.price);
+  const handleSpecialOfferAccept = () => {
+    const pricing = getPricing();
+    
+    // Aylık item'ları bul ve yıllık + %10 ekstra indirim uygula
+    items.forEach(item => {
+      if (item.period === 'monthly') {
+        const planType = item.name.toLowerCase().includes('premium') ? 'premium' : 'business';
+        const baseAnnualPrice = pricing[planType].annual;
+        
+        applySpecialOffer(item.id, baseAnnualPrice);
       }
-      return total;
-    }, 0);
+    });
+    
+    setShowSpecialOffer(false);
+  };
+
+  const handleSpecialOfferDecline = () => {
+    setShowSpecialOffer(false);
+  };
+
+  const getSpecialOfferSavings = () => {
+    const pricing = getPricing();
+    let totalSavings = 0;
+    
+    items.forEach(item => {
+      if (item.period === 'monthly') {
+        const planType = item.name.toLowerCase().includes('premium') ? 'premium' : 'business';
+        const baseAnnualPrice = pricing[planType].annual;
+        const specialPrice = baseAnnualPrice * 0.9; // %10 ekstra indirim
+        const monthlySavings = (item.price * 12) - specialPrice;
+        totalSavings += monthlySavings;
+      }
+    });
+    
+    return totalSavings;
   };
 
   if (items.length === 0) {
     return (
       <>
         <Header onAuthClick={() => setIsAuthModalOpen(true)} />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-          <div className="container mx-auto px-4 py-16">
-            <div className="max-w-4xl mx-auto">
-              {/* Empty Cart State */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-                <div className="mb-8">
-                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m-2.4 8L9 13v6a1 1 0 001 1h4a1 1 0 001-1v-6m-6 0h6m-6 0V9a3 3 0 116 0v4m-6 0a2 2 0 104 0m-2-2h.01" />
-                    </svg>
-                  </div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                    Sepetiniz Boş
-                  </h1>
-                  <p className="text-xl text-gray-600 mb-8">
-                    QuickUtil Premium planlarımıza göz atarak başlayın!
-                  </p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link
-                    href="/pricing"
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    Planları İncele
-                  </Link>
-                  <Link
-                    href="/"
-                    className="bg-gray-100 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                  >
-                    Ana Sayfaya Dön
-                  </Link>
-                </div>
-              </div>
-            </div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🛒</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Sepetiniz Boş</h2>
+            <p className="text-gray-600 mb-6">Henüz sepetinizde ürün bulunmuyor.</p>
+            <Link 
+              href="/pricing" 
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Planları İncele
+            </Link>
           </div>
         </div>
         
@@ -88,212 +105,177 @@ export default function CartPage() {
   return (
     <>
       <Header onAuthClick={() => setIsAuthModalOpen(true)} />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                🛒 Sepetim
-              </h1>
-              <p className="text-gray-600">
-                {items.length} ürün sepetinizde
-              </p>
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Cart Items */}
-              <div className="lg:col-span-2 space-y-4">
-                {items.map((item) => (
-                  <div key={item.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-3">
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                            item.name.includes('Premium') 
-                              ? 'bg-blue-100 text-blue-600' 
-                              : 'bg-purple-100 text-purple-600'
-                          }`}>
-                            {item.name.includes('Premium') ? '⭐' : '💼'}
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900">{item.name}</h3>
-                            <p className="text-gray-600">{item.description}</p>
-                          </div>
+      
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">🛒 Sepetiniz</h1>
+          
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Cart Items */}
+            <div className="lg:col-span-2 space-y-4">
+              {items.map((item) => (
+                <div key={item.id} className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900">{item.name}</h3>
+                      <p className="text-gray-600">{item.description}</p>
+                      {item.specialOffer && (
+                        <div className="flex items-center mt-2">
+                          <SparklesIcon className="w-4 h-4 text-yellow-500 mr-1" />
+                          <span className="text-sm text-yellow-600 font-medium">Özel Teklif Uygulandı!</span>
                         </div>
-
-                        {/* Features */}
-                        <div className="mb-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {item.features.slice(0, 4).map((feature, index) => (
-                              <div key={index} className="flex items-center text-sm text-gray-700">
-                                <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                                <span>{feature}</span>
-                              </div>
-                            ))}
-                          </div>
-                          {item.features.length > 4 && (
-                            <p className="text-sm text-gray-500 mt-2">
-                              +{item.features.length - 4} daha fazla özellik
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Period & Savings */}
-                        <div className="flex items-center space-x-4">
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            item.period === 'annual' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-blue-100 text-blue-800'
-                          }`}>
-                            {item.period === 'annual' ? 'Yıllık Plan' : 'Aylık Plan'}
-                          </span>
-                          
-                          {item.period === 'annual' && item.originalPrice && (
-                            <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
-                              %{calculateSavingsPercentage(item.originalPrice, item.price / 12)} Tasarruf
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="text-right ml-6">
-                        <div className="mb-4">
-                          {item.period === 'annual' && item.originalPrice && (
-                            <div className="text-sm text-gray-500 line-through">
-                              {formatUSDPrice(item.originalPrice)}/ay
-                            </div>
-                          )}
-                          <div className="text-2xl font-bold text-gray-900">
-                            {formatUSDPrice(item.price)}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            /{item.period === 'annual' ? 'yıl' : 'ay'}
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors"
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                          <span className="text-sm font-medium">Kaldır</span>
-                        </button>
-                      </div>
+                      )}
                     </div>
-                  </div>
-                ))}
-
-                {/* Clear Cart Button */}
-                {items.length > 1 && (
-                  <div className="text-center pt-4">
                     <button
-                      onClick={clearCart}
-                      className="text-red-600 hover:text-red-800 font-medium transition-colors"
+                      onClick={() => removeItem(item.id)}
+                      className="text-red-500 hover:text-red-700 p-2"
                     >
-                      Sepeti Temizle
+                      <TrashIcon className="w-5 h-5" />
                     </button>
                   </div>
-                )}
-              </div>
+                  
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-2xl font-bold text-blue-600">
+                      {formatUSDPrice(item.price)}
+                    </span>
+                    <span className="text-gray-500">
+                      /{item.period === 'monthly' ? 'ay' : 'yıl'}
+                    </span>
+                  </div>
 
-              {/* Order Summary */}
-              <div className="lg:col-span-1">
-                <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">
-                    Sipariş Özeti
-                  </h2>
+                  {/* Savings Display */}
+                  {item.specialOffer && item.baseAnnualPrice && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                      <div className="text-sm text-green-700">
+                        <span className="font-medium">🎉 Size Özel İndirim!</span>
+                        <br />
+                        Normal Yıllık: {formatUSDPrice(item.baseAnnualPrice)} → 
+                        Sizin Fiyatınız: {formatUSDPrice(item.price)}
+                        <br />
+                        <span className="font-bold">%{Math.round(((item.baseAnnualPrice - item.price) / item.baseAnnualPrice) * 100)} tasarruf!</span>
+                      </div>
+                    </div>
+                  )}
 
-                  {/* Items Summary */}
-                  <div className="space-y-3 mb-6">
-                    {items.map((item) => (
-                      <div key={item.id} className="flex justify-between text-sm">
-                        <span className="text-gray-700">{item.name} ({item.period})</span>
-                        <span className="font-medium">{formatUSDPrice(item.price)}</span>
+                  {/* Features */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {item.features.slice(0, 4).map((feature, index) => (
+                      <div key={index} className="flex items-center text-sm text-gray-600">
+                        <span className="text-green-500 mr-2">✓</span>
+                        {feature}
                       </div>
                     ))}
                   </div>
+                </div>
+              ))}
+              
+              {/* Clear Cart Button */}
+              <button
+                onClick={clearCart}
+                className="w-full bg-red-50 text-red-600 py-3 rounded-lg font-medium hover:bg-red-100 transition-colors"
+              >
+                Sepeti Temizle
+              </button>
+            </div>
 
-                  <div className="border-t border-gray-200 pt-4 mb-6">
-                    {/* Savings */}
-                    {getTotalSavings() > 0 && (
-                      <div className="flex justify-between text-sm text-green-600 mb-2">
-                        <span>Toplam Tasarruf:</span>
-                        <span className="font-medium">-{formatUSDPrice(getTotalSavings())}</span>
-                      </div>
-                    )}
-                    
-                    {/* Total */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold text-gray-900">Toplam:</span>
-                      <span className="text-2xl font-bold text-gray-900">{formatUSDPrice(totalPrice)}</span>
+            {/* Order Summary */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-lg shadow-md p-6 sticky top-8">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Sipariş Özeti</h3>
+                
+                <div className="space-y-3 mb-6">
+                  {items.map(item => (
+                    <div key={item.id} className="flex justify-between text-sm">
+                      <span className="text-gray-700">{item.name}</span>
+                      <span className="font-medium">{formatUSDPrice(item.price)}</span>
                     </div>
-                  </div>
-
-                  {/* Payment Methods */}
-                  <div className="mb-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Güvenli Ödeme</h3>
-                    <div className="flex items-center justify-center space-x-3">
-                      <Image 
-                        src="/images/payment-methods/visa.png" 
-                        alt="Visa"
-                        width={60}
-                        height={19}
-                        className="h-5 w-auto"
-                      />
-                      <Image 
-                        src="/images/payment-methods/mastercard.svg" 
-                        alt="MasterCard"
-                        width={60}
-                        height={19}
-                        className="h-5 w-auto"
-                      />
-                      <Image 
-                        src="/images/payment-methods/iyzico.svg" 
-                        alt="İyzico"
-                        width={60}
-                        height={19}
-                        className="h-5 w-auto"
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 text-center mt-2">
-                      256-bit SSL şifrelemesi ile güvenli
-                    </p>
-                  </div>
-
-                  {/* Checkout Button */}
-                  <button
-                    onClick={handleCheckout}
-                    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    {user ? 'Ödemeye Geç' : 'Giriş Yap ve Öde'}
-                  </button>
-
-                  {!user && (
-                    <p className="text-xs text-gray-500 text-center mt-2">
-                      Ödeme için giriş yapmanız gerekiyor
-                    </p>
-                  )}
-
-                  {/* Security Badges */}
-                  <div className="mt-6 text-center">
-                    <div className="flex items-center justify-center space-x-2 text-green-600 mb-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                      <span className="text-sm font-medium">SSL Güvenli</span>
-                    </div>
-                    <p className="text-xs text-gray-500">
-                      3D Secure • PCI DSS Uyumlu
-                    </p>
+                  ))}
+                </div>
+                
+                <div className="border-t pt-4 mb-6">
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Toplam:</span>
+                    <span className="text-blue-600">{formatUSDPrice(totalPrice)}</span>
                   </div>
                 </div>
+
+                {/* Payment Methods */}
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Güvenli Ödeme</h4>
+                  <div className="flex flex-wrap gap-2">
+                    <Image src="/images/payment-methods/visa.png" alt="Visa" width={40} height={25} />
+                    <Image src="/images/payment-methods/mastercard.svg" alt="MasterCard" width={40} height={25} />
+                    <Image src="/images/payment-methods/iyzico.svg" alt="İyzico" width={40} height={25} />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleCheckout}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  {user ? 'Ödemeye Geç' : 'Giriş Yap ve Öde'}
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Special Offer Modal */}
+      {showSpecialOffer && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full animate-bounce-in">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Size Özel Teklif!
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Aylık planınızı yıllık plana çevirmeniz için size özel <span className="font-bold text-green-600">%10 ekstra indirim</span> sunuyoruz!
+              </p>
+              
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="text-sm text-green-700">
+                  <div className="font-bold text-lg mb-2">
+                    💰 {formatUSDPrice(getSpecialOfferSavings())} Tasarruf!
+                  </div>
+                  <div>
+                    • Normal yıllık indirim<br />
+                    • <strong>+ Size özel %10 ekstra indirim</strong><br />
+                    • 12 ay yerine tek seferde ödeme
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleSpecialOfferDecline}
+                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                >
+                  Hayır, Teşekkürler
+                </button>
+                <button
+                  onClick={handleSpecialOfferAccept}
+                  className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-medium hover:from-green-700 hover:to-blue-700 transition-colors"
+                >
+                  Kabul Ediyorum! 🎯
+                </button>
+              </div>
+              
+              <p className="text-xs text-gray-500 mt-4">
+                Bu teklif sadece sizin için geçerlidir ve bir kez kullanılabilir.
+              </p>
+            </div>
+            
+            <button
+              onClick={handleSpecialOfferDecline}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {isAuthModalOpen && (
         <AuthModal onClose={() => setIsAuthModalOpen(false)} />

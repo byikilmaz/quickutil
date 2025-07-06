@@ -67,7 +67,8 @@ export default function PricingPage() {
       price: planPrice,
       period: selectedPeriod,
       features: plan === 'premium' ? premiumFeatures : businessFeatures,
-      originalPrice: planOriginalPrice
+      originalPrice: planOriginalPrice,
+      baseAnnualPrice: pricing![plan].annual
     };
 
     addItem(cartItem);
