@@ -17,12 +17,18 @@ export default function PricingPage() {
   const [pricing, setPricing] = useState<PlanPricing | null>(null);
 
   useEffect(() => {
-    // Basit USD fiyatlarını al
+    // USD fiyatlarını al
     const usdPricing = getPricing();
     setPricing(usdPricing);
   }, []);
 
-  const handleSubscribe = (plan: 'premium' | 'business', period: 'monthly' | 'annual') => {
+  const handleSubscribe = (plan: 'free' | 'premium' | 'business', period?: 'monthly' | 'annual') => {
+    if (plan === 'free') {
+      // Free plan için direkt başla
+      console.log('Starting with free plan');
+      return;
+    }
+    
     if (!user) {
       setIsAuthModalOpen(true);
       return;
@@ -49,15 +55,15 @@ export default function PricingPage() {
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         {/* Header */}
-        <div className="relative bg-white">
+        <div className="relative bg-white shadow-sm">
           <div className="container mx-auto px-4 py-16">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 💳 Fiyatlandırma Planları
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Profesyonel dosya işleme araçlarına sınırsız erişim. 
-                USD bazlı sabit fiyatlarla, şeffaf ve adil ödeme.
+                Profesyonel dosya işleme araçlarına erişim. 
+                Ücretsiz başlayın, ihtiyacınıza göre yükseltin.
               </p>
             </div>
           </div>
@@ -65,10 +71,69 @@ export default function PricingPage() {
 
         {/* Pricing Cards */}
         <div className="container mx-auto px-4 py-16">
-          <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Premium Plan */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 relative border-2 border-blue-200">
+          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            
+            {/* Free Plan */}
+            <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
               <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Ücretsiz</h3>
+                <p className="text-gray-600">Başlamak için ideal</p>
+              </div>
+
+              <div className="text-center mb-8">
+                <div className="mb-4">
+                  <span className="text-4xl font-bold text-green-600">$0</span>
+                  <span className="text-gray-500 ml-2">/her zaman</span>
+                </div>
+                <div className="text-sm text-gray-500">
+                  Kalıcı olarak ücretsiz
+                </div>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  5 PDF sıkıştırma/gün
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Temel format dönüştürme
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Dosya boyutu: 10MB&apos;a kadar
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  E-posta desteği
+                </li>
+              </ul>
+
+              <button
+                onClick={() => handleSubscribe('free')}
+                className="w-full bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+              >
+                Ücretsiz Başla
+              </button>
+            </div>
+
+            {/* Premium Plan */}
+            <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-blue-500 relative transform scale-105">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  ⭐ Önerilen
+                </span>
+              </div>
+
+              <div className="text-center mb-8 mt-4">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Premium</h3>
                 <p className="text-gray-600">Bireysel kullanıcılar için</p>
               </div>
@@ -93,13 +158,13 @@ export default function PricingPage() {
                   <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Sınırsız PDF sıkıştırma
+                  Sınırsız PDF işlemleri
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Batch işleme (50 dosyaya kadar)
+                  Batch işleme (50 dosya)
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -111,27 +176,33 @@ export default function PricingPage() {
                   <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
+                  Dosya boyutu: 100MB&apos;a kadar
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
                   Öncelikli destek
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Gelişmiş filtreler
                 </li>
               </ul>
 
               <button
                 onClick={() => handleSubscribe('premium', 'annual')}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
               >
                 Premium&apos;a Başla
               </button>
             </div>
 
             {/* Business Plan */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 relative border-2 border-purple-200">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  🚀 Popüler
-                </span>
-              </div>
-
-              <div className="text-center mb-8 mt-4">
+            <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200 hover:border-purple-300 transition-all duration-300">
+              <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Business</h3>
                 <p className="text-gray-600">Ekipler ve işletmeler için</p>
               </div>
@@ -162,13 +233,19 @@ export default function PricingPage() {
                   <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Batch işleme (200 dosyaya kadar)
+                  Batch işleme (200 dosya)
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   50GB cloud storage
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Dosya boyutu: 500MB&apos;a kadar
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -182,11 +259,17 @@ export default function PricingPage() {
                   </svg>
                   24/7 premium destek
                 </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Takım yönetimi
+                </li>
               </ul>
 
               <button
                 onClick={() => handleSubscribe('business', 'annual')}
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-colors"
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-colors shadow-lg"
               >
                 Business&apos;a Başla
               </button>
@@ -227,15 +310,6 @@ export default function PricingPage() {
                   <svg width="80" height="26" viewBox="0 0 80 26" fill="none">
                     <rect width="80" height="26" fill="white" rx="4"/>
                     <path d="M12 8H18V18H12V8ZM22 13L28 8V10.5L24.5 13.5L28 16.5V19L22 15V13ZM30 8H60V10H32V12H58V14H32V16H60V18H30V8Z" fill="#1BB3E8"/>
-                  </svg>
-                </div>
-
-                {/* PayPal */}
-                <div className="bg-white border border-gray-200 rounded-lg px-6 py-4 shadow-sm hover:shadow-md transition-shadow">
-                  <svg width="80" height="26" viewBox="0 0 80 26" fill="none">
-                    <rect width="80" height="26" fill="white" rx="4"/>
-                    <path d="M26 8C29.3 8 32 10.7 32 14S29.3 20 26 20H20L18 22H15L20 8H26ZM26 10H22.5L21 16H26C27.7 16 29 14.7 29 13S27.7 10 26 10Z" fill="#003087"/>
-                    <path d="M34 10C37.3 10 40 12.7 40 16S37.3 22 34 22H28L27 24H24L28 10H34ZM34 12H30.5L29 18H34C35.7 18 37 16.7 37 15S35.7 12 34 12Z" fill="#009CDE"/>
                   </svg>
                 </div>
 
@@ -290,6 +364,16 @@ export default function PricingPage() {
                 <p className="text-gray-600">
                   İstediğiniz zaman aboneliğinizi iptal edebilirsiniz. İptal sonrası mevcut 
                   periyodunuz sonuna kadar hizmetlere erişim devam eder.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl p-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  Ücretsiz plan ile neler yapabilirim?
+                </h3>
+                <p className="text-gray-600">
+                  Ücretsiz planla günde 5 PDF sıkıştırma, temel format dönüştürme ve 10MB&apos;a 
+                  kadar dosya işleme işlemlerini gerçekleştirebilirsiniz.
                 </p>
               </div>
             </div>
