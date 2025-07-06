@@ -1,215 +1,162 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { DocumentIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
+import { ScissorsIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { useDropzone } from 'react-dropzone';
 import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
-import FileUpload from '@/components/FileUpload';
-import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
-import { ActivityTracker } from '@/lib/activityTracker';
+import { trackImageCrop } from '@/lib/activityTracker';
 import { 
   cropImage,
   getImageDimensions,
-  validateImageFormat,
   formatFileSize,
   type ConversionResult,
   type CropOptions 
 } from '@/lib/imageUtils';
 
-export default function ImageCrop() {
-  const { user } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [croppedFile, setCroppedFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [cropOptions, setCropOptions] = useState<CropOptions>({ x: 0, y: 0, width: 0, height: 0 });
-  const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
-  const [cropResult, setCropResult] = useState<ConversionResult | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+type Stage = 'upload' | 'cropping' | 'result';
 
-  const handleFileSelect = async (selectedFile: File) => {
-    if (!validateImageFormat(selectedFile)) {
-      setError('Lütfen geçerli bir resim dosyası seçin (PNG, JPEG, WebP, GIF)');
+export default function ImageCropPage() {
+  const { user } = useAuth();
+  
+  // Core state
+  const [stage, setStage] = useState<Stage>('upload');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [cropOptions, setCropOptions] = useState<CropOptions>({ x: 0, y: 0, width: 0, height: 0 });
+  const [cropResult, setCropResult] = useState<ConversionResult | null>(null);
+  
+  // UI state
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  
+  // Refs
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  // File validation
+  const validateFile = (file: File): string | null => {
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    
+    if (!validTypes.includes(file.type)) {
+      return 'Desteklenen formatlar: JPEG, PNG, WebP, GIF';
+    }
+    
+    if (file.size > maxSize) {
+      return 'Dosya boyutu 50MB\'tan küçük olmalıdır';
+    }
+    
+    return null;
+  };
+
+  // File selection handler
+  const handleFileSelect = async (files: File[]) => {
+    const file = files[0];
+    const error = validateFile(file);
+    
+    if (error) {
+      setError(error);
       return;
     }
 
-    setFile(selectedFile);
-    setCroppedFile(null);
-    setCropResult(null);
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setStage('cropping');
     setError('');
-    setCropOptions({ x: 0, y: 0, width: 0, height: 0 });
-
-    // Get original dimensions
+    
     try {
-      const dimensions = await getImageDimensions(selectedFile);
+      const dimensions = await getImageDimensions(file);
       setOriginalDimensions(dimensions);
       
-      // Set default crop to center 50% of image
+      // Set default crop to center 70% of image
       const defaultCrop = {
-        x: Math.round(dimensions.width * 0.25),
-        y: Math.round(dimensions.height * 0.25),
-        width: Math.round(dimensions.width * 0.5),
-        height: Math.round(dimensions.height * 0.5)
+        x: Math.round(dimensions.width * 0.15),
+        y: Math.round(dimensions.height * 0.15),
+        width: Math.round(dimensions.width * 0.7),
+        height: Math.round(dimensions.height * 0.7)
       };
       setCropOptions(defaultCrop);
     } catch (err) {
       console.error('Error getting image dimensions:', err);
+      setError('Resim boyutları alınamadı');
     }
-
-    // Create preview URL
-    const url = URL.createObjectURL(selectedFile);
-    setPreviewUrl(url);
   };
 
-  const handleCrop = async () => {
-    if (!file || !cropOptions.width || !cropOptions.height) {
+  // Dropzone configuration
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileSelect,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
+    },
+    multiple: false
+  });
+
+  // Crop processing
+  const handleCropImage = async () => {
+    if (!selectedFile || !cropOptions.width || !cropOptions.height) {
       setError('Lütfen kırpılacak alanı seçin');
       return;
     }
 
-    setLoading(true);
+    setIsProcessing(true);
     setError('');
-
+    
     const startTime = Date.now();
 
     try {
-      const result = await cropImage(file, cropOptions);
-      setCroppedFile(result.file);
+      const result = await cropImage(selectedFile, cropOptions);
       setCropResult(result);
+      setStage('result');
 
-      // Track activity if user is logged in
+      // Track activity
       if (user) {
-        try {
-          const processingTime = Date.now() - startTime;
-
-          await ActivityTracker.createActivity(user.uid, {
-            type: 'image_crop',
-            fileName: file.name,
-            originalFileName: file.name,
-            fileSize: file.size,
-            processedSize: result.file.size,
-            status: 'success',
-            category: 'Image',
-            processingTime,
-            compressionRatio: Math.abs(1 - result.compressionRatio) * 100
-          });
-          console.log('Image crop activity tracked successfully');
-        } catch (activityError) {
-          console.error('Activity tracking error:', activityError);
-        }
+        const processingTime = Date.now() - startTime;
+        await trackImageCrop(
+          user.uid,
+          selectedFile.name,
+          selectedFile.size,
+          result.file.size,
+          processingTime
+        );
       }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kırpma sırasında hata oluştu');
-      
-      // Track failed activity if user is logged in
-      if (user && file) {
-        try {
-          const processingTime = Date.now() - startTime;
-
-          await ActivityTracker.createActivity(user.uid, {
-            type: 'image_crop',
-            fileName: file.name,
-            originalFileName: file.name,
-            fileSize: file.size,
-            status: 'error',
-            category: 'Image',
-            processingTime
-          });
-        } catch (activityError) {
-          console.error('Activity tracking error:', activityError);
-        }
-      }
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
+  // Download handler
   const handleDownload = () => {
-    if (!croppedFile) return;
-
-    const url = URL.createObjectURL(croppedFile);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = croppedFile.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    if (!cropResult) return;
+    
+    const url = URL.createObjectURL(cropResult.file);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = cropResult.file.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
-  // Handle mouse events for crop selection
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!originalDimensions || !imageRef.current) return;
-    
-    const rect = imageRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // Calculate actual image coordinates
-    const actualX = Math.round((x / rect.width) * originalDimensions.width);
-    const actualY = Math.round((y / rect.height) * originalDimensions.height);
-    
-    setSelectionStart({ x: actualX, y: actualY });
-    setIsSelecting(true);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isSelecting || !selectionStart || !originalDimensions || !imageRef.current) return;
-    
-    const rect = imageRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // Calculate actual image coordinates
-    const actualX = Math.round((x / rect.width) * originalDimensions.width);
-    const actualY = Math.round((y / rect.height) * originalDimensions.height);
-    
-    // Update crop options
-    const newCrop = {
-      x: Math.min(selectionStart.x, actualX),
-      y: Math.min(selectionStart.y, actualY),
-      width: Math.abs(actualX - selectionStart.x),
-      height: Math.abs(actualY - selectionStart.y)
-    };
-    
-    setCropOptions(newCrop);
-  };
-
-  const handleMouseUp = () => {
-    setIsSelecting(false);
-    setSelectionStart(null);
-  };
-
-  // Cleanup preview URL when component unmounts or file changes
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
-  const resetForm = () => {
-    setFile(null);
-    setCroppedFile(null);
-    setCropResult(null);
-    setError('');
+  // Reset handler
+  const resetToUpload = () => {
+    setStage('upload');
+    setSelectedFile(null);
+    setPreviewUrl('');
     setOriginalDimensions(null);
     setCropOptions({ x: 0, y: 0, width: 0, height: 0 });
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
+    setCropResult(null);
+    setError('');
   };
 
-  const setPresetCrop = (preset: 'square' | 'landscape' | 'portrait' | 'center') => {
+  // Preset crop options
+  const applyPresetCrop = (preset: 'square' | 'landscape' | 'portrait' | 'center' | 'full') => {
     if (!originalDimensions) return;
     
     const { width: imgWidth, height: imgHeight } = originalDimensions;
@@ -249,12 +196,60 @@ export default function ImageCrop() {
           height: Math.round(imgHeight * 0.5)
         };
         break;
+      case 'full':
+        newCrop = {
+          x: 0,
+          y: 0,
+          width: imgWidth,
+          height: imgHeight
+        };
+        break;
     }
     
     setCropOptions(newCrop);
   };
 
-  // Calculate crop overlay position for preview
+  // Mouse interaction for crop selection
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!originalDimensions || !imageRef.current) return;
+    
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const actualX = Math.round((x / rect.width) * originalDimensions.width);
+    const actualY = Math.round((y / rect.height) * originalDimensions.height);
+    
+    setDragStart({ x: actualX, y: actualY });
+    setIsDragging(true);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !dragStart || !originalDimensions || !imageRef.current) return;
+    
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const actualX = Math.round((x / rect.width) * originalDimensions.width);
+    const actualY = Math.round((y / rect.height) * originalDimensions.height);
+    
+    const newCrop = {
+      x: Math.min(dragStart.x, actualX),
+      y: Math.min(dragStart.y, actualY),
+      width: Math.abs(actualX - dragStart.x),
+      height: Math.abs(actualY - dragStart.y)
+    };
+    
+    setCropOptions(newCrop);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setDragStart(null);
+  };
+
+  // Calculate crop overlay style
   const getCropOverlayStyle = () => {
     if (!originalDimensions || !imageRef.current) return {};
     
@@ -270,348 +265,338 @@ export default function ImageCrop() {
     };
   };
 
+  // Calculate crop area percentage
+  const getCropPercentage = () => {
+    if (!originalDimensions || !cropOptions.width || !cropOptions.height) return 0;
+    
+    const totalPixels = originalDimensions.width * originalDimensions.height;
+    const cropPixels = cropOptions.width * cropOptions.height;
+    
+    return Math.round((cropPixels / totalPixels) * 100);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onAuthClick={() => setShowAuthModal(true)} />
-      <Breadcrumb />
+      <Header onAuthClick={() => {}} />
       
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 bg-purple-100 rounded-full">
-              <DocumentIcon className="h-12 w-12 text-purple-600" />
+      {/* Upload Stage */}
+      {stage === 'upload' && (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Breadcrumb />
+          
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white mb-4 shadow-lg">
+              <ScissorsIcon className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              Professional Image Cropping
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Resimlerinizi hassas şekilde kırpın ve tam istediğiniz alanı seçin
+            </p>
+          </div>
+
+          {/* Upload Area */}
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 ${
+              isDragActive
+                ? 'border-blue-500 bg-blue-50 scale-105'
+                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+            }`}
+          >
+            <input {...getInputProps()} />
+            <ScissorsIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {isDragActive ? 'Dosyayı bırakın' : 'Kırpılacak resmi yükleyin'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              JPEG, PNG, WebP, GIF formatlarını destekliyoruz (max 50MB)
+            </p>
+            
+            <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-colors font-medium shadow-lg">
+              Dosya Seç
+            </button>
+
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-700 text-sm">{error}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Cropping Stage */}
+      {(stage === 'cropping' || stage === 'result') && selectedFile && (
+        <div className="h-screen flex flex-col">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <ScissorsIcon className="w-6 h-6 text-blue-600" />
+                  <h1 className="text-xl font-semibold text-gray-900">Image Cropping</h1>
+                </div>
+                <div className="hidden sm:block text-sm text-gray-500">
+                  {selectedFile.name} ({formatFileSize(selectedFile.size)})
+                </div>
+              </div>
+              
+              <button
+                onClick={resetToUpload}
+                className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+              >
+                New Image
+              </button>
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Resim Kırpma
-          </h1>
-          <p className="text-lg text-gray-600">
-            Resimlerinizi istediğiniz alandan kırpın ve özelleştirin
-          </p>
-        </div>
 
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          {!file ? (
-            <FileUpload
-              onFileSelect={handleFileSelect}
-              acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
-              maxSize={50 * 1024 * 1024} // 50MB
-              title="Kırpılacak Resmi Yükleyin"
-              description="PNG, JPEG, WebP veya GIF formatında resminizi buraya sürükleyin"
-              currentFiles={[]}
-            />
-          ) : !croppedFile ? (
-            <>
-              {/* Success Upload State */}
-              <FileUpload
-                onFileSelect={handleFileSelect}
-                acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
-                maxSize={50 * 1024 * 1024}
-                title="Kırpılacak Resmi Yükleyin"
-                description="PNG, JPEG, WebP veya GIF formatında resminizi buraya sürükleyin"
-                currentFiles={[file]}
-              />
-              
-              {/* File Processing Section */}
-              <div className="mt-6 space-y-6">
-                {/* File Info & Preview */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* File Info */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3">Seçilen Dosya</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Dosya Adı:</span>
-                        <span className="text-sm font-medium">{file.name}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Boyut:</span>
-                        <span className="text-sm font-medium">{formatFileSize(file.size)}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Format:</span>
-                        <span className="text-sm font-medium uppercase">
-                          {file.type.replace('image/', '')}
-                        </span>
-                      </div>
-                      {originalDimensions && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Boyutlar:</span>
-                          <span className="text-sm font-medium">
-                            {originalDimensions.width} × {originalDimensions.height}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="mt-3 flex items-center justify-between">
-                      <button
-                        onClick={resetForm}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1"
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span>Farklı resim seç</span>
-                      </button>
-                      
-                      <div className="flex items-center space-x-1 text-sm text-green-600">
-                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span>Resim hazır</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Interactive Preview */}
-                  {previewUrl && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h3 className="font-medium text-gray-900 mb-3">Kırpma Önizlemesi</h3>
-                      <div 
-                        ref={containerRef}
-                        className="relative w-full h-48 bg-white rounded border overflow-hidden cursor-crosshair select-none"
-                        onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseLeave={handleMouseUp}
-                      >
-                        <Image
-                          ref={imageRef}
-                          src={previewUrl}
-                          alt={`${file?.name || 'Yüklenen dosya'} kırpma önizlemesi`}
-                          fill
-                          className="object-contain pointer-events-none"
-                          unoptimized
-                          loading="lazy"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                        
-                        {/* Crop Overlay */}
-                        {cropOptions.width > 0 && cropOptions.height > 0 && (
-                          <div
-                            className="absolute border-2 border-purple-500 bg-purple-200 bg-opacity-20"
-                            style={getCropOverlayStyle()}
-                          >
-                            <div className="absolute inset-0 border border-white border-dashed"></div>
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2">
-                        Kırpılacak alanı seçmek için sürükleyin
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Crop Settings */}
-                <div className="space-y-4">
-                  <h3 className="font-medium text-gray-900">Kırpma Ayarları</h3>
-                  
-                  {/* Preset Crops */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hızlı Kırpma Seçenekleri
-                    </label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      <button
-                        onClick={() => setPresetCrop('square')}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        Kare
-                      </button>
-                      <button
-                        onClick={() => setPresetCrop('landscape')}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        Yatay
-                      </button>
-                      <button
-                        onClick={() => setPresetCrop('portrait')}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        Dikey
-                      </button>
-                      <button
-                        onClick={() => setPresetCrop('center')}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        Merkez
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Manual Crop Coordinates */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        X Koordinatı
-                      </label>
-                      <input
-                        type="number"
-                        value={cropOptions.x}
-                        onChange={(e) => setCropOptions({...cropOptions, x: parseInt(e.target.value) || 0})}
-                        min="0"
-                        max={originalDimensions?.width || 0}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Y Koordinatı
-                      </label>
-                      <input
-                        type="number"
-                        value={cropOptions.y}
-                        onChange={(e) => setCropOptions({...cropOptions, y: parseInt(e.target.value) || 0})}
-                        min="0"
-                        max={originalDimensions?.height || 0}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Genişlik
-                      </label>
-                      <input
-                        type="number"
-                        value={cropOptions.width}
-                        onChange={(e) => setCropOptions({...cropOptions, width: parseInt(e.target.value) || 0})}
-                        min="1"
-                        max={originalDimensions?.width || 0}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Yükseklik
-                      </label>
-                      <input
-                        type="number"
-                        value={cropOptions.height}
-                        onChange={(e) => setCropOptions({...cropOptions, height: parseInt(e.target.value) || 0})}
-                        min="1"
-                        max={originalDimensions?.height || 0}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Crop Stats */}
-                  {cropOptions.width > 0 && cropOptions.height > 0 && originalDimensions && (
-                    <div className="bg-blue-50 rounded-lg p-3">
-                      <div className="text-sm text-blue-800">
-                        <strong>Kırpılacak Alan:</strong> {cropOptions.width} × {cropOptions.height} px
-                        <br />
-                        <strong>Orijinal Boyutun:</strong> {((cropOptions.width * cropOptions.height) / (originalDimensions.width * originalDimensions.height) * 100).toFixed(1)}%
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Crop Button */}
-                <div className="flex justify-center">
-                  <button
-                    onClick={handleCrop}
-                    disabled={loading || !cropOptions.width || !cropOptions.height}
-                    className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+          {/* Main Content */}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-0">
+            
+            {/* Image Preview Area - 3/4 width */}
+            <div className="lg:col-span-3 bg-gray-900 flex items-center justify-center p-4">
+              <div className="relative max-w-full max-h-full">
+                {previewUrl && (
+                  <div 
+                    className="relative cursor-crosshair"
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
                   >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        <span>Kırpılıyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <DocumentIcon className="h-5 w-5" />
-                        <span>Resmi Kırp</span>
-                      </>
+                    <img
+                      ref={imageRef}
+                      src={previewUrl}
+                      alt="Crop preview"
+                      className="max-w-full max-h-[calc(100vh-200px)] object-contain"
+                      style={{ userSelect: 'none' }}
+                    />
+                    
+                    {/* Dark overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-50 pointer-events-none" />
+                    
+                    {/* Crop selection area */}
+                    {cropOptions.width > 0 && cropOptions.height > 0 && (
+                      <div
+                        className="absolute border-2 border-blue-400 bg-transparent pointer-events-none"
+                        style={getCropOverlayStyle()}
+                      >
+                        {/* Clear area (remove dark overlay) */}
+                        <div className="absolute inset-0 shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]" />
+                        
+                        {/* Corner handles */}
+                        <div className="absolute -top-1 -left-1 w-3 h-3 bg-blue-400 border border-white rounded-full" />
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 border border-white rounded-full" />
+                        <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-400 border border-white rounded-full" />
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-400 border border-white rounded-full" />
+                        
+                        {/* Grid lines */}
+                        <div className="absolute inset-0 border border-blue-400 border-dashed opacity-70">
+                          <div className="absolute top-1/3 left-0 right-0 border-t border-blue-400 border-dashed" />
+                          <div className="absolute top-2/3 left-0 right-0 border-t border-blue-400 border-dashed" />
+                          <div className="absolute left-1/3 top-0 bottom-0 border-l border-blue-400 border-dashed" />
+                          <div className="absolute left-2/3 top-0 bottom-0 border-l border-blue-400 border-dashed" />
+                        </div>
+                      </div>
                     )}
-                  </button>
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                    {error}
                   </div>
                 )}
               </div>
-            </>
-          ) : (
-            <>
-              {/* Result */}
-              {cropResult && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="font-medium text-green-900 mb-3">Kırpma Tamamlandı!</h3>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-green-800">Orijinal</h4>
-                      <div className="text-sm text-green-700">
-                        <div>Boyut: {formatFileSize(cropResult.originalSize)}</div>
-                        {originalDimensions && (
-                          <div>Boyutlar: {originalDimensions.width} × {originalDimensions.height}</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-green-800">Kırpılmış</h4>
-                      <div className="text-sm text-green-700">
-                        <div>Boyut: {formatFileSize(cropResult.newSize)}</div>
-                        <div>Boyutlar: {cropOptions.width} × {cropOptions.height}</div>
-                      </div>
-                    </div>
-                  </div>
+            </div>
+
+            {/* Controls Panel - 1/4 width */}
+            <div className="lg:col-span-1 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+              
+              {/* Crop Options Header */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Crop Options</h3>
+                <div className="text-sm text-gray-600">
+                  Kırpılacak alanı ayarlayın
+                </div>
+              </div>
+
+              {/* Preset Crop Buttons */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Presets</h4>
+                <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={handleDownload}
-                    className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                    onClick={() => applyPresetCrop('square')}
+                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-blue-100 rounded-lg transition-colors font-medium"
                   >
-                    <ArrowUpTrayIcon className="h-5 w-5" />
-                    <span>Kırpılmış Resmi İndir</span>
+                    Square
+                  </button>
+                  <button
+                    onClick={() => applyPresetCrop('landscape')}
+                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-blue-100 rounded-lg transition-colors font-medium"
+                  >
+                    Landscape
+                  </button>
+                  <button
+                    onClick={() => applyPresetCrop('portrait')}
+                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-blue-100 rounded-lg transition-colors font-medium"
+                  >
+                    Portrait
+                  </button>
+                  <button
+                    onClick={() => applyPresetCrop('center')}
+                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-blue-100 rounded-lg transition-colors font-medium"
+                  >
+                    Center
                   </button>
                 </div>
+              </div>
+
+              {/* Manual Coordinates */}
+              <div className="space-y-4 mb-6">
+                <h4 className="text-sm font-medium text-gray-700">Coordinates</h4>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Width (px)</label>
+                    <input
+                      type="number"
+                      value={cropOptions.width}
+                      onChange={(e) => setCropOptions({...cropOptions, width: parseInt(e.target.value) || 0})}
+                      min="1"
+                      max={originalDimensions?.width || 0}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Height (px)</label>
+                    <input
+                      type="number"
+                      value={cropOptions.height}
+                      onChange={(e) => setCropOptions({...cropOptions, height: parseInt(e.target.value) || 0})}
+                      min="1"
+                      max={originalDimensions?.height || 0}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Position X (px)</label>
+                    <input
+                      type="number"
+                      value={cropOptions.x}
+                      onChange={(e) => setCropOptions({...cropOptions, x: parseInt(e.target.value) || 0})}
+                      min="0"
+                      max={originalDimensions?.width || 0}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Position Y (px)</label>
+                    <input
+                      type="number"
+                      value={cropOptions.y}
+                      onChange={(e) => setCropOptions({...cropOptions, y: parseInt(e.target.value) || 0})}
+                      min="0"
+                      max={originalDimensions?.height || 0}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Crop Info */}
+              {originalDimensions && (
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Crop Info</h4>
+                  <div className="space-y-1 text-xs text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Original:</span>
+                      <span>{originalDimensions.width} × {originalDimensions.height}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Crop Size:</span>
+                      <span>{cropOptions.width} × {cropOptions.height}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Area:</span>
+                      <span>{getCropPercentage()}%</span>
+                    </div>
+                  </div>
+                </div>
               )}
-            </>
-          )}
-        </div>
 
-        {/* Info Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="bg-purple-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <DocumentIcon className="h-8 w-8 text-purple-600" />
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                {stage === 'cropping' && (
+                  <button
+                    onClick={handleCropImage}
+                    disabled={isProcessing || !cropOptions.width || !cropOptions.height}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-colors font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Cropping...
+                      </>
+                    ) : (
+                      <>
+                        <ScissorsIcon className="w-4 h-4 mr-2" />
+                        Crop Image
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {stage === 'result' && cropResult && (
+                  <button
+                    onClick={handleDownload}
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-colors font-medium shadow-lg flex items-center justify-center"
+                  >
+                    <ArrowDownTrayIcon className="w-4 h-4 mr-2" />
+                    Download Cropped
+                  </button>
+                )}
+
+                {error && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-xs">{error}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Success Result Info */}
+              {stage === 'result' && cropResult && (
+                <div className="mt-6 p-4 bg-green-50 rounded-lg">
+                  <h4 className="text-sm font-medium text-green-800 mb-2">✅ Crop Complete!</h4>
+                  <div className="space-y-1 text-xs text-green-700">
+                    <div className="flex justify-between">
+                      <span>Original Size:</span>
+                      <span>{formatFileSize(selectedFile.size)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Cropped Size:</span>
+                      <span>{formatFileSize(cropResult.file.size)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Dimensions:</span>
+                      <span>{cropOptions.width} × {cropOptions.height}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            <h3 className="text-lg font-semibold mb-2">İnteraktif Kırpma</h3>
-            <p className="text-gray-600">Fareyle sürükleyerek kolay kırpma alanı seçimi</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Hassas Kontrol</h3>
-            <p className="text-gray-600">Manuel koordinat girişi ile piksel düzeyinde kırpma</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Hızlı Presetler</h3>
-            <p className="text-gray-600">Kare, yatay, dikey ve merkez kırpma seçenekleri</p>
           </div>
         </div>
-      </div>
-
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
     </div>
   );
