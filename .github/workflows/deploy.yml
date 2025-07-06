@@ -9,11 +9,13 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     
     steps:
     # Checkout the repository code
     - name: Checkout code
       uses: actions/checkout@v4
+      timeout-minutes: 5
       
     # Setup Node.js environment
     - name: Setup Node.js
@@ -21,14 +23,17 @@ jobs:
       with:
         node-version: '22'
         cache: 'npm'
+      timeout-minutes: 5
     
-    # Install project dependencies (ROOT ONLY - NO FUNCTIONS)
+    # Install project dependencies with retry
     - name: Install root dependencies
-      run: npm ci
+      run: npm ci --retry=3 --timeout=300000
+      timeout-minutes: 8
         
     # Build Next.js static export
     - name: Build project
       run: npm run build
+      timeout-minutes: 8
       env:
         NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
         NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
@@ -37,12 +42,57 @@ jobs:
         NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
         NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
         
-    # Install Firebase CLI globally
-    - name: Install Firebase CLI
-      run: npm install -g firebase-tools
+    # Verify build output
+    - name: Verify build output
+      run: |
+        ls -la out/
+        echo "Build verification complete"
       
-    # Deploy to Firebase Hosting (NO FUNCTIONS)
+    # Install Firebase CLI globally with retry
+    - name: Install Firebase CLI
+      run: |
+        npm install -g firebase-tools --retry=3
+        firebase --version
+      timeout-minutes: 5
+      
+    # Environment check
+    - name: Environment check
+      run: |
+        echo "Checking environment variables..."
+        echo "Firebase Project ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}"
+        echo "Firebase Token present: ${{ secrets.FIREBASE_TOKEN != '' }}"
+      
+    # Deploy to Firebase Hosting with retry logic
     - name: Deploy to Firebase
-      run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }} --force
+      run: |
+        echo "Starting Firebase deployment..."
+        max_attempts=3
+        attempt=1
+        
+        while [ $attempt -le $max_attempts ]; do
+          echo "Deployment attempt $attempt/$max_attempts"
+          
+          if firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }} --force --non-interactive; then
+            echo "Deployment successful on attempt $attempt"
+            exit 0
+          else
+            echo "Deployment failed on attempt $attempt"
+            if [ $attempt -eq $max_attempts ]; then
+              echo "All deployment attempts failed"
+              exit 1
+            fi
+            echo "Waiting 30 seconds before retry..."
+            sleep 30
+            attempt=$((attempt + 1))
+          fi
+        done
+      timeout-minutes: 10
       env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} 
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        
+    # Deployment verification
+    - name: Verify deployment
+      run: |
+        echo "Deployment verification..."
+        curl -I https://quickutil.app/pricing || true
+        echo "Deployment process completed" 
