@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import FileUpload from '@/components/FileUpload';
 import Breadcrumb from '@/components/Breadcrumb';
 import StructuredData from '@/components/StructuredData';
+import AuthModal from '@/components/AuthModal';
 import { 
   compressPDF, 
   analyzePDF,
@@ -21,6 +22,7 @@ interface PDFAnalysis {
 }
 
 export default function PDFCompress() {
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -125,7 +127,7 @@ export default function PDFCompress() {
       />
       <StructuredData type="faq" />
       
-      <Header onAuthClick={() => {}} />
+      <Header onAuthClick={() => setShowAuthModal(true)} />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb />
@@ -361,6 +363,11 @@ export default function PDFCompress() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
     </div>
   );
 } 

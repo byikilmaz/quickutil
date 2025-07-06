@@ -4,6 +4,7 @@ import { PhotoIcon, ArrowUpTrayIcon, ArrowPathIcon } from '@heroicons/react/24/o
 import Image from 'next/image';
 import Header from '@/components/Header';
 import FileUpload from '@/components/FileUpload';
+import AuthModal from '@/components/AuthModal';
 import { 
   convertImage, 
   getImageDimensions, 
@@ -14,6 +15,7 @@ import {
 } from '@/lib/imageUtils';
 
 export default function ImageConvert() {
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [convertedFile, setConvertedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -110,7 +112,7 @@ export default function ImageConvert() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onAuthClick={() => {}} />
+      <Header onAuthClick={() => setShowAuthModal(true)} />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -367,6 +369,11 @@ export default function ImageConvert() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
     </div>
   );
 } 
