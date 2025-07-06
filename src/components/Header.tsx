@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { UserCircleIcon, Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import CacheManager from './CacheManager';
 
 interface HeaderProps {
   onAuthClick: () => void;
@@ -80,6 +81,10 @@ export default function Header({ onAuthClick }: HeaderProps) {
             <Link href="/image-convert" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Görsel Dönüştür
             </Link>
+            {/* Cache Manager - Development Only */}
+            {process.env.NODE_ENV === 'development' && (
+              <CacheManager className="ml-4" />
+            )}
           </nav>
 
           {/* User Menu */}

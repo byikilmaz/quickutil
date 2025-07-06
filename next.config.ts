@@ -1,7 +1,75 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Static export for Firebase hosting
+  output: 'export',
+  distDir: 'out',
+  trailingSlash: false,
+  
+  // Cache busting and optimization
+  generateBuildId: async () => {
+    // Generate unique build ID based on timestamp
+    return `build-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+  },
+  
+  // Asset optimization
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  
+  // Image optimization (disable for static export)
+  images: {
+    unoptimized: true,
+  },
+  
+  // Compile options
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Headers for better caching
+  async headers() {
+    return [
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+  
+  // Webpack config for better chunking
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Optimize chunks for better caching
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            chunks: 'all',
+          },
+        },
+      };
+    }
+    return config;
+  },
+  
+  // Experimental features
+  experimental: {
+    optimizeCss: true,
+    optimizeServerReact: true,
+  },
 };
 
 export default nextConfig;

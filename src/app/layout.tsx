@@ -20,6 +20,47 @@ export default function RootLayout({
       <head>
         <StructuredData type="website" />
         <StructuredData type="webapp" />
+        {/* Service Worker Registration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                      console.log('SW registered: ', registration);
+                      
+                      // Check for updates
+                      registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        if (newWorker) {
+                          newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                              // New content is available; show update notification
+                              if (confirm('Yeni güncelleme mevcut! Sayfayı yeniden yüklemek istiyor musunuz?')) {
+                                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                window.location.reload();
+                              }
+                            }
+                          });
+                        }
+                      });
+                    })
+                    .catch(function(registrationError) {
+                      console.log('SW registration failed: ', registrationError);
+                    });
+                });
+                
+                // Listen for messages from service worker
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                  if (event.data && event.data.type === 'CACHE_CLEARED') {
+                    window.location.reload();
+                  }
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body className={inter.className}>
         <AuthProvider>

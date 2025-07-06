@@ -692,6 +692,95 @@ logEvent(analytics, 'pdf_compressed', {
 7. **Analytics**: User behavior tracking
 8. **Testing**: Unit & integration tests
 
+## 🗂️ Cache Management Kuralları
+
+### Browser Cache Strategy
+```typescript
+// Firebase hosting cache headers
+{
+  "source": "**/*.@(js|css)",
+  "headers": [
+    {
+      "key": "Cache-Control",
+      "value": "public, max-age=31536000, immutable"
+    }
+  ]
+}
+```
+
+### Service Worker Implementation
+```typescript
+// Service worker for cache invalidation
+const CACHE_NAME = `quickutil-cache-${Date.now()}`;
+
+// Cache busting strategy
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(STATIC_ASSETS))
+  );
+  self.skipWaiting();
+});
+```
+
+### Cache Busting Techniques
+- **Build ID**: Unique timestamp-based build IDs
+- **Asset Versioning**: Automatic file hash generation
+- **Service Worker**: Cache invalidation on updates
+- **HTTP Headers**: Proper cache control headers
+
+### Next.js Cache Configuration
+```typescript
+// next.config.ts optimizations
+export default {
+  generateBuildId: async () => {
+    return `build-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+  },
+  
+  experimental: {
+    optimizeCss: true,
+    optimizeServerReact: true,
+  }
+};
+```
+
+### Cache Management Tools
+```typescript
+// CacheManager component for manual cache clearing
+const clearAllCaches = async () => {
+  // Clear browser cache
+  const cacheNames = await caches.keys();
+  await Promise.all(cacheNames.map(name => caches.delete(name)));
+  
+  // Clear service worker cache
+  navigator.serviceWorker.controller?.postMessage({ type: 'CACHE_UPDATE' });
+  
+  // Reload page
+  window.location.reload();
+};
+```
+
+### Deployment Cache Strategy
+```bash
+# NPM Scripts for cache management
+"deploy:fresh": "npm run build && firebase deploy --force"
+"cache:clear": "rm -rf .next && rm -rf out && npm run build"
+"version:bump": "npm version patch && git push origin main --tags"
+```
+
+### Cache Invalidation Rules
+1. **Static Assets**: Long-term cache (1 year) with immutable flag
+2. **HTML Files**: No cache, always revalidate
+3. **API Responses**: Short-term cache with proper ETags
+4. **Service Worker**: Automatic cache clearing on updates
+5. **Manual Override**: CacheManager component for force refresh
+
+### User Experience
+- **Auto-update notifications**: Service worker update prompts
+- **Manual cache clearing**: Development tools in header
+- **Progressive enhancement**: Graceful fallback for cache failures
+- **Loading states**: Clear feedback during cache operations
+
 ## 📝 Notlar
 
 - Her yeni özellik için Notion'da task oluştur
@@ -699,6 +788,7 @@ logEvent(analytics, 'pdf_compressed', {
 - Documentation'ı güncel tut
 - Performance metrics'leri izle
 - User feedback'i toplam ve değerlendir
+- Cache management değişikliklerini test et
 
 ---
 
