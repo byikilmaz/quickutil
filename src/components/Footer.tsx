@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   BuildingOfficeIcon, 
   EnvelopeIcon, 
@@ -103,48 +104,58 @@ export default function Footer() {
         {/* Payment Methods */}
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="text-center mb-6">
-            <h4 className="text-lg font-semibold mb-4">Güvenli Ödeme Yöntemleri</h4>
+            <h4 className="text-lg font-semibold mb-4 text-white">💳 Güvenli Ödeme Yöntemleri</h4>
+            <p className="text-gray-300 mb-6">
+              İyzico güvencesi ile güvenli ödeme. SSL şifrelemesi ve 3D Secure koruması.
+            </p>
+            
             <div className="flex flex-wrap justify-center items-center gap-6">
               {/* Visa */}
-              <div className="bg-white rounded-lg px-4 py-2">
-                <svg width="60" height="20" viewBox="0 0 60 20" fill="none">
-                  <rect width="60" height="20" fill="white" rx="4"/>
-                  <path d="M25.54 6.33L23.77 13.67H22.04L21.03 9.58C20.96 9.29 20.82 9.02 20.58 8.88C20.01 8.58 19.34 8.31 18.63 8.12L18.76 7.67H22.3C22.8 7.67 23.2 8.02 23.28 8.52L24.15 13.67H25.88L27.65 6.33H25.54ZM31.3 11.93C31.31 10.13 29.35 10.02 29.37 9.27C29.38 9.05 29.62 8.81 30.16 8.74C30.43 8.71 31.2 8.69 32.08 9.1L32.37 7.81C31.99 7.67 31.49 7.54 30.84 7.54C28.84 7.54 27.41 8.55 27.4 9.98C27.39 11.04 28.36 11.62 29.08 11.96C29.82 12.31 30.07 12.53 30.07 12.84C30.06 13.3 29.5 13.51 28.99 13.52C28.21 13.53 27.78 13.33 27.47 13.19L27.17 14.5C27.48 14.64 28.06 14.76 28.66 14.76C30.84 14.76 32.26 13.77 32.27 12.24C32.28 11.04 31.3 11.93 31.3 11.93ZM37.32 6.33L35.85 13.67H34.3L32.83 6.33H37.32ZM42.36 7.9C42.02 7.75 41.5 7.59 40.84 7.59C39.69 7.59 38.9 8.14 38.9 8.95C38.9 9.55 39.4 9.93 40.33 10.39C41.01 10.73 41.38 10.95 41.38 11.29C41.38 11.78 40.8 12 40.28 12C39.59 12 39.22 11.84 38.94 11.7L38.64 13.01C38.96 13.15 39.54 13.27 40.14 13.27C41.42 13.27 42.22 12.74 42.22 11.87C42.22 11.21 41.68 10.77 40.71 10.29C40.1 9.98 39.76 9.77 39.76 9.47C39.76 9.04 40.25 8.84 40.84 8.84C41.42 8.84 41.85 8.97 42.14 9.09L42.36 7.9Z" fill="#1434CB"/>
-                </svg>
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                <Image 
+                  src="/images/payment-methods/visa.png" 
+                  alt="Visa"
+                  width={120}
+                  height={38}
+                  className="h-9 w-auto"
+                />
               </div>
 
               {/* Mastercard */}
-              <div className="bg-white rounded-lg px-4 py-2">
-                <svg width="60" height="20" viewBox="0 0 60 20" fill="none">
-                  <rect width="60" height="20" fill="white" rx="4"/>
-                  <circle cx="22" cy="10" r="6" fill="#EB001B"/>
-                  <circle cx="30" cy="10" r="6" fill="#F79E1B"/>
-                  <path d="M26 6.5C27.4 7.6 28.3 9.2 28.3 11S27.4 14.4 26 15.5C24.6 14.4 23.7 12.8 23.7 11S24.6 7.6 26 6.5Z" fill="#FF5F00"/>
-                </svg>
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                <Image 
+                  src="/images/payment-methods/mastercard.svg" 
+                  alt="MasterCard"
+                  width={120}
+                  height={38}
+                  className="h-9 w-auto"
+                />
               </div>
 
               {/* iyzico */}
-              <div className="bg-white rounded-lg px-4 py-2">
-                <svg width="60" height="20" viewBox="0 0 60 20" fill="none">
-                  <rect width="60" height="20" fill="white" rx="4"/>
-                  <path d="M8 6H12V14H8V6ZM16 10L20 6V8.5L17.5 10.5L20 12.5V15L16 11V10ZM22 6H44V8H24V10H42V12H24V14H44V16H22V6Z" fill="#1BB3E8"/>
-                </svg>
-              </div>
-
-              {/* PayPal */}
-              <div className="bg-white rounded-lg px-4 py-2">
-                <svg width="60" height="20" viewBox="0 0 60 20" fill="none">
-                  <rect width="60" height="20" fill="white" rx="4"/>
-                  <path d="M20 6C22.2 6 24 7.8 24 10S22.2 14 20 14H16L15 16H13L16 6H20ZM20 8H17.5L16.5 12H20C21.1 12 22 11.1 22 10S21.1 8 20 8Z" fill="#003087"/>
-                  <path d="M26 8C28.2 8 30 9.8 30 12S28.2 16 26 16H22L21 18H19L22 8H26ZM26 10H23.5L22.5 14H26C27.1 14 28 13.1 28 12S27.1 10 26 10Z" fill="#009CDE"/>
-                </svg>
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                <Image 
+                  src="/images/payment-methods/iyzico.svg" 
+                  alt="İyzico ile Öde"
+                  width={120}
+                  height={38}
+                  className="h-9 w-auto"
+                />
               </div>
 
               {/* SSL Certificate */}
-              <div className="flex items-center bg-green-600 rounded-lg px-3 py-2">
-                <ShieldCheckIcon className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium">SSL Güvenli</span>
+              <div className="flex items-center bg-green-600 rounded-lg px-4 py-3 text-white shadow-sm hover:shadow-md transition-shadow">
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span className="font-medium">SSL Güvenli</span>
               </div>
+            </div>
+
+            <div className="text-center mt-6">
+              <p className="text-sm text-gray-400">
+                256-bit SSL şifrelemesi • 3D Secure doğrulama • PCI DSS uyumluluğu
+              </p>
             </div>
           </div>
         </div>
