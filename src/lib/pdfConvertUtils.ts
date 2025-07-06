@@ -106,66 +106,81 @@ export const mergePDFs = async (files: File[]): Promise<ConversionResult> => {
 };
 
 /**
- * PDF sayfalarını resimlere dönüştürme (Canvas API kullanılarak)
+ * PDF sayfalarını resimlere dönüştürme (PDF.js kullanılarak)
  * @param file - Dönüştürülecek PDF dosyası
  * @param format - Çıktı formatı ('png' veya 'jpeg')
  * @param quality - JPEG kalitesi (0.1-1.0)
+ * @param scale - Render ölçeği (1.0 = normal, 2.0 = yüksek çözünürlük)
  * @returns Resim dosyaları
  */
 export const convertPDFToImages = async (
   file: File, 
   format: 'png' | 'jpeg' = 'png',
-  quality: number = 0.9
+  quality: number = 0.9,
+  scale: number = 2.0
 ): Promise<ConversionResult[]> => {
   try {
-    // Bu işlev için PDF.js veya benzeri bir kütüphane gerekir
-    // Şu an için placeholder implementation
+    // Dinamik olarak PDF.js'i import et
+    const pdfjsLib = await import('pdfjs-dist');
     
+    // PDF.js worker'ını kur
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const results: ConversionResult[] = [];
     const fileBaseName = file.name.replace('.pdf', '');
     
-    // Simulated conversion - gerçek implementasyon için PDF.js gerekir
-    for (let i = 1; i <= 3; i++) { // Placeholder: 3 sayfa varsayımı
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+    // Her sayfayı işle
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const viewport = page.getViewport({ scale });
       
-      if (ctx) {
-        canvas.width = 800;
-        canvas.height = 1000;
-        
-        // Basit placeholder görsel oluştur
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = '#333333';
-        ctx.font = '24px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`Sayfa ${i}`, canvas.width / 2, canvas.height / 2);
-        ctx.fillText('PDF to Image Dönüştürme', canvas.width / 2, canvas.height / 2 + 40);
-        ctx.fillText('Geliştirme Aşamasında', canvas.width / 2, canvas.height / 2 + 80);
-        
-        const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
-        const blob = await new Promise<Blob>((resolve) => {
-          canvas.toBlob((blob) => {
-            resolve(blob!);
-          }, mimeType, quality);
-        });
-        
-        const url = URL.createObjectURL(blob);
-        
-        results.push({
-          name: `${fileBaseName}_sayfa_${i}.${format}`,
-          url,
-          size: blob.size,
-          type: mimeType
-        });
+      // Canvas oluştur
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      
+      if (!context) {
+        throw new Error('Canvas context oluşturulamadı');
       }
+      
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      
+      // PDF sayfasını canvas'a render et
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport,
+      };
+      
+      await page.render(renderContext).promise;
+      
+      // Canvas'ı blob'a dönüştür
+      const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Canvas to blob dönüştürme başarısız'));
+          }
+        }, mimeType, quality);
+      });
+      
+      const url = URL.createObjectURL(blob);
+      
+      results.push({
+        name: `${fileBaseName}_sayfa_${pageNum}.${format}`,
+        url,
+        size: blob.size,
+        type: mimeType
+      });
     }
     
     return results;
   } catch (error) {
     console.error('PDF to images error:', error);
-    throw new Error('PDF\'den resim dönüştürme işlemi başarısız');
+    throw new Error(`PDF'den resim dönüştürme işlemi başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
   }
 };
 

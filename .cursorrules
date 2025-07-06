@@ -207,7 +207,37 @@ const mergePDFs = async (files: File[]): Promise<ConversionResult> => {
 - Watermark ekleme
 - Page rotation
 - Metadata editing
-- PDF to Images conversion
+- PDF to Images conversion (PDF.js entegrasyonu)
+
+### PDF to Images Dönüştürme
+```typescript
+// PDF.js ile PDF to Images conversion
+import { convertPDFToImages } from '@/lib/pdfConvertUtils';
+
+const convertToImages = async (file: File) => {
+  try {
+    // PDF.js dinamik import ile worker kurulumu
+    const results = await convertPDFToImages(
+      file, 
+      'png',     // format: 'png' | 'jpeg'
+      0.9,       // quality: 0.1-1.0
+      2.0        // scale: render kalitesi
+    );
+    
+    return results; // ConversionResult[]
+  } catch (error) {
+    console.error('PDF to Images error:', error);
+    throw error;
+  }
+};
+```
+
+### PDF.js Entegrasyon Kuralları
+- Dinamik import kullan: `await import('pdfjs-dist')`
+- Worker CDN'den yükle: `//cdnjs.cloudflare.com/ajax/libs/pdf.js/`
+- Canvas rendering için 2D context kullan
+- Scale parametresi ile çözünürlük ayarla
+- Error handling detaylı mesajlarla
 
 ### Dosya İşleme
 - File validation (size, type)

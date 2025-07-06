@@ -10,7 +10,13 @@ import {
   CloudArrowDownIcon
 } from '@heroicons/react/24/outline';
 import { useDropzone } from 'react-dropzone';
-import { PDFDocument } from 'pdf-lib';
+import { 
+  extractTextFromPDF, 
+  splitPDF, 
+  mergePDFs, 
+  convertPDFToImages,
+  ConversionResult 
+} from '@/lib/pdfConvertUtils';
 import Header from '@/components/Header';
 import AuthModal from '@/components/AuthModal';
 
@@ -29,7 +35,7 @@ export default function PDFConvert() {
   const [selectedTool, setSelectedTool] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processedFiles, setProcessedFiles] = useState<Array<{ name: string; url: string; size: number }>>([]);
+  const [processedFiles, setProcessedFiles] = useState<ConversionResult[]>([]);
   const [error, setError] = useState<string>('');
 
   const conversionTools: ConversionTool[] = [
@@ -93,60 +99,7 @@ export default function PDFConvert() {
     setError('');
   };
 
-  const extractTextFromPDF = async (file: File): Promise<string> => {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pages = pdfDoc.getPages();
-      
-      let fullText = '';
-      for (let i = 0; i < pages.length; i++) {
-        // Bu basit bir implementasyon - gerçek OCR için pdf-parse gibi kütüphaneler gerekir
-        fullText += `Page ${i + 1}\n\n`;
-      }
-      
-      return fullText || 'Metin çıkarma işlemi tamamlandı. Daha detaylı metin çıkarma için OCR özelliği gerekir.';
-    } catch {
-      throw new Error('PDF\'den metin çıkarılamadı');
-    }
-  };
-
-  const splitPDF = async (file: File): Promise<PDFDocument[]> => {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pages = pdfDoc.getPages();
-      const splitDocs: PDFDocument[] = [];
-
-      for (let i = 0; i < pages.length; i++) {
-        const newDoc = await PDFDocument.create();
-        const [copiedPage] = await newDoc.copyPages(pdfDoc, [i]);
-        newDoc.addPage(copiedPage);
-        splitDocs.push(newDoc);
-      }
-
-      return splitDocs;
-    } catch {
-      throw new Error('PDF bölme işlemi başarısız');
-    }
-  };
-
-  const mergePDFs = async (files: File[]): Promise<PDFDocument> => {
-    try {
-      const mergedDoc = await PDFDocument.create();
-
-      for (const file of files) {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(arrayBuffer);
-        const pages = await mergedDoc.copyPages(pdfDoc, pdfDoc.getPageIndices());
-        pages.forEach(page => mergedDoc.addPage(page));
-      }
-
-      return mergedDoc;
-    } catch {
-      throw new Error('PDF birleştirme işlemi başarısız');
-    }
-  };
+  // PDF processing functions are now imported from pdfConvertUtils
 
   const handleProcess = async () => {
     if (files.length === 0) return;
@@ -155,7 +108,7 @@ export default function PDFConvert() {
     setError('');
 
     try {
-      const results: Array<{ name: string; url: string; size: number }> = [];
+      let results: ConversionResult[] = [];
 
       if (selectedTool === 'pdf-to-text') {
         const text = await extractTextFromPDF(files[0]);
@@ -164,33 +117,17 @@ export default function PDFConvert() {
         results.push({
           name: files[0].name.replace('.pdf', '.txt'),
           url,
-          size: blob.size
+          size: blob.size,
+          type: 'text/plain'
         });
       } else if (selectedTool === 'pdf-split') {
-        const splitDocs = await splitPDF(files[0]);
-        for (let i = 0; i < splitDocs.length; i++) {
-          const pdfBytes = await splitDocs[i].save();
-          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-          const url = URL.createObjectURL(blob);
-          results.push({
-            name: files[0].name.replace('.pdf', `_page_${i + 1}.pdf`),
-            url,
-            size: blob.size
-          });
-        }
+        results = await splitPDF(files[0]);
       } else if (selectedTool === 'pdf-merge') {
-        const mergedDoc = await mergePDFs(files);
-        const pdfBytes = await mergedDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        results.push({
-          name: 'merged_document.pdf',
-          url,
-          size: blob.size
-        });
+        const mergedResult = await mergePDFs(files);
+        results = [mergedResult];
       } else if (selectedTool === 'pdf-to-images') {
-        // PDF to images için canvas ile rendering gerekir
-        setError('PDF to Images özelliği henüz geliştiriliyor');
+        // PDF.js kullanarak gerçek PDF to Images dönüştürme
+        results = await convertPDFToImages(files[0], 'png', 0.9, 2.0);
       }
 
       setProcessedFiles(results);
@@ -201,7 +138,7 @@ export default function PDFConvert() {
     }
   };
 
-  const downloadFile = (file: { name: string; url: string; size: number }) => {
+  const downloadFile = (file: ConversionResult) => {
     const a = document.createElement('a');
     a.href = file.url;
     a.download = file.name;
