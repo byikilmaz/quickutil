@@ -477,13 +477,16 @@ export default function ImageCropPage() {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col xl:flex-row">
+          <div className="flex-1 flex flex-col lg:flex-row bg-white">
             
-            {/* Image Preview Area */}
-            <div className="flex-1 bg-gray-900 flex items-center justify-center p-4 min-h-[50vh] xl:min-h-0">
+            {/* Image Preview Area - İçinde sınırlı gölge */}
+            <div className="flex-1 bg-gray-100 flex items-center justify-center p-6 relative">
+              
+              {/* Image Container with bounded shadow */}
               <div 
                 ref={containerRef}
-                className="relative max-w-full max-h-full select-none"
+                className="relative bg-gray-900 rounded-lg overflow-hidden shadow-xl"
+                style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 200px)' }}
               >
                 {previewUrl && (
                   <div className="relative">
@@ -491,59 +494,58 @@ export default function ImageCropPage() {
                       ref={imageRef}
                       src={previewUrl}
                       alt="Kırpma önizlemesi"
-                      className="max-w-full max-h-[50vh] xl:max-h-[calc(100vh-140px)] object-contain block"
+                      className="block w-auto h-auto max-w-full max-h-[calc(100vh-200px)] object-contain"
                       style={{ userSelect: 'none' }}
                       draggable={false}
                     />
                     
-                    {/* Dark overlay */}
+                    {/* Dark overlay - sadece image container içinde */}
                     <div className="absolute inset-0 bg-black bg-opacity-60 pointer-events-none" />
                     
                     {/* Crop selection area */}
                     {cropOptions.width > 0 && cropOptions.height > 0 && (
                       <div
-                        className="absolute border-2 border-blue-400 bg-transparent cursor-move"
-                        style={getCropSelectionStyle()}
+                        className="absolute border-2 border-blue-400 cursor-move"
+                        style={{
+                          ...getCropSelectionStyle(),
+                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                          backdropFilter: 'brightness(1.5)'
+                        }}
                         onMouseDown={(e) => handleMouseDown(e, 'move')}
                       >
-                        {/* Clear area (remove dark overlay) */}
-                        <div className="absolute inset-0" style={{
-                          boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.6)'
-                        }} />
-                        
                         {/* Corner resize handles */}
                         <div 
-                          className="absolute -top-2 -left-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-nw-resize hover:bg-blue-500"
+                          className="absolute -top-2 -left-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-nw-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 'nw')}
                         />
                         <div 
-                          className="absolute -top-2 -right-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-ne-resize hover:bg-blue-500"
+                          className="absolute -top-2 -right-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-ne-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 'ne')}
                         />
                         <div 
-                          className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-sw-resize hover:bg-blue-500"
+                          className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-sw-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 'sw')}
                         />
                         <div 
-                          className="absolute -bottom-2 -right-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-se-resize hover:bg-blue-500"
+                          className="absolute -bottom-2 -right-2 w-4 h-4 bg-blue-400 border-2 border-white rounded-full cursor-se-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 'se')}
                         />
                         
                         {/* Edge resize handles */}
                         <div 
-                          className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-blue-400 border border-white rounded cursor-n-resize hover:bg-blue-500"
+                          className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-blue-400 border border-white rounded cursor-n-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 'n')}
                         />
                         <div 
-                          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-blue-400 border border-white rounded cursor-s-resize hover:bg-blue-500"
+                          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-blue-400 border border-white rounded cursor-s-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 's')}
                         />
                         <div 
-                          className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-6 bg-blue-400 border border-white rounded cursor-w-resize hover:bg-blue-500"
+                          className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-6 bg-blue-400 border border-white rounded cursor-w-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 'w')}
                         />
                         <div 
-                          className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-6 bg-blue-400 border border-white rounded cursor-e-resize hover:bg-blue-500"
+                          className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-6 bg-blue-400 border border-white rounded cursor-e-resize hover:bg-blue-500 z-10"
                           onMouseDown={(e) => handleMouseDown(e, 'e')}
                         />
                         
@@ -561,8 +563,8 @@ export default function ImageCropPage() {
               </div>
             </div>
 
-            {/* Controls Panel */}
-            <div className="w-full xl:w-80 bg-white border-t xl:border-t-0 xl:border-l border-gray-200 flex flex-col">
+            {/* Controls Panel - Her zaman erişilebilir */}
+            <div className="w-full lg:w-80 bg-white border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col shadow-lg">
               <div className="p-6 overflow-y-auto flex-1">
                 
                 {/* Crop Options Header */}
@@ -685,14 +687,14 @@ export default function ImageCropPage() {
                 </div>
 
                 {error && (
-                  <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                     <p className="text-red-700 text-sm">{error}</p>
                   </div>
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="border-t border-gray-200 p-6 bg-gray-50">
+              {/* Fixed Action Buttons - Her zaman erişilebilir */}
+              <div className="border-t border-gray-200 p-4 bg-white">
                 {stage === 'cropping' && (
                   <button
                     onClick={handleCropImage}
@@ -714,8 +716,8 @@ export default function ImageCropPage() {
                 )}
 
                 {stage === 'result' && cropResult && (
-                  <div className="space-y-4">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="space-y-3">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <div className="flex items-center space-x-2 mb-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <h4 className="text-sm font-medium text-green-900">Kırpma Tamamlandı!</h4>
