@@ -336,7 +336,8 @@ export class ActivityTracker {
         image_compress: 0,
         image_resize: 0,
         image_crop: 0,
-        image_rotate: 0
+        image_rotate: 0,
+        image_filter: 0
       };
 
       const currentMonth = new Date().getMonth();
@@ -660,6 +661,26 @@ export const trackImageRotate = async (
   });
 };
 
+export const trackImageFilter = async (
+  userId: string,
+  fileName: string,
+  originalSize: number,
+  filtersApplied: number,
+  processingTime?: number
+) => {
+  return ActivityTracker.createActivity(userId, {
+    type: 'image_filter',
+    fileName,
+    originalFileName: fileName,
+    fileSize: originalSize,
+    processedSize: originalSize, // Filters don't change file size significantly
+    category: 'Image',
+    status: 'success',
+    processingTime,
+    compressionRatio: filtersApplied // Use this field to store number of filters applied
+  });
+};
+
 // Utility for formatting activity data for UI
 export const formatActivityForUI = (activity: UserActivity) => {
   const typeNames: Record<ActivityType, string> = {
@@ -669,7 +690,8 @@ export const formatActivityForUI = (activity: UserActivity) => {
     image_compress: 'Resim Sıkıştırma',
     image_resize: 'Resim Boyutlandırma',
     image_crop: 'Resim Kırpma',
-    image_rotate: 'Resim Döndürme'
+    image_rotate: 'Resim Döndürme',
+    image_filter: 'Resim Filtreleme'
   };
 
   const statusNames: Record<ActivityStatus, string> = {

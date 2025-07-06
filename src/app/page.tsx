@@ -102,6 +102,15 @@ export default function Home() {
           icon: ArrowPathIcon,
           color: 'bg-purple-50 text-purple-600',
           href: '/image-rotate'
+        },
+        {
+          id: 'image-filters',
+          title: 'Resim Filtreleme',
+          description: 'Professional filtrelerle resimlerinizi enhance edin',
+          icon: SparklesIcon,
+          color: 'bg-purple-50 text-purple-600',
+          href: '/image-filters',
+          badge: 'YENİ'
         }
       ]
     },

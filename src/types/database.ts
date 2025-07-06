@@ -2,7 +2,7 @@
 export interface UserActivity {
   id?: string;
   userId: string;
-  type: 'pdf_compress' | 'pdf_convert' | 'image_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate';
+  type: 'pdf_compress' | 'pdf_convert' | 'image_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter';
   fileName: string;
   originalFileName: string;
   fileSize: number;
@@ -123,6 +123,7 @@ export interface SystemStats {
     imageResize: number;
     imageCrop: number;
     imageRotate: number;
+    imageFilter: number;
   };
   avgProcessingTime: number;
   successRate: number;
@@ -154,7 +155,7 @@ export interface ProcessingQueue {
   userId: string;
   fileName: string;
   fileSize: number;
-  type: 'pdf_compress' | 'pdf_convert' | 'image_convert';
+  type: 'pdf_compress' | 'pdf_convert' | 'image_convert' | 'image_filter';
   priority: 'low' | 'normal' | 'high';
   status: 'queued' | 'processing' | 'completed' | 'failed';
   queuedAt: Date;
