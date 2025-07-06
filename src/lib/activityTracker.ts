@@ -583,12 +583,93 @@ export const trackImageConvert = async (
   });
 };
 
+export const trackImageCompress = async (
+  userId: string,
+  fileName: string,
+  originalSize: number,
+  compressedSize?: number,
+  processingTime?: number
+) => {
+  return ActivityTracker.createActivity(userId, {
+    type: 'image_compress',
+    fileName,
+    originalFileName: fileName,
+    fileSize: originalSize,
+    processedSize: compressedSize,
+    category: 'Image',
+    status: compressedSize ? 'success' : 'processing',
+    processingTime,
+    compressionRatio: compressedSize ? ((originalSize - compressedSize) / originalSize) * 100 : undefined
+  });
+};
+
+export const trackImageResize = async (
+  userId: string,
+  fileName: string,
+  originalSize: number,
+  processedSize?: number,
+  processingTime?: number
+) => {
+  return ActivityTracker.createActivity(userId, {
+    type: 'image_resize',
+    fileName,
+    originalFileName: fileName,
+    fileSize: originalSize,
+    processedSize,
+    category: 'Image',
+    status: processedSize ? 'success' : 'processing',
+    processingTime
+  });
+};
+
+export const trackImageCrop = async (
+  userId: string,
+  fileName: string,
+  originalSize: number,
+  processedSize?: number,
+  processingTime?: number
+) => {
+  return ActivityTracker.createActivity(userId, {
+    type: 'image_crop',
+    fileName,
+    originalFileName: fileName,
+    fileSize: originalSize,
+    processedSize,
+    category: 'Image',
+    status: processedSize ? 'success' : 'processing',
+    processingTime
+  });
+};
+
+export const trackImageRotate = async (
+  userId: string,
+  fileName: string,
+  originalSize: number,
+  processedSize?: number,
+  processingTime?: number
+) => {
+  return ActivityTracker.createActivity(userId, {
+    type: 'image_rotate',
+    fileName,
+    originalFileName: fileName,
+    fileSize: originalSize,
+    processedSize,
+    category: 'Image',
+    status: processedSize ? 'success' : 'processing',
+    processingTime
+  });
+};
+
 // Utility for formatting activity data for UI
 export const formatActivityForUI = (activity: UserActivity) => {
   const typeNames: Record<ActivityType, string> = {
     pdf_compress: 'PDF Sıkıştırma',
     pdf_convert: 'PDF Dönüştürme',
-    image_convert: 'Görsel Dönüştürme'
+    image_convert: 'Görsel Dönüştürme',
+    image_compress: 'Resim Sıkıştırma',
+    image_resize: 'Resim Boyutlandırma',
+    image_crop: 'Resim Kırpma',
+    image_rotate: 'Resim Döndürme'
   };
 
   const statusNames: Record<ActivityStatus, string> = {
