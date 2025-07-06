@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   // Static export for Firebase hosting
   output: 'export',
   distDir: 'out',
-  trailingSlash: false,
+  trailingSlash: true,
   
   // Cache busting and optimization
   generateBuildId: async () => {

@@ -7,7 +7,9 @@ import {
   ArrowPathIcon, 
   CubeTransparentIcon,
   DocumentArrowDownIcon,
-  SparklesIcon
+  SparklesIcon,
+  PencilSquareIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
 import ToolCard from '@/components/ToolCard';
 import Header from '@/components/Header';
@@ -26,46 +28,85 @@ export default function Home() {
     setIsLoaded(true);
   }, []);
 
-  const tools = [
+  const toolCategories = [
     {
-      id: 'pdf-compress',
-      title: 'PDF Sıkıştırma',
-      description: 'PDF dosyalarınızı kaliteden ödün vermeden sıkıştırın',
-      icon: DocumentArrowDownIcon,
-      color: 'bg-blue-50 text-blue-600',
-      href: '/pdf-compress'
-    },
-    {
-      id: 'pdf-convert',
-      title: 'PDF Dönüştürme',
-      description: 'PDF\'leri farklı formatlara kolayca dönüştürün',
+      id: 'pdf-tools',
+      title: 'PDF İşlemleri',
+      description: 'PDF dosyalarınızı sıkıştırın, dönüştürün ve düzenleyin',
       icon: DocumentIcon,
-      color: 'bg-green-50 text-green-600',
-      href: '/pdf-convert'
+      color: 'from-blue-600 to-blue-700',
+      bgColor: 'bg-blue-50',
+      tools: [
+        {
+          id: 'pdf-compress',
+          title: 'PDF Sıkıştırma',
+          description: 'PDF dosyalarınızı kaliteden ödün vermeden sıkıştırın',
+          icon: DocumentArrowDownIcon,
+          color: 'bg-blue-50 text-blue-600',
+          href: '/pdf-compress'
+        },
+        {
+          id: 'pdf-convert',
+          title: 'PDF Dönüştürme',
+          description: 'PDF\'leri farklı formatlara kolayca dönüştürün',
+          icon: DocumentTextIcon,
+          color: 'bg-blue-50 text-blue-600',
+          href: '/pdf-convert'
+        }
+      ]
     },
     {
-      id: 'image-convert',
-      title: 'Resim Dönüştürme',
-      description: 'PNG, JPEG, WebP formatları arası dönüştürün',
+      id: 'image-tools',
+      title: 'Fotoğraf İşlemleri',
+      description: 'Fotoğraflarınızı düzenleyin, dönüştürün ve optimize edin',
       icon: PhotoIcon,
-      color: 'bg-purple-50 text-purple-600',
-      href: '/image-convert'
+      color: 'from-purple-600 to-purple-700',
+      bgColor: 'bg-purple-50',
+      tools: [
+        {
+          id: 'image-convert',
+          title: 'Resim Dönüştürme',
+          description: 'PNG, JPEG, WebP formatları arası dönüştürün',
+          icon: PhotoIcon,
+          color: 'bg-purple-50 text-purple-600',
+          href: '/image-convert'
+        },
+        {
+          id: 'image-compress',
+          title: 'Fotoğraf Sıkıştırma',
+          description: 'Fotoğraflarınızı kaliteden ödün vermeden küçültün',
+          icon: ArrowPathIcon,
+          color: 'bg-purple-50 text-purple-600',
+          href: '/image-compress'
+        },
+        {
+          id: 'background-remove',
+          title: 'Arka Plan Kaldırma',
+          description: 'Fotoğraflarınızın arka planını otomatik kaldırın',
+          icon: CubeTransparentIcon,
+          color: 'bg-purple-50 text-purple-600',
+          href: '/background-remove'
+        }
+      ]
     },
     {
-      id: 'image-compress',
-      title: 'Fotoğraf Sıkıştırma',
-      description: 'Fotoğraflarınızı kaliteden ödün vermeden küçültün',
-      icon: ArrowPathIcon,
-      color: 'bg-orange-50 text-orange-600',
-      href: '/image-compress'
-    },
-    {
-      id: 'background-remove',
-      title: 'Arka Plan Kaldırma',
-      description: 'Fotoğraflarınızın arka planını otomatik kaldırın',
-      icon: CubeTransparentIcon,
-      color: 'bg-red-50 text-red-600',
-      href: '/background-remove'
+      id: 'esign-tools',
+      title: 'E-İmza Sistemi',
+      description: 'PDF belgelerinizi dijital olarak imzalayın ve gönderin',
+      icon: PencilSquareIcon,
+      color: 'from-green-600 to-green-700',
+      bgColor: 'bg-green-50',
+      tools: [
+        {
+          id: 'pdf-esign',
+          title: 'PDF E-İmza',
+          description: 'PDF belgelerine dijital imza ekleyin ve gönderin',
+          icon: PencilSquareIcon,
+          color: 'bg-green-50 text-green-600',
+          href: '/pdf-esign',
+          badge: 'YENİ'
+        }
+      ]
     }
   ];
 
@@ -121,27 +162,55 @@ export default function Home() {
 
       {/* Tools Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className={`text-center mb-12 transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`text-center mb-16 transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Araçlarımız
           </h2>
           <p className="text-xl text-gray-600">
-            İhtiyacınız olan tüm dosya işleme araçları tek yerde
+            İhtiyacınız olan tüm dosya işleme araçları kategoriler halinde
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {tools.map((tool, index) => (
+        <div className="space-y-16">
+          {toolCategories.map((category, categoryIndex) => (
             <div 
-              key={tool.id}
-              className={`transition-all duration-700 ${
+              key={category.id}
+              className={`transition-all duration-1000 ${
                 isLoaded 
                   ? 'opacity-100 translate-y-0' 
                   : 'opacity-0 translate-y-10'
               }`}
-              style={{ transitionDelay: `${500 + index * 100}ms` }}
+              style={{ transitionDelay: `${400 + categoryIndex * 200}ms` }}
             >
-              <ToolCard tool={tool} />
+              {/* Category Header */}
+              <div className="text-center mb-8">
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r ${category.color} text-white mb-4 shadow-lg`}>
+                  <category.icon className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  {category.title}
+                </h3>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  {category.description}
+                </p>
+              </div>
+
+              {/* Category Tools */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {category.tools.map((tool, toolIndex) => (
+                  <div 
+                    key={tool.id}
+                    className={`transition-all duration-700 ${
+                      isLoaded 
+                        ? 'opacity-100 translate-y-0' 
+                        : 'opacity-0 translate-y-10'
+                    }`}
+                    style={{ transitionDelay: `${600 + categoryIndex * 200 + toolIndex * 100}ms` }}
+                  >
+                    <ToolCard tool={tool} />
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>

@@ -13,6 +13,7 @@ interface Tool {
   } & RefAttributes<SVGSVGElement>>;
   color: string;
   href: string;
+  badge?: string;
 }
 
 interface ToolCardProps {
@@ -27,6 +28,13 @@ export default function ToolCard({ tool }: ToolCardProps) {
       <div className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 hover:border-blue-300 group-hover:scale-105 overflow-hidden">
         {/* Hover gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        {/* Badge */}
+        {tool.badge && (
+          <div className="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
+            {tool.badge}
+          </div>
+        )}
         
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4">

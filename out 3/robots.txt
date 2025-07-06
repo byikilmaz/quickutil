@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://quickutil.app/sitemap.xml
+
+# Disallow Firebase hosting URLs
+Disallow: /pdf-compress?
+Disallow: /pdf-convert?
+Disallow: /image-convert?
+
+# Allow main pages
+Allow: /pdf-compress
+Allow: /pdf-convert
+Allow: /image-convert 

@@ -9,7 +9,18 @@ import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
 const inter = Inter({ subsets: ["latin"] });
 
 // Dynamic metadata based on page
-export const metadata: Metadata = generatePageMetadata(getPageSEOData('home'));
+export const metadata: Metadata = {
+  ...generatePageMetadata(getPageSEOData('home')),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
+    ],
+    apple: { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    shortcut: '/favicon.svg'
+  }
+};
 
 export default function RootLayout({
   children,
