@@ -411,6 +411,12 @@ await ActivityTracker.createActivity(user.uid, {
 - Proper spacing (p-4, m-2, etc.)
 - Flexible layouts (flex, grid)
 
+### Color Usage Rules (KRİTİK KURAL)
+- **AÇIK GRİ RENKLERDE KULLANMA**: `text-gray-500`, `text-gray-600` gibi açık gri renkler okunabilirlik sorunu yaratır
+- **KOYU RENKLER KULLAN**: `text-gray-700`, `text-gray-800`, `text-gray-900` gibi daha koyu renkler tercih et
+- **KONTRAS ORANI**: Her zaman yeterli kontrast oranı sağla (minimum WCAG AA standardı)
+- **ACCESSIBILITY**: Renk seçimlerinde görme engelli kullanıcıları da düşün
+
 ### Modern Form Design
 ```typescript
 // Enhanced form input styling
