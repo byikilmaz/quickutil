@@ -21,7 +21,9 @@ export default function FileUpload({
   const [isHovering, setIsHovering] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log('FileUpload onDrop called:', acceptedFiles);
     if (acceptedFiles.length > 0) {
+      console.log('Calling onFileSelect with:', acceptedFiles[0]);
       onFileSelect(acceptedFiles[0]);
     }
   }, [onFileSelect]);

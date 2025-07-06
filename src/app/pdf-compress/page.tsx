@@ -50,20 +50,40 @@ export default function PDFCompress() {
   };
 
   const handleFileSelect = async (selectedFile: File) => {
+    console.log('File selected:', selectedFile.name, selectedFile.size, selectedFile.type);
+    
     setFile(selectedFile);
     setCompressedFile(null);
     setCompressionResult(null);
     setError('');
     setPdfAnalysis(null);
 
+    // Validate PDF file first
+    if (!selectedFile.type.includes('pdf') && !selectedFile.name.toLowerCase().endsWith('.pdf')) {
+      setError('Lütfen geçerli bir PDF dosyası seçin');
+      setFile(null);
+      return;
+    }
+
+    // Check file size (50MB limit)
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      setError('Dosya boyutu 50MB\'dan küçük olmalıdır');
+      setFile(null);
+      return;
+    }
+
+    console.log('File validation passed, starting PDF analysis...');
+
     // Analyze PDF
     setAnalyzing(true);
     try {
       const analysis = await analyzePDF(selectedFile);
+      console.log('PDF analysis completed:', analysis);
       setPdfAnalysis(analysis);
     } catch (err) {
       console.error('PDF analysis error:', err);
-      setError('PDF analizi sırasında hata oluştu');
+      setError('PDF analizi sırasında hata oluştu: ' + (err instanceof Error ? err.message : 'Bilinmeyen hata'));
+      setFile(null); // Reset file on analysis error
     } finally {
       setAnalyzing(false);
     }

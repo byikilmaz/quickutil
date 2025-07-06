@@ -177,11 +177,39 @@ export async function analyzePDF(file: File): Promise<{
   isEncrypted: boolean;
 }> {
   try {
+    console.log('Starting PDF analysis for file:', file.name, file.size, file.type);
+    
+    // Validate file type
+    if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
+      throw new Error('Geçersiz dosya türü. PDF dosyası bekleniyor.');
+    }
+    
+    // Validate file size
+    if (file.size === 0) {
+      throw new Error('Dosya boş görünüyor');
+    }
+    
+    if (file.size > 50 * 1024 * 1024) {
+      throw new Error('Dosya çok büyük (maksimum 50MB)');
+    }
+    
+    console.log('Reading file as array buffer...');
     const arrayBuffer = await file.arrayBuffer();
+    
+    if (arrayBuffer.byteLength === 0) {
+      throw new Error('Dosya içeriği okunamadı');
+    }
+    
+    console.log('Loading PDF document...');
     const pdfDoc = await PDFDocument.load(arrayBuffer);
     
+    console.log('Getting PDF pages...');
     const pages = pdfDoc.getPages();
     const pageCount = pages.length;
+    
+    if (pageCount === 0) {
+      throw new Error('PDF dosyasında sayfa bulunamadı');
+    }
     
     // Basic analysis
     const analysis = {
@@ -192,9 +220,26 @@ export async function analyzePDF(file: File): Promise<{
       isEncrypted: false, // Would be caught in load if encrypted
     };
     
+    console.log('PDF analysis completed successfully:', analysis);
     return analysis;
   } catch (error) {
-    console.error('PDF analysis error:', error);
-    throw new Error('PDF analizi sırasında hata oluştu');
+    console.error('PDF analysis error details:', error);
+    
+    if (error instanceof Error) {
+      // Check for specific PDF-lib errors
+      if (error.message.includes('Invalid PDF')) {
+        throw new Error('Geçersiz PDF dosyası formatı');
+      }
+      if (error.message.includes('Password')) {
+        throw new Error('Şifreli PDF dosyaları desteklenmiyor');
+      }
+      if (error.message.includes('Corrupt')) {
+        throw new Error('PDF dosyası bozuk görünüyor');
+      }
+      
+      throw new Error(error.message);
+    }
+    
+    throw new Error('PDF analizi sırasında bilinmeyen hata oluştu');
   }
 } 
