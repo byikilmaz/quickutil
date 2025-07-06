@@ -265,11 +265,141 @@ const convertToImages = async (file: File) => {
 - Proper spacing (p-4, m-2, etc.)
 - Flexible layouts (flex, grid)
 
+### Modern Form Design
+```typescript
+// Enhanced form input styling
+.form-input {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply text-gray-900 placeholder-gray-500 bg-white;
+  @apply transition-all duration-200;
+}
+
+// Form field structure
+<div>
+  <label htmlFor="field" className="block text-sm font-medium text-gray-700 mb-2">
+    Field Label *
+  </label>
+  <input
+    type="text"
+    id="field"
+    className="form-input"
+    placeholder="Placeholder text"
+    required
+  />
+</div>
+```
+
+### Authentication Form Guidelines
+```typescript
+// Ad/Soyad alanları ayrı ayrı
+const [firstName, setFirstName] = useState('');
+const [lastName, setLastName] = useState('');
+
+// Şifre görünürlük toggle
+const [showPassword, setShowPassword] = useState(false);
+
+// Firebase'de ayrı ayrı kaydetme
+await setDoc(doc(firestore, 'users', user.uid), {
+  firstName,
+  lastName,
+  email,
+  createdAt: new Date(),
+  updatedAt: new Date()
+});
+```
+
+### Animation & Transitions
+```css
+/* Custom animations in globals.css */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Usage classes */
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+.animate-slide-in { animation: slideIn 0.6s ease-out; }
+.animate-bounce-in { animation: bounceIn 0.6s ease-out; }
+```
+
+### Component Hover Effects
+```typescript
+// Modern card hover effects
+<div className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 hover:border-blue-300 group-hover:scale-105 overflow-hidden">
+  {/* Hover gradient background */}
+  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+  
+  {/* Content with z-index */}
+  <div className="relative z-10">
+    {/* Content here */}
+  </div>
+</div>
+```
+
+### Button Design System
+```css
+/* Primary button */
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white;
+  @apply px-6 py-3 rounded-lg font-medium;
+  @apply hover:from-blue-700 hover:to-blue-800;
+  @apply transition-all duration-200 shadow-lg hover:shadow-xl;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Loading state */
+{loading ? (
+  <div className="flex items-center justify-center">
+    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white">
+      {/* Spinner SVG */}
+    </svg>
+    Yükleniyor...
+  </div>
+) : (
+  'Button Text'
+)}
+```
+
+### File Upload Experience
+```typescript
+// Enhanced drag & drop with visual feedback
+const [isHovering, setIsHovering] = useState(false);
+
+// Dropzone configuration
+const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  onDrop,
+  onDragEnter: () => setIsHovering(true),
+  onDragLeave: () => setIsHovering(false),
+  onDropAccepted: () => setIsHovering(false),
+  onDropRejected: () => setIsHovering(false)
+});
+
+// Dynamic styling based on state
+className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
+  isDragActive || isHovering
+    ? 'border-blue-500 bg-blue-50 scale-105'
+    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+}`}
+```
+
 ### Loading States
 ```typescript
 const [isLoading, setIsLoading] = useState(false);
 
-// Loading UI
+// Enhanced loading UI with animations
 {isLoading ? (
   <div className="flex items-center justify-center p-8">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -278,6 +408,44 @@ const [isLoading, setIsLoading] = useState(false);
   <ContentComponent />
 )}
 ```
+
+### User Profile Display
+```typescript
+// User avatar with initials
+const getUserInitials = () => {
+  if (userProfile) {
+    return `${userProfile.firstName.charAt(0)}${userProfile.lastName.charAt(0)}`.toUpperCase();
+  }
+  return 'K';
+};
+
+// Profile dropdown menu
+<div className="relative" ref={userMenuRef}>
+  <button className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full flex items-center justify-center">
+      <span className="text-white font-medium text-sm">
+        {getUserInitials()}
+      </span>
+    </div>
+    {/* User info */}
+  </button>
+</div>
+```
+
+### Progressive Enhancement
+- Staggered animations for list items
+- Scroll-triggered animations
+- Hover state feedback
+- Loading skeleton states
+- Error state handling with icons
+- Success state confirmations
+
+### Mobile Optimization
+- Touch-friendly 44px+ targets
+- Swipe gestures support
+- Haptic feedback indicators
+- Orientation-aware layouts
+- Performance-optimized animations
 
 ## 🔐 Güvenlik Kuralları
 

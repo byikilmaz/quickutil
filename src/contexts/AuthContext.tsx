@@ -8,13 +8,22 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '@/lib/firebase';
+
+interface UserProfile {
+  firstName: string;
+  lastName: string;
+  email: string;
+  createdAt: Date;
+}
 
 interface AuthContextType {
   user: User | null;
+  userProfile: UserProfile | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -30,11 +39,30 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUserProfile({
+              firstName: userData.firstName || '',
+              lastName: userData.lastName || '',
+              email: user.email || '',
+              createdAt: userData.createdAt?.toDate() || new Date()
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      } else {
+        setUserProfile(null);
+      }
       setLoading(false);
     });
 
@@ -42,20 +70,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
-  const register = async (email: string, password: string, name: string) => {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(user, { displayName: name });
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Update Firebase Auth profile
+      await updateProfile(user, { 
+        displayName: `${firstName} ${lastName}` 
+      });
+
+      // Create user profile in Firestore
+      await setDoc(doc(firestore, 'users', user.uid), {
+        firstName,
+        lastName,
+        email,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+
+      // Update local state
+      setUserProfile({
+        firstName,
+        lastName,
+        email,
+        createdAt: new Date()
+      });
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+      setUserProfile(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
   };
 
   const value: AuthContextType = {
     user,
+    userProfile,
     loading,
     login,
     register,
