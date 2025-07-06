@@ -12,6 +12,7 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { auth, firestore, functions } from '@/lib/firebase';
+import { analyzeFirebaseError } from '@/lib/errorAnalyzer';
 
 interface UserProfile {
   firstName: string;
@@ -68,8 +69,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 createdAt: userData.createdAt?.toDate() || new Date()
               });
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error('Error fetching user profile:', error);
+            
+            // 🔍 Analyze Firebase error
+            analyzeFirebaseError(error, {
+              code: error.code || 'unknown',
+              customData: { 
+                operation: 'fetch_user_profile',
+                userId: user.uid 
+              }
+            });
+            
             // Set basic profile even if Firestore fails
             setUserProfile({
               firstName: '',
@@ -81,8 +92,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setUserProfile(null);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Auth state change error:', error);
+        
+        // 🔍 Analyze authentication error
+        analyzeFirebaseError(error, {
+          code: error.code || 'unknown',
+          customData: { operation: 'auth_state_change' }
+        });
       } finally {
         setLoading(false);
       }
@@ -94,8 +111,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
+      
+      // 🔍 Analyze login error with detailed context
+      analyzeFirebaseError(error, {
+        code: error.code,
+        customData: { 
+          operation: 'login',
+          email,
+          timestamp: new Date().toISOString()
+        }
+      });
+      
       throw error;
     }
   };
@@ -140,8 +168,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fallback to Firebase default if window is not available
           await sendEmailVerification(user);
         }
-      } catch (emailError) {
+      } catch (emailError: any) {
         console.error('Custom email sending failed, falling back to Firebase default:', emailError);
+        
+        // 🔍 Analyze email sending error
+        analyzeFirebaseError(emailError, {
+          code: emailError.code || 'email-send-failed',
+          customData: { 
+            operation: 'send_verification_email',
+            email,
+            userId: user.uid
+          }
+        });
+        
         // Fallback to Firebase default verification email
         await sendEmailVerification(user);
       }
@@ -153,8 +192,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         createdAt: new Date()
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
+      
+      // 🔍 Analyze registration error with comprehensive context
+      analyzeFirebaseError(error, {
+        code: error.code,
+        customData: { 
+          operation: 'register',
+          email,
+          hasFirstName: !!firstName,
+          hasLastName: !!lastName,
+          passwordLength: password.length,
+          timestamp: new Date().toISOString()
+        }
+      });
+      
       throw error;
     }
   };
@@ -190,13 +243,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fallback to Firebase default
           await sendEmailVerification(user);
         }
-      } catch (emailError) {
+      } catch (emailError: any) {
         console.error('Custom email resend failed, falling back to Firebase default:', emailError);
+        
+        // 🔍 Analyze resend verification error
+        analyzeFirebaseError(emailError, {
+          code: emailError.code || 'email-resend-failed',
+          customData: { 
+            operation: 'resend_verification_email',
+            email: user.email,
+            userId: user.uid
+          }
+        });
+        
         // Fallback to Firebase default verification email
         await sendEmailVerification(user);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Resend verification error:', error);
+      
+      // 🔍 Analyze general resend error
+      analyzeFirebaseError(error, {
+        code: error.code || 'resend-verification-failed',
+        customData: { 
+          operation: 'resend_verification',
+          hasUser: !!user,
+          hasUserProfile: !!userProfile
+        }
+      });
+      
       throw error;
     }
   };
@@ -205,8 +280,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await signOut(auth);
       setUserProfile(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
+      
+      // 🔍 Analyze logout error
+      analyzeFirebaseError(error, {
+        code: error.code || 'logout-failed',
+        customData: { 
+          operation: 'logout',
+          userId: user?.uid
+        }
+      });
+      
       throw error;
     }
   };

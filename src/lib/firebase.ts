@@ -3,6 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions } from 'firebase/functions';
+import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -26,4 +27,16 @@ export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app);
+
+// Initialize Analytics (client-side only, with error handling)
+let analytics: any = null;
+try {
+  if (typeof window !== 'undefined') {
+    analytics = getAnalytics(app);
+  }
+} catch (error) {
+  console.warn('Analytics initialization failed:', error);
+}
+
+export { analytics };
 export { app }; 

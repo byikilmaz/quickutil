@@ -53,6 +53,7 @@ src/
 ├── lib/                  # Utility functions
 │   ├── firebase.ts       # Firebase config
 │   ├── utils.ts          # General utilities
+│   ├── errorAnalyzer.ts  # Error analysis system
 │   └── [feature]Utils.ts # Feature-specific utils
 ├── contexts/             # React contexts
 ├── hooks/               # Custom hooks
@@ -275,7 +276,200 @@ const compressPDF = async (file: File, quality: number): Promise<Blob> => {
 }
 ```
 
-## 🔍 Debugging Kuralları
+## 🔍 Error Analysis & Debugging Kuralları
+
+### QuickUtil Error Analyzer Sistemi
+```typescript
+import { analyzeFirebaseError, analyzeGitHubError, analyzeCodeError } from '@/lib/errorAnalyzer';
+
+// Firebase error handling
+try {
+  await signInWithEmailAndPassword(auth, email, password);
+} catch (error: any) {
+  analyzeFirebaseError(error, {
+    code: error.code,
+    customData: { operation: 'login', email }
+  });
+  throw error;
+}
+
+// GitHub API error handling
+try {
+  const response = await fetch('/api/github/repos');
+} catch (error: any) {
+  analyzeGitHubError(error, {
+    status: error.status,
+    endpoint: '/api/github/repos',
+    method: 'GET'
+  });
+}
+
+// General code error handling
+try {
+  processUserData(userData);
+} catch (error) {
+  analyzeCodeError(error, { context: 'user_data_processing' });
+}
+```
+
+### Error Categories & Severity
+```typescript
+// Error categories
+enum ErrorCategory {
+  FIREBASE = 'firebase',    // Firebase Auth, Firestore, Functions
+  GITHUB = 'github',        // GitHub API, Actions, Repository
+  CODE = 'code',           // JavaScript/TypeScript runtime errors
+  NETWORK = 'network',     // Network connectivity issues
+  VALIDATION = 'validation', // Input validation failures
+  UI = 'ui'               // User interface errors
+}
+
+// Severity levels
+enum ErrorSeverity {
+  LOW = 'low',           // Minor issues, fallbacks available
+  MEDIUM = 'medium',     // Moderate impact, some features affected
+  HIGH = 'high',         // Significant impact, major features affected
+  CRITICAL = 'critical'  // System-wide impact, immediate attention needed
+}
+```
+
+### Firebase Error Analysis
+```typescript
+// Automatic Firebase error detection and recommendations
+const firebaseErrorPatterns = {
+  'auth/api-key-not-valid': {
+    severity: 'critical',
+    recommendations: [
+      'Firebase Console\'dan doğru API key\'i kontrol edin',
+      'Environment variables\'ları doğrulayın',
+      'Firebase project ayarlarını kontrol edin'
+    ]
+  },
+  'auth/user-not-found': {
+    severity: 'high',
+    recommendations: [
+      'Kullanıcının kayıtlı olup olmadığını kontrol edin',
+      'Email adresini doğrulayın',
+      'Kayıt sayfasına yönlendirin'
+    ]
+  },
+  'permission-denied': {
+    severity: 'high',
+    recommendations: [
+      'Firestore security rules\'ları kontrol edin',
+      'Kullanıcı authentication durumunu kontrol edin',
+      'Gerekli izinleri doğrulayın'
+    ]
+  }
+};
+```
+
+### GitHub Error Analysis
+```typescript
+// GitHub API error patterns and solutions
+const githubErrorPatterns = {
+  401: {
+    severity: 'high',
+    recommendations: [
+      'GitHub Personal Access Token\'ı kontrol edin',
+      'Token permission\'larını doğrulayın',
+      'Token süresinin dolup dolmadığını kontrol edin'
+    ]
+  },
+  403: {
+    severity: 'high',
+    recommendations: [
+      'Rate limit\'e takılmış olabilirsiniz',
+      'Repository access permission\'larını kontrol edin',
+      'GitHub API quota\'nızı kontrol edin'
+    ]
+  },
+  404: {
+    severity: 'medium',
+    recommendations: [
+      'Repository URL\'ini kontrol edin',
+      'Branch name\'i doğrulayın',
+      'File path\'inin doğru olduğunu kontrol edin'
+    ]
+  }
+};
+```
+
+### MCP Server Entegrasyonları
+```typescript
+// Firebase MCP Server integration
+// npx firebase-tools@latest experimental:mcp
+const firebaseMCPAnalysis = {
+  tools: [
+    'firestore_read', 'firestore_write', 'firestore_query',
+    'auth_list_users', 'auth_get_user', 'auth_create_user',
+    'functions_call', 'functions_logs',
+    'storage_upload', 'storage_download'
+  ],
+  capabilities: [
+    'Firestore database debugging',
+    'Authentication flow analysis', 
+    'Cloud Functions monitoring',
+    'Storage operations tracking'
+  ]
+};
+
+// GitHub MCP Server integration
+const githubMCPAnalysis = {
+  tools: [
+    'get_repository', 'list_issues', 'create_issue',
+    'get_pull_request', 'merge_pull_request',
+    'search_code', 'get_file_contents',
+    'create_branch', 'push_files'
+  ],
+  capabilities: [
+    'Repository analysis and debugging',
+    'Actions workflow monitoring',
+    'Issue tracking and management',
+    'Security vulnerability scanning'
+  ]
+};
+
+// MCPScan.ai security analysis
+const mcpSecurityAnalysis = {
+  vulnerabilities: [
+    'Command injection patterns',
+    'Tool poisoning detection',
+    'Malicious instruction scanning',
+    'Cross-server interference',
+    'Authentication deficiencies'
+  ],
+  monitoring: [
+    'Real-time vulnerability scanning',
+    'Continuous security assessment',
+    'Pattern recognition for threats',
+    'Automated security reporting'
+  ]
+};
+```
+
+### Error Monitoring & Analytics
+```typescript
+// Error tracking with Firebase Analytics
+import { analytics } from '@/lib/firebase';
+import { logEvent } from 'firebase/analytics';
+
+// Track analyzed errors
+logEvent(analytics, 'error_analyzed', {
+  error_category: 'firebase',
+  error_severity: 'high',
+  error_code: 'auth/user-not-found',
+  session_id: sessionId,
+  user_id: userId
+});
+
+// Track error resolution
+logEvent(analytics, 'error_resolved', {
+  error_id: 'firebase_1704672000000',
+  resolution_time: 120, // seconds
+  resolution_method: 'user_retry'
+});
+```
 
 ### Console Logging
 ```typescript
@@ -341,6 +535,7 @@ fix: Turkish language support bug [NOTION-124]
 ui: responsive design optimization [NOTION-125]
 docs: update API documentation
 test: add unit tests for PDF utils
+analyze: implement error analysis system [ERROR-ANALYZER]
 ```
 
 ### Branch Naming
@@ -349,6 +544,7 @@ feature/pdf-compression-improvement
 bugfix/turkish-language-support
 ui/responsive-design-optimization
 hotfix/critical-security-patch
+analyze/error-tracking-system
 ```
 
 ## 📊 Analytics & Monitoring
@@ -375,13 +571,14 @@ logEvent(analytics, 'pdf_compressed', {
 ## 🎯 Öncelik Sırası
 
 1. **Güvenlik**: Input validation, authentication
-2. **Performance**: Loading times, optimization
-3. **Accessibility**: WCAG compliance
-4. **User Experience**: Intuitive interface
-5. **Mobile Experience**: Touch-friendly design
-6. **SEO**: Meta tags, structured data
-7. **Analytics**: User behavior tracking
-8. **Testing**: Unit & integration tests
+2. **Error Analysis**: Comprehensive error tracking and resolution
+3. **Performance**: Loading times, optimization
+4. **Accessibility**: WCAG compliance
+5. **User Experience**: Intuitive interface
+6. **Mobile Experience**: Touch-friendly design
+7. **SEO**: Meta tags, structured data
+8. **Analytics**: User behavior tracking
+9. **Testing**: Unit & integration tests
 
 ## 📝 Notlar
 
@@ -390,6 +587,8 @@ logEvent(analytics, 'pdf_compressed', {
 - Documentation'ı güncel tut
 - Performance metrics'leri izle
 - User feedback'i toplam ve değerlendir
+- Error patterns'leri düzenli analiz et
+- MCP server entegrasyonlarını güncel tut
 
 ---
 
