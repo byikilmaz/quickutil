@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import FileUpload from '@/components/FileUpload';
 import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { ActivityTracker } from '@/lib/activityTracker';
 import { 
   convertImage, 
   getImageDimensions, 
@@ -15,6 +17,7 @@ import {
 } from '@/lib/imageUtils';
 
 export default function ImageConvert() {
+  const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [convertedFile, setConvertedFile] = useState<File | null>(null);
@@ -58,6 +61,8 @@ export default function ImageConvert() {
     setLoading(true);
     setError('');
 
+    const startTime = Date.now();
+
     try {
       const options: ConversionOptions = {
         format,
@@ -69,8 +74,50 @@ export default function ImageConvert() {
       const result = await convertImage(file, options);
       setConvertedFile(result.file);
       setConversionResult(result);
+
+      // Track activity if user is logged in
+      if (user) {
+        try {
+          const processingTime = Date.now() - startTime;
+
+          await ActivityTracker.createActivity(user.uid, {
+            type: 'image_convert',
+            fileName: file.name,
+            originalFileName: file.name,
+            fileSize: file.size,
+            processedSize: result.file.size,
+            status: 'success',
+            category: 'Image',
+            processingTime,
+            compressionRatio: Math.abs(1 - result.compressionRatio) * 100
+          });
+          console.log('Image convert activity tracked successfully');
+        } catch (activityError) {
+          console.error('Activity tracking error:', activityError);
+        }
+      }
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Dönüştürme sırasında hata oluştu');
+      
+      // Track failed activity if user is logged in
+      if (user && file) {
+        try {
+          const processingTime = Date.now() - startTime;
+
+          await ActivityTracker.createActivity(user.uid, {
+            type: 'image_convert',
+            fileName: file.name,
+            originalFileName: file.name,
+            fileSize: file.size,
+            status: 'error',
+            category: 'Image',
+            processingTime
+          });
+        } catch (activityError) {
+          console.error('Activity tracking error:', activityError);
+        }
+      }
     } finally {
       setLoading(false);
     }

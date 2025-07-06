@@ -19,6 +19,8 @@ import {
 } from '@/lib/pdfConvertUtils';
 import Header from '@/components/Header';
 import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { ActivityTracker } from '@/lib/activityTracker';
 
 interface ConversionTool {
   id: string;
@@ -31,6 +33,7 @@ interface ConversionTool {
 }
 
 export default function PDFConvert() {
+  const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedTool, setSelectedTool] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
@@ -107,8 +110,11 @@ export default function PDFConvert() {
     setIsProcessing(true);
     setError('');
 
+    const startTime = Date.now();
+
     try {
       let results: ConversionResult[] = [];
+      const totalFileSize = files.reduce((total, file) => total + file.size, 0);
 
       if (selectedTool === 'pdf-to-text') {
         const text = await extractTextFromPDF(files[0]);
@@ -131,8 +137,51 @@ export default function PDFConvert() {
       }
 
       setProcessedFiles(results);
+
+      // Track activity if user is logged in
+      if (user) {
+        try {
+          const processingTime = Date.now() - startTime;
+          const totalProcessedSize = results.reduce((total, result) => total + result.size, 0);
+
+          await ActivityTracker.createActivity(user.uid, {
+            type: 'pdf_convert',
+            fileName: files.length > 1 ? `${files.length} dosya` : files[0].name,
+            originalFileName: files.length > 1 ? `${files.length} dosya` : files[0].name,
+            fileSize: totalFileSize,
+            processedSize: totalProcessedSize,
+            status: 'success',
+            category: 'PDF',
+            processingTime
+          });
+          console.log('PDF convert activity tracked successfully');
+        } catch (activityError) {
+          console.error('Activity tracking error:', activityError);
+        }
+      }
+
     } catch (error) {
       setError(error instanceof Error ? error.message : 'İşlem başarısız');
+      
+      // Track failed activity if user is logged in
+      if (user && files.length > 0) {
+        try {
+          const processingTime = Date.now() - startTime;
+          const totalFileSize = files.reduce((total, file) => total + file.size, 0);
+
+          await ActivityTracker.createActivity(user.uid, {
+            type: 'pdf_convert',
+            fileName: files.length > 1 ? `${files.length} dosya` : files[0].name,
+            originalFileName: files.length > 1 ? `${files.length} dosya` : files[0].name,
+            fileSize: totalFileSize,
+            status: 'error',
+            category: 'PDF',
+            processingTime
+          });
+        } catch (activityError) {
+          console.error('Activity tracking error:', activityError);
+        }
+      }
     } finally {
       setIsProcessing(false);
     }

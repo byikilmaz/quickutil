@@ -6,6 +6,8 @@ import FileUpload from '@/components/FileUpload';
 import Breadcrumb from '@/components/Breadcrumb';
 import StructuredData from '@/components/StructuredData';
 import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { ActivityTracker } from '@/lib/activityTracker';
 import { 
   compressPDF, 
   analyzePDF,
@@ -22,6 +24,7 @@ interface PDFAnalysis {
 }
 
 export default function PDFCompress() {
+  const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
@@ -70,6 +73,8 @@ export default function PDFCompress() {
     setError('');
     setCompressionResult(null);
 
+    const startTime = Date.now();
+
     try {
       const currentRatio = compressionLevels[compressionLevel].ratio;
       const compressed = await compressPDF(file, currentRatio);
@@ -80,6 +85,7 @@ export default function PDFCompress() {
       const compressedSize = compressed.size;
       const savedBytes = originalSize - compressedSize;
       const savedPercentage = calculateCompressionRatio(originalSize, compressedSize);
+      const processingTime = Date.now() - startTime;
 
       setCompressionResult({
         originalSize,
@@ -88,8 +94,46 @@ export default function PDFCompress() {
         savedPercentage: Math.max(0, savedPercentage), // Ensure non-negative
       });
 
+      // Track activity if user is logged in
+      if (user) {
+        try {
+          await ActivityTracker.createActivity(user.uid, {
+            type: 'pdf_compress',
+            fileName: file.name,
+            originalFileName: file.name,
+            fileSize: originalSize,
+            processedSize: compressedSize,
+            status: 'success',
+            category: 'PDF',
+            processingTime,
+            compressionRatio: savedPercentage
+          });
+          console.log('Activity tracked successfully');
+        } catch (activityError) {
+          console.error('Activity tracking error:', activityError);
+          // Don't show error to user, just log it
+        }
+      }
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sıkıştırma sırasında hata oluştu');
+      
+      // Track failed activity if user is logged in
+      if (user && file) {
+        try {
+          await ActivityTracker.createActivity(user.uid, {
+            type: 'pdf_compress',
+            fileName: file.name,
+            originalFileName: file.name,
+            fileSize: file.size,
+            status: 'error',
+            category: 'PDF',
+            processingTime: Date.now() - startTime
+          });
+        } catch (activityError) {
+          console.error('Activity tracking error:', activityError);
+        }
+      }
     } finally {
       setLoading(false);
     }
