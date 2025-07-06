@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions } from 'firebase/functions';
@@ -27,6 +27,13 @@ export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app);
+
+// Set Auth Persistence to LOCAL (kullanıcı oturumu kalıcı olsun)
+if (typeof window !== 'undefined') {
+  setPersistence(auth, browserLocalPersistence).catch((error) => {
+    console.warn('Auth persistence setup failed:', error);
+  });
+}
 
 // Initialize Analytics (client-side only, with error handling)
 let analytics: ReturnType<typeof getAnalytics> | null = null;

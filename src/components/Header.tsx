@@ -122,6 +122,13 @@ export default function Header({ onAuthClick }: HeaderProps) {
                         {user.email}
                       </p>
                     </div>
+                    <Link
+                      href="/profile"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      Profilim
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 transition-colors"
@@ -204,15 +211,24 @@ export default function Header({ onAuthClick }: HeaderProps) {
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="text-red-700 hover:text-red-800 font-medium transition-colors"
-                  >
-                    Çıkış Yap
-                  </button>
+                  <div className="space-y-2">
+                    <Link 
+                      href="/profile"
+                      className="block text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Profilim
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="text-red-700 hover:text-red-800 font-medium transition-colors"
+                    >
+                      Çıkış Yap
+                    </button>
+                  </div>
                 </div>
               )}
             </nav>

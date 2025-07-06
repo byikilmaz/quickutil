@@ -56,7 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
+        console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
         setUser(user);
+        
         if (user) {
           try {
             const userDoc = await getDoc(doc(firestore, 'users', user.uid));
@@ -71,6 +73,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 lastName: userData.lastName || '',
                 email: user.email || '',
                 createdAt: userData.createdAt?.toDate() || new Date()
+              });
+              console.log('User profile loaded successfully');
+            } else {
+              console.log('User document not found, creating basic profile');
+              // Create basic profile if document doesn't exist
+              setUserProfile({
+                firstName: '',
+                lastName: '',
+                email: user.email || '',
+                createdAt: new Date()
               });
             }
           } catch (error) {
@@ -95,6 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         } else {
           setUserProfile(null);
+          console.log('User logged out, profile cleared');
         }
       } catch (error) {
         console.error('Auth state change error:', error);
@@ -106,6 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       } finally {
         setLoading(false);
+        console.log('Auth loading completed');
       }
     });
 

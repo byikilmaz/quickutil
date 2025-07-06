@@ -251,6 +251,255 @@ const convertToImages = async (file: File) => {
 - Error recovery
 - Batch processing
 
+## 🚗 Google Drive Entegrasyon Kuralları (Server-Side Architecture)
+
+### Server-Side Service Account Implementation
+```typescript
+// Firebase Functions ile Google Drive API entegrasyonu
+const { google } = require('googleapis');
+const serviceAccount = require('./quickutil-service-account.json');
+
+class GoogleDriveService {
+  static async getAuth() {
+    return new google.auth.GoogleAuth({
+      credentials: serviceAccount,
+      scopes: ['https://www.googleapis.com/auth/drive.file']
+    });
+  }
+
+  static async getDrive() {
+    const auth = await this.getAuth();
+    return google.drive({ version: 'v3', auth });
+  }
+
+  static async uploadFile(fileBuffer, fileName, mimeType) {
+    const drive = await this.getDrive();
+    const folderId = await this.getOrCreateQuickUtilFolder();
+
+    const response = await drive.files.create({
+      resource: { name: fileName, parents: [folderId] },
+      media: { mimeType, body: fileBuffer },
+      fields: 'id,name,size,createdTime,mimeType'
+    });
+
+    return response.data;
+  }
+}
+```
+
+### Firebase Functions Architecture
+```typescript
+// uploadFile Firebase Function
+exports.uploadFile = functions.https.onRequest(async (req, res) => {
+  // Firebase Auth token verification
+  const authHeader = req.headers.authorization;
+  const token = authHeader.split('Bearer ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+  const userId = decodedToken.uid;
+
+  // Multipart form data parsing
+  const busboy = Busboy({ headers: req.headers });
+  
+  // Google Drive upload
+  const uploadedFile = await GoogleDriveService.uploadFile(
+    fileBuffer, fileName, mimeType
+  );
+
+  // Firestore activity tracking
+  await admin.firestore().collection('userActivities').add({
+    userId,
+    type: 'file_upload',
+    fileName,
+    fileSize: fileBuffer.length,
+    googleDriveFileId: uploadedFile.id,
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    expiresAt: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000))
+  });
+});
+```
+
+### Client-Side Server API Integration
+```typescript
+// Client-side server API kullanımı
+import { googleDriveServerClient } from '@/lib/googleDriveServerClient';
+
+const uploadToGoogleDrive = async (file: File) => {
+  try {
+    // Firebase Auth token al
+    const token = await user.getIdToken();
+    
+    // Server-side API'ye gönder
+    const result = await googleDriveServerClient.uploadFile(file, token);
+    
+    return result;
+  } catch (error) {
+    console.error('Upload error:', error);
+    throw error;
+  }
+};
+```
+
+### React Context State Management
+```typescript
+// Centralized Cloud Storage Context
+const GoogleDriveContext = createContext<GoogleDriveContextType>();
+
+export const GoogleDriveProvider = ({ children }) => {
+  const [quota, setQuota] = useState<GoogleDriveQuota>();
+  const [files, setFiles] = useState<GoogleDriveFile[]>([]);
+  const { user } = useAuth();
+  
+  const value = {
+    quota,
+    files,
+    uploadFile: (file: File) => uploadToServerDrive(file),
+    listFiles: () => listServerFiles(),
+    deleteFile: (fileId: string) => deleteFromServerDrive(fileId),
+    downloadFile: (fileId: string) => downloadFromServerDrive(fileId),
+    getQuotaInfo: () => getServerQuotaInfo()
+  };
+  
+  return (
+    <GoogleDriveContext.Provider value={value}>
+      {children}
+    </GoogleDriveContext.Provider>
+  );
+};
+```
+
+### Environment & Configuration
+```bash
+# Firebase Functions Service Account (JSON dosyası)
+functions/quickutil-service-account.json
+
+# Firebase Functions Config (backup method)
+firebase functions:config:set google.client_email="quickutil-drive@quickutil-d2998.iam.gserviceaccount.com"
+```
+
+### Firebase Functions Endpoints
+```typescript
+// Production endpoints
+const FUNCTIONS_BASE_URL = 'https://us-central1-quickutil-d2998.cloudfunctions.net';
+
+const endpoints = {
+  uploadFile: `${FUNCTIONS_BASE_URL}/uploadFile`,
+  listFiles: `${FUNCTIONS_BASE_URL}/listFiles`,
+  deleteFile: `${FUNCTIONS_BASE_URL}/deleteFile`,
+  downloadFile: `${FUNCTIONS_BASE_URL}/downloadFile`,
+  getQuotaInfo: `${FUNCTIONS_BASE_URL}/getQuotaInfo`,
+  healthCheck: `${FUNCTIONS_BASE_URL}/healthCheck`
+};
+```
+
+### Security Best Practices
+- **Service Account**: Merkezi Google Drive hesabı (quickutil-drive@quickutil-d2998.iam.gserviceaccount.com)
+- **Firebase Auth**: Tüm endpoints'te user token verification
+- **File Ownership**: Firestore'da user-file associations
+- **Scope Limitation**: Sadece `drive.file` scope (app'in oluşturduğu dosyalar)
+- **30-day TTL**: Otomatik dosya silme (expiresAt field)
+- **IAM Permissions**: Firebase Functions için `allUsers` invoker role gerekli
+
+### UI/UX Guidelines
+```typescript
+// Centralized Cloud Storage Card
+const GoogleDriveCard = () => {
+  const { quota, files, uploadFile } = useGoogleDrive();
+  
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h3>Merkezi Bulut Depolama</h3>
+        <div className="w-3 h-3 rounded-full bg-green-500" />
+      </div>
+      
+      {/* Storage Info */}
+      <div className="mb-4">
+        <p className="text-sm text-gray-600">
+          {formatBytes(quota.usage)} / {formatBytes(quota.limit)} kullanıldı
+        </p>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className="bg-blue-600 h-2 rounded-full" 
+            style={{ width: `${(quota.usage / quota.limit) * 100}%` }}
+          />
+        </div>
+      </div>
+      
+      {/* File List */}
+      <FileList files={files} onUpload={uploadFile} />
+    </div>
+  );
+};
+```
+
+### Error Handling
+```typescript
+// Server-side Google Drive error handling
+const handleGoogleDriveError = (error: unknown) => {
+  if (error instanceof Error) {
+    // Firebase Auth errors
+    if (error.message.includes('Unauthorized')) {
+      return 'Giriş yapmanız gerekiyor';
+    }
+    
+    // Google Drive quota errors
+    if (error.message.includes('quota')) {
+      return 'Depolama alanı dolu, eski dosyalar silinecek';
+    }
+    
+    // File not found errors
+    if (error.message.includes('File not found')) {
+      return 'Dosya bulunamadı veya erişim izniniz yok';
+    }
+  }
+  
+  return 'Sunucu hatası, lütfen tekrar deneyin';
+};
+```
+
+### Activity Tracking Integration
+```typescript
+// Firestore activity tracking (server-side)
+await admin.firestore().collection('userActivities').add({
+  userId,
+  type: 'file_upload',
+  fileName,
+  fileSize: fileBuffer.length,
+  googleDriveFileId: uploadedFile.id,
+  timestamp: admin.firestore.FieldValue.serverTimestamp(),
+  expiresAt: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)), // 30 days
+  status: 'success'
+});
+
+// Cleanup scheduler (Firebase Functions)
+exports.cleanupExpiredFiles = functions.pubsub
+  .schedule('every 24 hours')
+  .timeZone('Europe/Istanbul')
+  .onRun(async (context) => {
+    const expiredActivities = await admin.firestore()
+      .collection('userActivities')
+      .where('expiresAt', '<=', new Date())
+      .where('status', '==', 'success')
+      .get();
+
+    // Delete expired files from Google Drive
+    for (const doc of expiredActivities.docs) {
+      const data = doc.data();
+      await GoogleDriveService.deleteFile(data.googleDriveFileId);
+      await doc.ref.update({ status: 'expired' });
+    }
+  });
+```
+
+### Performance Optimization
+- **Server-Side Processing**: Dosya işlemleri Firebase Functions'ta
+- **Firestore Caching**: User file associations'ları cache'leme
+- **Parallel Operations**: Multiple file operations server-side'da parallel
+- **Quota Monitoring**: Real-time quota tracking (16GB limit)
+- **Background Cleanup**: 30 günlük otomatik dosya silme
+- **Stream Downloads**: Memory-efficient file downloading
+
 ## 🎯 UI/UX Kuralları
 
 ### Accessibility

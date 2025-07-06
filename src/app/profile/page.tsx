@@ -3,8 +3,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { redirect } from 'next/navigation';
 import { ActivityTracker } from '@/lib/activityTracker';
-import { GoogleDriveService } from '@/lib/googleDriveApi';
 import { UserActivity } from '@/types/database';
+import GoogleDriveCard from '@/components/GoogleDriveCard';
 import { 
   UserIcon, 
   DocumentIcon, 
@@ -14,7 +14,6 @@ import {
   CloudArrowUpIcon,
   CogIcon,
   BellIcon,
-  LinkIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 
@@ -25,15 +24,6 @@ interface UserStats {
   favoriteFeature: string;
   successRate: number;
   avgProcessingTime: number;
-}
-
-interface GoogleDriveStatus {
-  isConnected: boolean;
-  isActive: boolean;
-  quotaUsed: number;
-  quotaLimit: number;
-  errorCount: number;
-  lastError?: string;
 }
 
 export default function ProfilePage() {
@@ -47,27 +37,9 @@ export default function ProfilePage() {
     successRate: 0,
     avgProcessingTime: 0
   });
-  const [googleDriveStatus, setGoogleDriveStatus] = useState<GoogleDriveStatus>({
-    isConnected: false,
-    isActive: false,
-    quotaUsed: 0,
-    quotaLimit: 0,
-    errorCount: 0
-  });
   const [activeTab, setActiveTab] = useState<'overview' | 'files' | 'settings'>('overview');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!loading && !user) {
-      redirect('/');
-      return;
-    }
-
-    if (user) {
-      loadUserData();
-    }
-  }, [user, loading]);
 
   const loadUserData = useCallback(async () => {
     if (!user) return;
@@ -77,10 +49,9 @@ export default function ProfilePage() {
 
     try {
       // Paralel data loading
-      const [activitiesResult, statsResult, driveStatus] = await Promise.all([
+      const [activitiesResult, statsResult] = await Promise.all([
         ActivityTracker.getUserActivities(user.uid, { limit: 20 }),
-        ActivityTracker.getUserStats(user.uid),
-        GoogleDriveService.checkIntegrationStatus(user.uid)
+        ActivityTracker.getUserStats(user.uid)
       ]);
 
       // Activities
@@ -105,9 +76,6 @@ export default function ProfilePage() {
         console.error('Error loading stats:', statsResult.error);
       }
 
-      // Google Drive Status
-      setGoogleDriveStatus(driveStatus);
-
     } catch (error) {
       console.error('Error loading user data:', error);
       setError('Veriler yüklenirken bir hata oluştu');
@@ -116,33 +84,18 @@ export default function ProfilePage() {
     }
   }, [user]);
 
-  const handleGoogleDriveConnect = async () => {
-    if (!user) return;
-
-    try {
-      // Authorization URL'e yönlendir
-      window.location.href = `/api/auth/google-drive/authorize?userId=${user.uid}`;
-    } catch (error) {
-      console.error('Google Drive bağlantı hatası:', error);
-      setError('Google Drive bağlantısı kurulamadı');
+  useEffect(() => {
+    // Redirect sadece loading tamamlandığında ve user yoksa
+    if (!loading && !user) {
+      redirect('/');
+      return;
     }
-  };
 
-  const handleGoogleDriveDisconnect = async () => {
-    if (!user) return;
-
-    try {
-      const result = await GoogleDriveService.disconnectIntegration(user.uid);
-      if (result.success) {
-        setGoogleDriveStatus(prev => ({ ...prev, isConnected: false, isActive: false }));
-      } else {
-        setError('Google Drive bağlantısı kesilemedi');
-      }
-    } catch (error) {
-      console.error('Google Drive bağlantı kesme hatası:', error);
-      setError('Bir hata oluştu');
+    // User varsa ve loading tamamlandıysa data yükle
+    if (user && !loading) {
+      loadUserData();
     }
-  };
+  }, [user, loading, loadUserData]);
 
   const getFeatureName = (type: string): string => {
     const names: Record<string, string> = {
@@ -235,27 +188,8 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            {/* Google Drive Status */}
+            {/* Quick Actions */}
             <div className="flex items-center space-x-3">
-              {googleDriveStatus.isConnected ? (
-                <div className="flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-lg">
-                  <CloudArrowUpIcon className="w-5 h-5 text-green-600" />
-                  <span className="text-sm font-medium text-green-800">
-                    Google Drive Bağlı
-                  </span>
-                </div>
-              ) : (
-                <button
-                  onClick={handleGoogleDriveConnect}
-                  className="flex items-center space-x-2 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors"
-                >
-                  <LinkIcon className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-800">
-                    Google Drive Bağla
-                  </span>
-                </button>
-              )}
-
               <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <BellIcon className="w-6 h-6" />
               </button>
@@ -365,59 +299,8 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Google Drive Status Card */}
-            {googleDriveStatus.isConnected && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Google Drive Durumu</h3>
-                  {googleDriveStatus.isActive ? (
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                      Aktif
-                    </span>
-                  ) : (
-                    <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                      Pasif
-                    </span>
-                  )}
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Kullanılan Alan</p>
-                    <p className="text-lg font-semibold">{formatFileSize(googleDriveStatus.quotaUsed)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Toplam Alan</p>
-                    <p className="text-lg font-semibold">{formatFileSize(googleDriveStatus.quotaLimit)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Hata Sayısı</p>
-                    <p className="text-lg font-semibold">{googleDriveStatus.errorCount}</p>
-                  </div>
-                </div>
-
-                {googleDriveStatus.lastError && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-800">{googleDriveStatus.lastError}</p>
-                  </div>
-                )}
-
-                <div className="mt-4 flex space-x-3">
-                  <button
-                    onClick={handleGoogleDriveDisconnect}
-                    className="px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
-                  >
-                    Bağlantıyı Kes
-                  </button>
-                  <button
-                    onClick={loadUserData}
-                    className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
-                  >
-                    Yenile
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* Google Drive Card */}
+            <GoogleDriveCard />
 
             {/* Recent Activities */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -487,35 +370,69 @@ export default function ProfilePage() {
         )}
 
         {activeTab === 'files' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Dosya Yönetimi</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                {googleDriveStatus.isConnected ? 
-                  'Google Drive entegrasyonu aktif! Dosyalarınız güvenle saklanıyor.' :
-                  'Google Drive entegrasyonu yakında gelecek! Dosyalarınız 30 gün boyunca güvenle saklanacak.'
-                }
-              </p>
-            </div>
-            <div className="p-6 text-center text-gray-500">
-              <CloudArrowUpIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <h4 className="text-lg font-medium mb-2">
-                {googleDriveStatus.isConnected ? 'Dosya Listesi' : 'Google Drive Entegrasyonu'}
-              </h4>
-              <p className="mb-4">
-                {googleDriveStatus.isConnected ? 
-                  'Dosya listesi özelliği geliştiriliyor' :
-                  'Dosyalarınızı Google Drive\'da güvenle saklayacağız'
-                }
-              </p>
-              <div className="bg-blue-50 rounded-lg p-4 max-w-md mx-auto">
-                <h5 className="font-medium text-blue-900 mb-2">Özellikler:</h5>
-                <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• 30 gün otomatik saklama</li>
-                  <li>• Kategorili dosya organizasyonu</li>
-                  <li>• Son gün email uyarısı</li>
-                  <li>• Otomatik temizlik</li>
-                </ul>
+          <div className="space-y-6">
+            {/* Google Drive Integration */}
+            <GoogleDriveCard />
+            
+            {/* Recent Activities */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">Son İşlenen Dosyalar</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Son işlediğiniz dosyalar ve işlem detayları
+                </p>
+              </div>
+              <div className="divide-y divide-gray-200">
+                {isLoading ? (
+                  <div className="p-6 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  </div>
+                ) : activities.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500">
+                    <DocumentIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <p>Henüz hiç dosya işlemi yapılmamış</p>
+                    <p className="text-sm">İlk dosyanızı işlemek için ana sayfaya gidin</p>
+                  </div>
+                ) : (
+                  activities.map((activity) => (
+                    <div key={activity.id} className="p-6 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="p-2 bg-gray-100 rounded-full">
+                          {getActivityIcon(activity.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {activity.fileName}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {getActivityName(activity.type)} • {formatFileSize(activity.fileSize)}
+                            {activity.processedSize && (
+                              <span className="text-green-600 ml-2">
+                                → {formatFileSize(activity.processedSize)}
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Süre: {formatExpirationTime(activity.expiresAt)}
+                          </p>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {formatRelativeTime(activity.timestamp)}
+                        </div>
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          activity.status === 'success' 
+                            ? 'bg-green-100 text-green-800'
+                            : activity.status === 'error'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {activity.status === 'success' ? 'Başarılı' : 
+                           activity.status === 'error' ? 'Hata' : 'İşleniyor'}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -523,91 +440,76 @@ export default function ProfilePage() {
 
         {activeTab === 'settings' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Hesap Ayarları</h3>
+            {/* Profile Settings */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Profil Ayarları</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ad
+                  </label>
+                  <input
+                    type="text"
+                    value={userProfile?.firstName || ''}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Soyad
+                  </label>
+                  <input
+                    type="text"
+                    value={userProfile?.lastName || ''}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    E-posta
+                  </label>
+                  <input
+                    type="email"
+                    value={user.email || ''}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                  />
+                </div>
+                <p className="text-sm text-gray-500">
+                  Profil düzenleme özelliği yakında eklenecek.
+                </p>
               </div>
-              <div className="p-6">
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ad
-                    </label>
-                    <input
-                      type="text"
-                      value={userProfile?.firstName || ''}
-                      disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Soyad
-                    </label>
-                    <input
-                      type="text"
-                      value={userProfile?.lastName || ''}
-                      disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={user.email || ''}
-                      disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
-                    />
-                  </div>
-                </div>
+            </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <h4 className="text-sm font-medium text-gray-900 mb-4">Bildirim Ayarları</h4>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-700">Email Bildirimleri</p>
-                        <p className="text-sm text-gray-500">Dosya işlem durumu ve süresi dolan dosyalar</p>
-                      </div>
-                      <button className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-blue-600 transition-colors duration-200 ease-in-out">
-                        <span className="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-700">Dosya Süresi Uyarıları</p>
-                        <p className="text-sm text-gray-500">Dosyalar silinmeden 1 gün önce uyarı</p>
-                      </div>
-                      <button className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-blue-600 transition-colors duration-200 ease-in-out">
-                        <span className="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            {/* Google Drive Settings */}
+            <GoogleDriveCard />
 
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <h4 className="text-sm font-medium text-gray-900 mb-4">İstatistikler</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{stats.totalFiles}</p>
-                      <p className="text-sm text-gray-600">Toplam Dosya</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-green-600">{formatFileSize(stats.totalSizeSaved)}</p>
-                      <p className="text-sm text-gray-600">Tasarruf</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-purple-600">{stats.successRate.toFixed(0)}%</p>
-                      <p className="text-sm text-gray-600">Başarı Oranı</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-orange-600">{(stats.avgProcessingTime / 1000).toFixed(1)}s</p>
-                      <p className="text-sm text-gray-600">Ort. İşlem</p>
-                    </div>
+            {/* Preferences */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Tercihler</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900">E-posta Bildirimleri</p>
+                    <p className="text-sm text-gray-500">Dosya süresi dolmadan önce uyarı al</p>
                   </div>
+                  <input type="checkbox" className="h-4 w-4 text-blue-600" defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900">Otomatik Sıkıştırma</p>
+                    <p className="text-sm text-gray-500">PDF dosyalarını otomatik olarak sıkıştır</p>
+                  </div>
+                  <input type="checkbox" className="h-4 w-4 text-blue-600" defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900">Güvenli Silme</p>
+                    <p className="text-sm text-gray-500">Dosya işleminden sonra orijinali güvenle sil</p>
+                  </div>
+                  <input type="checkbox" className="h-4 w-4 text-blue-600" />
                 </div>
               </div>
             </div>
