@@ -7,7 +7,7 @@ import AuthModal from '@/components/AuthModal';
 import Header from '@/components/Header';
 import Link from 'next/link';
 import { TrashIcon, XMarkIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
-import { formatUSDPrice, getPricing } from '@/lib/pricingUtils';
+import { formatUSDPrice, getPricing, getAnnualTotalPrice, calculateSavingsPercentage } from '@/lib/pricingUtils';
 import Image from 'next/image';
 
 export default function CartPage() {
@@ -170,20 +170,33 @@ export default function CartPage() {
                       <div className="flex justify-between items-center">
                         <div>
                           <div className="text-3xl font-bold text-blue-600 mb-2">
-                            {formatUSDPrice(item.price)}
+                            {item.period === 'annual' ? (
+                              formatUSDPrice(
+                                item.name.toLowerCase().includes('premium') 
+                                  ? getAnnualTotalPrice('premium') 
+                                  : getAnnualTotalPrice('business')
+                              )
+                            ) : (
+                              formatUSDPrice(item.price)
+                            )}
                           </div>
                           <div className="text-gray-800 font-medium">
                             {item.period === 'monthly' ? (
                               <span>💳 Aylık ödeme • {formatUSDPrice(item.price * 12)} yıllık toplam</span>
                             ) : (
-                              <span>🎯 Tek seferlik yıllık ödeme</span>
+                              <span>🎯 Tek seferlik yıllık ödeme • {formatUSDPrice(item.price)}/ay eşdeğeri</span>
                             )}
                           </div>
                         </div>
                         {item.period === 'annual' && (
                           <div className="text-right">
                             <div className="text-green-600 font-bold text-lg">
-                              %{Math.round(((13.1 - item.price) / 13.1) * 100)} Tasarruf!
+                              %{calculateSavingsPercentage(
+                                item.name.toLowerCase().includes('premium') ? 13.1 : 40.1,
+                                item.name.toLowerCase().includes('premium') 
+                                  ? getAnnualTotalPrice('premium') 
+                                  : getAnnualTotalPrice('business')
+                              )} Tasarruf!
                             </div>
                             <div className="text-gray-700 text-sm">
                               Aylık yerine yıllık
@@ -249,24 +262,37 @@ export default function CartPage() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">💼 Sipariş Özeti</h3>
                 
                 <div className="space-y-4 mb-8">
-                  {items.map(item => (
-                    <div key={item.id} className="flex justify-between items-center py-3 border-b border-gray-100">
-                      <div>
-                        <div className="text-gray-900 font-semibold">{item.name}</div>
-                        <div className="text-gray-700 text-sm">
-                          {item.period === 'monthly' ? 'Aylık Plan' : 'Yıllık Plan'}
+                  {items.map(item => {
+                    const displayPrice = item.period === 'annual' ? (
+                      item.name.toLowerCase().includes('premium') 
+                        ? getAnnualTotalPrice('premium') 
+                        : getAnnualTotalPrice('business')
+                    ) : item.price;
+
+                    return (
+                      <div key={item.id} className="flex justify-between items-center py-3 border-b border-gray-100">
+                        <div>
+                          <div className="text-gray-900 font-semibold">{item.name}</div>
+                          <div className="text-gray-700 text-sm">
+                            {item.period === 'monthly' ? 'Aylık Plan' : 'Yıllık Plan'}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-gray-900">{formatUSDPrice(displayPrice)}</div>
+                          {item.period === 'monthly' && (
+                            <div className="text-gray-700 text-xs">
+                              {formatUSDPrice(item.price * 12)} / yıl
+                            </div>
+                          )}
+                          {item.period === 'annual' && (
+                            <div className="text-gray-700 text-xs">
+                              {formatUSDPrice(item.price)} / ay eşdeğeri
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-bold text-gray-900">{formatUSDPrice(item.price)}</div>
-                        {item.period === 'monthly' && (
-                          <div className="text-gray-700 text-xs">
-                            {formatUSDPrice(item.price * 12)} / yıl
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 
                 <div className="border-t border-gray-200 pt-6 mb-8">
@@ -296,17 +322,38 @@ export default function CartPage() {
                 {/* Payment Methods */}
                 <div className="mb-8">
                   <h4 className="text-gray-900 font-semibold mb-4">💳 Güvenli Ödeme Yöntemleri</h4>
-                  <div className="flex flex-wrap gap-3 justify-center">
-                    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-                      <Image src="/images/payment-methods/visa.svg" alt="Visa" width={50} height={32} />
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                      <Image 
+                        src="/images/payment-methods/visa.svg" 
+                        alt="Visa" 
+                        width={60} 
+                        height={38}
+                        className="h-8 w-auto"
+                      />
                     </div>
-                    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-                      <Image src="/images/payment-methods/mastercard.svg" alt="MasterCard" width={50} height={32} />
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                      <Image 
+                        src="/images/payment-methods/mastercard.svg" 
+                        alt="MasterCard" 
+                        width={60} 
+                        height={38}
+                        className="h-8 w-auto"
+                      />
                     </div>
-                    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-                      <Image src="/images/payment-methods/iyzico.svg" alt="İyzico" width={50} height={32} />
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                      <Image 
+                        src="/images/payment-methods/iyzico.svg" 
+                        alt="İyzico ile Öde" 
+                        width={80} 
+                        height={38}
+                        className="h-8 w-auto"
+                      />
                     </div>
                   </div>
+                  <p className="text-gray-700 text-center text-sm mt-3">
+                    256-bit SSL şifrelemesi • 3D Secure doğrulama • PCI DSS uyumluluğu
+                  </p>
                 </div>
 
                 <button

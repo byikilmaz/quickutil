@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getAnnualTotalPrice } from '@/lib/pricingUtils';
 
 export interface CartItem {
   id: string;
@@ -130,7 +131,23 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const itemCount = items.length;
-  const totalPrice = items.reduce((total, item) => total + item.price, 0);
+  
+  // Doğru toplam fiyat hesaplama - yıllık planlar için gerçek toplam kullan
+  const totalPrice = items.reduce((total, item) => {
+    if (item.period === 'annual') {
+      if (item.specialOffer) {
+        // Special offer item'ları için direkt price kullan
+        return total + item.price;
+      } else {
+        // Normal yıllık planlar için gerçek toplam fiyat kullan
+        const planType = item.name.toLowerCase().includes('premium') ? 'premium' : 'business';
+        return total + getAnnualTotalPrice(planType);
+      }
+    } else {
+      // Aylık planlar için normal price kullan
+      return total + item.price;
+    }
+  }, 0);
 
   return (
     <CartContext.Provider value={{
