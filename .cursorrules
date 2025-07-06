@@ -681,6 +681,56 @@ const compressPDF = async (file: File, quality: number): Promise<Blob> => {
 }
 ```
 
+### GitHub Actions CI/CD
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Firebase
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+        
+    - name: Build project
+      run: npm run build
+      env:
+        NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+        # ... other Firebase config secrets
+        
+    - name: Deploy to Firebase
+      run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }} --force
+```
+
+### CI/CD Best Practices
+- **Clean Workflows**: Remove deprecated steps (Firebase Functions)
+- **Environment Variables**: Use GitHub Secrets for sensitive data
+- **Build Optimization**: Cache node_modules for faster builds
+- **Error Handling**: Clear error messages and debugging info
+- **Force Deploy**: Use `--force` flag for consistent deployments
+- **Node.js Version**: Use latest stable version (22.x)
+
+### Troubleshooting GitHub Actions
+- **Missing Dependencies**: Check if all required folders exist
+- **Environment Secrets**: Verify all secrets are properly configured
+- **Build Failures**: Review ESLint and TypeScript errors
+- **Firebase Token**: Ensure FIREBASE_TOKEN is valid and has proper permissions
+
 ## 🔍 Debugging Kuralları
 
 ### Console Logging
