@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { StorageProvider } from "@/contexts/StorageContext";
+import { CartProvider } from "@/contexts/CartContext";
 import StructuredData from "@/components/StructuredData";
 import Footer from "@/components/Footer";
 import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
@@ -78,12 +79,14 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <StorageProvider>
-            <div className="min-h-screen flex flex-col">
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </div>
+            <CartProvider>
+              <div className="min-h-screen flex flex-col">
+                <main className="flex-grow">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </CartProvider>
           </StorageProvider>
         </AuthProvider>
       </body>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useCart, CartItem } from '@/contexts/CartContext';
 import AuthModal from '@/components/AuthModal';
 import Header from '@/components/Header';
 import StructuredData from '@/components/StructuredData';
@@ -12,9 +12,11 @@ import {
   type PlanPricing 
 } from '@/lib/pricingUtils';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function PricingPage() {
-  const { user } = useAuth();
+  const { addItem, isInCart } = useCart();
+  const router = useRouter();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pricing, setPricing] = useState<PlanPricing | null>(null);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual');
@@ -32,13 +34,44 @@ export default function PricingPage() {
       return;
     }
     
-    if (!user) {
-      setIsAuthModalOpen(true);
-      return;
-    }
+    const selectedPeriod = period || billingPeriod;
+    const planPrice = pricing![plan][selectedPeriod];
+    const planOriginalPrice = selectedPeriod === 'annual' ? pricing![plan]['monthly'] : undefined;
     
-    // Subscription logic burada olacak
-    console.log(`Subscribing to ${plan} ${period || billingPeriod}`);
+    // Premium ve Business plan feature'ları
+    const premiumFeatures = [
+      'Sınırsız PDF işlemleri',
+      'Batch işleme (50 dosya)',
+      '5GB cloud storage',
+      'Dosya boyutu: 100MB\'a kadar',
+      'Öncelikli destek (24 saat)',
+      'Gelişmiş filtreler ve ayarlar',
+      'Dosya geçmişi (30 gün)'
+    ];
+
+    const businessFeatures = [
+      'Premium\'daki tüm özellikler',
+      'Batch işleme (200 dosya)',
+      '50GB cloud storage',
+      'Dosya boyutu: 500MB\'a kadar',
+      'API erişimi ve webhook\'lar',
+      '24/7 premium destek',
+      'Takım yönetimi ve analitik',
+      'Özel branding ve özelleştirme'
+    ];
+
+    const cartItem: CartItem = {
+      id: `${plan}-${selectedPeriod}-${Date.now()}`,
+      name: plan === 'premium' ? 'Premium Plan' : 'Business Plan',
+      description: plan === 'premium' ? 'Bireysel kullanıcılar için' : 'Ekipler ve işletmeler için',
+      price: planPrice,
+      period: selectedPeriod,
+      features: plan === 'premium' ? premiumFeatures : businessFeatures,
+      originalPrice: planOriginalPrice
+    };
+
+    addItem(cartItem);
+    router.push('/cart');
   };
 
   if (!pricing) {
@@ -249,7 +282,7 @@ export default function PricingPage() {
                 onClick={() => handleSubscribe('premium', billingPeriod)}
                 className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
               >
-                Premium&apos;a Başla
+                {isInCart('premium', billingPeriod) ? 'Sepete Eklendi ✓' : 'Sepete Ekle'}
               </button>
             </div>
 
@@ -339,7 +372,7 @@ export default function PricingPage() {
                 onClick={() => handleSubscribe('business', billingPeriod)}
                 className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-colors shadow-lg"
               >
-                Business&apos;a Başla
+                {isInCart('business', billingPeriod) ? 'Sepete Eklendi ✓' : 'Sepete Ekle'}
               </button>
             </div>
           </div>
@@ -386,6 +419,14 @@ export default function PricingPage() {
                     height={38}
                     className="h-9 w-auto"
                   />
+                </div>
+
+                {/* SSL Certificate */}
+                <div className="flex items-center bg-green-600 rounded-lg px-4 py-3 text-white shadow-sm hover:shadow-md transition-shadow">
+                  <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span className="font-medium">SSL Güvenli</span>
                 </div>
               </div>
 

@@ -1,8 +1,9 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { UserCircleIcon, Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import CacheManager from './CacheManager';
 
 interface HeaderProps {
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 export default function Header({ onAuthClick }: HeaderProps) {
   const { user, userProfile, logout } = useAuth();
+  const { itemCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [legalMenuOpen, setLegalMenuOpen] = useState(false);
@@ -140,8 +142,21 @@ export default function Header({ onAuthClick }: HeaderProps) {
             )}
           </nav>
 
-          {/* User Menu */}
+          {/* Right Side: Cart + User Menu */}
           <div className="flex items-center space-x-4">
+            {/* Shopping Cart Icon */}
+            <Link
+              href="/cart"
+              className="relative p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
+            >
+              <ShoppingCartIcon className="h-6 w-6" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  {itemCount > 9 ? '9+' : itemCount}
+                </span>
+              )}
+            </Link>
+
             {user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -181,6 +196,13 @@ export default function Header({ onAuthClick }: HeaderProps) {
                       className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       Profilim
+                    </Link>
+                    <Link
+                      href="/cart"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      🛒 Sepetim ({itemCount})
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -253,6 +275,16 @@ export default function Header({ onAuthClick }: HeaderProps) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Fiyatlar
+              </Link>
+              
+              {/* Mobile Cart Link */}
+              <Link 
+                href="/cart" 
+                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ShoppingCartIcon className="h-5 w-5" />
+                <span>Sepetim ({itemCount})</span>
               </Link>
               
               {/* Mobile Legal Links */}
