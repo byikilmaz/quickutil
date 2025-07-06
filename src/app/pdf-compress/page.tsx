@@ -7,7 +7,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import StructuredData from '@/components/StructuredData';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
-import { useGoogleDrive } from '@/contexts/GoogleDriveContext';
+import { useStorage } from '@/contexts/StorageContext';
 import { ActivityTracker } from '@/lib/activityTracker';
 import { 
   compressPDF, 
@@ -26,7 +26,7 @@ interface PDFAnalysis {
 
 export default function PDFCompress() {
   const { user } = useAuth();
-  const { uploadFile: uploadToGoogleDrive } = useGoogleDrive();
+  const { uploadFile: uploadToStorage } = useStorage();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
@@ -40,7 +40,7 @@ export default function PDFCompress() {
     compressedSize: number;
     savedBytes: number;
     savedPercentage: number;
-    googleDriveFileId?: string;
+    storageDownloadURL?: string;
   } | null>(null);
 
   const compressionLevels = {
@@ -67,7 +67,7 @@ export default function PDFCompress() {
 
     // Check file size (50MB limit)
     if (selectedFile.size > 50 * 1024 * 1024) {
-      setError('Dosya boyutu 50MB\'dan küçük olmalıdır');
+      setError('Dosya boyutu 50MB&apos;dan küçük olmalıdır');
       setFile(null);
       return;
     }
@@ -110,22 +110,22 @@ export default function PDFCompress() {
       const savedPercentage = calculateCompressionRatio(originalSize, compressedSize);
       const processingTime = Date.now() - startTime;
 
-      // Try to upload to Google Drive if user is logged in
-      let googleDriveFileId: string | undefined;
-      if (user && uploadToGoogleDrive) {
+      // Try to upload to Firebase Storage if user is logged in
+      let storageDownloadURL: string | undefined;
+      if (user && uploadToStorage) {
         try {
-          console.log('Uploading compressed PDF to Google Drive...');
+          console.log('Uploading compressed PDF to Firebase Storage...');
           const compressedFileName = `compressed_${file.name}`;
           const renamedCompressed = new File([compressed], compressedFileName, {
             type: 'application/pdf',
             lastModified: Date.now(),
           });
           
-          const uploadResult = await uploadToGoogleDrive(renamedCompressed);
-          googleDriveFileId = uploadResult.id;
-          console.log('Google Drive upload successful:', googleDriveFileId);
+          const uploadResult = await uploadToStorage(renamedCompressed, 'pdf', compressedFileName);
+          storageDownloadURL = uploadResult.downloadURL;
+          console.log('Firebase Storage upload successful:', storageDownloadURL);
         } catch (uploadError) {
-          console.error('Google Drive upload failed:', uploadError);
+          console.error('Firebase Storage upload failed:', uploadError);
           // Continue without failing the compression
         }
       }
@@ -135,7 +135,7 @@ export default function PDFCompress() {
         compressedSize,
         savedBytes,
         savedPercentage: Math.max(0, savedPercentage), // Ensure non-negative
-        googleDriveFileId
+        storageDownloadURL
       });
 
       // Track activity if user is logged in
@@ -151,7 +151,7 @@ export default function PDFCompress() {
             category: 'PDF',
             processingTime,
             compressionRatio: savedPercentage,
-            googleDriveFileId
+            downloadUrl: storageDownloadURL
           });
           console.log('Activity tracked successfully');
         } catch (activityError) {
@@ -358,7 +358,7 @@ export default function PDFCompress() {
                   ) : (
                     <>
                       <ArrowUpTrayIcon className="h-5 w-5" />
-                      <span>PDF&apos;i Sıkıştır</span>
+                      <span>PDFi Sıkıştır</span>
                     </>
                   )}
                 </button>
@@ -408,14 +408,14 @@ export default function PDFCompress() {
                     </div>
                   )}
 
-                  {compressionResult.googleDriveFileId && (
+                  {compressionResult.storageDownloadURL && (
                     <div className="mb-4 p-3 bg-blue-100 rounded-lg">
                       <div className="text-sm text-blue-800 flex items-center space-x-2">
                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M7.71 6.71L5.71 8.71a1 1 0 000 1.41L7.71 12.12a1 1 0 001.41-1.41L8.41 10H15a1 1 0 000-2H8.41l.71-.71a1 1 0 00-1.41-1.41z"/>
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                         </svg>
                         <span>
-                          <span className="font-medium">Bulut depolamaya kaydedildi!</span>
+                          <span className="font-medium">Firebase Storage&apos;a kaydedildi!</span>
                           <br />Profil sayfasından dosyalarınıza erişebilirsiniz.
                         </span>
                       </div>
@@ -427,7 +427,7 @@ export default function PDFCompress() {
                     className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
                   >
                     <ArrowUpTrayIcon className="h-5 w-5" />
-                    <span>Sıkıştırılmış PDF&apos;i İndir</span>
+                    <span>Sıkıştırılmış PDFi İndir</span>
                   </button>
                 </div>
               )}
@@ -462,7 +462,7 @@ export default function PDFCompress() {
               </svg>
             </div>
             <h3 className="text-lg font-semibold mb-2">Hızlı İşlem</h3>
-            <p className="text-gray-600">Browser&apos;da güvenli işleme</p>
+            <p className="text-gray-600">Tarayıcıda güvenli işleme</p>
           </div>
         </div>
       </div>

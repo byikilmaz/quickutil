@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { redirect } from 'next/navigation';
 import { ActivityTracker } from '@/lib/activityTracker';
 import { UserActivity } from '@/types/database';
-import GoogleDriveCard from '@/components/GoogleDriveCard';
+import StorageCard from '@/components/StorageCard';
 import { 
   UserIcon, 
   DocumentIcon, 
@@ -299,8 +299,8 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Google Drive Card */}
-            <GoogleDriveCard />
+            {/* Storage Card */}
+            <StorageCard />
 
             {/* Recent Activities */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -371,8 +371,8 @@ export default function ProfilePage() {
 
         {activeTab === 'files' && (
           <div className="space-y-6">
-            {/* Google Drive Integration */}
-            <GoogleDriveCard />
+            {/* Storage Integration */}
+            <StorageCard />
             
             {/* Recent Activities */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -483,8 +483,8 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Google Drive Settings */}
-            <GoogleDriveCard />
+            {/* Storage Settings */}
+            <StorageCard />
 
             {/* Preferences */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

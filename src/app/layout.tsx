@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { GoogleDriveProvider } from "@/contexts/GoogleDriveContext";
+import { StorageProvider } from "@/contexts/StorageContext";
 import StructuredData from "@/components/StructuredData";
 import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
 
@@ -65,9 +65,9 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <GoogleDriveProvider>
+          <StorageProvider>
             {children}
-          </GoogleDriveProvider>
+          </StorageProvider>
         </AuthProvider>
       </body>
     </html>
