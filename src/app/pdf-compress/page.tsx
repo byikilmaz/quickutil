@@ -7,6 +7,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import StructuredData from '@/components/StructuredData';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
+import { useGoogleDrive } from '@/contexts/GoogleDriveContext';
 import { ActivityTracker } from '@/lib/activityTracker';
 import { 
   compressPDF, 
@@ -25,6 +26,7 @@ interface PDFAnalysis {
 
 export default function PDFCompress() {
   const { user } = useAuth();
+  const { uploadFile: uploadToGoogleDrive } = useGoogleDrive();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
@@ -38,6 +40,7 @@ export default function PDFCompress() {
     compressedSize: number;
     savedBytes: number;
     savedPercentage: number;
+    googleDriveFileId?: string;
   } | null>(null);
 
   const compressionLevels = {
@@ -87,11 +90,32 @@ export default function PDFCompress() {
       const savedPercentage = calculateCompressionRatio(originalSize, compressedSize);
       const processingTime = Date.now() - startTime;
 
+      // Try to upload to Google Drive if user is logged in
+      let googleDriveFileId: string | undefined;
+      if (user && uploadToGoogleDrive) {
+        try {
+          console.log('Uploading compressed PDF to Google Drive...');
+          const compressedFileName = `compressed_${file.name}`;
+          const renamedCompressed = new File([compressed], compressedFileName, {
+            type: 'application/pdf',
+            lastModified: Date.now(),
+          });
+          
+          const uploadResult = await uploadToGoogleDrive(renamedCompressed);
+          googleDriveFileId = uploadResult.id;
+          console.log('Google Drive upload successful:', googleDriveFileId);
+        } catch (uploadError) {
+          console.error('Google Drive upload failed:', uploadError);
+          // Continue without failing the compression
+        }
+      }
+
       setCompressionResult({
         originalSize,
         compressedSize,
         savedBytes,
         savedPercentage: Math.max(0, savedPercentage), // Ensure non-negative
+        googleDriveFileId
       });
 
       // Track activity if user is logged in
@@ -106,7 +130,8 @@ export default function PDFCompress() {
             status: 'success',
             category: 'PDF',
             processingTime,
-            compressionRatio: savedPercentage
+            compressionRatio: savedPercentage,
+            googleDriveFileId
           });
           console.log('Activity tracked successfully');
         } catch (activityError) {
@@ -359,6 +384,20 @@ export default function PDFCompress() {
                         <span className="font-medium">
                           {Math.round(compressionResult.savedBytes / 1024)} KB
                         </span> tasarruf sağlandı!
+                      </div>
+                    </div>
+                  )}
+
+                  {compressionResult.googleDriveFileId && (
+                    <div className="mb-4 p-3 bg-blue-100 rounded-lg">
+                      <div className="text-sm text-blue-800 flex items-center space-x-2">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M7.71 6.71L5.71 8.71a1 1 0 000 1.41L7.71 12.12a1 1 0 001.41-1.41L8.41 10H15a1 1 0 000-2H8.41l.71-.71a1 1 0 00-1.41-1.41z"/>
+                        </svg>
+                        <span>
+                          <span className="font-medium">Bulut depolamaya kaydedildi!</span>
+                          <br />Profil sayfasından dosyalarınıza erişebilirsiniz.
+                        </span>
                       </div>
                     </div>
                   )}

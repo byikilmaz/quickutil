@@ -48,18 +48,36 @@ export class ActivityTracker {
         expiresAt,
         ...activityData,
         // Default values
-        status: activityData.status || 'processing',
-        downloadUrl: activityData.downloadUrl || undefined,
-        compressionRatio: activityData.compressionRatio || undefined,
-        processingTime: activityData.processingTime || undefined,
-        googleDriveFileId: activityData.googleDriveFileId || undefined
+        status: activityData.status || 'processing'
       };
 
-      const docRef = await addDoc(collection(firestore, COLLECTIONS.USER_ACTIVITIES), {
-        ...activity,
-        timestamp: Timestamp.fromDate(activity.timestamp),
-        expiresAt: Timestamp.fromDate(activity.expiresAt)
-      });
+      // Optional fields - sadece tanımlı olanları ekle
+      if (activityData.downloadUrl) {
+        activity.downloadUrl = activityData.downloadUrl;
+      }
+      if (activityData.compressionRatio !== undefined) {
+        activity.compressionRatio = activityData.compressionRatio;
+      }
+      if (activityData.processingTime !== undefined) {
+        activity.processingTime = activityData.processingTime;
+      }
+      if (activityData.googleDriveFileId) {
+        activity.googleDriveFileId = activityData.googleDriveFileId;
+      }
+      if (activityData.processedSize !== undefined) {
+        activity.processedSize = activityData.processedSize;
+      }
+
+      // Firestore'a gönderilecek data - undefined değerleri filtrele
+      const firestoreData = Object.fromEntries(
+        Object.entries({
+          ...activity,
+          timestamp: Timestamp.fromDate(activity.timestamp),
+          expiresAt: Timestamp.fromDate(activity.expiresAt)
+        }).filter(([, value]) => value !== undefined)
+      );
+
+      const docRef = await addDoc(collection(firestore, COLLECTIONS.USER_ACTIVITIES), firestoreData);
 
       const createdActivity: UserActivity = {
         id: docRef.id,
