@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -11,12 +11,58 @@ import {
   BuildingOfficeIcon,
   UserGroupIcon,
   StarIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  ArrowPathIcon,
+  InformationCircleIcon
 } from '@heroicons/react/24/outline';
+import { 
+  getPricing, 
+  formatPrice, 
+  calculateSavings, 
+  calculateSavingsPercentage,
+  type CalculatedPricing 
+} from '@/lib/pricingUtils';
 
 export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pricing, setPricing] = useState<CalculatedPricing | null>(null);
+  const [isLoadingPricing, setIsLoadingPricing] = useState(true);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
+
+  // Pricing'i yükle
+  useEffect(() => {
+    const loadPricing = async () => {
+      try {
+        setIsLoadingPricing(true);
+        const calculatedPricing = await getPricing();
+        setPricing(calculatedPricing);
+      } catch (error) {
+        console.error('Pricing load error:', error);
+        // Fallback pricing
+        setPricing({
+          premium: { monthly: 449, annual: 345 },
+          business: { monthly: 1371, annual: 1031 },
+          lastUpdated: new Date().toISOString(),
+          exchangeRate: 34.2
+        });
+      } finally {
+        setIsLoadingPricing(false);
+      }
+    };
+
+    loadPricing();
+  }, []);
+
+  // Pricing yenile
+  const refreshPricing = async () => {
+    // Cache'i temizle ve yeniden yükle
+    localStorage.removeItem('quickutil_pricing_cache');
+    setIsLoadingPricing(true);
+    const freshPricing = await getPricing();
+    setPricing(freshPricing);
+    setIsLoadingPricing(false);
+  };
 
   const plans = [
     {
@@ -46,7 +92,10 @@ export default function Pricing() {
       id: 'premium',
       name: 'Premium',
       subtitle: 'Profesyonel kullanıcılar için',
-      price: { monthly: 12.99, annual: 9.99 },
+      price: pricing ? { 
+        monthly: pricing.premium.monthly, 
+        annual: pricing.premium.annual 
+      } : { monthly: 0, annual: 0 },
       popular: true,
       color: 'from-blue-600 to-blue-700',
       bgColor: 'bg-blue-50',
@@ -69,14 +118,17 @@ export default function Pricing() {
       id: 'business',
       name: 'Business',
       subtitle: 'Ekipler ve şirketler için',
-      price: { monthly: 39.99, annual: 29.99 },
+      price: pricing ? { 
+        monthly: pricing.business.monthly, 
+        annual: pricing.business.annual 
+      } : { monthly: 0, annual: 0 },
       popular: false,
       color: 'from-purple-600 to-purple-700',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-500',
       textColor: 'text-purple-900',
       features: [
-        { name: 'Premium&apos;un tüm özellikleri', included: true, detail: 'Sınırsız kullanım' },
+        { name: 'Premium\'un tüm özellikleri', included: true, detail: 'Sınırsız kullanım' },
         { name: 'Takım işbirliği', included: true, detail: 'Çoklu kullanıcı yönetimi' },
         { name: 'API erişimi', included: true, detail: 'Kendi uygulamanızla entegrasyon' },
         { name: 'Özel marka', included: true, detail: 'Logonuzla email gönderimi' },
@@ -96,8 +148,12 @@ export default function Pricing() {
       answer: 'Evet! Ayda 5 belgeye kadar tamamen ücretsiz kullanabilirsiniz. Kredi kartı bilgisi gerektirmez.'
     },
     {
+      question: 'Fiyatlar USD bazlı nasıl hesaplanıyor?',
+      answer: 'Fiyatlarımız USD bazında belirlenir ve güncel döviz kuruna göre TL karşılığı hesaplanır. Fiyatlar her ayın sonunda güncellenir.'
+    },
+    {
       question: 'Yıllık ödeme ile ne kadar tasarruf ederim?',
-      answer: 'Premium için yıllık ödeme ile aylık %23, Business için %25 tasarruf edersiniz.'
+      answer: pricing ? `Premium için yıllık ödeme ile aylık %${calculateSavingsPercentage(pricing.premium.monthly, pricing.premium.annual)}, Business için %${calculateSavingsPercentage(pricing.business.monthly, pricing.business.annual)} tasarruf edersiniz.` : 'Yıllık ödeme ile %20-25 arası tasarruf edersiniz.'
     },
     {
       question: 'Planımı istediğim zaman değiştirebilir miyim?',
@@ -105,7 +161,7 @@ export default function Pricing() {
     },
     {
       question: 'Belge sınırını aştığımda ne olur?',
-      answer: 'Basic planda limit aştığınızda Premium&apos;a yükseltme önerisi gösterilir. Premium ve Business&apos;ta sınır yoktur.'
+      answer: 'Basic planda limit aştığınızda Premium\'a yükseltme önerisi gösterilir. Premium ve Business\'ta sınır yoktur.'
     },
     {
       question: 'İptal ettiğimde verilerim ne olur?',
@@ -145,6 +201,59 @@ export default function Pricing() {
             İhtiyacınıza uygun planı seçin. İlk ay ücretsiz deneyin, istediğiniz zaman iptal edin. 
             Gizli ücret yok, taahhüt yok.
           </p>
+
+          {/* Fiyat yenileme ve debug panel */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <button
+              onClick={refreshPricing}
+              disabled={isLoadingPricing}
+              className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              <ArrowPathIcon className={`w-4 h-4 mr-2 ${isLoadingPricing ? 'animate-spin' : ''}`} />
+              Fiyatları Yenile
+            </button>
+            
+            {pricing && (
+              <button
+                onClick={() => setShowDebugPanel(!showDebugPanel)}
+                className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+              >
+                <InformationCircleIcon className="w-4 h-4 mr-2" />
+                Fiyat Detayları
+              </button>
+            )}
+          </div>
+
+          {/* Debug Panel */}
+          {showDebugPanel && pricing && (
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-8 text-left">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">💰 Fiyatlandırma Debug Bilgileri</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">USD Bazlı Fiyatlar:</h4>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div>Premium Aylık: 13.1 USD</div>
+                    <div>Premium Yıllık: 10.1 USD</div>
+                    <div>Business Aylık: 40.1 USD</div>
+                    <div>Business Yıllık: 30.1 USD</div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">TL Karşılıkları:</h4>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div>Döviz Kuru: {pricing.exchangeRate} TL/USD</div>
+                    <div>Premium Aylık: {formatPrice(pricing.premium.monthly)}</div>
+                    <div>Premium Yıllık: {formatPrice(pricing.premium.annual)}</div>
+                    <div>Business Aylık: {formatPrice(pricing.business.monthly)}</div>
+                    <div>Business Yıllık: {formatPrice(pricing.business.annual)}</div>
+                    <div className="text-xs text-gray-500 mt-2">
+                      Son güncelleme: {new Date(pricing.lastUpdated).toLocaleString('tr-TR')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Billing Toggle */}
           <div className="flex items-center justify-center mb-8">
@@ -166,9 +275,12 @@ export default function Pricing() {
             <span className={`ml-3 text-sm font-medium ${isAnnual ? 'text-gray-900' : 'text-gray-500'}`}>
               Yıllık
             </span>
-            {isAnnual && (
+            {isAnnual && pricing && (
               <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                %25&apos;e varan tasarruf
+                %{Math.max(
+                  calculateSavingsPercentage(pricing.premium.monthly, pricing.premium.annual),
+                  calculateSavingsPercentage(pricing.business.monthly, pricing.business.annual)
+                )}&apos;e varan tasarruf
               </span>
             )}
           </div>
@@ -176,86 +288,98 @@ export default function Pricing() {
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`relative bg-white rounded-2xl shadow-lg p-8 ${
-                plan.popular ? 'ring-2 ring-blue-500 scale-105' : 'hover:shadow-xl'
-              } transition-all duration-300`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
-                    <StarIcon className="w-4 h-4 mr-1" />
-                    En Popüler
-                  </span>
-                </div>
-              )}
-              
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {plan.name}
-                </h3>
-                <p className="text-gray-600 mb-6">{plan.subtitle}</p>
-                
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">
-                    {plan.price[isAnnual ? 'annual' : 'monthly'] === 0 ? 'Ücretsiz' : `₺${plan.price[isAnnual ? 'annual' : 'monthly']}`}
-                  </span>
-                  {plan.price[isAnnual ? 'annual' : 'monthly'] > 0 && (
-                    <span className="text-gray-600 ml-1">
-                      /{isAnnual ? 'ay' : 'ay'}
+          {plans.map((plan) => {
+            const currentPrice = plan.price[isAnnual ? 'annual' : 'monthly'];
+            const otherPrice = plan.price[isAnnual ? 'monthly' : 'annual'];
+            const hasSavings = isAnnual && currentPrice > 0 && otherPrice > 0 && otherPrice > currentPrice;
+            
+            return (
+              <div
+                key={plan.id}
+                className={`relative bg-white rounded-2xl shadow-lg p-8 ${
+                  plan.popular ? 'ring-2 ring-blue-500 scale-105' : 'hover:shadow-xl'
+                } transition-all duration-300`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
+                      <StarIcon className="w-4 h-4 mr-1" />
+                      En Popüler
                     </span>
-                  )}
-                </div>
-                
-                {plan.price[isAnnual ? 'annual' : 'monthly'] > 0 && isAnnual && (
-                  <p className="text-sm text-green-600 mb-6">
-                    Yıllık ödeme ile ₺{plan.price.monthly - plan.price.annual}/ay tasarruf
-                  </p>
+                  </div>
                 )}
                 
-                <button
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
-                    plan.popular
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl'
-                      : plan.id === 'basic'
-                      ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                      : 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800'
-                  }`}
-                >
-                  {plan.id === 'basic' ? 'Ücretsiz Başla' : 'Ücretsiz Dene'}
-                  <ArrowRightIcon className="inline w-4 h-4 ml-2" />
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                {plan.features.map((feature, index) => (
-                  <div key={index} className="flex items-start">
-                    <div className="flex-shrink-0">
-                      {feature.included ? (
-                        <CheckIcon className="w-5 h-5 text-green-500 mt-0.5" />
-                      ) : (
-                        <XMarkIcon className="w-5 h-5 text-gray-300 mt-0.5" />
-                      )}
-                    </div>
-                    <div className="ml-3">
-                      <p className={`text-sm font-medium ${
-                        feature.included ? 'text-gray-900' : 'text-gray-400'
-                      }`}>
-                        {feature.name}
-                      </p>
-                      {feature.detail && feature.included && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          {feature.detail}
-                        </p>
-                      )}
-                    </div>
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    {plan.name}
+                  </h3>
+                  <p className="text-gray-600 mb-6">{plan.subtitle}</p>
+                  
+                  <div className="mb-6">
+                    {isLoadingPricing && plan.id !== 'basic' ? (
+                      <div className="flex items-center justify-center">
+                        <ArrowPathIcon className="w-8 h-8 animate-spin text-gray-400" />
+                      </div>
+                    ) : (
+                      <span className="text-5xl font-bold text-gray-900">
+                        {currentPrice === 0 ? 'Ücretsiz' : formatPrice(currentPrice)}
+                      </span>
+                    )}
+                    {currentPrice > 0 && (
+                      <span className="text-gray-600 ml-1">
+                        /ay
+                      </span>
+                    )}
                   </div>
-                ))}
+                  
+                  {hasSavings && (
+                    <p className="text-sm text-green-600 mb-6">
+                      Yıllık ödeme ile {formatPrice(calculateSavings(otherPrice, currentPrice))}/ay tasarruf
+                    </p>
+                  )}
+                  
+                  <button
+                    className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                      plan.popular
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl'
+                        : plan.id === 'basic'
+                        ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                        : 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800'
+                    }`}
+                  >
+                    {plan.id === 'basic' ? 'Ücretsiz Başla' : 'Ücretsiz Dene'}
+                    <ArrowRightIcon className="inline w-4 h-4 ml-2" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {plan.features.map((feature, index) => (
+                    <div key={index} className="flex items-start">
+                      <div className="flex-shrink-0">
+                        {feature.included ? (
+                          <CheckIcon className="w-5 h-5 text-green-500 mt-0.5" />
+                        ) : (
+                          <XMarkIcon className="w-5 h-5 text-gray-300 mt-0.5" />
+                        )}
+                      </div>
+                      <div className="ml-3">
+                        <p className={`text-sm font-medium ${
+                          feature.included ? 'text-gray-900' : 'text-gray-400'
+                        }`}>
+                          {feature.name}
+                        </p>
+                        {feature.detail && feature.included && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {feature.detail}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Stats Section */}
