@@ -1320,6 +1320,106 @@ const handleCheckout = () => {
 - **Mobile**: Touch-optimized interactions
 - **Analytics**: Cart abandonment tracking
 
+### Special Offer System Rules
+```typescript
+// Akıllı özel teklif sistemi - Aylık plandan yıllık plana geçiş teklifi
+interface CartItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  period: 'monthly' | 'annual';
+  features: string[];
+  originalPrice?: number;
+  specialOffer?: boolean; // %10 ekstra indirim flag'i
+  baseAnnualPrice?: number; // Orijinal yıllık fiyat
+}
+
+// Cart context enhanced methods
+const hasMonthlyItems = () => {
+  return items.some(item => item.period === 'monthly');
+};
+
+const applySpecialOffer = (item: CartItem) => {
+  const pricing = getPricing();
+  const planType = item.name.includes('Premium') ? 'premium' : 'business';
+  const baseAnnualPrice = pricing[planType].annual;
+  const specialPrice = baseAnnualPrice * 0.9; // %10 ekstra indirim
+  
+  const specialItem: CartItem = {
+    ...item,
+    id: `${planType}-annual-special-${Date.now()}`,
+    period: 'annual',
+    price: specialPrice,
+    specialOffer: true,
+    baseAnnualPrice,
+    description: `${item.name} - Özel Yıllık Teklif (%10 ekstra indirim)`
+  };
+  
+  // Aylık planı kaldır, özel yıllık planı ekle
+  const newItems = items.filter(i => i.id !== item.id);
+  newItems.push(specialItem);
+  setItems(newItems);
+  localStorage.setItem('quickutil-cart', JSON.stringify(newItems));
+};
+```
+
+### Special Offer Popup Implementation
+```typescript
+// Cart sayfasında 3 saniye sonra özel teklif popup'ı
+useEffect(() => {
+  if (hasMonthlyItems() && !specialOfferShown) {
+    const timer = setTimeout(() => {
+      setShowSpecialOffer(true);
+      setSpecialOfferShown(true);
+      localStorage.setItem('quickutil-special-offer-shown', 'true');
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }
+}, [items, hasMonthlyItems, specialOfferShown]);
+
+// Popup UI component
+{showSpecialOffer && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl p-8 max-w-md mx-4 animate-bounce-in">
+      <div className="text-center">
+        <SparklesIcon className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-gray-900 mb-2">Size Özel Teklif!</h3>
+        <p className="text-gray-600 mb-6">
+          Aylık plan yerine yıllık plana geçin ve <span className="font-bold text-green-600">%10 ekstra indirim</span> kazanın!
+        </p>
+        
+        {/* Savings calculation */}
+        <div className="bg-green-50 rounded-lg p-4 mb-6">
+          <p className="text-sm text-green-700">
+            💰 ${Math.round(savings)} Tasarruf!
+          </p>
+          <p className="text-xs text-green-600">
+            Normal Yıllık: ${baseAnnualPrice} → Sizin Fiyatınız: ${formatUSDPrice(specialPrice)}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+```
+
+### Pricing Logic Rules
+- **Aylık Plan**: Recurring monthly payment (her ay tahsil edilir)
+- **Yıllık Plan**: Single payment for 12 months (tek seferde 12 aylık ödeme)
+- **Özel Teklif**: Annual price × 0.9 (%10 ekstra indirim)
+- **Timer UX**: 3 saniye optimal user experience timing
+- **One-time Offer**: Flag tracking ile tek seferlik gösterim
+- **LocalStorage Persistence**: Cross-session offer state management
+
+### Business Intelligence Features
+- **Conversion Optimization**: Monthly → Annual plan conversion incentive
+- **Revenue Enhancement**: %10 extra discount for higher lifetime value
+- **User Engagement**: Personalized offer experience
+- **Retention Strategy**: Longer commitment reduces churn rate
+- **Real-time Calculation**: Dynamic savings display
+
 ## 📝 Notlar
 
 - Her yeni özellik için Notion'da task oluştur
@@ -1330,6 +1430,7 @@ const handleCheckout = () => {
 - Cache management değişikliklerini test et
 - Email deliverability'yi izle (Resend dashboard)
 - **Cart System**: E-commerce best practices uygula
+- **Special Offers**: Pricing intelligence ve conversion optimization
 
 ---
 
