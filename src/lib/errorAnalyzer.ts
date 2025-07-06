@@ -30,7 +30,7 @@ interface ErrorAnalysis {
   severity: ErrorSeverity;
   message: string;
   stack?: string;
-  context: Record<string, any>;
+  context: Record<string, unknown>;
   timestamp: Date;
   userId?: string;
   sessionId: string;
@@ -38,400 +38,441 @@ interface ErrorAnalysis {
   relatedIssues: string[];
 }
 
-interface FirebaseErrorDetails {
+interface FirebaseErrorData {
   code: string;
-  customData?: Record<string, any>;
-  serverResponse?: any;
+  customData?: Record<string, unknown>;
 }
 
-interface GitHubErrorDetails {
+interface GitHubErrorData {
   status: number;
-  response?: any;
-  endpoint?: string;
-  method?: string;
+  endpoint: string;
+  method: string;
+  customData?: Record<string, unknown>;
 }
 
-class ErrorAnalyzer {
-  private sessionId: string;
-  private errors: ErrorAnalysis[] = [];
-  
-  constructor() {
-    this.sessionId = this.generateSessionId();
-    this.initializeErrorTracking();
-  }
-
-  private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-  }
-
-  private initializeErrorTracking() {
-    // Global error handler
-    window.addEventListener('error', (event) => {
-      this.analyzeError(event.error, {
-        type: 'unhandled_error',
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno
-      });
-    });
-
-    // Promise rejection handler
-    window.addEventListener('unhandledrejection', (event) => {
-      this.analyzeError(event.reason, {
-        type: 'unhandled_promise_rejection'
-      });
-    });
-  }
-
-  /**
-   * 🔥 Firebase Error Analysis
-   */
-  analyzeFirebaseError(error: any, context: FirebaseErrorDetails): ErrorAnalysis {
-    const analysis: ErrorAnalysis = {
-      id: `firebase_${Date.now()}`,
-      category: ErrorCategory.FIREBASE,
-      severity: this.getFirebaseSeverity(error.code),
-      message: error.message,
-      stack: error.stack,
-      context: { ...context, firebaseCode: error.code },
-      timestamp: new Date(),
-      sessionId: this.sessionId,
-      recommendations: this.getFirebaseRecommendations(error.code),
-      relatedIssues: this.getFirebaseRelatedIssues(error.code)
-    };
-
-    this.logError(analysis);
-    return analysis;
-  }
-
-  private getFirebaseSeverity(code: string): ErrorSeverity {
-    const criticalCodes = ['auth/api-key-not-valid', 'permission-denied', 'unauthenticated'];
-    const highCodes = ['auth/user-not-found', 'auth/wrong-password', 'resource-exhausted'];
-    const mediumCodes = ['auth/too-many-requests', 'already-exists', 'deadline-exceeded'];
-
-    if (criticalCodes.includes(code)) return ErrorSeverity.CRITICAL;
-    if (highCodes.includes(code)) return ErrorSeverity.HIGH;
-    if (mediumCodes.includes(code)) return ErrorSeverity.MEDIUM;
-    return ErrorSeverity.LOW;
-  }
-
-  private getFirebaseRecommendations(code: string): string[] {
-    const recommendations: Record<string, string[]> = {
-      'auth/api-key-not-valid': [
-        'Firebase Console\'dan doğru API key\'i kontrol edin',
-        'Environment variables\'ları doğrulayın',
-        'Firebase project ayarlarını kontrol edin'
-      ],
-      'auth/user-not-found': [
-        'Kullanıcının kayıtlı olup olmadığını kontrol edin',
-        'Email adresini doğrulayın',
-        'Kayıt sayfasına yönlendirin'
-      ],
-      'permission-denied': [
-        'Firestore security rules\'ları kontrol edin',
-        'Kullanıcı authentication durumunu kontrol edin',
-        'Gerekli izinleri doğrulayın'
-      ],
-      'resource-exhausted': [
-        'Firebase quota limitlerini kontrol edin',
-        'Rate limiting uygulayın',
-        'Query optimizasyonu yapın'
-      ]
-    };
-
-    return recommendations[code] || ['Firebase documentation\'ı kontrol edin'];
-  }
-
-  private getFirebaseRelatedIssues(code: string): string[] {
-    // Bu gerçek projede GitHub Issues API ile entegre edilebilir
-    return [`firebase-error-${code}`, 'firebase-config-issue'];
-  }
-
-  /**
-   * 🐙 GitHub Error Analysis
-   */
-  analyzeGitHubError(error: any, context: GitHubErrorDetails): ErrorAnalysis {
-    const analysis: ErrorAnalysis = {
-      id: `github_${Date.now()}`,
-      category: ErrorCategory.GITHUB,
-      severity: this.getGitHubSeverity(context.status),
-      message: error.message,
-      stack: error.stack,
-      context: { ...context, githubStatus: context.status },
-      timestamp: new Date(),
-      sessionId: this.sessionId,
-      recommendations: this.getGitHubRecommendations(context.status),
-      relatedIssues: this.getGitHubRelatedIssues(context.status)
-    };
-
-    this.logError(analysis);
-    return analysis;
-  }
-
-  private getGitHubSeverity(status: number): ErrorSeverity {
-    if (status >= 500) return ErrorSeverity.CRITICAL;
-    if (status === 403 || status === 401) return ErrorSeverity.HIGH;
-    if (status >= 400) return ErrorSeverity.MEDIUM;
-    return ErrorSeverity.LOW;
-  }
-
-  private getGitHubRecommendations(status: number): string[] {
-    const recommendations: Record<number, string[]> = {
-      401: [
-        'GitHub Personal Access Token\'ı kontrol edin',
-        'Token permission\'larını doğrulayın',
-        'Token süresinin dolup dolmadığını kontrol edin'
-      ],
-      403: [
-        'Rate limit\'e takılmış olabilirsiniz',
-        'Repository access permission\'larını kontrol edin',
-        'GitHub API quota\'nızı kontrol edin'
-      ],
-      404: [
-        'Repository URL\'ini kontrol edin',
-        'Branch name\'i doğrulayın',
-        'File path\'inin doğru olduğunu kontrol edin'
-      ],
-      500: [
-        'GitHub server\'ında geçici sorun olabilir',
-        'Birkaç dakika sonra tekrar deneyin',
-        'GitHub Status sayfasını kontrol edin'
-      ]
-    };
-
-    return recommendations[status] || ['GitHub API documentation\'ı kontrol edin'];
-  }
-
-  private getGitHubRelatedIssues(status: number): string[] {
-    return [`github-error-${status}`, 'api-integration-issue'];
-  }
-
-  /**
-   * 💻 Code Error Analysis
-   */
-  analyzeCodeError(error: Error, context: Record<string, any> = {}): ErrorAnalysis {
-    const analysis: ErrorAnalysis = {
-      id: `code_${Date.now()}`,
-      category: ErrorCategory.CODE,
-      severity: this.getCodeSeverity(error),
-      message: error.message,
-      stack: error.stack,
-      context,
-      timestamp: new Date(),
-      sessionId: this.sessionId,
-      recommendations: this.getCodeRecommendations(error),
-      relatedIssues: this.getCodeRelatedIssues(error)
-    };
-
-    this.logError(analysis);
-    return analysis;
-  }
-
-  private getCodeSeverity(error: Error): ErrorSeverity {
-    const criticalPatterns = [
-      /ReferenceError/,
-      /TypeError.*null/,
-      /Cannot read property.*undefined/
-    ];
-    
-    const highPatterns = [
-      /SyntaxError/,
-      /RangeError/,
-      /TypeError/
-    ];
-
-    const message = error.message + (error.stack || '');
-    
-    if (criticalPatterns.some(pattern => pattern.test(message))) {
-      return ErrorSeverity.CRITICAL;
-    }
-    if (highPatterns.some(pattern => pattern.test(message))) {
-      return ErrorSeverity.HIGH;
-    }
-    return ErrorSeverity.MEDIUM;
-  }
-
-  private getCodeRecommendations(error: Error): string[] {
-    const message = error.message.toLowerCase();
-    
-    if (message.includes('null') || message.includes('undefined')) {
-      return [
-        'Null/undefined kontrolü ekleyin',
-        'Optional chaining (?.) kullanın',
-        'Default değerler atayın'
-      ];
-    }
-    
-    if (message.includes('not a function')) {
-      return [
-        'Fonksiyon tanımını kontrol edin',
-        'Import/export ifadelerini kontrol edin',
-        'TypeScript tip kontrollerini kullanın'
-      ];
-    }
-    
-    return [
-      'Error stack trace\'i detaylı inceleyin',
-      'Browser console\'u kontrol edin',
-      'Kodun son değişikliklerini gözden geçirin'
-    ];
-  }
-
-  private getCodeRelatedIssues(error: Error): string[] {
-    return [`code-error-${error.name.toLowerCase()}`, 'bug-fix-needed'];
-  }
-
-  /**
-   * 📊 General Error Analysis
-   */
-  analyzeError(error: any, context: Record<string, any> = {}): ErrorAnalysis {
-    // Firebase error detection
-    if (error?.code && error.code.startsWith('auth/')) {
-      return this.analyzeFirebaseError(error, context as FirebaseErrorDetails);
-    }
-    
-    // GitHub error detection (HTTP status)
-    if (context.status && typeof context.status === 'number') {
-      return this.analyzeGitHubError(error, context as GitHubErrorDetails);
-    }
-    
-    // General code error
-    return this.analyzeCodeError(error, context);
-  }
-
-  /**
-   * 📝 Error Logging & Analytics
-   */
-  private logError(analysis: ErrorAnalysis) {
-    this.errors.push(analysis);
-    
-    // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.group(`🔍 Error Analysis - ${analysis.category.toUpperCase()}`);
-      console.error('Error:', analysis.message);
-      console.log('Severity:', analysis.severity);
-      console.log('Context:', analysis.context);
-      console.log('Recommendations:', analysis.recommendations);
-      console.groupEnd();
-    }
-    
-    // Send to Firebase Analytics
-    if (analytics) {
-      logEvent(analytics, 'error_analyzed', {
-        error_category: analysis.category,
-        error_severity: analysis.severity,
-        error_id: analysis.id,
-        session_id: analysis.sessionId
-      });
-    }
-    
-    // Send critical errors to monitoring service
-    if (analysis.severity === ErrorSeverity.CRITICAL) {
-      this.sendToMonitoring(analysis);
-    }
-  }
-
-  private sendToMonitoring(analysis: ErrorAnalysis) {
-    // Integration with external monitoring services
-    // Örnek: Sentry, LogRocket, Datadog
-    console.warn('🚨 Critical Error Detected:', analysis);
-  }
-
-  /**
-   * 📈 Error Reporting & Dashboard
-   */
-  getErrorSummary(): {
-    totalErrors: number;
-    errorsByCategory: Record<ErrorCategory, number>;
-    errorsBySeverity: Record<ErrorSeverity, number>;
-    recentErrors: ErrorAnalysis[];
-  } {
-    const errorsByCategory = Object.values(ErrorCategory).reduce((acc, category) => {
-      acc[category] = this.errors.filter(e => e.category === category).length;
-      return acc;
-    }, {} as Record<ErrorCategory, number>);
-
-    const errorsBySeverity = Object.values(ErrorSeverity).reduce((acc, severity) => {
-      acc[severity] = this.errors.filter(e => e.severity === severity).length;
-      return acc;
-    }, {} as Record<ErrorSeverity, number>);
-
-    return {
-      totalErrors: this.errors.length,
-      errorsByCategory,
-      errorsBySeverity,
-      recentErrors: this.errors.slice(-10).reverse()
-    };
-  }
-
-  getErrorsByTimeRange(hours: number = 24): ErrorAnalysis[] {
-    const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000);
-    return this.errors.filter(error => error.timestamp > cutoff);
-  }
-
-  /**
-   * 🔧 MCP Integration Methods
-   */
-  async analyzeWithMCP(errorType: 'firebase' | 'github' | 'code'): Promise<string[]> {
-    // Bu method'lar Firebase MCP Server veya GitHub MCP Server ile entegre edilebilir
-    
-    switch (errorType) {
-      case 'firebase':
-        return await this.analyzeFirebaseWithMCP();
-      case 'github':
-        return await this.analyzeGitHubWithMCP();
-      case 'code':
-        return await this.analyzeCodeWithMCP();
-      default:
-        return ['No specific analysis available'];
-    }
-  }
-
-  private async analyzeFirebaseWithMCP(): Promise<string[]> {
-    // Firebase MCP Server integration
-    // npx firebase-tools@latest experimental:mcp
-    return [
-      'Firebase MCP Server ile analiz yapılabilir',
-      'Firestore rules validation',
-      'Authentication flow analysis',
-      'Cloud Functions debugging'
-    ];
-  }
-
-  private async analyzeGitHubWithMCP(): Promise<string[]> {
-    // GitHub MCP Server integration
-    return [
-      'GitHub MCP Server ile repository analizi',
-      'Actions workflow debugging',
-      'Issue tracking ve bug reports',
-      'Security vulnerability scanning'
-    ];
-  }
-
-  private async analyzeCodeWithMCP(): Promise<string[]> {
-    // Code analysis with external MCP servers
-    return [
-      'MCPScan.ai ile güvenlik analizi',
-      'Code quality metrics',
-      'Performance bottleneck detection',
-      'Best practices recommendations'
-    ];
-  }
+interface CodeErrorData {
+  context: string;
+  customData?: Record<string, unknown>;
 }
 
-// Singleton instance
-export const errorAnalyzer = new ErrorAnalyzer();
+interface FirebaseError extends Error {
+  code?: string;
+  customData?: Record<string, unknown>;
+}
 
-// Convenience functions
-export const analyzeFirebaseError = (error: any, context: FirebaseErrorDetails) => 
-  errorAnalyzer.analyzeFirebaseError(error, context);
+interface GitHubError extends Error {
+  status?: number;
+  response?: {
+    status: number;
+    statusText: string;
+  };
+}
 
-export const analyzeGitHubError = (error: any, context: GitHubErrorDetails) => 
-  errorAnalyzer.analyzeGitHubError(error, context);
+// Session ID generator
+const generateSessionId = (): string => {
+  return `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+};
 
-export const analyzeCodeError = (error: Error, context?: Record<string, any>) => 
-  errorAnalyzer.analyzeCodeError(error, context);
+// Current session ID
+let currentSessionId = generateSessionId();
 
-export const getErrorSummary = () => errorAnalyzer.getErrorSummary();
+// Error analysis storage
+const errorHistory: ErrorAnalysis[] = [];
 
-export default errorAnalyzer; 
+/**
+ * 🔥 Firebase Error Analyzer
+ * Firebase hatalarını analiz eder ve çözüm önerileri sunar
+ */
+export const analyzeFirebaseError = (error: FirebaseError, data: FirebaseErrorData): ErrorAnalysis => {
+  const analysis: ErrorAnalysis = {
+    id: `firebase_${Date.now()}`,
+    category: ErrorCategory.FIREBASE,
+    severity: getFirebaseErrorSeverity(data.code),
+    message: error.message,
+    stack: error.stack,
+    context: {
+      code: data.code,
+      ...data.customData
+    },
+    timestamp: new Date(),
+    sessionId: currentSessionId,
+    recommendations: getFirebaseErrorRecommendations(data.code),
+    relatedIssues: []
+  };
+
+  // Store in history
+  errorHistory.push(analysis);
+
+  // Log to Firebase Analytics
+  if (analytics) {
+    logEvent(analytics, 'error_analyzed', {
+      error_category: analysis.category,
+      error_severity: analysis.severity,
+      error_code: data.code,
+      session_id: currentSessionId
+    });
+  }
+
+  // Console logging for development
+  if (process.env.NODE_ENV === 'development') {
+    console.group(`🔥 Firebase Error Analysis: ${data.code}`);
+    console.error('Error:', error);
+    console.log('Analysis:', analysis);
+    console.log('Recommendations:', analysis.recommendations);
+    console.groupEnd();
+  }
+
+  return analysis;
+};
+
+/**
+ * 🐙 GitHub Error Analyzer
+ * GitHub API hatalarını analiz eder
+ */
+export const analyzeGitHubError = (error: GitHubError, data: GitHubErrorData): ErrorAnalysis => {
+  const analysis: ErrorAnalysis = {
+    id: `github_${Date.now()}`,
+    category: ErrorCategory.GITHUB,
+    severity: getGitHubErrorSeverity(data.status),
+    message: error.message,
+    stack: error.stack,
+    context: {
+      status: data.status,
+      endpoint: data.endpoint,
+      method: data.method,
+      ...data.customData
+    },
+    timestamp: new Date(),
+    sessionId: currentSessionId,
+    recommendations: getGitHubErrorRecommendations(data.status),
+    relatedIssues: []
+  };
+
+  // Store in history
+  errorHistory.push(analysis);
+
+  // Log to Firebase Analytics
+  if (analytics) {
+    logEvent(analytics, 'error_analyzed', {
+      error_category: analysis.category,
+      error_severity: analysis.severity,
+      error_code: data.status.toString(),
+      session_id: currentSessionId
+    });
+  }
+
+  // Console logging for development
+  if (process.env.NODE_ENV === 'development') {
+    console.group(`🐙 GitHub Error Analysis: ${data.status}`);
+    console.error('Error:', error);
+    console.log('Analysis:', analysis);
+    console.log('Recommendations:', analysis.recommendations);
+    console.groupEnd();
+  }
+
+  return analysis;
+};
+
+/**
+ * 💻 Code Error Analyzer
+ * Genel kod hatalarını analiz eder
+ */
+export const analyzeCodeError = (error: Error, data: CodeErrorData): ErrorAnalysis => {
+  const analysis: ErrorAnalysis = {
+    id: `code_${Date.now()}`,
+    category: ErrorCategory.CODE,
+    severity: getCodeErrorSeverity(error),
+    message: error.message,
+    stack: error.stack,
+    context: {
+      context: data.context,
+      errorName: error.name,
+      ...data.customData
+    },
+    timestamp: new Date(),
+    sessionId: currentSessionId,
+    recommendations: getCodeErrorRecommendations(error),
+    relatedIssues: []
+  };
+
+  // Store in history
+  errorHistory.push(analysis);
+
+  // Log to Firebase Analytics
+  if (analytics) {
+    logEvent(analytics, 'error_analyzed', {
+      error_category: analysis.category,
+      error_severity: analysis.severity,
+      error_code: error.name,
+      session_id: currentSessionId
+    });
+  }
+
+  // Console logging for development
+  if (process.env.NODE_ENV === 'development') {
+    console.group(`💻 Code Error Analysis: ${error.name}`);
+    console.error('Error:', error);
+    console.log('Analysis:', analysis);
+    console.log('Recommendations:', analysis.recommendations);
+    console.groupEnd();
+  }
+
+  return analysis;
+};
+
+/**
+ * Firebase Error Severity Mapping
+ */
+const getFirebaseErrorSeverity = (code: string): ErrorSeverity => {
+  const severityMap: Record<string, ErrorSeverity> = {
+    'auth/api-key-not-valid': ErrorSeverity.CRITICAL,
+    'auth/invalid-api-key': ErrorSeverity.CRITICAL,
+    'auth/project-not-found': ErrorSeverity.CRITICAL,
+    'auth/user-not-found': ErrorSeverity.HIGH,
+    'auth/wrong-password': ErrorSeverity.HIGH,
+    'auth/invalid-email': ErrorSeverity.HIGH,
+    'auth/user-disabled': ErrorSeverity.HIGH,
+    'auth/email-already-in-use': ErrorSeverity.MEDIUM,
+    'auth/weak-password': ErrorSeverity.MEDIUM,
+    'auth/network-request-failed': ErrorSeverity.MEDIUM,
+    'permission-denied': ErrorSeverity.HIGH,
+    'not-found': ErrorSeverity.MEDIUM,
+    'already-exists': ErrorSeverity.MEDIUM,
+    'resource-exhausted': ErrorSeverity.HIGH,
+    'unauthenticated': ErrorSeverity.HIGH
+  };
+
+  return severityMap[code] || ErrorSeverity.MEDIUM;
+};
+
+/**
+ * Firebase Error Recommendations
+ */
+const getFirebaseErrorRecommendations = (code: string): string[] => {
+  const recommendationMap: Record<string, string[]> = {
+    'auth/api-key-not-valid': [
+      'Firebase Console\'dan doğru API key\'i kontrol edin',
+      'Environment variables\'ları doğrulayın (.env.local)',
+      'Firebase project ayarlarını kontrol edin',
+      'API key\'in kısıtlamalarını kontrol edin'
+    ],
+    'auth/user-not-found': [
+      'Kullanıcının kayıtlı olup olmadığını kontrol edin',
+      'Email adresini doğrulayın',
+      'Kayıt sayfasına yönlendirin',
+      'Kullanıcı arama işlemini geliştirin'
+    ],
+    'auth/wrong-password': [
+      'Şifre doğruluğunu kontrol edin',
+      'Şifre sıfırlama özelliği sunun',
+      'Caps Lock durumunu kontrol edin',
+      'Şifre görünürlük toggle\'ı ekleyin'
+    ],
+    'auth/email-already-in-use': [
+      'Giriş yapmaya yönlendirin',
+      'Email adresinin zaten kullanıldığını belirtin',
+      'Şifre sıfırlama seçeneği sunun',
+      'Sosyal medya girişi alternatifi sunun'
+    ],
+    'permission-denied': [
+      'Firestore security rules\'ları kontrol edin',
+      'Kullanıcı authentication durumunu kontrol edin',
+      'Gerekli izinleri doğrulayın',
+      'Admin panelinden izinleri kontrol edin'
+    ],
+    'auth/network-request-failed': [
+      'İnternet bağlantısını kontrol edin',
+      'Firebase servis durumunu kontrol edin',
+      'Retry mekanizması ekleyin',
+      'Offline mode desteği ekleyin'
+    ]
+  };
+
+  return recommendationMap[code] || [
+    'Hata kodunu Firebase documentation\'dan araştırın',
+    'Console\'daki detaylı hata mesajlarını kontrol edin',
+    'Firebase support\'a başvurun',
+    'Community forum\'larda benzer durumları araştırın'
+  ];
+};
+
+/**
+ * GitHub Error Severity Mapping
+ */
+const getGitHubErrorSeverity = (status: number): ErrorSeverity => {
+  if (status >= 500) return ErrorSeverity.CRITICAL;
+  if (status === 401 || status === 403) return ErrorSeverity.HIGH;
+  if (status === 404) return ErrorSeverity.MEDIUM;
+  if (status === 422) return ErrorSeverity.MEDIUM;
+  if (status >= 400) return ErrorSeverity.HIGH;
+  return ErrorSeverity.LOW;
+};
+
+/**
+ * GitHub Error Recommendations
+ */
+const getGitHubErrorRecommendations = (status: number): string[] => {
+  const recommendationMap: Record<number, string[]> = {
+    401: [
+      'GitHub Personal Access Token\'ı kontrol edin',
+      'Token\'ın expire olup olmadığını kontrol edin',
+      'Token permission\'larını doğrulayın',
+      'GitHub Actions secrets\'ları kontrol edin'
+    ],
+    403: [
+      'Rate limit\'e takılmış olabilirsiniz',
+      'Repository access permission\'larını kontrol edin',
+      'GitHub API quota\'nızı kontrol edin',
+      'Organization permissions\'ları kontrol edin'
+    ],
+    404: [
+      'Repository URL\'ini kontrol edin',
+      'Branch name\'i doğrulayın',
+      'File path\'inin doğru olduğunu kontrol edin',
+      'Repository\'nin public/private durumunu kontrol edin'
+    ],
+    422: [
+      'Request body\'sini kontrol edin',
+      'Required field\'ları kontrol edin',
+      'Data format\'ını doğrulayın',
+      'API documentation\'ı kontrol edin'
+    ],
+    500: [
+      'GitHub servis durumunu kontrol edin',
+      'Bir süre sonra tekrar deneyin',
+      'GitHub Status sayfasını kontrol edin',
+      'Support\'a başvurun'
+    ]
+  };
+
+  return recommendationMap[status] || [
+    'HTTP status kodunu araştırın',
+    'GitHub API documentation\'ı kontrol edin',
+    'Network connectivity\'yi kontrol edin',
+    'Request headers\'ları doğrulayın'
+  ];
+};
+
+/**
+ * Code Error Severity Mapping
+ */
+const getCodeErrorSeverity = (error: Error): ErrorSeverity => {
+  const severityMap: Record<string, ErrorSeverity> = {
+    'TypeError': ErrorSeverity.HIGH,
+    'ReferenceError': ErrorSeverity.HIGH,
+    'SyntaxError': ErrorSeverity.CRITICAL,
+    'RangeError': ErrorSeverity.MEDIUM,
+    'URIError': ErrorSeverity.MEDIUM,
+    'EvalError': ErrorSeverity.HIGH
+  };
+
+  return severityMap[error.name] || ErrorSeverity.MEDIUM;
+};
+
+/**
+ * Code Error Recommendations
+ */
+const getCodeErrorRecommendations = (error: Error): string[] => {
+  const recommendationMap: Record<string, string[]> = {
+    'TypeError': [
+      'Variable tiplerini kontrol edin',
+      'null/undefined kontrolü yapın',
+      'Method existence kontrolü yapın',
+      'TypeScript kullanarak tip güvenliği sağlayın'
+    ],
+         'ReferenceError': [
+       'Variable declaration\'ini kontrol edin',
+       'Import statements\'lari kontrol edin',
+       'Scope\'lari kontrol edin',
+       'Typo\'lari kontrol edin'
+     ],
+    'SyntaxError': [
+      'Kod syntax\'ını kontrol edin',
+      'Bracket/parenthesis eşleşmelerini kontrol edin',
+      'Semicolon kullanımını kontrol edin',
+      'Linter kullanarak kod kalitesini artırın'
+    ],
+    'RangeError': [
+      'Array/string length\'lerini kontrol edin',
+      'Numeric range\'leri kontrol edin',
+      'Recursive function\'ları kontrol edin',
+      'Memory usage\'ını optimize edin'
+    ]
+  };
+
+  return recommendationMap[error.name] || [
+    'Stack trace\'i detaylı inceleyin',
+    'Error message\'ını araştırın',
+    'Benzer hataları online araştırın',
+    'Debug mode\'da adım adım kontrol edin'
+  ];
+};
+
+/**
+ * Error History Management
+ */
+export const getErrorHistory = (): ErrorAnalysis[] => {
+  return [...errorHistory];
+};
+
+export const clearErrorHistory = (): void => {
+  errorHistory.length = 0;
+};
+
+export const generateNewSession = (): string => {
+  currentSessionId = generateSessionId();
+  return currentSessionId;
+};
+
+export const getCurrentSessionId = (): string => {
+  return currentSessionId;
+};
+
+/**
+ * Error Pattern Analysis
+ */
+export const analyzeErrorPatterns = (): {
+  mostCommonCategory: ErrorCategory;
+  mostCommonSeverity: ErrorSeverity;
+  totalErrors: number;
+  sessionDuration: number;
+} => {
+  const categoryCount: Record<ErrorCategory, number> = {
+    [ErrorCategory.FIREBASE]: 0,
+    [ErrorCategory.GITHUB]: 0,
+    [ErrorCategory.CODE]: 0,
+    [ErrorCategory.NETWORK]: 0,
+    [ErrorCategory.VALIDATION]: 0,
+    [ErrorCategory.UI]: 0
+  };
+
+  const severityCount: Record<ErrorSeverity, number> = {
+    [ErrorSeverity.LOW]: 0,
+    [ErrorSeverity.MEDIUM]: 0,
+    [ErrorSeverity.HIGH]: 0,
+    [ErrorSeverity.CRITICAL]: 0
+  };
+
+  errorHistory.forEach(error => {
+    categoryCount[error.category]++;
+    severityCount[error.severity]++;
+  });
+
+  const mostCommonCategory = Object.entries(categoryCount)
+    .sort(([,a], [,b]) => b - a)[0][0] as ErrorCategory;
+
+  const mostCommonSeverity = Object.entries(severityCount)
+    .sort(([,a], [,b]) => b - a)[0][0] as ErrorSeverity;
+
+  const firstError = errorHistory[0];
+  const lastError = errorHistory[errorHistory.length - 1];
+  const sessionDuration = firstError && lastError ? 
+    (lastError.timestamp.getTime() - firstError.timestamp.getTime()) / 1000 : 0;
+
+  return {
+    mostCommonCategory,
+    mostCommonSeverity,
+    totalErrors: errorHistory.length,
+    sessionDuration
+  };
+}; 

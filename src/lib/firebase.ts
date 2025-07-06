@@ -29,12 +29,12 @@ export const storage = getStorage(app);
 export const functions = getFunctions(app);
 
 // Initialize Analytics (client-side only, with error handling)
-let analytics: any = null;
+let analytics: ReturnType<typeof getAnalytics> | null = null;
 try {
   if (typeof window !== 'undefined') {
     analytics = getAnalytics(app);
   }
-} catch (error) {
+} catch (error: unknown) {
   console.warn('Analytics initialization failed:', error);
 }
 

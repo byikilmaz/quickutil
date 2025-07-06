@@ -61,7 +61,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
             const userDoc = await getDoc(doc(firestore, 'users', user.uid));
             if (userDoc.exists()) {
-              const userData = userDoc.data();
+              const userData = userDoc.data() as {
+                firstName?: string;
+                lastName?: string;
+                createdAt?: { toDate(): Date };
+              };
               setUserProfile({
                 firstName: userData.firstName || '',
                 lastName: userData.lastName || '',
@@ -69,12 +73,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 createdAt: userData.createdAt?.toDate() || new Date()
               });
             }
-          } catch (error: any) {
+          } catch (error) {
             console.error('Error fetching user profile:', error);
             
             // 🔍 Analyze Firebase error
-            analyzeFirebaseError(error, {
-              code: error.code || 'unknown',
+            analyzeFirebaseError(error as Error, {
+              code: (error as { code?: string }).code || 'unknown',
               customData: { 
                 operation: 'fetch_user_profile',
                 userId: user.uid 
@@ -92,12 +96,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setUserProfile(null);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Auth state change error:', error);
         
         // 🔍 Analyze authentication error
-        analyzeFirebaseError(error, {
-          code: error.code || 'unknown',
+        analyzeFirebaseError(error as Error, {
+          code: (error as { code?: string }).code || 'unknown',
           customData: { operation: 'auth_state_change' }
         });
       } finally {
@@ -111,12 +115,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login error:', error);
       
       // 🔍 Analyze login error with detailed context
-      analyzeFirebaseError(error, {
-        code: error.code,
+      analyzeFirebaseError(error as Error, {
+        code: (error as { code?: string }).code || 'unknown',
         customData: { 
           operation: 'login',
           email,
@@ -168,12 +172,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fallback to Firebase default if window is not available
           await sendEmailVerification(user);
         }
-      } catch (emailError: any) {
+      } catch (emailError) {
         console.error('Custom email sending failed, falling back to Firebase default:', emailError);
         
         // 🔍 Analyze email sending error
-        analyzeFirebaseError(emailError, {
-          code: emailError.code || 'email-send-failed',
+        analyzeFirebaseError(emailError as Error, {
+          code: (emailError as { code?: string }).code || 'email-send-failed',
           customData: { 
             operation: 'send_verification_email',
             email,
@@ -192,12 +196,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         createdAt: new Date()
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Registration error:', error);
       
       // 🔍 Analyze registration error with comprehensive context
-      analyzeFirebaseError(error, {
-        code: error.code,
+      analyzeFirebaseError(error as Error, {
+        code: (error as { code?: string }).code || 'unknown',
         customData: { 
           operation: 'register',
           email,
@@ -243,12 +247,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fallback to Firebase default
           await sendEmailVerification(user);
         }
-      } catch (emailError: any) {
+      } catch (emailError) {
         console.error('Custom email resend failed, falling back to Firebase default:', emailError);
         
         // 🔍 Analyze resend verification error
-        analyzeFirebaseError(emailError, {
-          code: emailError.code || 'email-resend-failed',
+        analyzeFirebaseError(emailError as Error, {
+          code: (emailError as { code?: string }).code || 'email-resend-failed',
           customData: { 
             operation: 'resend_verification_email',
             email: user.email,
@@ -259,12 +263,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Fallback to Firebase default verification email
         await sendEmailVerification(user);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Resend verification error:', error);
       
       // 🔍 Analyze general resend error
-      analyzeFirebaseError(error, {
-        code: error.code || 'resend-verification-failed',
+      analyzeFirebaseError(error as Error, {
+        code: (error as { code?: string }).code || 'resend-verification-failed',
         customData: { 
           operation: 'resend_verification',
           hasUser: !!user,
@@ -280,12 +284,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await signOut(auth);
       setUserProfile(null);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Logout error:', error);
       
       // 🔍 Analyze logout error
-      analyzeFirebaseError(error, {
-        code: error.code || 'logout-failed',
+      analyzeFirebaseError(error as Error, {
+        code: (error as { code?: string }).code || 'logout-failed',
         customData: { 
           operation: 'logout',
           userId: user?.uid
