@@ -18,7 +18,7 @@ interface ConversionTool {
   id: string;
   title: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   color: string;
   acceptedFiles: string;
   action: string;
@@ -106,7 +106,7 @@ export default function PDFConvert() {
       }
       
       return fullText || 'Metin çıkarma işlemi tamamlandı. Daha detaylı metin çıkarma için OCR özelliği gerekir.';
-    } catch (error) {
+    } catch {
       throw new Error('PDF\'den metin çıkarılamadı');
     }
   };
@@ -126,7 +126,7 @@ export default function PDFConvert() {
       }
 
       return splitDocs;
-    } catch (error) {
+    } catch {
       throw new Error('PDF bölme işlemi başarısız');
     }
   };
@@ -143,7 +143,7 @@ export default function PDFConvert() {
       }
 
       return mergedDoc;
-    } catch (error) {
+    } catch {
       throw new Error('PDF birleştirme işlemi başarısız');
     }
   };
