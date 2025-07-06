@@ -73,19 +73,35 @@ export default function Home() {
         },
         {
           id: 'image-compress',
-          title: 'Fotoğraf Sıkıştırma',
-          description: 'Fotoğraflarınızı kaliteden ödün vermeden küçültün',
+          title: 'Resim Sıkıştırma',
+          description: 'Resimlerinizi kaliteden ödün vermeden sıkıştırın',
           icon: ArrowPathIcon,
           color: 'bg-purple-50 text-purple-600',
           href: '/image-compress'
         },
         {
-          id: 'background-remove',
-          title: 'Arka Plan Kaldırma',
-          description: 'Fotoğraflarınızın arka planını otomatik kaldırın',
+          id: 'image-resize',
+          title: 'Resim Boyutlandırma',
+          description: 'Resimlerinizi istediğiniz boyutlara getirin',
           icon: CubeTransparentIcon,
           color: 'bg-purple-50 text-purple-600',
-          href: '/background-remove'
+          href: '/image-resize'
+        },
+        {
+          id: 'image-crop',
+          title: 'Resim Kırpma',
+          description: 'Resimlerinizi istediğiniz alandan kırpın',
+          icon: DocumentIcon,
+          color: 'bg-purple-50 text-purple-600',
+          href: '/image-crop'
+        },
+        {
+          id: 'image-rotate',
+          title: 'Resim Döndürme',
+          description: 'Resimlerinizi istediğiniz açıda döndürün',
+          icon: ArrowPathIcon,
+          color: 'bg-purple-50 text-purple-600',
+          href: '/image-rotate'
         }
       ]
     },

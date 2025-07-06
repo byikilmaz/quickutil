@@ -329,10 +329,14 @@ export class ActivityTracker {
       let totalProcessingTime = 0;
       let processedFiles = 0;
       
-      const featureCount: Record<ActivityType, number> = {
+      const featureCount: Record<string, number> = {
         pdf_compress: 0,
         pdf_convert: 0,
-        image_convert: 0
+        image_convert: 0,
+        image_compress: 0,
+        image_resize: 0,
+        image_crop: 0,
+        image_rotate: 0
       };
 
       const currentMonth = new Date().getMonth();
@@ -368,7 +372,7 @@ export class ActivityTracker {
 
                  // Feature usage count
          if (data.type && data.type in featureCount) {
-           featureCount[data.type as ActivityType]++;
+           featureCount[data.type]++;
          }
       });
 

@@ -2,7 +2,7 @@
 export interface UserActivity {
   id?: string;
   userId: string;
-  type: 'pdf_compress' | 'pdf_convert' | 'image_convert';
+  type: 'pdf_compress' | 'pdf_convert' | 'image_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate';
   fileName: string;
   originalFileName: string;
   fileSize: number;
@@ -119,6 +119,10 @@ export interface SystemStats {
     pdfCompress: number;
     pdfConvert: number;
     imageConvert: number;
+    imageCompress: number;
+    imageResize: number;
+    imageCrop: number;
+    imageRotate: number;
   };
   avgProcessingTime: number;
   successRate: number;
