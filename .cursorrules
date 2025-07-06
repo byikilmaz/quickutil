@@ -781,6 +781,81 @@ const clearAllCaches = async () => {
 - **Progressive enhancement**: Graceful fallback for cache failures
 - **Loading states**: Clear feedback during cache operations
 
+## 📧 Email Verification Kuralları
+
+### Resend API Integration
+```typescript
+// Firebase Functions ile Resend kullanımı
+const { Resend } = require('resend');
+const resend = new Resend(RESEND_API_KEY);
+
+const result = await resend.emails.send({
+  from: 'QuickUtil Team <noreply@quickutil.app>',
+  to: [email],
+  subject: '✨ QuickUtil Hesabınızı Doğrulayın',
+  html: htmlTemplate,
+  text: textVersion,
+  tags: [{ name: 'category', value: 'email_verification' }]
+});
+```
+
+### Email Template Guidelines
+- **Professional Design**: QuickUtil branding ile tutarlı
+- **Responsive**: Mobil ve desktop uyumlu
+- **Accessible**: Yüksek kontrastlı renkler, semantic HTML
+- **Modern Animations**: Gradients, shadows, hover effects
+- **CTA Buttons**: Belirgin ve erişilebilir aksiyon butonları
+- **Security Notice**: Güvenlik uyarıları ve süre bildirimi
+
+### Domain Authentication (Gerekli)
+```dns
+# SPF Record
+quickutil.app TXT "v=spf1 include:_spf.resend.com ~all"
+
+# DKIM Record (Resend vereceği)
+re._domainkey.quickutil.app TXT "p=MIGfMA0GCSqGSI..."
+
+# DMARC Record
+_dmarc.quickutil.app TXT "v=DMARC1; p=quarantine;"
+```
+
+### Firebase Functions Structure
+```
+functions/
+├── index.js              # Email functions
+├── package.json          # Resend dependency
+└── .eslintrc.js          # ESLint config
+```
+
+### AuthContext Email Flow
+```typescript
+const register = async (email, password, firstName, lastName) => {
+  // 1. Create user with Firebase Auth
+  const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  
+  // 2. Save profile to Firestore
+  await setDoc(doc(firestore, 'users', user.uid), {
+    firstName, lastName, email, emailVerified: false
+  });
+  
+  // 3. Send verification email via Firebase Function
+  const sendEmail = httpsCallable(functions, 'sendVerificationEmail');
+  await sendEmail({ email, firstName, lastName, verificationLink });
+};
+```
+
+### Verification Page (/verify-email)
+- **Suspense Boundary**: useSearchParams() için gerekli
+- **Loading States**: Spinner ve progress indicators
+- **Success/Error States**: Clear feedback ve next steps
+- **Resend Functionality**: Rate limiting ile email tekrar gönderme
+
+### Email Verification Security
+- **24 saat TTL**: Verification links expire
+- **One-time use**: Bağlantılar tek kullanımlık
+- **UID validation**: User identity verification
+- **Firestore update**: emailVerified flag'i güncelle
+
 ## 📝 Notlar
 
 - Her yeni özellik için Notion'da task oluştur
@@ -789,6 +864,7 @@ const clearAllCaches = async () => {
 - Performance metrics'leri izle
 - User feedback'i toplam ve değerlendir
 - Cache management değişikliklerini test et
+- Email deliverability'yi izle (Resend dashboard)
 
 ---
 

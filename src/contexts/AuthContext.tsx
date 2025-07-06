@@ -44,33 +44,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
+      try {
+        setUser(user);
+        if (user) {
+          try {
+            const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              setUserProfile({
+                firstName: userData.firstName || '',
+                lastName: userData.lastName || '',
+                email: user.email || '',
+                createdAt: userData.createdAt?.toDate() || new Date()
+              });
+            }
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+            // Set basic profile even if Firestore fails
             setUserProfile({
-              firstName: userData.firstName || '',
-              lastName: userData.lastName || '',
+              firstName: '',
+              lastName: '',
               email: user.email || '',
-              createdAt: userData.createdAt?.toDate() || new Date()
+              createdAt: new Date()
             });
           }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
+        } else {
+          setUserProfile(null);
         }
-      } else {
-        setUserProfile(null);
+      } catch (error) {
+        console.error('Auth state change error:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return unsubscribe;
-  }, []);
+  }, [mounted]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -102,20 +121,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Send custom verification email via Firebase Functions
       try {
-        const sendVerificationEmail = httpsCallable(functions, 'sendVerificationEmail');
-        const actionCodeSettings = {
-          url: `${window.location.origin}/verify-email?uid=${user.uid}`,
-          handleCodeInApp: true,
-        };
+        if (typeof window !== 'undefined') {
+          const sendVerificationEmail = httpsCallable(functions, 'sendVerificationEmail');
+          const actionCodeSettings = {
+            url: `${window.location.origin}/verify-email?uid=${user.uid}`,
+            handleCodeInApp: true,
+          };
 
-        await sendVerificationEmail({
-          email,
-          firstName,
-          lastName,
-          verificationLink: actionCodeSettings.url
-        });
-        
-        console.log('Custom verification email sent successfully');
+          await sendVerificationEmail({
+            email,
+            firstName,
+            lastName,
+            verificationLink: actionCodeSettings.url
+          });
+          
+          console.log('Custom verification email sent successfully');
+        } else {
+          // Fallback to Firebase default if window is not available
+          await sendEmailVerification(user);
+        }
       } catch (emailError) {
         console.error('Custom email sending failed, falling back to Firebase default:', emailError);
         // Fallback to Firebase default verification email
@@ -147,20 +171,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Try custom email first
       try {
-        const sendVerificationEmail = httpsCallable(functions, 'sendVerificationEmail');
-        const actionCodeSettings = {
-          url: `${window.location.origin}/verify-email?uid=${user.uid}`,
-          handleCodeInApp: true,
-        };
+        if (typeof window !== 'undefined') {
+          const sendVerificationEmail = httpsCallable(functions, 'sendVerificationEmail');
+          const actionCodeSettings = {
+            url: `${window.location.origin}/verify-email?uid=${user.uid}`,
+            handleCodeInApp: true,
+          };
 
-        await sendVerificationEmail({
-          email: user.email,
-          firstName: userProfile.firstName,
-          lastName: userProfile.lastName,
-          verificationLink: actionCodeSettings.url
-        });
-        
-        console.log('Custom verification email resent successfully');
+          await sendVerificationEmail({
+            email: user.email,
+            firstName: userProfile.firstName,
+            lastName: userProfile.lastName,
+            verificationLink: actionCodeSettings.url
+          });
+          
+          console.log('Custom verification email resent successfully');
+        } else {
+          // Fallback to Firebase default
+          await sendEmailVerification(user);
+        }
       } catch (emailError) {
         console.error('Custom email resend failed, falling back to Firebase default:', emailError);
         // Fallback to Firebase default verification email
@@ -191,6 +220,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     resendVerification
   };
+
+  // Don't render until mounted to prevent hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={value}>
