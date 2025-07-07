@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
 import { 
   PencilSquareIcon, 
@@ -11,7 +10,6 @@ import {
 
 export default function PDFESign() {
   const [currentStep] = useState(1);
-  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const steps = [
     { id: 1, name: 'PDF Yükle', icon: DocumentTextIcon },
@@ -22,7 +20,6 @@ export default function PDFESign() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onAuthClick={() => setShowAuthModal(true)} />
       <Breadcrumb />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -117,11 +114,6 @@ export default function PDFESign() {
           </div>
         </div>
       </div>
-      
-      {/* Show auth modal if needed */}
-      {showAuthModal && (
-        <div>Auth Modal Placeholder</div>
-      )}
     </div>
   );
 } 

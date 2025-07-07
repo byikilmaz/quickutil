@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import Header from '@/components/Header';
 import AuthModal from '@/components/AuthModal';
 import StructuredData from '@/components/StructuredData';
 import { 
@@ -110,8 +109,6 @@ export default function HomePage() {
 
   return (
     <>
-      <Header onAuthClick={() => setIsAuthModalOpen(true)} />
-      
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         
         {/* Structured Data for SEO */}

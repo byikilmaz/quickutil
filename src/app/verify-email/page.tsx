@@ -5,7 +5,7 @@ import { CheckCircleIcon, XCircleIcon, ArrowPathIcon } from '@heroicons/react/24
 import { useAuth } from '@/contexts/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
-import Header from '@/components/Header';
+
 import Link from 'next/link';
 
 function VerifyEmailContent() {
@@ -66,8 +66,6 @@ function VerifyEmailContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onAuthClick={() => setShowAuthModal(true)} />
-      
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
           {verificationStatus === 'loading' && (

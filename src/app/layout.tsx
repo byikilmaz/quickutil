@@ -1,12 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { QuotaProvider } from "@/contexts/QuotaContext";
-import { Toaster } from "react-hot-toast";
-import StructuredData from "@/components/StructuredData";
-import Footer from "@/components/Footer";
 import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
+import ClientLayout from "./ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -70,10 +66,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr">
+    <html lang="tr" className={inter.className}>
       <head>
-        <StructuredData type="website" />
-        <StructuredData type="webapp" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
@@ -119,18 +113,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
-        <AuthProvider>
-          <QuotaProvider>
-            <div className="min-h-screen flex flex-col">
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Toaster position="top-right" />
-          </QuotaProvider>
-        </AuthProvider>
+      <body>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

@@ -9,7 +9,6 @@ import {
   ArrowDownTrayIcon,
   ScissorsIcon
 } from '@heroicons/react/24/outline';
-import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
 import BatchFileUpload, { BatchFile } from '@/components/BatchFileUpload';
 import { useAuth } from '@/contexts/AuthContext';
@@ -270,8 +269,6 @@ export default function ImageBatchPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onAuthClick={() => {}} />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb />
         

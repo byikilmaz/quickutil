@@ -1,8 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { PhotoIcon, ArrowUpTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import Header from '@/components/Header';
 import FileUpload from '@/components/FileUpload';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -159,8 +158,6 @@ export default function ImageConvert() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onAuthClick={() => setShowAuthModal(true)} />
-      
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -362,7 +359,9 @@ export default function ImageConvert() {
                       </>
                     ) : (
                       <>
-                        <ArrowPathIcon className="h-5 w-5" />
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
                         <span>Resmi Dönüştür</span>
                       </>
                     )}
@@ -407,7 +406,9 @@ export default function ImageConvert() {
                     onClick={handleDownload}
                     className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
                   >
-                    <ArrowUpTrayIcon className="h-5 w-5" />
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
                     <span>Dönüştürülmüş Resmi İndir</span>
                   </button>
                 </div>
@@ -428,7 +429,9 @@ export default function ImageConvert() {
           
           <div className="text-center">
             <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <ArrowPathIcon className="h-8 w-8 text-blue-600" />
+              <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
             <h3 className="text-lg font-semibold mb-2">Kalite Kontrolü</h3>
             <p className="text-gray-600">Dosya boyutu ve kalite dengesini ayarlayın</p>
