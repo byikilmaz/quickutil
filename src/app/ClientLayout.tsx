@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { QuotaProvider } from "@/contexts/QuotaContext";
+import { StorageProvider } from "@/contexts/StorageContext";
 import { Toaster } from "react-hot-toast";
 import StructuredData from "@/components/StructuredData";
 import Header from "@/components/Header";
@@ -24,25 +25,27 @@ export default function ClientLayout({
   return (
     <AuthProvider>
       <QuotaProvider>
-        <StructuredData type="website" />
-        <StructuredData type="webapp" />
-        
-        <div className="min-h-screen flex flex-col">
-          {!isAdminPage && <Header onAuthClick={() => setShowAuthModal(true)} />}
-          <main className="flex-grow">
-            {children}
-          </main>
-          {!isAdminPage && <Footer />}
-        </div>
-        
-        {/* Global Auth Modal */}
-        {showAuthModal && (
-          <AuthModal 
-            onClose={() => setShowAuthModal(false)}
-          />
-        )}
-        
-        <Toaster position="top-right" />
+        <StorageProvider>
+          <StructuredData type="website" />
+          <StructuredData type="webapp" />
+          
+          <div className="min-h-screen flex flex-col">
+            {!isAdminPage && <Header onAuthClick={() => setShowAuthModal(true)} />}
+            <main className="flex-grow">
+              {children}
+            </main>
+            {!isAdminPage && <Footer />}
+          </div>
+          
+          {/* Global Auth Modal */}
+          {showAuthModal && (
+            <AuthModal 
+              onClose={() => setShowAuthModal(false)}
+            />
+          )}
+          
+          <Toaster position="top-right" />
+        </StorageProvider>
       </QuotaProvider>
     </AuthProvider>
   );
