@@ -176,7 +176,7 @@ export default function HakkimizdaPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">E-posta</h3>
                   <p className="text-gray-600 mb-4">
-                    destek@quickutil.app
+                    hello@quickutil.app
                   </p>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Çalışma Saatleri</h3>

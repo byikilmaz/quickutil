@@ -1,9 +1,13 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { UserCircleIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCart } from '@/contexts/CartContext';
+import {
+  Bars3Icon,
+  XMarkIcon,
+  ChartBarIcon,
+  ChevronDownIcon
+} from '@heroicons/react/24/outline';
 import CacheManager from './CacheManager';
 
 interface HeaderProps {
@@ -11,224 +15,207 @@ interface HeaderProps {
 }
 
 export default function Header({ onAuthClick }: HeaderProps) {
-  const { user, userProfile, logout } = useAuth();
-  const { itemCount } = useCart();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [legalMenuOpen, setLegalMenuOpen] = useState(false);
+  const { user, userProfile, logout, isAdmin } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const legalMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
       }
-      if (legalMenuRef.current && !legalMenuRef.current.contains(event.target as Node)) {
-        setLegalMenuOpen(false);
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setUserMenuOpen(false);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
-  const getUserDisplayName = () => {
-    if (userProfile) {
-      return `${userProfile.firstName} ${userProfile.lastName}`;
-    }
-    return user?.displayName || user?.email || 'Kullanıcı';
-  };
-
   const getUserInitials = () => {
-    if (userProfile) {
+    if (userProfile?.firstName && userProfile?.lastName) {
       return `${userProfile.firstName.charAt(0)}${userProfile.lastName.charAt(0)}`.toUpperCase();
     }
-    const name = user?.displayName || user?.email || 'K';
-    return name.charAt(0).toUpperCase();
+    return user?.email?.charAt(0).toUpperCase() || 'K';
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-40">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo & Home Link */}
+          
+          {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
-                <span className="text-white font-bold text-sm">Q</span>
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                QuickUtil.app
               </div>
-              <span className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">QuickUtil</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-              Ana Sayfa
-            </Link>
-            <Link href="/pdf-compress" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-              PDF Sıkıştır
-            </Link>
-            <Link href="/pdf-convert" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-              PDF Dönüştür
-            </Link>
-            <Link href="/image-convert" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-              Görsel Dönüştür
-            </Link>
-            <Link href="/pricing" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-              Fiyatlar
-            </Link>
             
-            {/* Legal Pages Dropdown */}
-            <div className="relative" ref={legalMenuRef}>
-              <button
-                onClick={() => setLegalMenuOpen(!legalMenuOpen)}
-                className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 font-medium transition-colors"
-              >
-                <span>Yasal</span>
-                <ChevronDownIcon className="h-4 w-4" />
+            {/* PDF Tools Dropdown */}
+            <div className="relative group">
+              <button className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors">
+                📄 PDF Araçları
+                <ChevronDownIcon className="w-4 h-4 ml-1" />
               </button>
-
-              {legalMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 py-1">
-                  <Link
-                    href="/hakkimizda"
-                    onClick={() => setLegalMenuOpen(false)}
-                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    🏢 Hakkımızda
+              <div className="absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                <div className="py-2">
+                  <Link href="/pdf-compress" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <div className="font-medium">🗜️ PDF Sıkıştırma</div>
+                    <div className="text-sm text-gray-500">Dosya boyutunu küçültün</div>
                   </Link>
-                  <Link
-                    href="/gizlilik-sozlesmesi"
-                    onClick={() => setLegalMenuOpen(false)}
-                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    🔒 Gizlilik Sözleşmesi
+                  <Link href="/pdf-convert" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <div className="font-medium">🔄 PDF Dönüştürme</div>
+                    <div className="text-sm text-gray-500">Farklı formatlara çevirin</div>
                   </Link>
-                  <Link
-                    href="/teslimat-iade"
-                    onClick={() => setLegalMenuOpen(false)}
-                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    📦 Teslimat ve İade
-                  </Link>
-                  <Link
-                    href="/mesafeli-satis-sozlesmesi"
-                    onClick={() => setLegalMenuOpen(false)}
-                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    ⚖️ Mesafeli Satış Sözleşmesi
+                  <Link href="/pdf-esign" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <div className="font-medium">✍️ E-İmza</div>
+                    <div className="text-sm text-gray-500">Dijital imza ekleyin</div>
                   </Link>
                 </div>
-              )}
+              </div>
             </div>
-            
-            {/* Cache Manager - Development Only */}
+
+            {/* Image Tools Dropdown */}
+            <div className="relative group">
+              <button className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors">
+                🖼️ Resim Araçları
+                <ChevronDownIcon className="w-4 h-4 ml-1" />
+              </button>
+              <div className="absolute left-0 mt-1 w-72 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                <div className="py-2">
+                  <div className="grid grid-cols-2 gap-1">
+                    <Link href="/image-compress" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <div className="font-medium">🗜️ Sıkıştırma</div>
+                      <div className="text-xs text-gray-500">Boyut küçültme</div>
+                    </Link>
+                    <Link href="/image-resize" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <div className="font-medium">📏 Boyutlandırma</div>
+                      <div className="text-xs text-gray-500">Ölçek değiştirme</div>
+                    </Link>
+                    <Link href="/image-crop" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <div className="font-medium">✂️ Kırpma</div>
+                      <div className="text-xs text-gray-500">Alan seçme</div>
+                    </Link>
+                    <Link href="/image-rotate" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <div className="font-medium">🔄 Döndürme</div>
+                      <div className="text-xs text-gray-500">Açı değiştirme</div>
+                    </Link>
+                    <Link href="/image-format-convert" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <div className="font-medium">⚡ Format</div>
+                      <div className="text-xs text-gray-500">JPG/PNG dönüştürme</div>
+                    </Link>
+                    <Link href="/image-filters" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <div className="font-medium">🎨 Filtreler</div>
+                      <div className="text-xs text-gray-500">Efekt uygulama</div>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Batch Tools */}
+            <Link href="/image-batch" className="px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors">
+              ⚡ Toplu İşlem
+            </Link>
+
+
+
             {process.env.NODE_ENV === 'development' && (
               <CacheManager className="ml-4" />
             )}
           </nav>
 
-          {/* Right Side: Cart + User Menu */}
+          {/* Right Side: User Menu */}
           <div className="flex items-center space-x-4">
-            {/* Shopping Cart Icon */}
-            <Link
-              href="/cart"
-              className="relative p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              <ShoppingCartIcon className="h-6 w-6" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                  {itemCount > 9 ? '9+' : itemCount}
-                </span>
-              )}
-            </Link>
-
+            
+            {/* User Account Area */}
             {user ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full flex items-center justify-center">
-                    <span className="text-white font-medium text-sm">
-                      {getUserInitials()}
-                    </span>
-                  </div>
-                  <div className="hidden sm:block text-left">
-                    <div className="text-sm font-medium text-gray-700">
-                      {getUserDisplayName()}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {user.email}
-                    </div>
-                  </div>
-                  <ChevronDownIcon className="h-4 w-4 text-gray-400" />
-                </button>
-
-                {/* User Dropdown */}
-                {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 py-1">
-                    <div className="px-4 py-2 border-b border-gray-200">
-                      <p className="text-sm font-medium text-gray-900">
-                        {getUserDisplayName()}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {user.email}
-                      </p>
-                    </div>
-                    <Link
-                      href="/profile"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      Profilim
-                    </Link>
-                    <Link
-                      href="/cart"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      🛒 Sepetim ({itemCount})
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 transition-colors"
-                    >
-                      Çıkış Yap
-                    </button>
-                  </div>
+              <div className="flex items-center space-x-4">
+                {/* Admin Panel Button - sadece admin kullanıcılar için */}
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center space-x-1"
+                  >
+                    <ChartBarIcon className="h-4 w-4" />
+                    <span>Admin</span>
+                  </Link>
                 )}
+                
+                {/* Profile Menu */}
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full flex items-center justify-center">
+                      <span className="text-white font-medium text-sm">
+                        {getUserInitials()}
+                      </span>
+                    </div>
+                    <div className="hidden sm:block text-left">
+                      <div className="text-sm font-medium text-gray-900">
+                        {userProfile?.firstName ? `${userProfile.firstName} ${userProfile.lastName}` : user.email}
+                      </div>
+                    </div>
+                    <ChevronDownIcon className="w-4 h-4 text-gray-500" />
+                  </button>
+
+                  {/* User Dropdown Menu */}
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <div className="text-sm font-medium text-gray-900">
+                          {userProfile?.firstName ? `${userProfile.firstName} ${userProfile.lastName}` : user.email}
+                        </div>
+                        <div className="text-xs text-gray-700">{user.email}</div>
+                      </div>
+                      
+                      <Link 
+                        href="/profile" 
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        👤 Profilim
+                      </Link>
+                      
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        🚪 Çıkış Yap
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <button
                 onClick={onAuthClick}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-colors shadow-md hover:shadow-lg"
               >
-                <UserCircleIcon className="h-5 w-5" />
-                <span className="font-medium">Giriş / Kayıt</span>
+                Giriş / Kayıt
               </button>
             )}
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-500 hover:bg-gray-50 transition-colors"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              {mobileMenuOpen ? (
+              {isMenuOpen ? (
                 <XMarkIcon className="h-6 w-6" />
               ) : (
                 <Bars3Icon className="h-6 w-6" />
@@ -237,129 +224,55 @@ export default function Header({ onAuthClick }: HeaderProps) {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
-            <nav className="flex flex-col space-y-4">
-              <Link 
-                href="/" 
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Ana Sayfa
-              </Link>
-              <Link 
-                href="/pdf-compress" 
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                PDF Sıkıştır
-              </Link>
-              <Link 
-                href="/pdf-convert" 
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                PDF Dönüştür
-              </Link>
-              <Link 
-                href="/image-convert" 
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Görsel Dönüştür
-              </Link>
-              <Link 
-                href="/pricing" 
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Fiyatlar
-              </Link>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div ref={menuRef} className="md:hidden border-t border-gray-200 py-4">
+            <div className="space-y-2">
               
-              {/* Mobile Cart Link */}
-              <Link 
-                href="/cart" 
-                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <ShoppingCartIcon className="h-5 w-5" />
-                <span>Sepetim ({itemCount})</span>
-              </Link>
-              
-              {/* Mobile Legal Links */}
-              <div className="pt-2 border-t border-gray-200">
-                <div className="text-sm font-medium text-gray-500 mb-2">Yasal Sayfalar</div>
-                <div className="space-y-2 pl-4">
-                  <Link 
-                    href="/hakkimizda" 
-                    className="block text-gray-600 hover:text-blue-600 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    🏢 Hakkımızda
-                  </Link>
-                  <Link 
-                    href="/gizlilik-sozlesmesi" 
-                    className="block text-gray-600 hover:text-blue-600 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    🔒 Gizlilik Sözleşmesi
-                  </Link>
-                  <Link 
-                    href="/teslimat-iade" 
-                    className="block text-gray-600 hover:text-blue-600 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    📦 Teslimat ve İade
-                  </Link>
-                  <Link 
-                    href="/mesafeli-satis-sozlesmesi" 
-                    className="block text-gray-600 hover:text-blue-600 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    ⚖️ Mesafeli Satış Sözleşmesi
-                  </Link>
-                </div>
+              {/* PDF Tools */}
+              <div className="space-y-1">
+                <div className="text-sm font-semibold text-gray-900 px-3 py-2">📄 PDF Araçları</div>
+                <Link href="/pdf-compress" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  🗜️ PDF Sıkıştırma
+                </Link>
+                <Link href="/pdf-convert" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  🔄 PDF Dönüştürme
+                </Link>
+                <Link href="/pdf-esign" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  ✍️ E-İmza
+                </Link>
               </div>
-              
-              {user && (
-                <div className="pt-4 border-t border-gray-200">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium text-sm">
-                        {getUserInitials()}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-700">
-                        {getUserDisplayName()}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {user.email}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Link 
-                      href="/profile"
-                      className="block text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Profilim
-                    </Link>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="text-red-700 hover:text-red-800 font-medium transition-colors"
-                    >
-                      Çıkış Yap
-                    </button>
-                  </div>
-                </div>
-              )}
-            </nav>
+
+              {/* Image Tools */}
+              <div className="space-y-1 pt-4 border-t border-gray-100">
+                <div className="text-sm font-semibold text-gray-900 px-3 py-2">🖼️ Resim Araçları</div>
+                <Link href="/image-compress" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  🗜️ Resim Sıkıştırma
+                </Link>
+                <Link href="/image-resize" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  📏 Boyutlandırma
+                </Link>
+                <Link href="/image-crop" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  ✂️ Resim Kırpma
+                </Link>
+                <Link href="/image-rotate" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  🔄 Döndürme
+                </Link>
+                <Link href="/image-format-convert" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  ⚡ Format Dönüştürme
+                </Link>
+                <Link href="/image-filters" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  🎨 Filtreler
+                </Link>
+              </div>
+
+              {/* Other Tools */}
+              <div className="space-y-1 pt-4 border-t border-gray-100">
+                <Link href="/image-batch" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                  ⚡ Toplu İşlem
+                </Link>
+              </div>
+            </div>
           </div>
         )}
       </div>

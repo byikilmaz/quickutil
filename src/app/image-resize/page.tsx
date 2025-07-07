@@ -1,27 +1,27 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { CubeTransparentIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
+import { CubeTransparentIcon, ArrowDownTrayIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { useDropzone } from 'react-dropzone';
 import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
-import FileUpload from '@/components/FileUpload';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { ActivityTracker } from '@/lib/activityTracker';
 import { 
   resizeImage,
   getImageDimensions,
-  validateImageFormat,
   formatFileSize,
   type ConversionResult,
   type ResizeOptions 
 } from '@/lib/imageUtils';
 
+type Stage = 'upload' | 'settings' | 'result';
+
 export default function ImageResize() {
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [stage, setStage] = useState<Stage>('upload');
   const [file, setFile] = useState<File | null>(null);
-  const [resizedFile, setResizedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [width, setWidth] = useState<number | undefined>(undefined);
@@ -32,32 +32,58 @@ export default function ImageResize() {
   const [resizeResult, setResizeResult] = useState<ConversionResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleFileSelect = async (selectedFile: File) => {
-    if (!validateImageFormat(selectedFile)) {
-      setError('Lütfen geçerli bir resim dosyası seçin (PNG, JPEG, WebP, GIF)');
+  // File validation
+  const validateFile = (file: File): string | null => {
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    
+    if (!validTypes.includes(file.type)) {
+      return 'Desteklenen formatlar: JPEG, PNG, WebP, GIF';
+    }
+    
+    if (file.size > maxSize) {
+      return 'Dosya boyutu 50MB\'tan küçük olmalıdır';
+    }
+    
+    return null;
+  };
+
+  // File selection handler
+  const handleFileSelect = async (files: File[]) => {
+    const selectedFile = files[0];
+    const error = validateFile(selectedFile);
+    
+    if (error) {
+      setError(error);
       return;
     }
 
     setFile(selectedFile);
-    setResizedFile(null);
-    setResizeResult(null);
+    setStage('settings');
     setError('');
 
-    // Get original dimensions
     try {
       const dimensions = await getImageDimensions(selectedFile);
       setOriginalDimensions(dimensions);
-      // Set initial values to original dimensions
-      if (!width) setWidth(dimensions.width);
-      if (!height) setHeight(dimensions.height);
+      setWidth(dimensions.width);
+      setHeight(dimensions.height);
     } catch (err) {
       console.error('Error getting image dimensions:', err);
+      setError('Resim boyutları alınamadı');
     }
 
-    // Create preview URL
     const url = URL.createObjectURL(selectedFile);
     setPreviewUrl(url);
   };
+
+  // Dropzone configuration
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileSelect,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
+    },
+    multiple: false
+  });
 
   const handleResize = async () => {
     if (!file || (!width && !height)) {
@@ -79,8 +105,8 @@ export default function ImageResize() {
       };
 
       const result = await resizeImage(file, options);
-      setResizedFile(result.file);
       setResizeResult(result);
+      setStage('result');
 
       // Track activity if user is logged in
       if (user) {
@@ -98,7 +124,6 @@ export default function ImageResize() {
             processingTime,
             compressionRatio: Math.abs(1 - result.compressionRatio) * 100
           });
-          console.log('Image resize activity tracked successfully');
         } catch (activityError) {
           console.error('Activity tracking error:', activityError);
         }
@@ -107,11 +132,9 @@ export default function ImageResize() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Boyutlandırma sırasında hata oluştu');
       
-      // Track failed activity if user is logged in
       if (user && file) {
         try {
           const processingTime = Date.now() - startTime;
-
           await ActivityTracker.createActivity(user.uid, {
             type: 'image_resize',
             fileName: file.name,
@@ -131,30 +154,21 @@ export default function ImageResize() {
   };
 
   const handleDownload = () => {
-    if (!resizedFile) return;
+    if (!resizeResult) return;
 
-    const url = URL.createObjectURL(resizedFile);
+    const url = URL.createObjectURL(resizeResult.file);
     const a = document.createElement('a');
     a.href = url;
-    a.download = resizedFile.name;
+    a.download = resizeResult.file.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  // Cleanup preview URL when component unmounts or file changes
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
   const resetForm = () => {
+    setStage('upload');
     setFile(null);
-    setResizedFile(null);
     setResizeResult(null);
     setError('');
     setOriginalDimensions(null);
@@ -204,346 +218,329 @@ export default function ImageResize() {
     }
   };
 
+  // Cleanup preview URL when component unmounts or file changes
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header onAuthClick={() => setShowAuthModal(true)} />
-      <Breadcrumb />
       
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 bg-purple-100 rounded-full">
-              <CubeTransparentIcon className="h-12 w-12 text-purple-600" />
+      {/* Upload Stage */}
+      {stage === 'upload' && (
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Breadcrumb />
+          
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white mb-4 shadow-lg">
+              <CubeTransparentIcon className="w-8 h-8" />
             </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              Resim Boyutlandırma
+            </h1>
+            <p className="text-gray-700 max-w-md mx-auto">
+              Resimlerinizi istediğiniz boyutlara kolayca getirin
+            </p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Resim Boyutlandırma
-          </h1>
-          <p className="text-lg text-gray-600">
-            Resimlerinizi istediğiniz boyutlara getirin ve boyutlandırma seçeneklerini özelleştirin
-          </p>
-        </div>
 
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          {!file ? (
-            <FileUpload
-              onFileSelect={handleFileSelect}
-              acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
-              maxSize={50 * 1024 * 1024} // 50MB
-              title="Boyutlandırılacak Resmi Yükleyin"
-              description="PNG, JPEG, WebP veya GIF formatında resminizi buraya sürükleyin"
-              currentFiles={[]}
-            />
-          ) : !resizedFile ? (
-            <>
-              {/* Success Upload State */}
-              <FileUpload
-                onFileSelect={handleFileSelect}
-                acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
-                maxSize={50 * 1024 * 1024}
-                title="Boyutlandırılacak Resmi Yükleyin"
-                description="PNG, JPEG, WebP veya GIF formatında resminizi buraya sürükleyin"
-                currentFiles={[file]}
-              />
-              
-              {/* File Processing Section */}
-              <div className="mt-6 space-y-6">
-                {/* File Info & Preview */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* File Info */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3">Seçilen Dosya</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Dosya Adı:</span>
-                        <span className="text-sm font-medium">{file.name}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Boyut:</span>
-                        <span className="text-sm font-medium">{formatFileSize(file.size)}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Format:</span>
-                        <span className="text-sm font-medium uppercase">
-                          {file.type.replace('image/', '')}
-                        </span>
-                      </div>
-                      {originalDimensions && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Mevcut Boyut:</span>
-                          <span className="text-sm font-medium">
-                            {originalDimensions.width} × {originalDimensions.height}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="mt-3 flex items-center justify-between">
-                      <button
-                        onClick={resetForm}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1"
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span>Farklı resim seç</span>
-                      </button>
-                      
-                      <div className="flex items-center space-x-1 text-sm text-green-600">
-                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span>Resim hazır</span>
-                      </div>
-                    </div>
-                  </div>
+          {/* Mobile-Optimized Upload Area */}
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
+              isDragActive
+                ? 'border-blue-500 bg-blue-50 scale-[1.02]'
+                : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+            }`}
+          >
+            <input {...getInputProps()} />
+            <PhotoIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+            
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {isDragActive ? 'Dosyayı Bırakın' : 'Resim Yükleyin'}
+            </h3>
+            <p className="text-sm text-gray-700 mb-4">
+              JPEG, PNG, WebP formatları • Max 50MB
+            </p>
+            
+            <button className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-colors font-medium shadow-lg text-sm">
+              📁 Dosya Seç
+            </button>
 
-                  {/* Preview */}
-                  {previewUrl && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h3 className="font-medium text-gray-900 mb-3">Önizleme</h3>
-                      <div className="relative w-full h-48 bg-white rounded border flex items-center justify-center overflow-hidden">
-                        <Image
-                          src={previewUrl}
-                          alt={`${file?.name || 'Yüklenen dosya'} resim önizlemesi`}
-                          fill
-                          className="object-contain"
-                          unoptimized
-                          loading="lazy"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Resize Settings */}
-                <div className="space-y-4">
-                  <h3 className="font-medium text-gray-900">Boyutlandırma Ayarları</h3>
-                  
-                  {/* Preset Sizes */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hızlı Boyutlar
-                    </label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      <button
-                        onClick={() => setPresetSize(1920, 1080)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        1920×1080 (Full HD)
-                      </button>
-                      <button
-                        onClick={() => setPresetSize(1280, 720)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        1280×720 (HD)
-                      </button>
-                      <button
-                        onClick={() => setPresetSize(800, 600)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        800×600
-                      </button>
-                      <button
-                        onClick={() => setPresetSize(400, 400)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        400×400 (Kare)
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Custom Dimensions */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Genişlik (px)
-                      </label>
-                      <input
-                        type="number"
-                        value={width || ''}
-                        onChange={(e) => handleWidthChange(e.target.value)}
-                        placeholder="Genişlik"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Yükseklik (px)
-                      </label>
-                      <input
-                        type="number"
-                        value={height || ''}
-                        onChange={(e) => handleHeightChange(e.target.value)}
-                        placeholder="Yükseklik"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Aspect Ratio Toggle */}
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="maintain-aspect-ratio"
-                      checked={maintainAspectRatio}
-                      onChange={(e) => setMaintainAspectRatio(e.target.checked)}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                    />
-                    <label htmlFor="maintain-aspect-ratio" className="text-sm text-gray-700">
-                      En-boy oranını koru
-                    </label>
-                  </div>
-
-                  {/* Resize Mode */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Boyutlandırma Modu
-                    </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      <button
-                        onClick={() => setResizeMode('fit')}
-                        className={`p-3 border rounded-lg text-sm font-medium transition-colors ${
-                          resizeMode === 'fit'
-                            ? 'bg-purple-50 border-purple-300 text-purple-700'
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        Sığdır
-                      </button>
-                      <button
-                        onClick={() => setResizeMode('fill')}
-                        className={`p-3 border rounded-lg text-sm font-medium transition-colors ${
-                          resizeMode === 'fill'
-                            ? 'bg-purple-50 border-purple-300 text-purple-700'
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        Doldur
-                      </button>
-                      <button
-                        onClick={() => setResizeMode('stretch')}
-                        className={`p-3 border rounded-lg text-sm font-medium transition-colors ${
-                          resizeMode === 'stretch'
-                            ? 'bg-purple-50 border-purple-300 text-purple-700'
-                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        Uzat
-                      </button>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {resizeMode === 'fit' && 'Resmi verilen boyutlara sığdırır, en-boy oranını korur'}
-                      {resizeMode === 'fill' && 'Verilen alanı tamamen doldurur, kırpma yapılabilir'}
-                      {resizeMode === 'stretch' && 'Resmi tam olarak verilen boyutlara getirir'}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Resize Button */}
-                <div className="flex justify-center">
-                  <button
-                    onClick={handleResize}
-                    disabled={loading || (!width && !height)}
-                    className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        <span>Boyutlandırılıyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CubeTransparentIcon className="h-5 w-5" />
-                        <span>Resmi Boyutlandır</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                    {error}
-                  </div>
-                )}
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm">{error}</p>
               </div>
-            </>
-          ) : (
-            <>
-              {/* Result */}
-              {resizeResult && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="font-medium text-green-900 mb-3">Boyutlandırma Tamamlandı!</h3>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-green-800">Orijinal</h4>
-                      <div className="text-sm text-green-700">
-                        <div>Boyut: {formatFileSize(resizeResult.originalSize)}</div>
-                        {originalDimensions && (
-                          <div>Boyutlar: {originalDimensions.width} × {originalDimensions.height}</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-green-800">Boyutlandırılmış</h4>
-                      <div className="text-sm text-green-700">
-                        <div>Boyut: {formatFileSize(resizeResult.newSize)}</div>
-                        <div>Boyutlar: {width} × {height}</div>
-                      </div>
-                    </div>
-                  </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Settings Stage */}
+      {stage === 'settings' && file && (
+        <div className="flex flex-col h-screen">
+          {/* Mobile Header */}
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CubeTransparentIcon className="w-5 h-5 text-blue-600" />
+                <h1 className="text-lg font-semibold text-gray-900">Boyutlandırma</h1>
+              </div>
+              <button
+                onClick={resetForm}
+                className="text-sm text-gray-800 bg-gray-100 px-3 py-1.5 rounded-lg"
+              >
+                Yeni Resim
+              </button>
+            </div>
+          </div>
+
+          {/* Image Preview */}
+          <div className="bg-gray-100 p-4">
+            {previewUrl && (
+              <div className="bg-white rounded-2xl p-4 mx-auto max-w-sm">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full h-48 object-contain rounded-xl"
+                />
+                <div className="mt-3 text-center text-sm text-gray-700">
+                  <p>{file.name}</p>
+                  <p>{formatFileSize(file.size)} • {originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : ''}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile-Friendly Settings */}
+          <div className="flex-1 bg-white p-4 overflow-y-auto">
+            <div className="space-y-6">
+              
+              {/* Quick Presets */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Hızlı Boyutlar</h3>
+                <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={handleDownload}
-                    className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                    onClick={() => setPresetSize(1920, 1080)}
+                    className="p-3 bg-gray-100 text-gray-800 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
                   >
-                    <ArrowUpTrayIcon className="h-5 w-5" />
-                    <span>Boyutlandırılmış Resmi İndir</span>
+                    📺 Full HD<br/>
+                    <span className="text-xs text-gray-600">1920×1080</span>
+                  </button>
+                  <button
+                    onClick={() => setPresetSize(1280, 720)}
+                    className="p-3 bg-gray-100 text-gray-800 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    📱 HD<br/>
+                    <span className="text-xs text-gray-600">1280×720</span>
+                  </button>
+                  <button
+                    onClick={() => setPresetSize(800, 600)}
+                    className="p-3 bg-gray-100 text-gray-800 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    💻 Standart<br/>
+                    <span className="text-xs text-gray-600">800×600</span>
+                  </button>
+                  <button
+                    onClick={() => setPresetSize(400, 400)}
+                    className="p-3 bg-gray-100 text-gray-800 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    🔲 Kare<br/>
+                    <span className="text-xs text-gray-600">400×400</span>
                   </button>
                 </div>
+              </div>
+
+              {/* Custom Dimensions */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Özel Boyutlar</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Genişlik (px)</label>
+                    <input
+                      type="number"
+                      value={width || ''}
+                      onChange={(e) => handleWidthChange(e.target.value)}
+                      placeholder="Genişlik"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Yükseklik (px)</label>
+                    <input
+                      type="number"
+                      value={height || ''}
+                      onChange={(e) => handleHeightChange(e.target.value)}
+                      placeholder="Yükseklik"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                
+                {/* Aspect Ratio Toggle */}
+                <div className="mt-4 flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="maintain-aspect-ratio"
+                    checked={maintainAspectRatio}
+                    onChange={(e) => setMaintainAspectRatio(e.target.checked)}
+                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="maintain-aspect-ratio" className="text-sm font-medium text-gray-800">
+                    En-boy oranını koru
+                  </label>
+                </div>
+              </div>
+
+              {/* Resize Mode */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Boyutlandırma Modu</h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setResizeMode('fit')}
+                    className={`w-full p-4 rounded-xl text-left transition-colors ${
+                      resizeMode === 'fit'
+                        ? 'bg-blue-100 border-2 border-blue-300 text-blue-800'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="font-medium">🎯 Sığdır</div>
+                    <div className="text-sm opacity-75 mt-1">En-boy oranını koruyarak sığdırır</div>
+                  </button>
+                  <button
+                    onClick={() => setResizeMode('fill')}
+                    className={`w-full p-4 rounded-xl text-left transition-colors ${
+                      resizeMode === 'fill'
+                        ? 'bg-blue-100 border-2 border-blue-300 text-blue-800'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="font-medium">📏 Doldur</div>
+                    <div className="text-sm opacity-75 mt-1">Alanı tamamen doldurur, kırpma yapabilir</div>
+                  </button>
+                  <button
+                    onClick={() => setResizeMode('stretch')}
+                    className={`w-full p-4 rounded-xl text-left transition-colors ${
+                      resizeMode === 'stretch'
+                        ? 'bg-blue-100 border-2 border-blue-300 text-blue-800'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="font-medium">↔️ Uzat</div>
+                    <div className="text-sm opacity-75 mt-1">Tam olarak verilen boyutlara getirir</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Action Button */}
+          <div className="bg-white border-t border-gray-200 p-4 safe-area-bottom">
+            <button
+              onClick={handleResize}
+              disabled={loading || (!width && !height)}
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>İşleniyor...</span>
+                </>
+              ) : (
+                <>
+                  <CubeTransparentIcon className="w-5 h-5" />
+                  <span>Boyutlandır</span>
+                </>
               )}
-            </>
-          )}
-        </div>
-
-        {/* Info Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="bg-purple-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <CubeTransparentIcon className="h-8 w-8 text-purple-600" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Esnek Boyutlandırma</h3>
-            <p className="text-gray-600">Özel boyutlar veya hazır presetler ile kolay boyutlandırma</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">En-Boy Oranı</h3>
-            <p className="text-gray-600">Otomatik en-boy oranı koruması ve özelleştirme seçenekleri</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Yüksek Kalite</h3>
-            <p className="text-gray-600">Gelişmiş algoritma ile kalite kaybı minimum boyutlandırma</p>
+            </button>
+            
+            {error && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm text-center">{error}</p>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Auth Modal */}
+      {/* Result Stage */}
+      {stage === 'result' && resizeResult && (
+        <div className="flex flex-col h-screen">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CubeTransparentIcon className="w-5 h-5 text-green-600" />
+                <h1 className="text-lg font-semibold text-gray-900">Tamamlandı</h1>
+              </div>
+              <button
+                onClick={resetForm}
+                className="text-sm text-gray-800 bg-gray-100 px-3 py-1.5 rounded-lg"
+              >
+                Yeni Resim
+              </button>
+            </div>
+          </div>
+
+          {/* Result Comparison */}
+          <div className="flex-1 bg-gray-100 p-4 overflow-y-auto">
+            <div className="space-y-6">
+              
+              {/* Before/After */}
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-white rounded-2xl p-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Sonuç</h3>
+                  <img
+                    src={URL.createObjectURL(resizeResult.file)}
+                    alt="Boyutlandırılmış resim"
+                    className="w-full h-64 object-contain rounded-xl bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="bg-white rounded-2xl p-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">İstatistikler</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-gray-50 rounded-xl">
+                    <div className="text-sm text-gray-700">Orijinal</div>
+                    <div className="font-medium text-gray-900">{formatFileSize(resizeResult.originalSize)}</div>
+                    {originalDimensions && (
+                      <div className="text-xs text-gray-600">{originalDimensions.width}×{originalDimensions.height}</div>
+                    )}
+                  </div>
+                  <div className="text-center p-3 bg-blue-50 rounded-xl">
+                    <div className="text-sm text-blue-700">Yeni</div>
+                    <div className="font-medium text-blue-900">{formatFileSize(resizeResult.newSize)}</div>
+                    <div className="text-xs text-blue-600">{width}×{height}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Download Section */}
+          <div className="bg-white border-t border-gray-200 p-4 safe-area-bottom">
+            <button
+              onClick={handleDownload}
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 shadow-lg"
+            >
+              <ArrowDownTrayIcon className="w-5 h-5" />
+              <span>İndir</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {showAuthModal && (
-        <AuthModal onClose={() => setShowAuthModal(false)} />
+        <AuthModal 
+          onClose={() => setShowAuthModal(false)} 
+        />
       )}
     </div>
   );

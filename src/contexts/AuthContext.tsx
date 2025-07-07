@@ -13,6 +13,8 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { auth, firestore, functions } from '@/lib/firebase';
 import { analyzeFirebaseError } from '@/lib/errorAnalyzer';
+import { EmailEvents, UserEmailData } from '@/lib/emailService';
+import { isAdminUser } from '@/lib/adminAuth';
 
 interface UserProfile {
   firstName: string;
@@ -24,6 +26,8 @@ interface UserProfile {
 interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
+  isAdmin: boolean;
+  emailVerified: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
@@ -203,6 +207,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await sendEmailVerification(user);
       }
 
+      // Send welcome email after successful registration
+      try {
+        const emailData: UserEmailData = {
+          firstName,
+          lastName,
+          email
+        };
+        
+        const emailResult = await EmailEvents.onUserRegistered(emailData);
+        if (emailResult.success) {
+          console.log('Welcome email sent successfully:', emailResult.messageId);
+        } else {
+          console.error('Welcome email failed:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('Welcome email error:', emailError);
+        // Don't throw - registration should succeed even if email fails
+      }
+
       // Update local state
       setUserProfile({
         firstName,
@@ -317,6 +340,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value: AuthContextType = {
     user,
     userProfile,
+    isAdmin: isAdminUser(user?.email),
+    emailVerified: user?.emailVerified || false,
     loading,
     login,
     register,

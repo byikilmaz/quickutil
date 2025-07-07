@@ -1,367 +1,313 @@
 'use client';
-import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { 
-  DocumentIcon, 
-  PhotoIcon, 
-  ArrowPathIcon, 
-  CubeTransparentIcon,
-  DocumentArrowDownIcon,
-  SparklesIcon,
-  PencilSquareIcon,
-  DocumentTextIcon,
-  QueueListIcon
-} from '@heroicons/react/24/outline';
-import ToolCard from '@/components/ToolCard';
+import { useState } from 'react';
 import Header from '@/components/Header';
+import AuthModal from '@/components/AuthModal';
+import StructuredData from '@/components/StructuredData';
+import { 
+  DocumentArrowDownIcon, 
+  PhotoIcon, 
+  CloudArrowUpIcon,
+  CheckCircleIcon,
+  ShieldCheckIcon,
+  BoltIcon
+} from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
-// Lazy load non-critical components
-const AuthModal = dynamic(() => import('@/components/AuthModal'), {
-  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-96 w-96"></div>,
-  ssr: false,
-});
+export default function HomePage() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-export default function Home() {
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
-  const toolCategories = [
+  const pdfTools = [
     {
-      id: 'pdf-tools',
-      title: 'PDF İşlemleri',
-      description: 'PDF dosyalarınızı sıkıştırın, dönüştürün ve düzenleyin',
-      icon: DocumentIcon,
-      color: 'from-blue-600 to-blue-700',
-      bgColor: 'bg-blue-50',
-      tools: [
-        {
-          id: 'pdf-compress',
-          title: 'PDF Sıkıştırma',
-          description: 'PDF dosyalarınızı kaliteden ödün vermeden sıkıştırın',
-          icon: DocumentArrowDownIcon,
-          color: 'bg-blue-50 text-blue-600',
-          href: '/pdf-compress'
-        },
-        {
-          id: 'pdf-convert',
-          title: 'PDF Dönüştürme',
-          description: 'PDF\'leri farklı formatlara kolayca dönüştürün',
-          icon: DocumentTextIcon,
-          color: 'bg-blue-50 text-blue-600',
-          href: '/pdf-convert'
-        }
-      ]
+      icon: '🗜️',
+      title: 'PDF Sıkıştırma',
+      description: 'PDF dosyalarınızı kalitesini koruyarak küçültün',
+      href: '/pdf-compress',
+      color: 'from-blue-500 to-blue-600'
     },
     {
-      id: 'image-tools',
-      title: 'Fotoğraf İşlemleri',
-      description: 'Fotoğraflarınızı düzenleyin, dönüştürün ve optimize edin',
-      icon: PhotoIcon,
-      color: 'from-purple-600 to-purple-700',
-      bgColor: 'bg-purple-50',
-      tools: [
-        {
-          id: 'image-convert',
-          title: 'Resim Dönüştürme',
-          description: 'PNG, JPEG, WebP formatları arası dönüştürün',
-          icon: PhotoIcon,
-          color: 'bg-purple-50 text-purple-600',
-          href: '/image-convert'
-        },
-        {
-          id: 'image-compress',
-          title: 'Resim Sıkıştırma',
-          description: 'Resimlerinizi kaliteden ödün vermeden sıkıştırın',
-          icon: ArrowPathIcon,
-          color: 'bg-purple-50 text-purple-600',
-          href: '/image-compress'
-        },
-        {
-          id: 'image-resize',
-          title: 'Resim Boyutlandırma',
-          description: 'Resimlerinizi istediğiniz boyutlara getirin',
-          icon: CubeTransparentIcon,
-          color: 'bg-purple-50 text-purple-600',
-          href: '/image-resize'
-        },
-        {
-          id: 'image-crop',
-          title: 'Resim Kırpma',
-          description: 'Resimlerinizi istediğiniz alandan kırpın',
-          icon: DocumentIcon,
-          color: 'bg-purple-50 text-purple-600',
-          href: '/image-crop'
-        },
-        {
-          id: 'image-rotate',
-          title: 'Resim Döndürme',
-          description: 'Resimlerinizi istediğiniz açıda döndürün',
-          icon: ArrowPathIcon,
-          color: 'bg-purple-50 text-purple-600',
-          href: '/image-rotate'
-        },
-        {
-          id: 'image-filters',
-          title: 'Resim Filtreleme',
-          description: 'Professional filtrelerle resimlerinizi enhance edin',
-          icon: SparklesIcon,
-          color: 'bg-purple-50 text-purple-600',
-          href: '/image-filters',
-          badge: 'YENİ'
-        },
-        {
-          id: 'image-batch',
-          title: 'Batch İşleme',
-          description: 'Birden fazla resmi aynı anda işleyin - sıkıştırma, boyutlandırma, kırpma',
-          icon: QueueListIcon,
-          color: 'bg-purple-50 text-purple-600',
-          href: '/image-batch',
-          badge: 'YENİ'
-        }
-      ]
+      icon: '🔄',
+      title: 'PDF Dönüştürme',
+      description: 'PDF\'leri resim formatlarına dönüştürün',
+      href: '/pdf-convert',
+      color: 'from-purple-500 to-purple-600'
     },
     {
-      id: 'esign-tools',
-      title: 'E-İmza Sistemi',
-      description: 'PDF belgelerinizi dijital olarak imzalayın ve gönderin',
-      icon: PencilSquareIcon,
-      color: 'from-green-600 to-green-700',
-      bgColor: 'bg-green-50',
-      tools: [
-        {
-          id: 'pdf-esign',
-          title: 'PDF E-İmza',
-          description: 'PDF belgelerine dijital imza ekleyin ve gönderin',
-          icon: PencilSquareIcon,
-          color: 'bg-green-50 text-green-600',
-          href: '/pdf-esign',
-          badge: 'YENİ'
-        }
-      ]
+      icon: '✍️',
+      title: 'E-İmza',
+      description: 'PDF belgelerinize dijital imza ekleyin',
+      href: '/pdf-esign',
+      color: 'from-green-500 to-green-600'
+    }
+  ];
+
+  const imageTools = [
+    {
+      icon: '🗜️',
+      title: 'Resim Sıkıştırma',
+      description: 'Resimlerinizi kalitesini koruyarak küçültün',
+      href: '/image-compress',
+      color: 'from-red-500 to-red-600'
+    },
+    {
+      icon: '📏',
+      title: 'Boyutlandırma',
+      description: 'Resimlerinizin boyutlarını değiştirin',
+      href: '/image-resize',
+      color: 'from-orange-500 to-orange-600'
+    },
+    {
+      icon: '✂️',
+      title: 'Kırpma',
+      description: 'Resimlerinizi istediğiniz alana kırpın',
+      href: '/image-crop',
+      color: 'from-yellow-500 to-yellow-600'
+    },
+    {
+      icon: '🔄',
+      title: 'Döndürme',
+      description: 'Resimlerinizi istediğiniz açıda döndürün',
+      href: '/image-rotate',
+      color: 'from-teal-500 to-teal-600'
+    },
+    {
+      icon: '⚡',
+      title: 'Format Dönüştürme',
+      description: 'Resimlerinizi farklı formatlara çevirin',
+      href: '/image-format-convert',
+      color: 'from-indigo-500 to-indigo-600'
+    },
+    {
+      icon: '🎨',
+      title: 'Filtreler',
+      description: 'Resimlerinize çeşitli efektler uygulayın',
+      href: '/image-filters',
+      color: 'from-pink-500 to-pink-600'
+    }
+  ];
+
+  const features = [
+    {
+      icon: <BoltIcon className="h-8 w-8" />,
+      title: 'Tamamen Ücretsiz',
+      description: 'Tüm özelliklerimiz sonsuza kadar ücretsiz. Ödeme yok, abonelik yok.'
+    },
+    {
+      icon: <ShieldCheckIcon className="h-8 w-8" />,
+      title: 'Güvenli & Gizli',
+      description: 'Dosyalarınız SSL ile korunur ve işlem sonrası otomatik silinir.'
+    },
+    {
+      icon: <CloudArrowUpIcon className="h-8 w-8" />,
+      title: '30 Gün Saklama',
+      description: 'Kayıtlı kullanıcılar dosyalarına 30 gün boyunca erişebilir.'
+    },
+    {
+      icon: <CheckCircleIcon className="h-8 w-8" />,
+      title: 'Sınırsız Kullanım',
+      description: 'Günlük limit yok, istediğiniz kadar dosya işleyebilirsiniz.'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header onAuthClick={() => setShowAuthModal(true)} />
+    <>
+      <Header onAuthClick={() => setIsAuthModalOpen(true)} />
       
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-purple-700 text-white overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-10 -right-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-1/2 -left-20 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className={`text-center transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="mb-6">
-              <SparklesIcon className="w-16 h-16 mx-auto mb-4 text-yellow-300 animate-pulse" />
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                Dosya İşleme Araçları
+        {/* Structured Data for SEO */}
+        <StructuredData type="website" />
+        
+        {/* Hero Section */}
+        <section className="relative pt-20 pb-16 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              
+              {/* Free Badge */}
+              <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-8 animate-bounce-in">
+                🎉 Tamamen Ücretsiz! Tüm özellikler herkese açık
+              </div>
+              
+              <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 animate-fade-in">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  QuickUtil.app
+                </span>
               </h1>
-            </div>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-4xl mx-auto">
-              PDF sıkıştırma, format dönüştürme ve fotoğraf işleme işlemlerinizi
-              <br />
-              <span className="font-semibold text-yellow-300">ücretsiz</span> ve <span className="font-semibold text-yellow-300">hızlı</span> bir şekilde yapın
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <div className="flex items-center gap-2 text-blue-100 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Kayıt gerektirmez
-              </div>
-              <div className="flex items-center gap-2 text-blue-100 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Verileriniz güvende
-              </div>
-              <div className="flex items-center gap-2 text-blue-100 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Hızlı işlem
+              
+              <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto animate-slide-in">
+                PDF sıkıştırma, resim düzenleme ve format dönüştürme araçlarının <strong>tamamı ücretsiz!</strong> 
+                Hızlı, güvenli ve kullanımı kolay.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 animate-fade-in">
+                <Link
+                  href="/pdf-compress"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  🚀 Hemen Başla - Ücretsiz!
+                </Link>
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl text-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all duration-300"
+                >
+                  📝 Kayıt Ol (30 Gün Dosya Saklama)
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Tools Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className={`text-center mb-16 transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Araçlarımız
-          </h2>
-          <p className="text-xl text-gray-600">
-            İhtiyacınız olan tüm dosya işleme araçları kategoriler halinde
-          </p>
-        </div>
-
-        <div className="space-y-16">
-          {toolCategories.map((category, categoryIndex) => (
-            <div 
-              key={category.id}
-              className={`transition-all duration-1000 ${
-                isLoaded 
-                  ? 'opacity-100 translate-y-0' 
-                  : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: `${400 + categoryIndex * 200}ms` }}
-            >
-              {/* Category Header */}
-              <div className="text-center mb-8">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r ${category.color} text-white mb-4 shadow-lg`}>
-                  <category.icon className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                  {category.title}
-                </h3>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  {category.description}
-                </p>
-              </div>
-
-              {/* Category Tools */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {category.tools.map((tool, toolIndex) => (
-                  <div 
-                    key={tool.id}
-                    className={`transition-all duration-700 ${
-                      isLoaded 
-                        ? 'opacity-100 translate-y-0' 
-                        : 'opacity-0 translate-y-10'
-                    }`}
-                    style={{ transitionDelay: `${600 + categoryIndex * 200 + toolIndex * 100}ms` }}
-                  >
-                    <ToolCard tool={tool} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="bg-gradient-to-br from-white to-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`text-center mb-12 transition-all duration-1000 delay-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Neden QuickUtil?
-            </h2>
-            <p className="text-lg text-gray-600">
-              Dosya işleme süreçlerinizi kolaylaştıran özellikleri keşfedin
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className={`text-center transition-all duration-700 delay-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Hızlı İşlem</h3>
-              <p className="text-gray-600">Dosyalarınızı saniyeler içinde işleme alıyoruz</p>
-            </div>
-            
-            <div className={`text-center transition-all duration-700 delay-1100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-gradient-to-br from-green-100 to-green-200 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Güvenli</h3>
-              <p className="text-gray-600">Dosyalarınız işlem sonrası otomatik olarak silinir</p>
-            </div>
-            
-            <div className={`text-center transition-all duration-700 delay-1200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-gradient-to-br from-purple-100 to-purple-200 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Ücretsiz</h3>
-              <p className="text-gray-600">Tüm araçlarımızı ücretsiz kullanabilirsiniz</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing CTA Section */}
-      <section className="py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`bg-gradient-to-r from-blue-600 to-purple-700 rounded-3xl p-8 md:p-12 text-center text-white shadow-2xl transition-all duration-1000 delay-1300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm mb-4">
-                <svg className="w-8 h-8 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Daha Fazla Özellik mi Gerekiyor?
+        {/* Features Section */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Neden QuickUtil.app?
               </h2>
-              <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-                Premium özellikler ile dosya işleme süreçlerinizi bir üst seviyeye taşıyın. 
-                Sınırsız kullanım, gelişmiş özellikler ve öncelik desteği.
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+                Reklamlarla desteklenen hizmetimiz sayesinde tüm özelliklerimizi ücretsiz sunuyoruz
               </p>
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Sınırsız işlem
-              </div>
-              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Öncelik desteği
-              </div>
-              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Gelişmiş özellikler
-              </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="text-center p-6 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:shadow-lg transition-all duration-300 animate-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-700">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
             </div>
-            
+          </div>
+        </section>
+
+        {/* PDF Tools Section */}
+        <section className="py-16 bg-gradient-to-br from-blue-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <DocumentArrowDownIcon className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                📄 PDF Araçları
+              </h2>
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+                PDF dosyalarınızı sıkıştırın, dönüştürün ve dijital imza ekleyin
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {pdfTools.map((tool, index) => (
+                <Link
+                  key={index}
+                  href={tool.href}
+                  className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl hover:border-blue-300 transition-all duration-300 animate-slide-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className={`w-16 h-16 bg-gradient-to-br ${tool.color} rounded-2xl flex items-center justify-center mb-6 text-white text-2xl group-hover:scale-110 transition-transform duration-300`}>
+                    {tool.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                    {tool.title}
+                  </h3>
+                  <p className="text-gray-700 group-hover:text-gray-800 transition-colors">
+                    {tool.description}
+                  </p>
+                  <div className="mt-4 text-blue-600 font-medium group-hover:text-blue-700 transition-colors">
+                    Hemen Başla →
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Image Tools Section */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <PhotoIcon className="h-16 w-16 text-purple-600 mx-auto mb-4" />
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                🖼️ Resim Araçları
+              </h2>
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+                Resimlerinizi düzenleyin, sıkıştırın ve farklı formatlara dönüştürün
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {imageTools.map((tool, index) => (
+                <Link
+                  key={index}
+                  href={tool.href}
+                  className="group bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:border-purple-300 transition-all duration-300 animate-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className={`w-14 h-14 bg-gradient-to-br ${tool.color} rounded-xl flex items-center justify-center mb-4 text-white text-xl group-hover:scale-110 transition-transform duration-300`}>
+                    {tool.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
+                    {tool.title}
+                  </h3>
+                  <p className="text-gray-700 text-sm group-hover:text-gray-800 transition-colors">
+                    {tool.description}
+                  </p>
+                  <div className="mt-3 text-purple-600 font-medium text-sm group-hover:text-purple-700 transition-colors">
+                    Kullan →
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Batch Processing */}
+            <div className="mt-12 text-center">
+              <Link
+                href="/image-batch"
+                className="inline-flex items-center bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                ⚡ Toplu İşlem - Birden Fazla Dosya
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 bg-gradient-to-br from-blue-600 to-purple-700 text-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Hemen Başlayın - Tamamen Ücretsiz!
+            </h2>
+            <p className="text-xl mb-8 opacity-90">
+              Kayıt olmadan da tüm araçları kullanabilirsiniz. Dosya saklamak için ücretsiz hesap oluşturun.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/pricing"
-                className="inline-flex items-center justify-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg"
+              <Link
+                href="/pdf-compress"
+                className="bg-white text-blue-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
-                Fiyatları İncele
-                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </a>
-              <button 
-                onClick={() => setShowAuthModal(true)}
-                className="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-colors"
+                🚀 Araçları Kullan
+              </Link>
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300"
               >
-                Ücretsiz Dene
+                📝 Ücretsiz Kayıt Ol
               </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <AuthModal onClose={() => setShowAuthModal(false)} />
+      {isAuthModalOpen && (
+        <AuthModal onClose={() => setIsAuthModalOpen(false)} />
       )}
-    </div>
+    </>
   );
 }

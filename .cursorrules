@@ -1066,7 +1066,7 @@ const { Resend } = require('resend');
 const resend = new Resend(RESEND_API_KEY);
 
 const result = await resend.emails.send({
-  from: 'QuickUtil Team <noreply@quickutil.app>',
+  from: 'QuickUtil Team <hello@quickutil.app>',
   to: [email],
   subject: '✨ QuickUtil Hesabınızı Doğrulayın',
   html: htmlTemplate,
@@ -1811,6 +1811,357 @@ describe('İyzico Integration', () => {
 - [ ] Performance monitoring
 - [ ] Security incident response
 - [ ] Customer support integration
+
+## 🔧 Admin Panel & Analytics System Kuralları
+
+### Admin Authentication & Authorization
+```typescript
+// Admin kullanıcı kontrol sistemi
+const ADMIN_EMAILS = [
+  'hello@quickutil.app',
+  'admin@quickutil.app'
+];
+
+export function isAdminUser(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
+// Admin yetkileri
+export function getAdminPermissions(email: string): string[] {
+  if (!isAdminUser(email)) return [];
+  
+  return [
+    'view_analytics',
+    'view_users', 
+    'view_activities',
+    'export_data',
+    'manage_users',
+    'view_system_logs'
+  ];
+}
+```
+
+### Admin Dashboard Structure
+```typescript
+// Admin sayfalarının yapısı
+src/app/admin/
+├── page.tsx              # Ana dashboard (KPI, metrics, overview)
+├── users/page.tsx        # Kullanıcı yönetimi ve detayları
+├── activities/page.tsx   # Real-time aktivite logları
+└── reports/page.tsx      # Charts ve raporlama sistemi
+```
+
+### Analytics Service Implementation
+```typescript
+// Firebase'den real-time veri çekme
+export class AdminAnalytics {
+  // Dashboard metrikleri
+  static async getDashboardMetrics(): Promise<AdminMetrics> {
+    const [
+      totalUsers,
+      totalActivities, 
+      todayActivities,
+      successRate,
+      popularFeatures,
+      recentErrors
+    ] = await Promise.all([
+      this.getTotalUsers(),
+      this.getTotalActivities(),
+      this.getTodayActivities(), 
+      this.getSuccessRate(),
+      this.getPopularFeatures(),
+      this.getRecentErrors()
+    ]);
+    
+    return { totalUsers, totalActivities, /* ... */ };
+  }
+  
+  // Aktivite trendleri (son 30 gün)
+  static async getActivityTrends(): Promise<ActivityTrend[]> {
+    // Günlük aktivite sayıları ve trend analizi
+  }
+  
+  // Kullanıcı detayları ve aktivite geçmişi
+  static async getUserDetails(userId: string): Promise<UserDetails> {
+    // Kullanıcı bilgileri + aktivite istatistikleri
+  }
+}
+```
+
+### Admin UI/UX Design Patterns
+
+### Dashboard KPI Cards
+```typescript
+// Metric kartları için standart yapı
+function KPICard({ 
+  title, 
+  value, 
+  icon: Icon, 
+  color = 'blue' 
+}: KPICardProps) {
+  const colorClasses = {
+    blue: 'bg-blue-50 text-blue-600 border-blue-200',
+    green: 'bg-green-50 text-green-600 border-green-200',
+    yellow: 'bg-yellow-50 text-yellow-600 border-yellow-200',
+    red: 'bg-red-50 text-red-600 border-red-200'
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-600 mb-1">{title}</p>
+          <p className="text-2xl font-bold text-gray-900">{value}</p>
+        </div>
+        <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
+          <Icon className="h-6 w-6" />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### Charts & Visualization (Recharts)
+```typescript
+// Recharts kullanımı için standart yapı
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
+
+// Activity trend line chart
+<ResponsiveContainer width="100%" height="100%">
+  <LineChart data={chartData}>
+    <CartesianGrid strokeDasharray="3 3" />
+    <XAxis 
+      dataKey="date" 
+      tickFormatter={(date) => new Date(date).toLocaleDateString('tr-TR')}
+    />
+    <YAxis />
+    <Tooltip 
+      labelFormatter={(date) => new Date(date).toLocaleDateString('tr-TR')}
+    />
+    <Line 
+      type="monotone" 
+      dataKey="total" 
+      stroke="#3B82F6" 
+      strokeWidth={2}
+    />
+  </LineChart>
+</ResponsiveContainer>
+```
+
+### Admin Navigation & Route Protection
+```typescript
+// Admin route protection middleware
+useEffect(() => {
+  if (!loading && (!user || !isAdmin)) {
+    router.push('/admin');
+    return;
+  }
+}, [user, isAdmin, loading, router]);
+
+// Header'da admin link (sadece admin kullanıcılar için)
+{isAdmin && (
+  <Link
+    href="/admin"
+    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center space-x-1"
+  >
+    <ChartBarIcon className="h-4 w-4" />
+    <span>Admin</span>
+  </Link>
+)}
+```
+
+### User Management Features
+```typescript
+// Kullanıcı listesi ve detay yönetimi
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  emailVerified: boolean;
+  createdAt: Date;
+  lastLoginAt?: Date;
+  activityCount?: number;
+}
+
+// Search & filter functionality
+const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+const [searchQuery, setSearchQuery] = useState('');
+
+useEffect(() => {
+  if (searchQuery.trim() === '') {
+    setFilteredUsers(users);
+  } else {
+    const filtered = users.filter(user =>
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }
+}, [searchQuery, users]);
+```
+
+### Activity Logs & Real-time Monitoring
+```typescript
+// Activity log filtering sistemi
+interface ActivityFilter {
+  status: 'all' | 'success' | 'error' | 'processing';
+  feature: string; // 'all' veya spesifik feature adı
+  dateRange?: { start: Date; end: Date };
+}
+
+// Status badge gösterimi
+const getStatusBadge = (status: string) => {
+  const config = {
+    success: { bg: 'bg-green-100', text: 'text-green-800', label: 'Başarılı' },
+    error: { bg: 'bg-red-100', text: 'text-red-800', label: 'Hata' },
+    processing: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'İşleniyor' }
+  };
+  
+  return config[status] || config.success;
+};
+```
+
+### Reports & Export Functionality
+```typescript
+// Rapor export özellikleri (gelecek geliştirme)
+const exportOptions = [
+  { format: 'csv', label: 'CSV Raporu', icon: ArrowDownTrayIcon },
+  { format: 'excel', label: 'Excel Raporu', icon: ArrowDownTrayIcon },
+  { format: 'pdf', label: 'PDF Raporu', icon: ArrowDownTrayIcon }
+];
+
+// Date range selection
+const dateRanges = [
+  { value: '7d', label: 'Son 7 Gün' },
+  { value: '30d', label: 'Son 30 Gün' },
+  { value: '90d', label: 'Son 90 Gün' }
+];
+```
+
+### Admin Performance & Security
+```typescript
+// Database query optimization
+const ADMIN_QUERY_LIMITS = {
+  USERS: 100,           // Kullanıcı listesi limit
+  ACTIVITIES: 200,      // Aktivite log limit
+  TRENDS: 1000,        // Trend analizi için aktivite limit
+  ERRORS: 100          // Error log limit
+};
+
+// Caching strategy
+const ADMIN_CACHE_TTL = {
+  DASHBOARD_METRICS: 5 * 60 * 1000,    // 5 dakika
+  USER_LIST: 10 * 60 * 1000,           // 10 dakika
+  ACTIVITY_LOGS: 2 * 60 * 1000,        // 2 dakika
+  CHARTS_DATA: 15 * 60 * 1000          // 15 dakika
+};
+```
+
+### Admin Error Handling & User Feedback
+```typescript
+// Comprehensive error handling
+const [error, setError] = useState<string | null>(null);
+const [loading, setLoading] = useState(true);
+
+const loadAdminData = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+    const data = await AdminAnalytics.getDashboardMetrics();
+    setMetrics(data);
+  } catch (err) {
+    console.error('Admin data loading error:', err);
+    setError('Veriler yüklenirken hata oluştu. Lütfen sayfayı yenileyin.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Error state UI
+{error && (
+  <div className="text-center py-12">
+    <ExclamationTriangleIcon className="h-16 w-16 text-red-500 mx-auto mb-4" />
+    <h1 className="text-2xl font-bold text-gray-900 mb-2">Hata</h1>
+    <p className="text-gray-600">{error}</p>
+    <button
+      onClick={() => window.location.reload()}
+      className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+    >
+      Yeniden Dene
+    </button>
+  </div>
+)}
+```
+
+### Admin Analytics Integration
+```typescript
+// Admin panelde özel analytics tracking
+const adminAnalytics = {
+  trackAdminLogin: (adminEmail: string) => {
+    logEvent(analytics, 'admin_login', {
+      admin_email: adminEmail,
+      timestamp: new Date().toISOString()
+    });
+  },
+  
+  trackAdminAction: (action: string, details?: any) => {
+    logEvent(analytics, 'admin_action', {
+      action,
+      details,
+      timestamp: new Date().toISOString()
+    });
+  },
+  
+  trackDataExport: (format: string, dataType: string) => {
+    logEvent(analytics, 'admin_data_export', {
+      format,
+      data_type: dataType,
+      timestamp: new Date().toISOString()
+    });
+  }
+};
+```
+
+## 📊 Admin Panel Testing Requirements
+
+### Manual Testing Checklist
+- [ ] Admin authentication: hello@quickutil.app ile giriş
+- [ ] Dashboard metrics: Real-time data doğruluğu
+- [ ] User management: List, search, detail view
+- [ ] Activity logs: Filter, real-time updates
+- [ ] Charts: Recharts rendering ve data accuracy
+- [ ] Route protection: Non-admin access blocking
+- [ ] Mobile responsiveness: Admin panel mobile uyumluluğu
+- [ ] Error handling: Network failures, data loading errors
+
+### Performance Monitoring
+```typescript
+// Admin panel performance metrikleri
+const performanceMetrics = {
+  dashboardLoadTime: '< 2 seconds',
+  userListLoadTime: '< 3 seconds', 
+  chartRenderTime: '< 1 second',
+  activityLogRefresh: '< 1 second',
+  searchResponseTime: '< 500ms'
+};
+```
 
 ---
 

@@ -1,18 +1,58 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { StorageProvider } from "@/contexts/StorageContext";
-import { CartProvider } from "@/contexts/CartContext";
+import { QuotaProvider } from "@/contexts/QuotaContext";
+import { Toaster } from "react-hot-toast";
 import StructuredData from "@/components/StructuredData";
 import Footer from "@/components/Footer";
 import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Next.js 15 viewport export
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#3B82F6'
+};
+
 // Dynamic metadata based on page
 export const metadata: Metadata = {
   ...generatePageMetadata(getPageSEOData('home')),
+  title: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
+  description: 'PDF sıkıştırma, resim düzenleme ve format dönüştürme araçları. Tamamen ücretsiz, güvenli ve hızlı.',
+  keywords: 'PDF sıkıştırma, resim düzenleme, format dönüştürme, ücretsiz araçlar',
+  authors: [{ name: 'QuickUtil Team' }],
+  robots: 'index, follow',
+  openGraph: {
+    title: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
+    description: 'PDF ve resim işleme araçlarının tamamı ücretsiz! Hemen başlayın.',
+    url: 'https://quickutil.app',
+    siteName: 'QuickUtil.app',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
+      },
+    ],
+    locale: 'tr_TR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
+    description: 'PDF sıkıştırma, resim düzenleme ve format dönüştürme araçları. Tamamen ücretsiz!',
+    images: ['/og-image.jpg'],
+  },
+  alternates: {
+    canonical: 'https://quickutil.app',
+    languages: {
+      'tr-TR': 'https://quickutil.app',
+    },
+  },
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -34,6 +74,9 @@ export default function RootLayout({
       <head>
         <StructuredData type="website" />
         <StructuredData type="webapp" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
         {/* Service Worker Registration */}
         <script
           dangerouslySetInnerHTML={{
@@ -78,16 +121,15 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <StorageProvider>
-            <CartProvider>
-              <div className="min-h-screen flex flex-col">
-                <main className="flex-grow">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-            </CartProvider>
-          </StorageProvider>
+          <QuotaProvider>
+            <div className="min-h-screen flex flex-col">
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Toaster position="top-right" />
+          </QuotaProvider>
         </AuthProvider>
       </body>
     </html>

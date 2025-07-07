@@ -9,15 +9,36 @@ export type BatchOperation =
   | 'filter'
   | 'convert';
 
+export interface OperationParams {
+  quality?: number;
+  format?: string;
+  width?: number;
+  height?: number;
+  maintainAspectRatio?: boolean;
+  x?: number;
+  y?: number;
+  angle?: number;
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+}
+
+export interface ProcessingResult {
+  file?: File;
+  url?: string;
+  size?: number;
+  type?: string;
+}
+
 export interface BatchOperationConfig {
   operation: BatchOperation;
-  params: any; // Operation-specific parameters
+  params: OperationParams; // Operation-specific parameters
 }
 
 export interface BatchProcessorOptions {
   maxConcurrent?: number;
   onProgress?: (fileId: string, progress: number) => void;
-  onComplete?: (fileId: string, result: any) => void;
+  onComplete?: (fileId: string, result: ProcessingResult) => void;
   onError?: (fileId: string, error: string) => void;
   onBatchComplete?: (results: BatchResult[]) => void;
 }
@@ -25,9 +46,22 @@ export interface BatchProcessorOptions {
 export interface BatchResult {
   fileId: string;
   success: boolean;
-  result?: any;
+  result?: ProcessingResult;
   error?: string;
   processingTime: number;
+}
+
+interface ProcessingResultInternal {
+  success: boolean;
+  error?: string;
+  data?: Blob;
+  originalFile?: File;
+}
+
+interface BatchProgress {
+  completed: number;
+  total: number;
+  currentFile?: string;
 }
 
 export class BatchProcessor {
@@ -37,12 +71,18 @@ export class BatchProcessor {
   private isProcessing = false;
   private shouldStop = false;
   private currentlyProcessing = new Set<string>();
+  private onProgress?: (progress: BatchProgress) => void;
+  private onFileComplete?: (result: ProcessingResult) => void;
   
-  constructor(options: BatchProcessorOptions = {}) {
+  constructor(
+    onProgress?: (progress: BatchProgress) => void,
+    onFileComplete?: (result: ProcessingResult) => void
+  ) {
     this.options = {
       maxConcurrent: 3, // Process 3 files simultaneously
-      ...options
     };
+    this.onProgress = onProgress;
+    this.onFileComplete = onFileComplete;
   }
 
   public setFiles(files: BatchFile[]): void {
@@ -171,7 +211,7 @@ export class BatchProcessor {
     }
   }
 
-  private async executeOperation(file: File, config: BatchOperationConfig): Promise<any> {
+  private async executeOperation(file: File, config: BatchOperationConfig): Promise<ProcessingResult> {
     const { operation, params } = config;
     
     switch (operation) {
@@ -202,6 +242,21 @@ export class BatchProcessor {
       default:
         throw new Error(`Unsupported operation: ${operation}`);
     }
+  }
+
+  private async processImageFile(
+    file: File, 
+    options: ProcessingOptions
+  ): Promise<ProcessingResult> {
+    // Implementation of processImageFile method
+  }
+
+  private async processFileWithOperation(
+    file: File,
+    operation: string,
+    params: Record<string, unknown>
+  ): Promise<Blob> {
+    // Implementation of processFileWithOperation method
   }
 }
 
@@ -267,20 +322,20 @@ export const BatchOperations = {
   },
   
   // Validate parameters for each operation
-  validateParams: (operation: BatchOperation, params: any): boolean => {
+  validateParams: (operation: BatchOperation, params: OperationParams): boolean => {
     switch (operation) {
       case 'compress':
-        return params.quality >= 0.1 && params.quality <= 1.0;
+        return (params.quality || 0) >= 0.1 && (params.quality || 0) <= 1.0;
       case 'resize':
-        return params.width > 0 && params.height > 0;
+        return (params.width || 0) > 0 && (params.height || 0) > 0;
       case 'crop':
-        return params.width > 0 && params.height > 0;
+        return (params.width || 0) > 0 && (params.height || 0) > 0;
       case 'rotate':
         return typeof params.angle === 'number';
       case 'filter':
         return typeof params === 'object';
       case 'convert':
-        return ['png', 'jpeg', 'webp'].includes(params.format);
+        return ['png', 'jpeg', 'webp'].includes(params.format || '');
       default:
         return true;
     }

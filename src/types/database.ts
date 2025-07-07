@@ -2,7 +2,8 @@
 export interface UserActivity {
   id?: string;
   userId: string;
-  type: 'pdf_compress' | 'pdf_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter' | 'image_batch';
+  type: 'pdf_compress' | 'pdf_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter' | 'image_batch'
+  | 'image_convert' | 'image_convert';
   fileName: string;
   originalFileName: string;
   fileSize: number;
@@ -17,6 +18,7 @@ export interface UserActivity {
   expiresAt: Date; // 30 days from creation
   ipAddress?: string;
   userAgent?: string;
+  errorMessage?: string; // Error message for failed operations
 }
 
 // File Metadata for Google Drive Integration
@@ -155,7 +157,8 @@ export interface ProcessingQueue {
   userId: string;
   fileName: string;
   fileSize: number;
-  type: 'pdf_compress' | 'pdf_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter' | 'image_batch';
+  type: 'pdf_compress' | 'pdf_convert' | 'image_compress' | 'image_resize' | 'image_crop' | 'image_rotate' | 'image_filter' | 'image_batch'
+  | 'image_convert' | 'image_convert';
   priority: 'low' | 'normal' | 'high';
   status: 'queued' | 'processing' | 'completed' | 'failed';
   queuedAt: Date;
@@ -203,6 +206,7 @@ export interface UsageAnalytics {
 
 // Firestore Collection Names (for consistency)
 export const COLLECTIONS = {
+  USERS: 'users',
   USER_ACTIVITIES: 'userActivities',
   FILE_METADATA: 'fileMetadata',
   EMAIL_NOTIFICATIONS: 'emailNotifications',
@@ -219,12 +223,16 @@ export const COLLECTIONS = {
 export type ActivityType = 
   | 'pdf_compress' 
   | 'pdf_convert' 
+  | 'pdf_merge'
+  | 'pdf_split'
   | 'image_compress' 
   | 'image_resize' 
   | 'image_crop' 
   | 'image_rotate' 
-  | 'image_filter'
-  | 'image_batch';  // New: Batch processing operations
+  | 'image_filter' 
+  | 'image_batch'
+  | 'image_convert'
+  | 'image_convert';
 export type ActivityStatus = UserActivity['status'];
 export type FileCategory = UserActivity['category'];
 export type NotificationType = EmailNotification['type'];

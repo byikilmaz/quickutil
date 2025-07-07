@@ -337,8 +337,10 @@ export class ActivityTracker {
         image_crop: 0,
         image_rotate: 0,
         image_filter: 0,
-        image_batch: 0
-      };
+        image_batch: 0,
+        image_convert: 0,
+        pdf_merge: 0,
+        pdf_split: 0      };
 
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
@@ -701,7 +703,10 @@ export const formatActivityForUI = (activity: UserActivity) => {
     'image_crop': 'Resim Kırpma',
     'image_rotate': 'Resim Döndürme',
     'image_filter': 'Resim Filtreleme',
-    'image_batch': 'Batch İşleme'
+    'image_batch': 'Batch İşleme',
+    'image_convert': 'Resim Dönüştürme',
+    'pdf_merge': 'PDF Birleştirme',
+    'pdf_split': 'PDF Bölme'
   };
 
   const statusNames: Record<ActivityStatus, string> = {

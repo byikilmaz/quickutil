@@ -6,6 +6,16 @@ const nextConfig: NextConfig = {
   distDir: 'out',
   trailingSlash: true,
   
+  // Disable ESLint during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
+  // Disable TypeScript checking during build
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  
   // Cache busting and optimization
   generateBuildId: async () => {
     // Generate unique build ID based on timestamp

@@ -242,4 +242,60 @@ export async function analyzePDF(file: File): Promise<{
     
     throw new Error('PDF analizi sırasında bilinmeyen hata oluştu');
   }
+}
+
+// Utility function for file size formatting
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// PDF Merge function
+export async function mergePDFs(files: File[]): Promise<Blob> {
+  try {
+    const mergedDoc = await PDFDocument.create();
+    
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pages = await mergedDoc.copyPages(pdfDoc, pdfDoc.getPageIndices());
+      pages.forEach(page => mergedDoc.addPage(page));
+    }
+    
+    const pdfBytes = await mergedDoc.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+  } catch (error) {
+    console.error('PDF merge error:', error);
+    throw new Error('PDF birleştirme sırasında hata oluştu');
+  }
+}
+
+// PDF Split function
+export async function splitPDF(file: File, pageRanges: { start: number; end: number }[]): Promise<Blob[]> {
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const results: Blob[] = [];
+    
+    for (const range of pageRanges) {
+      const newDoc = await PDFDocument.create();
+      const pages = await newDoc.copyPages(pdfDoc, 
+        Array.from({ length: range.end - range.start + 1 }, (_, i) => range.start + i - 1)
+      );
+      pages.forEach(page => newDoc.addPage(page));
+      
+      const pdfBytes = await newDoc.save();
+      results.push(new Blob([pdfBytes], { type: 'application/pdf' }));
+    }
+    
+    return results;
+  } catch (error) {
+    console.error('PDF split error:', error);
+    throw new Error('PDF bölme sırasında hata oluştu');
+  }
 } 

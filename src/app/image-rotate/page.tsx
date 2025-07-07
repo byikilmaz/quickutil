@@ -1,61 +1,94 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { ArrowPathIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
+import { ArrowPathIcon, ArrowDownTrayIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { useDropzone } from 'react-dropzone';
 import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
-import FileUpload from '@/components/FileUpload';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { ActivityTracker } from '@/lib/activityTracker';
 import { 
   rotateImage,
   getImageDimensions,
-  validateImageFormat,
   formatFileSize,
-  type ConversionResult,
-  type RotateOptions 
+  type ConversionResult
 } from '@/lib/imageUtils';
+
+type Stage = 'upload' | 'settings' | 'result';
 
 export default function ImageRotate() {
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [stage, setStage] = useState<Stage>('upload');
   const [file, setFile] = useState<File | null>(null);
-  const [rotatedFile, setRotatedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [angle, setAngle] = useState(0);
+  const [rotation, setRotation] = useState(0);
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
   const [rotateResult, setRotateResult] = useState<ConversionResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleFileSelect = async (selectedFile: File) => {
-    if (!validateImageFormat(selectedFile)) {
-      setError('Lütfen geçerli bir resim dosyası seçin (PNG, JPEG, WebP, GIF)');
+  // File validation
+  const validateFile = (file: File): string | null => {
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    
+    if (!validTypes.includes(file.type)) {
+      return 'Desteklenen formatlar: JPEG, PNG, WebP';
+    }
+    
+    if (file.size > maxSize) {
+      return 'Dosya boyutu 50MB\'tan küçük olmalıdır';
+    }
+    
+    return null;
+  };
+
+  // File selection handler
+  const handleFileSelect = async (files: File[]) => {
+    const selectedFile = files[0];
+    const error = validateFile(selectedFile);
+    
+    if (error) {
+      setError(error);
       return;
     }
 
     setFile(selectedFile);
-    setRotatedFile(null);
-    setRotateResult(null);
+    setStage('settings');
     setError('');
-    setAngle(0);
 
-    // Get original dimensions
     try {
       const dimensions = await getImageDimensions(selectedFile);
       setOriginalDimensions(dimensions);
     } catch (err) {
       console.error('Error getting image dimensions:', err);
+      setError('Resim boyutları alınamadı');
     }
 
-    // Create preview URL
     const url = URL.createObjectURL(selectedFile);
     setPreviewUrl(url);
   };
 
+  // Dropzone configuration
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileSelect,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+    },
+    multiple: false
+  });
+
   const handleRotate = async () => {
-    if (!file) return;
+    if (!file) {
+      setError('Lütfen bir resim seçin');
+      return;
+    }
+
+    if (rotation === 0) {
+      setError('Lütfen bir döndürme açısı seçin');
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -63,13 +96,9 @@ export default function ImageRotate() {
     const startTime = Date.now();
 
     try {
-      const options: RotateOptions = {
-        angle: angle,
-      };
-
-      const result = await rotateImage(file, options);
-      setRotatedFile(result.file);
+      const result = await rotateImage(file, { angle: rotation });
       setRotateResult(result);
+      setStage('result');
 
       // Track activity if user is logged in
       if (user) {
@@ -84,10 +113,8 @@ export default function ImageRotate() {
             processedSize: result.file.size,
             status: 'success',
             category: 'Image',
-            processingTime,
-            compressionRatio: Math.abs(1 - result.compressionRatio) * 100
+            processingTime
           });
-          console.log('Image rotate activity tracked successfully');
         } catch (activityError) {
           console.error('Activity tracking error:', activityError);
         }
@@ -96,11 +123,9 @@ export default function ImageRotate() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Döndürme sırasında hata oluştu');
       
-      // Track failed activity if user is logged in
       if (user && file) {
         try {
           const processingTime = Date.now() - startTime;
-
           await ActivityTracker.createActivity(user.uid, {
             type: 'image_rotate',
             fileName: file.name,
@@ -120,16 +145,29 @@ export default function ImageRotate() {
   };
 
   const handleDownload = () => {
-    if (!rotatedFile) return;
+    if (!rotateResult) return;
 
-    const url = URL.createObjectURL(rotatedFile);
+    const url = URL.createObjectURL(rotateResult.file);
     const a = document.createElement('a');
     a.href = url;
-    a.download = rotatedFile.name;
+    a.download = rotateResult.file.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const resetForm = () => {
+    setStage('upload');
+    setFile(null);
+    setRotateResult(null);
+    setError('');
+    setRotation(0);
+    setOriginalDimensions(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
   };
 
   // Cleanup preview URL when component unmounts or file changes
@@ -141,381 +179,296 @@ export default function ImageRotate() {
     };
   }, [previewUrl]);
 
-  const resetForm = () => {
-    setFile(null);
-    setRotatedFile(null);
-    setRotateResult(null);
-    setError('');
-    setOriginalDimensions(null);
-    setAngle(0);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-  };
-
-  const setPresetAngle = (presetAngle: number) => {
-    setAngle(presetAngle);
-  };
-
-  const normalizeAngle = (angle: number) => {
-    return ((angle % 360) + 360) % 360;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header onAuthClick={() => setShowAuthModal(true)} />
-      <Breadcrumb />
       
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 bg-purple-100 rounded-full">
-              <ArrowPathIcon className="h-12 w-12 text-purple-600" />
+      {/* Upload Stage */}
+      {stage === 'upload' && (
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <Breadcrumb />
+          
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-green-600 to-emerald-600 text-white mb-4 shadow-lg">
+              <ArrowPathIcon className="w-8 h-8" />
             </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              Resim Döndürme
+            </h1>
+            <p className="text-gray-700 max-w-md mx-auto">
+              Resimlerinizi istediğiniz açıda kolayca döndürün
+            </p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Resim Döndürme
-          </h1>
-          <p className="text-lg text-gray-600">
-            Resimlerinizi istediğiniz açıda döndürün ve yönelimi düzenleyin
-          </p>
-        </div>
 
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          {!file ? (
-            <FileUpload
-              onFileSelect={handleFileSelect}
-              acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
-              maxSize={50 * 1024 * 1024} // 50MB
-              title="Döndürülecek Resmi Yükleyin"
-              description="PNG, JPEG, WebP veya GIF formatında resminizi buraya sürükleyin"
-              currentFiles={[]}
-            />
-          ) : !rotatedFile ? (
-            <>
-              {/* Success Upload State */}
-              <FileUpload
-                onFileSelect={handleFileSelect}
-                acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
-                maxSize={50 * 1024 * 1024}
-                title="Döndürülecek Resmi Yükleyin"
-                description="PNG, JPEG, WebP veya GIF formatında resminizi buraya sürükleyin"
-                currentFiles={[file]}
-              />
-              
-              {/* File Processing Section */}
-              <div className="mt-6 space-y-6">
-                {/* File Info & Preview */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* File Info */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3">Seçilen Dosya</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Dosya Adı:</span>
-                        <span className="text-sm font-medium">{file.name}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Boyut:</span>
-                        <span className="text-sm font-medium">{formatFileSize(file.size)}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Format:</span>
-                        <span className="text-sm font-medium uppercase">
-                          {file.type.replace('image/', '')}
-                        </span>
-                      </div>
-                      {originalDimensions && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Boyutlar:</span>
-                          <span className="text-sm font-medium">
-                            {originalDimensions.width} × {originalDimensions.height}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Döndürme Açısı:</span>
-                        <span className="text-sm font-medium">{normalizeAngle(angle)}°</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-3 flex items-center justify-between">
-                      <button
-                        onClick={resetForm}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1"
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span>Farklı resim seç</span>
-                      </button>
-                      
-                      <div className="flex items-center space-x-1 text-sm text-green-600">
-                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span>Resim hazır</span>
-                      </div>
-                    </div>
-                  </div>
+          {/* Mobile-Optimized Upload Area */}
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
+              isDragActive
+                ? 'border-green-500 bg-green-50 scale-[1.02]'
+                : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
+            }`}
+          >
+            <input {...getInputProps()} />
+            <PhotoIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+            
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {isDragActive ? 'Dosyayı Bırakın' : 'Resim Yükleyin'}
+            </h3>
+            <p className="text-sm text-gray-700 mb-4">
+              JPEG, PNG, WebP formatları • Max 50MB
+            </p>
+            
+            <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-colors font-medium shadow-lg text-sm">
+              📁 Dosya Seç
+            </button>
 
-                  {/* Live Preview */}
-                  {previewUrl && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h3 className="font-medium text-gray-900 mb-3">Canlı Önizleme</h3>
-                      <div className="relative w-full h-48 bg-white rounded border flex items-center justify-center overflow-hidden">
-                        <div 
-                          className="transition-transform duration-300 ease-in-out"
-                          style={{ transform: `rotate(${angle}deg)` }}
-                        >
-                          <Image
-                            src={previewUrl}
-                            alt={`${file?.name || 'Yüklenen dosya'} döndürme önizlemesi`}
-                            width={120}
-                            height={120}
-                            className="object-contain max-w-none"
-                            unoptimized
-                            loading="lazy"
-                          />
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 text-center">
-                        Anlık önizleme - {normalizeAngle(angle)}° döndürülmüş
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Rotation Settings */}
-                <div className="space-y-4">
-                  <h3 className="font-medium text-gray-900">Döndürme Ayarları</h3>
-                  
-                  {/* Quick Rotation Buttons */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hızlı Döndürme
-                    </label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      <button
-                        onClick={() => setPresetAngle(90)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <ArrowPathIcon className="h-4 w-4" />
-                        <span>90° Sağa</span>
-                      </button>
-                      <button
-                        onClick={() => setPresetAngle(180)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <ArrowPathIcon className="h-4 w-4" />
-                        <span>180° Ters</span>
-                      </button>
-                      <button
-                        onClick={() => setPresetAngle(270)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <ArrowPathIcon className="h-4 w-4" />
-                        <span>90° Sola</span>
-                      </button>
-                      <button
-                        onClick={() => setPresetAngle(0)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span>Sıfırla</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Custom Angle */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Özel Açı: {normalizeAngle(angle)}°
-                    </label>
-                    <div className="space-y-3">
-                      <input
-                        type="range"
-                        min="-360"
-                        max="360"
-                        step="1"
-                        value={angle}
-                        onChange={(e) => setAngle(parseInt(e.target.value))}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>-360°</span>
-                        <span>0°</span>
-                        <span>+360°</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Manual Angle Input */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Manuel Açı Girişi
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="number"
-                        value={angle}
-                        onChange={(e) => setAngle(parseInt(e.target.value) || 0)}
-                        min="-360"
-                        max="360"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="Açı değeri"
-                      />
-                      <span className="text-sm text-gray-600">derece</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Pozitif değerler saat yönünde, negatif değerler saat yönünün tersine döndürür
-                    </p>
-                  </div>
-
-                  {/* Fine Adjustment */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      İnce Ayar
-                    </label>
-                    <div className="flex items-center justify-center space-x-4">
-                      <button
-                        onClick={() => setAngle(angle - 1)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        -1°
-                      </button>
-                      <button
-                        onClick={() => setAngle(angle - 0.1)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        -0.1°
-                      </button>
-                      <span className="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium">
-                        {angle.toFixed(1)}°
-                      </span>
-                      <button
-                        onClick={() => setAngle(angle + 0.1)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        +0.1°
-                      </button>
-                      <button
-                        onClick={() => setAngle(angle + 1)}
-                        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        +1°
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Rotate Button */}
-                <div className="flex justify-center">
-                  <button
-                    onClick={handleRotate}
-                    disabled={loading || angle === 0}
-                    className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        <span>Döndürülüyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <ArrowPathIcon className="h-5 w-5" />
-                        <span>Resmi Döndür</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                    {error}
-                  </div>
-                )}
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm">{error}</p>
               </div>
-            </>
-          ) : (
-            <>
-              {/* Result */}
-              {rotateResult && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="font-medium text-green-900 mb-3">Döndürme Tamamlandı!</h3>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-green-800">Orijinal</h4>
-                      <div className="text-sm text-green-700">
-                        <div>Boyut: {formatFileSize(rotateResult.originalSize)}</div>
-                        {originalDimensions && (
-                          <div>Boyutlar: {originalDimensions.width} × {originalDimensions.height}</div>
-                        )}
-                        <div>Açı: 0°</div>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-green-800">Döndürülmüş</h4>
-                      <div className="text-sm text-green-700">
-                        <div>Boyut: {formatFileSize(rotateResult.newSize)}</div>
-                        <div>Döndürme: {normalizeAngle(angle)}°</div>
-                      </div>
-                    </div>
-                  </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Settings Stage */}
+      {stage === 'settings' && file && (
+        <div className="flex flex-col h-screen">
+          {/* Mobile Header */}
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <ArrowPathIcon className="w-5 h-5 text-green-600" />
+                <h1 className="text-lg font-semibold text-gray-900">Döndürme</h1>
+              </div>
+              <button
+                onClick={resetForm}
+                className="text-sm text-gray-800 bg-gray-100 px-3 py-1.5 rounded-lg"
+              >
+                Yeni Resim
+              </button>
+            </div>
+          </div>
+
+          {/* Image Preview */}
+          <div className="bg-gray-100 p-4">
+            {previewUrl && (
+              <div className="bg-white rounded-2xl p-4 mx-auto max-w-sm">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full h-48 object-contain rounded-xl transition-transform duration-300"
+                  style={{ transform: `rotate(${rotation}deg)` }}
+                />
+                <div className="mt-3 text-center text-sm text-gray-700">
+                  <p>{file.name}</p>
+                  <p>{formatFileSize(file.size)} • {originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : ''}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile-Friendly Settings */}
+          <div className="flex-1 bg-white p-4 overflow-y-auto">
+            <div className="space-y-6">
+              
+              {/* Rotation Buttons */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Döndürme Açısı</h3>
+                <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={handleDownload}
-                    className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                    onClick={() => setRotation(90)}
+                    className={`p-4 rounded-xl text-center transition-colors ${
+                      rotation === 90
+                        ? 'bg-green-100 border-2 border-green-300 text-green-800'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
+                    }`}
                   >
-                    <ArrowUpTrayIcon className="h-5 w-5" />
-                    <span>Döndürülmüş Resmi İndir</span>
+                    <div className="text-2xl mb-1">↻</div>
+                    <div className="font-medium">90° Sağa</div>
+                  </button>
+                  <button
+                    onClick={() => setRotation(180)}
+                    className={`p-4 rounded-xl text-center transition-colors ${
+                      rotation === 180
+                        ? 'bg-green-100 border-2 border-green-300 text-green-800'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="text-2xl mb-1">↺</div>
+                    <div className="font-medium">180° Ters</div>
+                  </button>
+                  <button
+                    onClick={() => setRotation(270)}
+                    className={`p-4 rounded-xl text-center transition-colors ${
+                      rotation === 270
+                        ? 'bg-green-100 border-2 border-green-300 text-green-800'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="text-2xl mb-1">↺</div>
+                    <div className="font-medium">90° Sola</div>
+                  </button>
+                  <button
+                    onClick={() => setRotation(0)}
+                    className={`p-4 rounded-xl text-center transition-colors ${
+                      rotation === 0
+                        ? 'bg-green-100 border-2 border-green-300 text-green-800'
+                        : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="text-2xl mb-1">⟲</div>
+                    <div className="font-medium">Sıfırla</div>
                   </button>
                 </div>
+              </div>
+
+              {/* Custom Rotation */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Özel Açı</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-800 mb-2">
+                      Döndürme Açısı: {rotation}°
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={rotation}
+                      onChange={(e) => setRotation(parseInt(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #10b981 0%, #10b981 ${(rotation / 360) * 100}%, #e5e7eb ${(rotation / 360) * 100}%, #e5e7eb 100%)`
+                      }}
+                    />
+                    <div className="flex justify-between text-xs text-gray-700 mt-1">
+                      <span>0°</span>
+                      <span>90°</span>
+                      <span>180°</span>
+                      <span>270°</span>
+                      <span>360°</span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <input
+                      type="number"
+                      value={rotation}
+                      onChange={(e) => setRotation(parseInt(e.target.value) || 0)}
+                      min="0"
+                      max="360"
+                      placeholder="Açı (0-360°)"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Action Button */}
+          <div className="bg-white border-t border-gray-200 p-4 safe-area-bottom">
+            <button
+              onClick={handleRotate}
+              disabled={loading || rotation === 0}
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>İşleniyor...</span>
+                </>
+              ) : (
+                <>
+                  <ArrowPathIcon className="w-5 h-5" />
+                  <span>Döndür</span>
+                </>
               )}
-            </>
-          )}
-        </div>
-
-        {/* Info Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="bg-purple-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <ArrowPathIcon className="h-8 w-8 text-purple-600" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Canlı Önizleme</h3>
-            <p className="text-gray-600">Döndürme işlemini gerçek zamanlı olarak görebilirsiniz</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Hassas Kontrol</h3>
-            <p className="text-gray-600">0.1° hassasiyetinde döndürme ve ince ayar seçenekleri</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Hızlı Presetler</h3>
-            <p className="text-gray-600">90°, 180°, 270° ve özel açılarla kolay döndürme</p>
+            </button>
+            
+            {error && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm text-center">{error}</p>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Auth Modal */}
+      {/* Result Stage */}
+      {stage === 'result' && rotateResult && (
+        <div className="flex flex-col h-screen">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <ArrowPathIcon className="w-5 h-5 text-green-600" />
+                <h1 className="text-lg font-semibold text-gray-900">Tamamlandı</h1>
+              </div>
+              <button
+                onClick={resetForm}
+                className="text-sm text-gray-800 bg-gray-100 px-3 py-1.5 rounded-lg"
+              >
+                Yeni Resim
+              </button>
+            </div>
+          </div>
+
+          {/* Result Image */}
+          <div className="flex-1 bg-gray-100 p-4 overflow-y-auto">
+            <div className="space-y-6">
+              
+              {/* Result */}
+              <div className="bg-white rounded-2xl p-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Döndürülmüş Resim</h3>
+                <img
+                  src={URL.createObjectURL(rotateResult.file)}
+                  alt="Döndürülmüş resim"
+                  className="w-full h-64 object-contain rounded-xl bg-gray-50"
+                />
+              </div>
+
+              {/* Stats */}
+              <div className="bg-white rounded-2xl p-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">İstatistikler</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-gray-50 rounded-xl">
+                    <div className="text-sm text-gray-700">Orijinal</div>
+                    <div className="font-medium text-gray-900">{formatFileSize(rotateResult.originalSize)}</div>
+                    {originalDimensions && (
+                      <div className="text-xs text-gray-600">{originalDimensions.width}×{originalDimensions.height}</div>
+                    )}
+                  </div>
+                  <div className="text-center p-3 bg-green-50 rounded-xl">
+                    <div className="text-sm text-green-700">Döndürülmüş</div>
+                    <div className="font-medium text-green-900">{formatFileSize(rotateResult.newSize)}</div>
+                    <div className="text-xs text-green-600">{rotation}° döndürüldü</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Download Section */}
+          <div className="bg-white border-t border-gray-200 p-4 safe-area-bottom">
+            <button
+              onClick={handleDownload}
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 shadow-lg"
+            >
+              <ArrowDownTrayIcon className="w-5 h-5" />
+              <span>İndir</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {showAuthModal && (
-        <AuthModal onClose={() => setShowAuthModal(false)} />
+        <AuthModal 
+          onClose={() => setShowAuthModal(false)} 
+        />
       )}
     </div>
   );

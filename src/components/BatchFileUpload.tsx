@@ -18,7 +18,12 @@ export interface BatchFile {
   file: File;
   status: 'pending' | 'processing' | 'completed' | 'error';
   progress: number;
-  result?: any;
+  result?: {
+    file?: File;
+    url?: string;
+    size?: number;
+    type?: string;
+  };
   error?: string;
   processingTime?: number;
 }
@@ -29,11 +34,11 @@ interface BatchFileUploadProps {
   onBatchStart: () => void;
   onBatchPause: () => void;
   onBatchClear: () => void;
-  acceptedTypes: string[];
+  acceptedTypes?: string[];
   maxSize: number;
   maxFiles?: number;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   batchFiles: BatchFile[];
   isProcessing: boolean;
   supportedOperations: string[];
@@ -64,7 +69,7 @@ export default function BatchFileUpload({
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
-    accept: acceptedTypes.reduce((acc, type) => {
+    accept: acceptedTypes?.reduce((acc, type) => {
       acc[type] = [];
       return acc;
     }, {} as Record<string, string[]>),
@@ -86,7 +91,7 @@ export default function BatchFileUpload({
   };
 
   const getFileTypesDisplay = () => {
-    return acceptedTypes.map(type => {
+    return acceptedTypes?.map(type => {
       switch (type) {
         case 'application/pdf':
           return 'PDF';
@@ -99,9 +104,9 @@ export default function BatchFileUpload({
         case 'image/webp':
           return 'WebP';
         default:
-          return type.split('/')[1]?.toUpperCase() || type;
+          return type?.split('/')[1]?.toUpperCase() || type;
       }
-    }).join(', ');
+    }).join(', ') || '';
   };
 
   const getBatchStats = () => {

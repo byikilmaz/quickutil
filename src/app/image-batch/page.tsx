@@ -23,6 +23,20 @@ import {
 } from '@/lib/batchProcessor';
 import { trackImageBatch } from '@/lib/activityTracker';
 
+interface BatchOperationParams {
+  quality?: number;
+  format?: string;
+  width?: number;
+  height?: number;
+  maintainAspectRatio?: boolean;
+  x?: number;
+  y?: number;
+  angle?: number;
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+}
+
 export default function ImageBatchPage() {
   const { user } = useAuth();
   
@@ -30,7 +44,7 @@ export default function ImageBatchPage() {
   const [batchFiles, setBatchFiles] = useState<BatchFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedOperation, setSelectedOperation] = useState<BatchOperation>('compress');
-  const [operationParams, setOperationParams] = useState<any>(BatchOperations.getDefaultParams('compress'));
+  const [operationParams, setOperationParams] = useState<BatchOperationParams>(BatchOperations.getDefaultParams('compress'));
   const [showSettings, setShowSettings] = useState(false);
   const [processor] = useState(() => new BatchProcessor({
     maxConcurrent: 3,
@@ -177,8 +191,8 @@ export default function ImageBatchPage() {
     setOperationParams(BatchOperations.getDefaultParams(operation));
   };
 
-  const handleParamChange = (key: string, value: any) => {
-    setOperationParams((prev: any) => ({ ...prev, [key]: value }));
+  const handleParamChange = (key: string, value: string | number | boolean) => {
+    setOperationParams((prev: BatchOperationParams) => ({ ...prev, [key]: value }));
   };
 
   // Get operation info
