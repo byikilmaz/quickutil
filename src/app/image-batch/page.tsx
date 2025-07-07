@@ -1,27 +1,26 @@
 'use client';
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
-  QueueListIcon, 
-  ArrowDownTrayIcon, 
-  CogIcon,
-  SparklesIcon,
+  QueueListIcon,
+  PhotoIcon,
   ArrowPathIcon,
-  ScissorsIcon,
-  PhotoIcon
+  SparklesIcon,
+  CogIcon,
+  ArrowDownTrayIcon,
+  ScissorsIcon
 } from '@heroicons/react/24/outline';
 import Header from '@/components/Header';
 import Breadcrumb from '@/components/Breadcrumb';
 import BatchFileUpload, { BatchFile } from '@/components/BatchFileUpload';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  BatchProcessor, 
-  BatchDownloader, 
-  BatchOperations,
-  BatchOperation,
-  BatchOperationConfig,
-  generateFileId 
-} from '@/lib/batchProcessor';
 import { trackImageBatch } from '@/lib/activityTracker';
+import BatchProcessor, { 
+  BatchOperation, 
+  BatchOperationConfig, 
+  ProcessingResult,
+  generateFileId,
+  BatchOperations 
+} from '@/lib/batchProcessor';
 
 interface BatchOperationParams {
   quality?: number;
@@ -122,19 +121,47 @@ export default function ImageBatchPage() {
         params: operationParams
       };
       
-      processor.setFiles(batchFiles);
-      processor.setConfig(config);
+      // Process files with callback handlers
+      const processingOptions = {
+        maxConcurrent: 3,
+        onProgress: (fileId: string, progress: number) => {
+          setBatchFiles(prev => 
+            prev.map(f => 
+              f.id === fileId 
+                ? { ...f, progress }
+                : f
+            )
+          );
+        },
+        onComplete: (fileId: string, result: ProcessingResult) => {
+          setBatchFiles(prev => 
+            prev.map(f => 
+              f.id === fileId 
+                ? { ...f, status: 'completed', result, progress: 100 }
+                : f
+            )
+          );
+        },
+        onError: (fileId: string, error: string) => {
+          setBatchFiles(prev => 
+            prev.map(f => 
+              f.id === fileId 
+                ? { ...f, status: 'error', error, progress: 0 }
+                : f
+            )
+          );
+        }
+      };
       
       // Start processing
-      const results = await processor.start();
+      await processor.processFiles(batchFiles, config, processingOptions);
       
       // Track batch activity
       if (user) {
         const processingTime = Date.now() - startTime;
         const totalOriginalSize = batchFiles.reduce((sum, f) => sum + f.file.size, 0);
-        const totalProcessedSize = results
-          .filter(r => r.success && r.result?.file)
-          .reduce((sum, r) => sum + r.result.file.size, 0);
+        const completedFiles = batchFiles.filter(f => f.status === 'completed' && f.result?.file);
+        const totalProcessedSize = completedFiles.reduce((sum, f) => sum + f.result!.file!.size, 0);
         
         await trackImageBatch(
           user.uid,
@@ -154,9 +181,8 @@ export default function ImageBatchPage() {
   }, [batchFiles, selectedOperation, operationParams, processor, user]);
 
   const handleBatchPause = useCallback(() => {
-    processor.stop();
     setIsProcessing(false);
-  }, [processor]);
+  }, []);
 
   // Download all processed files
   const handleBatchDownload = useCallback(async () => {
@@ -168,22 +194,24 @@ export default function ImageBatchPage() {
     }
 
     try {
-      const results = completedFiles.map(f => ({
-        fileId: f.id,
-        success: true,
-        result: f.result,
-        processingTime: f.processingTime || 0
-      }));
-
-      const zipBlob = await BatchDownloader.createZip(results);
-      const fileName = `batch_${selectedOperation}_${Date.now()}.zip`;
-      BatchDownloader.downloadZip(zipBlob, fileName);
+      completedFiles.forEach((f, index) => {
+        if (f.result?.file) {
+          const url = URL.createObjectURL(f.result.file);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = f.result.file.name || `processed_${index + 1}`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      });
       
     } catch (error) {
       console.error('Download error:', error);
       alert('İndirme sırasında hata oluştu');
     }
-  }, [batchFiles, selectedOperation]);
+  }, [batchFiles]);
 
   // Operation parameter handlers
   const handleOperationChange = (operation: BatchOperation) => {
@@ -374,16 +402,16 @@ export default function ImageBatchPage() {
                             min="0.1"
                             max="1"
                             step="0.1"
-                            value={operationParams.quality}
+                            value={operationParams.quality ?? 0.8}
                             onChange={(e) => handleParamChange('quality', parseFloat(e.target.value))}
                             className="w-full"
                           />
-                          <div className="text-xs text-gray-500">{Math.round(operationParams.quality * 100)}%</div>
+                          <div className="text-xs text-gray-500">{Math.round((operationParams.quality ?? 0.8) * 100)}%</div>
                         </div>
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Format</label>
                           <select
-                            value={operationParams.format}
+                            value={operationParams.format ?? 'jpeg'}
                             onChange={(e) => handleParamChange('format', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           >
@@ -401,7 +429,7 @@ export default function ImageBatchPage() {
                           <label className="block text-xs text-gray-600 mb-1">Genişlik (px)</label>
                           <input
                             type="number"
-                            value={operationParams.width}
+                            value={operationParams.width ?? 800}
                             onChange={(e) => handleParamChange('width', parseInt(e.target.value))}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           />
@@ -410,7 +438,7 @@ export default function ImageBatchPage() {
                           <label className="block text-xs text-gray-600 mb-1">Yükseklik (px)</label>
                           <input
                             type="number"
-                            value={operationParams.height}
+                            value={operationParams.height ?? 600}
                             onChange={(e) => handleParamChange('height', parseInt(e.target.value))}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           />
@@ -418,7 +446,7 @@ export default function ImageBatchPage() {
                         <div className="flex items-center">
                           <input
                             type="checkbox"
-                            checked={operationParams.maintainAspectRatio}
+                            checked={operationParams.maintainAspectRatio ?? true}
                             onChange={(e) => handleParamChange('maintainAspectRatio', e.target.checked)}
                             className="mr-2"
                           />
@@ -434,7 +462,7 @@ export default function ImageBatchPage() {
                             <label className="block text-xs text-gray-600 mb-1">X</label>
                             <input
                               type="number"
-                              value={operationParams.x}
+                              value={operationParams.x ?? 0}
                               onChange={(e) => handleParamChange('x', parseInt(e.target.value))}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                             />
@@ -443,7 +471,7 @@ export default function ImageBatchPage() {
                             <label className="block text-xs text-gray-600 mb-1">Y</label>
                             <input
                               type="number"
-                              value={operationParams.y}
+                              value={operationParams.y ?? 0}
                               onChange={(e) => handleParamChange('y', parseInt(e.target.value))}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                             />
@@ -454,7 +482,7 @@ export default function ImageBatchPage() {
                             <label className="block text-xs text-gray-600 mb-1">Genişlik</label>
                             <input
                               type="number"
-                              value={operationParams.width}
+                              value={operationParams.width ?? 400}
                               onChange={(e) => handleParamChange('width', parseInt(e.target.value))}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                             />
@@ -463,7 +491,7 @@ export default function ImageBatchPage() {
                             <label className="block text-xs text-gray-600 mb-1">Yükseklik</label>
                             <input
                               type="number"
-                              value={operationParams.height}
+                              value={operationParams.height ?? 400}
                               onChange={(e) => handleParamChange('height', parseInt(e.target.value))}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                             />
@@ -476,7 +504,7 @@ export default function ImageBatchPage() {
                       <div>
                         <label className="block text-xs text-gray-600 mb-1">Açı (derece)</label>
                         <select
-                          value={operationParams.angle}
+                          value={operationParams.angle ?? 90}
                           onChange={(e) => handleParamChange('angle', parseInt(e.target.value))}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                         >
@@ -495,11 +523,11 @@ export default function ImageBatchPage() {
                             type="range"
                             min="-100"
                             max="100"
-                            value={operationParams.brightness}
+                            value={operationParams.brightness ?? 0}
                             onChange={(e) => handleParamChange('brightness', parseInt(e.target.value))}
                             className="w-full"
                           />
-                          <div className="text-xs text-gray-500">{operationParams.brightness}</div>
+                          <div className="text-xs text-gray-500">{operationParams.brightness ?? 0}</div>
                         </div>
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Kontrast</label>
@@ -507,11 +535,11 @@ export default function ImageBatchPage() {
                             type="range"
                             min="-100"
                             max="100"
-                            value={operationParams.contrast}
+                            value={operationParams.contrast ?? 0}
                             onChange={(e) => handleParamChange('contrast', parseInt(e.target.value))}
                             className="w-full"
                           />
-                          <div className="text-xs text-gray-500">{operationParams.contrast}</div>
+                          <div className="text-xs text-gray-500">{operationParams.contrast ?? 0}</div>
                         </div>
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Doygunluk</label>
@@ -519,11 +547,11 @@ export default function ImageBatchPage() {
                             type="range"
                             min="-100"
                             max="100"
-                            value={operationParams.saturation}
+                            value={operationParams.saturation ?? 0}
                             onChange={(e) => handleParamChange('saturation', parseInt(e.target.value))}
                             className="w-full"
                           />
-                          <div className="text-xs text-gray-500">{operationParams.saturation}</div>
+                          <div className="text-xs text-gray-500">{operationParams.saturation ?? 0}</div>
                         </div>
                       </div>
                     )}
@@ -533,7 +561,7 @@ export default function ImageBatchPage() {
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Çıktı Formatı</label>
                           <select
-                            value={operationParams.format}
+                            value={operationParams.format ?? 'png'}
                             onChange={(e) => handleParamChange('format', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           >
@@ -549,11 +577,11 @@ export default function ImageBatchPage() {
                             min="0.1"
                             max="1"
                             step="0.1"
-                            value={operationParams.quality}
+                            value={operationParams.quality ?? 0.9}
                             onChange={(e) => handleParamChange('quality', parseFloat(e.target.value))}
                             className="w-full"
                           />
-                          <div className="text-xs text-gray-500">{Math.round(operationParams.quality * 100)}%</div>
+                          <div className="text-xs text-gray-500">{Math.round((operationParams.quality ?? 0.9) * 100)}%</div>
                         </div>
                       </div>
                     )}
