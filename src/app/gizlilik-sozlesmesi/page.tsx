@@ -39,12 +39,10 @@ export default function GizlilikSozlesmesiPage() {
               </div>
               
               <div className="bg-blue-50 p-6 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-3">Şirket Bilgileri:</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">Platform Bilgileri:</h3>
                 <ul className="space-y-2 text-gray-700">
-                  <li><strong>Ad Soyad:</strong> Bilal Yıkılmaz</li>
-                  <li><strong>Adres:</strong> Halkalı Merkez Mah. 1438. Sk. D No: 2 D İç Kapı No: 2, Küçükçekmece/İstanbul</li>
-                  <li><strong>Vergi No:</strong> 9530416885</li>
-                  <li><strong>TC Kimlik No:</strong> 12645032148</li>
+                  <li><strong>Platform:</strong> QuickUtil.app</li>
+                  <li><strong>Lokasyon:</strong> İstanbul, Türkiye</li>
                   <li><strong>E-posta:</strong> hello@quickutil.app</li>
                   <li><strong>Web Sitesi:</strong> https://quickutil.app</li>
                 </ul>
@@ -220,7 +218,7 @@ export default function GizlilikSozlesmesiPage() {
                 
                 <div className="space-y-2 text-gray-700">
                   <p><strong>E-posta:</strong> hello@quickutil.app</p>
-                  <p><strong>Posta Adresi:</strong> Halkalı Merkez Mah. 1438. Sk. D No: 2 D İç Kapı No: 2, Küçükçekmece/İstanbul</p>
+                  <p><strong>Lokasyon:</strong> İstanbul, Türkiye</p>
                   <p><strong>Başvuru Süresi:</strong> En geç 30 gün içinde yanıtlanır</p>
                 </div>
               </div>
