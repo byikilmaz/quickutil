@@ -7,6 +7,50 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
+// Firebase error code'larını Türkçe mesajlara çeviren fonksiyon
+const getFirebaseErrorMessage = (error: unknown): string => {
+  const errorCode = (error as { code?: string; message?: string })?.code || 
+                   (error as { code?: string; message?: string })?.message || '';
+  
+  const errorMessages: Record<string, string> = {
+    'auth/email-already-in-use': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
+    'auth/weak-password': 'Şifre çok zayıf. En az 6 karakter kullanın.',
+    'auth/invalid-email': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
+    'auth/user-disabled': 'Bu hesap devre dışı bırakılmış.',
+    'auth/user-not-found': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
+    'auth/wrong-password': 'Hatalı şifre. Lütfen tekrar deneyin.',
+    'auth/too-many-requests': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.',
+    'auth/network-request-failed': 'İnternet bağlantınızı kontrol edin.',
+    'auth/invalid-credential': 'Geçersiz giriş bilgileri. E-posta ve şifrenizi kontrol edin.',
+    'auth/missing-password': 'Şifre alanı boş bırakılamaz.',
+    'auth/missing-email': 'E-posta adresi boş bırakılamaz.',
+    'auth/requires-recent-login': 'Bu işlem için tekrar giriş yapmanız gerekiyor.',
+    'auth/operation-not-allowed': 'Bu işlem şu anda kullanılamıyor.',
+    'auth/popup-closed-by-user': 'İşlem iptal edildi.',
+    'auth/unauthorized-domain': 'Bu domain yetkili değil.',
+    'Firebase: Error (auth/email-already-in-use).': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
+    'Firebase: Error (auth/weak-password).': 'Şifre çok zayıf. En az 6 karakter kullanın.',
+    'Firebase: Error (auth/invalid-email).': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
+    'Firebase: Error (auth/user-not-found).': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
+    'Firebase: Error (auth/wrong-password).': 'Hatalı şifre. Lütfen tekrar deneyin.',
+    'Firebase: Error (auth/too-many-requests).': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.'
+  };
+
+  // Önce exact match ara
+  if (errorMessages[errorCode]) {
+    return errorMessages[errorCode];
+  }
+
+  // Error message'da code varsa extract et
+  const codeMatch = errorCode.match(/auth\/[\w-]+/);
+  if (codeMatch && errorMessages[codeMatch[0]]) {
+    return errorMessages[codeMatch[0]];
+  }
+
+  // Default message
+  return 'Bir hata oluştu. Lütfen tekrar deneyin.';
+};
+
 export default function AuthModal({ onClose }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -32,7 +76,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
       }
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+      setError(getFirebaseErrorMessage(err));
     } finally {
       setLoading(false);
     }
