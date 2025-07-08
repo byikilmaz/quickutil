@@ -493,19 +493,19 @@ export default function PDFCompress() {
             <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
               <div className="flex items-center space-x-2 text-gray-700">
                 <UserGroupIcon className="h-5 w-5" />
-                <span className="font-medium">1M+ kullanıcı</span>
+                <span className="font-medium">{t('trustSignals.users')}</span>
               </div>
               <div className="flex items-center space-x-2 text-gray-700">
                 <StarIcon className="h-5 w-5 text-yellow-500" />
-                <span className="font-medium">4.8/5 puan</span>
+                <span className="font-medium">{t('trustSignals.rating')}</span>
               </div>
               <div className="flex items-center space-x-2 text-gray-700">
                 <ShieldCheckIcon className="h-5 w-5" />
-                <span className="font-medium">256-bit SSL</span>
+                <span className="font-medium">{t('trustSignals.ssl')}</span>
               </div>
               <div className="flex items-center space-x-2 text-gray-700">
                 <BoltIcon className="h-5 w-5" />
-                <span className="font-medium">Toplu işlem</span>
+                <span className="font-medium">{t('trustSignals.batch')}</span>
               </div>
             </div>
 
@@ -515,16 +515,16 @@ export default function PDFCompress() {
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   <DocumentDuplicateIcon className="h-6 w-6 text-purple-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Toplu İşlem</h3>
-                <p className="text-gray-700 text-sm">50 dosyaya kadar aynı anda sıkıştırma</p>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('features.batchTitle')}</h3>
+                <p className="text-gray-700 text-sm">{t('features.batchDesc')}</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   <CpuChipIcon className="h-6 w-6 text-blue-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">AI Sıkıştırma</h3>
-                <p className="text-gray-700 text-sm">Neural network ile optimal ayarlar</p>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('features.aiTitle')}</h3>
+                <p className="text-gray-700 text-sm">{t('features.aiDesc')}</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
@@ -719,10 +719,10 @@ export default function PDFCompress() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">
-                    {pdfFiles.length} PDF dosyası seçildi
+                    {t('filesSelected').replace('{count}', pdfFiles.length.toString())}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Toplam boyut: {formatFileSize(stats.totalOriginalSize)}
+                    {t('totalSize').replace('{size}', formatFileSize(stats.totalOriginalSize))}
                   </p>
                 </div>
               </div>
@@ -742,13 +742,13 @@ export default function PDFCompress() {
                       onClick={() => document.getElementById('file-input')?.click()}
                       className="border border-gray-300 hover:border-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
                     >
-                      Daha fazla dosya ekle
+{t('moreFiles')}
                     </button>
                     <button
                       onClick={handleBatchClear}
                       className="text-gray-500 hover:text-red-600 px-3 py-2 rounded-lg transition-colors"
                     >
-                      Temizle
+{t('clear')}
                     </button>
                   </>
                 ) : (
@@ -757,7 +757,7 @@ export default function PDFCompress() {
                     className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
                   >
                     <PauseIcon className="w-4 h-4" />
-                    <span>DURDUR</span>
+<span>{t('stop')}</span>
                   </button>
                 )}
               </div>
@@ -771,30 +771,30 @@ export default function PDFCompress() {
             {/* Progress Overview */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Sıkıştırma İlerlemesi</h3>
-                <div className="text-sm text-gray-600">
-                  {stats.completed}/{stats.total} tamamlandı
-                </div>
+<h3 className="text-lg font-semibold text-gray-900">{t('progress.title')}</h3>
+                                  <div className="text-sm text-gray-600">
+                    {t('progress.completed').replace('{completed}', stats.completed.toString()).replace('{total}', stats.total.toString())}
+                  </div>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-blue-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-                  <div className="text-sm text-blue-600">Toplam Dosya</div>
+                  <div className="text-sm text-blue-600">{t('totalFiles')}</div>
                 </div>
                 <div className="bg-green-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-                  <div className="text-sm text-green-600">Tamamlandı</div>
+                  <div className="text-sm text-green-600">{t('completed')}</div>
                 </div>
                 <div className="bg-yellow-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-yellow-600">{formatFileSize(stats.totalOriginalSize)}</div>
-                  <div className="text-sm text-yellow-600">Orijinal Boyut</div>
+                  <div className="text-sm text-yellow-600">{t('originalSize')}</div>
                 </div>
                 <div className="bg-purple-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-purple-600">
                     {overallSavings > 0 ? `${overallSavings.toFixed(1)}%` : '-%'}
                   </div>
-                  <div className="text-sm text-purple-600">Toplam Tasarruf</div>
+                  <div className="text-sm text-purple-600">{t('totalSavings')}</div>
                 </div>
               </div>
 
@@ -877,12 +877,12 @@ export default function PDFCompress() {
                             <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-1.5 rounded-full">
                               <CpuChipIcon className="h-4 w-4 text-white" />
                             </div>
-                            <span className="text-sm font-semibold text-purple-900">🧠 AI Analizi</span>
+<span className="text-sm font-semibold text-purple-900">🧠 {t('ai.analysis')}</span>
                           </div>
                           <div className="bg-purple-100 px-2.5 py-1 rounded-full">
-                            <span className="text-xs font-medium text-purple-700">
-                              {(pdfFile.aiResult.processingMetrics.aiConfidence * 100).toFixed(0)}% güvenilir
-                            </span>
+                                                          <span className="text-xs font-medium text-purple-700">
+                                {(pdfFile.aiResult.processingMetrics.aiConfidence * 100).toFixed(0)}% {t('ai.reliable')}
+                              </span>
                           </div>
                         </div>
                         
@@ -892,20 +892,20 @@ export default function PDFCompress() {
                             <div className="text-sm font-bold text-gray-900">
                               {pdfFile.aiResult.uiData.summaryStats.sizeReduction.toFixed(0)}%
                             </div>
-                            <div className="text-xs text-gray-600">Tahmini Küçülme</div>
+<div className="text-xs text-gray-600">{t('ai.estimatedReduction')}</div>
                           </div>
                           <div className="bg-white/80 rounded-lg p-2 text-center">
                             <div className="text-sm font-bold text-gray-900">
                               {(pdfFile.aiResult.uiData.summaryStats.qualityScore * 100).toFixed(0)}%
                             </div>
-                            <div className="text-xs text-gray-600">Kalite Skoru</div>
+<div className="text-xs text-gray-600">{t('ai.qualityScore')}</div>
                           </div>
                         </div>
 
                         {/* AI Insights */}
                         {pdfFile.aiResult.uiData.insights.length > 0 && (
                           <div className="bg-blue-50 rounded-lg p-2 mb-2">
-                            <div className="text-xs font-medium text-blue-900 mb-1">💡 AI Önerisi:</div>
+<div className="text-xs font-medium text-blue-900 mb-1">💡 {t('ai.suggestion')}</div>
                             <div className="text-xs text-blue-700">
                               {pdfFile.aiResult.uiData.insights[0]}
                             </div>
@@ -914,7 +914,7 @@ export default function PDFCompress() {
 
                         {/* Processing Time */}
                         <div className="text-xs text-gray-500 text-center">
-                          Analiz süresi: {pdfFile.aiResult.processingMetrics.totalProcessingTime.toFixed(0)}ms
+                          {t('ai.analysisTime').replace('{time}', pdfFile.aiResult.processingMetrics.totalProcessingTime.toFixed(0))}
                         </div>
                       </div>
                     )}
@@ -924,7 +924,7 @@ export default function PDFCompress() {
                       <div className="bg-purple-50 rounded-lg p-3 mb-4 border border-purple-200">
                         <div className="flex items-center space-x-2">
                           <div className="w-4 h-4 bg-purple-600 rounded-full animate-pulse"></div>
-                          <span className="text-sm font-medium text-purple-900">🔄 AI analizi yapılıyor...</span>
+<span className="text-sm font-medium text-purple-900">🔄 {t('ai.analyzing')}</span>
                         </div>
                         <div className="mt-2 w-full bg-purple-200 rounded-full h-1">
                           <div className="bg-purple-600 h-1 rounded-full animate-pulse w-1/2"></div>
@@ -936,12 +936,12 @@ export default function PDFCompress() {
                     <div className="bg-gray-50 rounded-lg p-3 mb-4">
                       <div className="flex items-center space-x-2 mb-2">
                         <AdjustmentsHorizontalIcon className="h-4 w-4 text-gray-600" />
-                        <span className="text-sm font-medium text-gray-900">Ayarlar</span>
+<span className="text-sm font-medium text-gray-900">{t('settings.title')}</span>
                       </div>
-                      <div className="text-xs text-gray-700">
-                        <p>Seviye: {compressionLevels[pdfFile.compressionSettings.level].label}</p>
-                        <p>Mod: {pdfFile.compressionSettings.useAI ? 'AI Sıkıştırma' : 'Manuel'}</p>
-                      </div>
+                                              <div className="text-xs text-gray-700">
+                          <p>{t('settings.level')} {compressionLevels[pdfFile.compressionSettings.level].label}</p>
+                          <p>Mod: {pdfFile.compressionSettings.useAI ? t('settings.mode.ai') : t('settings.mode.manual')}</p>
+                        </div>
                     </div>
 
                     {/* Compression Results */}
@@ -949,21 +949,21 @@ export default function PDFCompress() {
                       <div className="bg-green-50 rounded-lg p-3 mb-4">
                         <div className="flex items-center space-x-2 mb-2">
                           <SparklesIcon className="h-4 w-4 text-green-600" />
-                          <span className="text-sm font-medium text-green-900">Sonuçlar</span>
+<span className="text-sm font-medium text-green-900">{t('results.title')}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs">
-                          <div>
-                            <div className="text-gray-600">Yeni Boyut:</div>
-                            <div className="font-medium text-green-700">
-                              {formatFileSize(pdfFile.compressionResult.compressedSize)}
+                                                      <div>
+                              <div className="text-gray-600">{t('results.newSize')}</div>
+                              <div className="font-medium text-green-700">
+                                {formatFileSize(pdfFile.compressionResult.compressedSize)}
+                              </div>
                             </div>
-                          </div>
-                          <div>
-                            <div className="text-gray-600">Tasarruf:</div>
-                            <div className="font-medium text-green-700">
-                              {pdfFile.compressionResult.savedPercentage.toFixed(1)}%
+                            <div>
+                              <div className="text-gray-600">{t('results.savings')}</div>
+                              <div className="font-medium text-green-700">
+                                {pdfFile.compressionResult.savedPercentage.toFixed(1)}%
+                              </div>
                             </div>
-                          </div>
                         </div>
                       </div>
                     )}
@@ -973,7 +973,7 @@ export default function PDFCompress() {
                       <div className="bg-red-50 rounded-lg p-3 mb-4">
                         <div className="flex items-center space-x-2 mb-1">
                           <ExclamationTriangleIcon className="h-4 w-4 text-red-600" />
-                          <span className="text-sm font-medium text-red-900">Hata</span>
+<span className="text-sm font-medium text-red-900">{t('error.title')}</span>
                         </div>
                         <p className="text-xs text-red-700">{pdfFile.error}</p>
                       </div>
@@ -986,7 +986,7 @@ export default function PDFCompress() {
                         className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium text-sm flex items-center justify-center space-x-2"
                       >
                         <ArrowUpTrayIcon className="h-4 w-4" />
-                        <span>PDF'i İndir</span>
+<span>{t('download.pdf')}</span>
                       </button>
                     )}
 
@@ -996,7 +996,7 @@ export default function PDFCompress() {
                         onClick={() => handleFileRemove(pdfFile.id)}
                         className="w-full mt-2 text-gray-500 hover:text-red-600 text-sm py-2 transition-colors"
                       >
-                        Dosyayı Kaldır
+{t('remove.file')}
                       </button>
                     )}
                   </div>
@@ -1009,9 +1009,9 @@ export default function PDFCompress() {
               <div className="bg-green-50 border border-green-200 rounded-xl p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold text-green-900 mb-1">🎉 {stats.completed} dosya hazır!</h4>
+                    <h4 className="font-semibold text-green-900 mb-1">🎉 {t('filesReady').replace('{count}', stats.completed.toString())}</h4>
                     <p className="text-green-700 text-sm">
-                      Toplam {formatFileSize(stats.totalCompressedSize)} boyutunda sıkıştırılmış dosyalar
+                      {t('totalCompressed').replace('{size}', formatFileSize(stats.totalCompressedSize))}
                     </p>
                     {stats.completed > 1 && (
                       <p className="text-green-600 text-xs mt-1">
@@ -1039,10 +1039,10 @@ export default function PDFCompress() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              QuickUtil ile PDF Toplu Sıkıştırmanın Avantajları
+              {t('benefits.title')}
             </h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              iLovePDF benzeri kolay kullanım, gelişmiş AI teknolojisi ve güvenilir işleme altyapısı ile PDF'lerinizi optimize edin
+              {t('benefits.subtitle')}
             </p>
           </div>
           
@@ -1053,13 +1053,13 @@ export default function PDFCompress() {
                   <DocumentDuplicateIcon className="h-8 w-8 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">Toplu İşlem Desteği</h3>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.batch.title')}</h3>
                   <p className="text-gray-700 mb-4">
-                    50 PDF dosyasına kadar aynı anda sıkıştırma yapabilirsiniz. Her dosya için ayrı ayarlar belirleyebilir veya toplu ayarlar uygulayabilirsiniz.
+                    {t('benefits.batch.desc')}
                   </p>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Sürükle-bırak ile kolay dosya ekleme</li>
-                    <li>• Gerçek zamanlı işlem takibi</li>
+                    <li>• {t('benefits.batch.feature1')}</li>
+                    <li>• {t('benefits.batch.feature2')}</li>
                     <li>• {t('zipFormatDownload')}</li>
                   </ul>
                 </div>
@@ -1072,14 +1072,14 @@ export default function PDFCompress() {
                   <CpuChipIcon className="h-8 w-8 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">AI Destekli Sıkıştırma</h3>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.ai.title')}</h3>
                   <p className="text-gray-700 mb-4">
-                    Neural network teknolojisi ile her PDF dosyası için optimal sıkıştırma ayarları otomatik belirlenir.
+                    {t('benefits.ai.desc')}
                   </p>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Kalite kaybı minimum seviyede</li>
-                    <li>• Akıllı görsel optimizasyon</li>
-                    <li>• Dosya türüne özel presetler</li>
+                    <li>• {t('benefits.ai.feature1')}</li>
+                    <li>• {t('benefits.ai.feature2')}</li>
+                    <li>• {t('benefits.ai.feature3')}</li>
                   </ul>
                 </div>
               </div>
@@ -1091,14 +1091,14 @@ export default function PDFCompress() {
                   <ShieldCheckIcon className="h-8 w-8 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">%100 Güvenli İşleme</h3>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.security.title')}</h3>
                   <p className="text-gray-700 mb-4">
-                    Dosyalarınız 256-bit SSL şifrelemesi ile korunur ve işlem sonrası otomatik olarak silinir.
+                    {t('benefits.security.desc')}
                   </p>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Otomatik dosya silme</li>
-                    <li>• SSL şifrelemesi</li>
-                    <li>• Gizlilik korunması</li>
+                    <li>• {t('benefits.security.feature1')}</li>
+                    <li>• {t('benefits.security.feature2')}</li>
+                    <li>• {t('benefits.security.feature3')}</li>
                   </ul>
                 </div>
               </div>
@@ -1110,14 +1110,14 @@ export default function PDFCompress() {
                   <BoltIcon className="h-8 w-8 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">Hızlı ve Pratik</h3>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.performance.title')}</h3>
                   <p className="text-gray-700 mb-4">
-                    Modern web teknolojileri ile saniyeler içinde sıkıştırma işlemi tamamlanır.
+                    {t('benefits.performance.desc')}
                   </p>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Anında işlem başlatma</li>
-                    <li>• Kayıt gerektirmez</li>
-                    <li>• Tüm cihazlarda çalışır</li>
+                    <li>• {t('benefits.performance.feature1')}</li>
+                    <li>• {t('benefits.performance.feature2')}</li>
+                    <li>• {t('benefits.performance.feature3')}</li>
                   </ul>
                 </div>
               </div>
@@ -1127,25 +1127,25 @@ export default function PDFCompress() {
           {/* Statistics */}
           <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Kullanıcı İstatistikleri</h3>
-              <p className="text-gray-600">Milyonlarca kullanıcının tercih ettiği platform</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('stats.title')}</h3>
+              <p className="text-gray-600">{t('stats.subtitle')}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-red-600 mb-2">1M+</div>
-                <div className="text-sm text-gray-600">Aylık Kullanıcı</div>
+                <div className="text-sm text-gray-600">{t('stats.monthlyUsers')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">50M+</div>
-                <div className="text-sm text-gray-600">İşlenen PDF</div>
+                <div className="text-sm text-gray-600">{t('stats.processedPdfs')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-600 mb-2">4.8⭐</div>
-                <div className="text-sm text-gray-600">Kullanıcı Puanı</div>
+                <div className="text-sm text-gray-600">{t('stats.userRating')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-600 mb-2">99.9%</div>
-                <div className="text-sm text-gray-600">Uptime</div>
+                <div className="text-sm text-gray-600">{t('stats.uptime')}</div>
               </div>
             </div>
           </div>
@@ -1171,11 +1171,10 @@ export default function PDFCompress() {
               </div>
               
               <h3 className="text-3xl md:text-4xl font-bold mb-4">
-                PDF Sıkıştırma ile Başlayın!
+                {t('cta.title')}
               </h3>
               <p className="text-red-100 text-lg mb-8 max-w-2xl mx-auto">
-                iLovePDF'e benzer kolay kullanım ile PDF dosyalarınızı hızlıca optimize edin. 
-{t('multipleFilesZip')}. Ücretsiz, güvenli ve kaliteli sonuçlar.
+                {t('cta.description').replace('{multipleFiles}', t('multipleFilesZip'))}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -1184,27 +1183,27 @@ export default function PDFCompress() {
                   className="bg-white text-red-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-colors shadow-lg text-lg flex items-center space-x-2"
                 >
                   <CloudArrowUpIcon className="w-6 h-6" />
-                  <span>PDF Dosyalarını Seç</span>
+                  <span>{t('cta.selectFiles')}</span>
                 </button>
                 
                 <div className="flex items-center space-x-4 text-red-100">
                   <div className="flex items-center space-x-1">
                     <CheckCircleIcon className="w-5 h-5" />
-                    <span className="text-sm">Ücretsiz</span>
+                    <span className="text-sm">{t('cta.features.free')}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <ShieldCheckIcon className="w-5 h-5" />
-                    <span className="text-sm">Güvenli</span>
+                    <span className="text-sm">{t('cta.features.secure')}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <BoltIcon className="w-5 h-5" />
-                    <span className="text-sm">Hızlı</span>
+                    <span className="text-sm">{t('cta.features.fast')}</span>
                   </div>
                 </div>
               </div>
               
               <div className="mt-8 text-red-100 text-sm">
-                ✨ Kayıt gerektirmez • 50 dosyaya kadar • AI destekli sıkıştırma
+                {t('cta.notice')}
               </div>
             </div>
           </div>
