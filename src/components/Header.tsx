@@ -59,13 +59,13 @@ export default function Header({ onAuthClick }: HeaderProps) {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-center h-16">
           
           {/* Logo with AI Badge */}
           <div className="flex items-center">
-            <Link href={`/${locale}`} className="flex items-center space-x-3 group">
-              <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-110">
+            <Link href={`/${locale}`} className="flex items-center space-x-2 sm:space-x-3 group">
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-110">
                 <Image
                   src="/images/logo.svg"
                   alt="QuickUtil.app AI-Powered Logo"
@@ -74,21 +74,21 @@ export default function Header({ onAuthClick }: HeaderProps) {
                   className="object-contain"
                 />
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-black group-hover:text-blue-600 transition-colors duration-300">
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <span className="text-xl sm:text-2xl font-bold text-black group-hover:text-blue-600 transition-colors duration-300">
                   QuickUtil
                 </span>
                 {/* AI Badge */}
-                <div className="flex items-center bg-gradient-to-r from-blue-500 to-purple-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-                  <CpuChipIcon className="h-3 w-3 mr-1" />
-                  AI
+                <div className="flex items-center bg-gradient-to-r from-blue-500 to-purple-600 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium">
+                  <CpuChipIcon className="h-3 w-3 mr-0.5 sm:mr-1" />
+                  <span className="hidden xs:inline">AI</span>
                 </div>
               </div>
             </Link>
           </div>
 
           {/* Desktop Navigation with AI Icons */}
-          <nav className="hidden md:flex items-center space-x-2">
+          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
             <Link href={`/${locale}/pdf-compress`} className="text-gray-800 hover:text-blue-600 px-3 py-2 apple-link-hover flex items-center space-x-1 transition-all duration-200 hover:bg-blue-50 rounded-lg">
               <span>🤖</span>
               <span>{t('aiPdfTools')}</span>
@@ -112,7 +112,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
           </nav>
 
           {/* Right Side: Language Switcher & User Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             
             {/* Language Switcher */}
             <LanguageSwitcher />
@@ -142,8 +142,8 @@ export default function Header({ onAuthClick }: HeaderProps) {
                         {getUserInitials()}
                       </span>
                     </div>
-                    <div className="hidden sm:block text-left">
-                      <div className="text-sm font-medium text-gray-900">
+                    <div className="hidden md:block text-left">
+                      <div className="text-sm font-medium text-gray-900 max-w-24 truncate">
                         {userProfile?.firstName ? `${userProfile.firstName} ${userProfile.lastName}` : user.email}
                       </div>
                     </div>
@@ -194,7 +194,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-800 hover:bg-gray-50 transition-colors"
+              className="lg:hidden p-2 rounded-lg text-gray-800 hover:bg-gray-50 transition-colors"
             >
               {isMenuOpen ? (
                 <XMarkIcon className="h-6 w-6" />
@@ -207,7 +207,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
 
         {/* Mobile Menu with AI Icons */}
         {isMenuOpen && (
-          <div ref={menuRef} className="md:hidden border-t border-gray-100 py-4 animate-fade-in">
+          <div ref={menuRef} className="lg:hidden border-t border-gray-100 py-4 animate-fade-in">
             <div className="space-y-2">
               <Link href={`/${locale}/pdf-compress`} className="block px-3 py-2 text-gray-800 hover:text-blue-600 apple-link-hover flex items-center space-x-2">
                 <span>🤖</span>

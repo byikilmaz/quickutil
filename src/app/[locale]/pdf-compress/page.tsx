@@ -467,7 +467,7 @@ export default function PDFCompress() {
     <div className="min-h-screen bg-white page-transition">
       {/* Hero Section */}
       <div className="bg-gray-50 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
           <Breadcrumb />
           
           <StructuredData 
@@ -482,15 +482,15 @@ export default function PDFCompress() {
             </div>
 
             {/* Hero Text */}
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">
               {t('title')}
             </h1>
-            <p className="text-2xl text-gray-700 max-w-4xl mx-auto mb-8 leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-6 sm:mb-8 leading-relaxed px-2">
               {t('subtitle')}
             </p>
 
             {/* Trust Signals */}
-            <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
+            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 px-2">
               <div className="flex items-center space-x-2 text-gray-700">
                 <UserGroupIcon className="h-5 w-5" />
                 <span className="font-medium">{t('trustSignals.users')}</span>
@@ -510,29 +510,29 @@ export default function PDFCompress() {
             </div>
 
             {/* Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <DocumentDuplicateIcon className="h-6 w-6 text-purple-600" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12 px-2">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3 sm:mb-4 mx-auto">
+                  <DocumentDuplicateIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{t('features.batchTitle')}</h3>
-                <p className="text-gray-700 text-sm">{t('features.batchDesc')}</p>
+                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{t('features.batchTitle')}</h3>
+                <p className="text-gray-700 text-xs sm:text-sm">{t('features.batchDesc')}</p>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <CpuChipIcon className="h-6 w-6 text-blue-600" />
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3 sm:mb-4 mx-auto">
+                  <CpuChipIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{t('features.aiTitle')}</h3>
-                <p className="text-gray-700 text-sm">{t('features.aiDesc')}</p>
+                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{t('features.aiTitle')}</h3>
+                <p className="text-gray-700 text-xs sm:text-sm">{t('features.aiDesc')}</p>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <DocumentArrowDownIcon className="h-6 w-6 text-green-600" />
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3 sm:mb-4 mx-auto">
+                  <DocumentArrowDownIcon className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{t('zipDownload')}</h3>
-                <p className="text-gray-700 text-sm">{t('batchZipFeature')}</p>
+                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{t('zipDownload')}</h3>
+                <p className="text-gray-700 text-xs sm:text-sm">{t('batchZipFeature')}</p>
               </div>
             </div>
 
@@ -545,7 +545,7 @@ export default function PDFCompress() {
       </div>
 
       {/* Main Tool Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
         
         {/* Global Settings Panel */}
         <div className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
@@ -572,7 +572,7 @@ export default function PDFCompress() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* AI Toggle */}
             <div className="bg-white/60 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
@@ -777,7 +777,7 @@ export default function PDFCompress() {
                   </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
                 <div className="bg-blue-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
                   <div className="text-sm text-blue-600">{t('totalFiles')}</div>
@@ -808,7 +808,7 @@ export default function PDFCompress() {
             </div>
 
             {/* File Cards - iLovePDF Style */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {pdfFiles.map((pdfFile) => (
                 <div
                   key={pdfFile.id}
@@ -1037,23 +1037,23 @@ export default function PDFCompress() {
       {/* Benefits Section - iLovePDF Style */}
       <div className="bg-gray-50 py-16 mt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+          <div className="text-center mb-8 sm:mb-12 px-2">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
               {t('benefits.title')}
             </h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
               {t('benefits.subtitle')}
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <DocumentDuplicateIcon className="h-8 w-8 text-red-600" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
+              <div className="flex items-start space-x-3 sm:space-x-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <DocumentDuplicateIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.batch.title')}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.batch.title')}</h3>
                   <p className="text-gray-700 mb-4">
                     {t('benefits.batch.desc')}
                   </p>
@@ -1066,13 +1066,13 @@ export default function PDFCompress() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <CpuChipIcon className="h-8 w-8 text-blue-600" />
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
+              <div className="flex items-start space-x-3 sm:space-x-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <CpuChipIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.ai.title')}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.ai.title')}</h3>
                   <p className="text-gray-700 mb-4">
                     {t('benefits.ai.desc')}
                   </p>
@@ -1085,13 +1085,13 @@ export default function PDFCompress() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <ShieldCheckIcon className="h-8 w-8 text-green-600" />
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
+              <div className="flex items-start space-x-3 sm:space-x-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <ShieldCheckIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.security.title')}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.security.title')}</h3>
                   <p className="text-gray-700 mb-4">
                     {t('benefits.security.desc')}
                   </p>
@@ -1104,13 +1104,13 @@ export default function PDFCompress() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <BoltIcon className="h-8 w-8 text-purple-600" />
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
+              <div className="flex items-start space-x-3 sm:space-x-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <BoltIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">{t('benefits.performance.title')}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.performance.title')}</h3>
                   <p className="text-gray-700 mb-4">
                     {t('benefits.performance.desc')}
                   </p>
@@ -1125,12 +1125,12 @@ export default function PDFCompress() {
           </div>
 
           {/* Statistics */}
-          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('stats.title')}</h3>
-              <p className="text-gray-600">{t('stats.subtitle')}</p>
+          <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
+            <div className="text-center mb-6 sm:mb-8 px-2">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{t('stats.title')}</h3>
+              <p className="text-sm sm:text-base text-gray-600">{t('stats.subtitle')}</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-red-600 mb-2">1M+</div>
                 <div className="text-sm text-gray-600">{t('stats.monthlyUsers')}</div>
@@ -1153,9 +1153,9 @@ export default function PDFCompress() {
       </div>
 
       {/* CTA Section - iLovePDF Style */}
-      <div className="py-16 bg-white">
+      <div className="py-8 sm:py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl p-12 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl p-6 sm:p-8 lg:p-12 text-white relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="absolute top-0 left-0 w-full h-full">
@@ -1170,10 +1170,10 @@ export default function PDFCompress() {
                 <DocumentDuplicateIcon className="h-10 w-10 text-white" />
               </div>
               
-              <h3 className="text-3xl md:text-4xl font-bold mb-4">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
                 {t('cta.title')}
               </h3>
-              <p className="text-red-100 text-lg mb-8 max-w-2xl mx-auto">
+              <p className="text-red-100 text-base sm:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
                 {t('cta.description').replace('{multipleFiles}', t('multipleFilesZip'))}
               </p>
               
@@ -1186,18 +1186,18 @@ export default function PDFCompress() {
                   <span>{t('cta.selectFiles')}</span>
                 </button>
                 
-                <div className="flex items-center space-x-4 text-red-100">
+                <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 text-red-100">
                   <div className="flex items-center space-x-1">
-                    <CheckCircleIcon className="w-5 h-5" />
-                    <span className="text-sm">{t('cta.features.free')}</span>
+                    <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-xs sm:text-sm">{t('cta.features.free')}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <ShieldCheckIcon className="w-5 h-5" />
-                    <span className="text-sm">{t('cta.features.secure')}</span>
+                    <ShieldCheckIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-xs sm:text-sm">{t('cta.features.secure')}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <BoltIcon className="w-5 h-5" />
-                    <span className="text-sm">{t('cta.features.fast')}</span>
+                    <BoltIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-xs sm:text-sm">{t('cta.features.fast')}</span>
                   </div>
                 </div>
               </div>

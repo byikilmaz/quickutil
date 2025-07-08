@@ -279,9 +279,40 @@ body {
   @apply animate-spin rounded-full border-b-2 border-blue-600;
 }
 
-/* Smooth scrolling */
+/* Mobile optimizations */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Prevent horizontal scrolling on mobile */
+.overflow-x-hidden {
+  overflow-x: hidden !important;
+}
+
+/* Mobile-friendly spacing */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Ensure no element exceeds viewport width */
+  * {
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+  
+  /* Responsive images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 /* Focus visible for accessibility */
