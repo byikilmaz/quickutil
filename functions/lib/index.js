@@ -30,12 +30,18 @@ exports.healthCheck = exports.compressPDFAdvanced = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const cors_1 = __importDefault(require("cors"));
+const form_data_1 = __importDefault(require("form-data"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 // Initialize Firebase Admin
 admin.initializeApp();
 const corsHandler = (0, cors_1.default)({ origin: true });
 /**
  * Advanced PDF Compression Function - Gelişmiş AI Destekli Sıkıştırma
  * Firebase Functions v1 ile advanced compression algoritmaları
+ */
+/**
+ * Revolutionary PDF Compression using External Python Service
+ * iLovePDF-level compression with Ghostscript backend
  */
 exports.compressPDFAdvanced = functions
     .region('us-central1')
@@ -46,7 +52,7 @@ exports.compressPDFAdvanced = functions
     .https.onCall(async (data, context) => {
     try {
         const { pdfBase64, compressionLevel, fileName } = data;
-        functions.logger.info('🚀 Starting advanced PDF compression', {
+        functions.logger.info('🚀 Starting revolutionary PDF compression with Python service', {
             compressionLevel,
             fileName,
             originalSize: Buffer.from(pdfBase64, 'base64').length
@@ -58,14 +64,39 @@ exports.compressPDFAdvanced = functions
         const originalBuffer = Buffer.from(pdfBase64, 'base64');
         const originalSize = originalBuffer.length;
         functions.logger.info('📊 Original PDF size:', { size: originalSize });
-        // Advanced compression simulation (Server-side optimized algorithms)
-        const compressedBuffer = await performAdvancedCompression(originalBuffer, compressionLevel);
+        // Try Python service first, fallback to local compression
+        let compressedBuffer;
+        let compressionRatio;
+        let usedPythonService = false;
+        try {
+            // Call external Python compression service
+            const pythonResult = await callPythonCompressionService(originalBuffer, compressionLevel, fileName);
+            if (pythonResult.success && pythonResult.compressedBuffer && pythonResult.compressionRatio !== undefined) {
+                compressedBuffer = pythonResult.compressedBuffer;
+                compressionRatio = pythonResult.compressionRatio;
+                usedPythonService = true;
+                functions.logger.info('✅ Python service compression successful', {
+                    compressionRatio: compressionRatio.toFixed(2) + '%'
+                });
+            }
+            else {
+                throw new Error(`Python service failed: ${pythonResult.error}`);
+            }
+        }
+        catch (pythonError) {
+            functions.logger.warn('⚠️ Python service failed, falling back to local compression:', pythonError);
+            // Fallback to local PDF-lib compression
+            compressedBuffer = await performAdvancedCompression(originalBuffer, compressionLevel);
+            const compressedSize = compressedBuffer.length;
+            compressionRatio = ((originalSize - compressedSize) / originalSize) * 100;
+            usedPythonService = false;
+        }
         const compressedSize = compressedBuffer.length;
-        const compressionRatio = ((originalSize - compressedSize) / originalSize) * 100;
         functions.logger.info('✅ Compression completed', {
             originalSize,
             compressedSize,
-            compressionRatio: compressionRatio.toFixed(2) + '%'
+            compressionRatio: compressionRatio.toFixed(2) + '%',
+            usedPythonService
         });
         return {
             success: true,
@@ -80,6 +111,75 @@ exports.compressPDFAdvanced = functions
         throw new functions.https.HttpsError('internal', `Compression failed: ${error}`);
     }
 });
+/**
+ * Call External Python Compression Service
+ * Revolutionary iLovePDF-level compression using Ghostscript
+ */
+async function callPythonCompressionService(buffer, compressionLevel, fileName) {
+    try {
+        // Python service URL (configure this based on your deployment)
+        const PYTHON_SERVICE_URL = process.env.PYTHON_COMPRESSION_SERVICE_URL || 'http://localhost:5000';
+        functions.logger.info('🔄 Calling Python compression service...', {
+            serviceUrl: PYTHON_SERVICE_URL,
+            compressionLevel,
+            fileName
+        });
+        // Map compression levels
+        const qualityMap = {
+            'light': 'printer',
+            'medium': 'ebook',
+            'high': 'ebook',
+            'maximum': 'screen' // Screen = maximum compression (80-90%)
+        };
+        const quality = qualityMap[compressionLevel] || 'screen';
+        // Create form data for Python API
+        const formData = new form_data_1.default();
+        formData.append('file', buffer, {
+            filename: fileName,
+            contentType: 'application/pdf'
+        });
+        formData.append('quality', quality);
+        // Call Python compression service
+        const response = await (0, node_fetch_1.default)(`${PYTHON_SERVICE_URL}/compress`, {
+            method: 'POST',
+            body: formData,
+            timeout: 300000,
+            headers: formData.getHeaders()
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || 'Python service returned error');
+        }
+        functions.logger.info('🎯 Python service response received', {
+            compressionRatio: result.compression_ratio,
+            originalSize: result.original_size,
+            compressedSize: result.compressed_size
+        });
+        // Download compressed file
+        const downloadResponse = await (0, node_fetch_1.default)(`${PYTHON_SERVICE_URL}/download/${result.download_id}`, {
+            timeout: 60000 // 1 minute timeout
+        });
+        if (!downloadResponse.ok) {
+            throw new Error(`Download failed: HTTP ${downloadResponse.status}`);
+        }
+        const compressedBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+        return {
+            success: true,
+            compressedBuffer,
+            compressionRatio: result.compression_ratio
+        };
+    }
+    catch (error) {
+        functions.logger.error('❌ Python service call failed:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+        };
+    }
+}
 /**
  * Gelişmiş AI Destekli PDF Sıkıştırma Algoritması
  * Advanced compression techniques ile maksimum optimizasyon

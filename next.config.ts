@@ -1,4 +1,30 @@
 import type { NextConfig } from "next";
+
+/**
+ * 🔥 Oracle Cloud PDF Compression Integration
+ * 
+ * Environment Variables needed:
+ * 
+ * NEXT_PUBLIC_ORACLE_COMPRESSION_API=https://your-oracle-domain.com
+ * 
+ * Example values:
+ * - Development: https://pdf-compressor.dev.oracle.cloud
+ * - Production: https://compression-api.quickutil.app
+ * - Local Testing: http://localhost:5000
+ * 
+ * Setup Guide:
+ * 1. Create Oracle Cloud Always Free account
+ * 2. Deploy Python compression service (see oracle-cloud-setup.md)
+ * 3. Get public IP or domain name
+ * 4. Add NEXT_PUBLIC_ORACLE_COMPRESSION_API to .env.local
+ * 5. Test health endpoint: https://your-domain.com/health
+ * 
+ * Benefits:
+ * - 100% FREE unlimited compression
+ * - iLovePDF-level compression (80-90%)
+ * - Professional Ghostscript backend
+ * - Always Free tier - no time limits
+ */
 const nextConfig: NextConfig = {
   // Static export for Firebase hosting
   output: 'export',

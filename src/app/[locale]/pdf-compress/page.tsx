@@ -37,6 +37,11 @@ import {
   calculateCompressionRatio,
   formatFileSize 
 } from '@/lib/pdfUtils';
+import { 
+  RevolutionaryPDFCompressor,
+  compressPDFRevolutionary,
+  adaptiveCompressPDF 
+} from '@/lib/revolutionaryPdfCompression';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { 
   aiEngine, 
@@ -44,6 +49,12 @@ import {
   SmartPreset,
   UserPreferences
 } from '@/lib/ai/aiEngine';
+import { 
+  OracleCompressionService,
+  useOracleCompression,
+  COMPRESSION_PROFILES,
+  type CompressionProfile
+} from '@/lib/oracleCompression';
 import { usePDFWorker, arrayBufferToFile } from '@/hooks/usePDFWorker';
 import JSZip from 'jszip';
 import { useTranslations, getTranslations } from '@/lib/translations';
@@ -77,6 +88,7 @@ export default function PDFCompress() {
   const { uploadFile: uploadToStorage } = useStorage();
   const { checkFileSize, getMaxFileSize } = useQuota();
   const { compressFile: compressWithWorker, isWorkerReady } = usePDFWorker();
+  const { compressPDF: compressWithOracle, checkHealth: checkOracleHealth } = useOracleCompression();
   const params = useParams();
   const locale = params?.locale as string || 'tr';
   const t = useTranslations('pdfCompress', locale);
@@ -84,10 +96,14 @@ export default function PDFCompress() {
   const [pdfFiles, setPdfFiles] = useState<PDFFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
+  const [oracleHealthy, setOracleHealthy] = useState<boolean | null>(null);
   const [globalSettings, setGlobalSettings] = useState({
     level: 'medium' as 'light' | 'medium' | 'high',
     useAI: true,
     aiCompressionLevel: 'advanced' as 'standard' | 'advanced',
+    useOracle: false,
+    oracleProfile: '/screen' as CompressionProfile,
+    compressionEngine: 'revolutionary' as 'revolutionary' | 'oracle' | 'standard',
     applyToAll: false
   });
 
@@ -96,6 +112,23 @@ export default function PDFCompress() {
     medium: { ratio: 0.7, label: t('medium'), description: t('mediumDesc'), icon: '📋' },
     high: { ratio: 0.5, label: t('high'), description: t('highDesc'), icon: '📰' },
   };
+
+  // Oracle Cloud health check on component mount
+  useEffect(() => {
+    const checkOracleStatus = async () => {
+      try {
+        const health = await checkOracleHealth();
+        setOracleHealthy(health.status === 'healthy');
+      } catch (error) {
+        console.error('Oracle health check failed:', error);
+        setOracleHealthy(false);
+      }
+    };
+
+    if (globalSettings.useOracle || globalSettings.compressionEngine === 'oracle') {
+      checkOracleStatus();
+    }
+  }, [globalSettings.useOracle, globalSettings.compressionEngine, checkOracleHealth]);
 
   // Dosya ekleme handler'ı
   const handleFilesSelect = (newFiles: File[]) => {
@@ -266,15 +299,111 @@ export default function PDFCompress() {
         const startTime = Date.now();
         let compressedFile: File;
 
-        // Advanced AI compression
-        if (globalSettings.useAI && globalSettings.aiCompressionLevel === 'advanced') {
+        // Oracle Cloud compression (highest priority for iLovePDF-level compression)
+        if ((globalSettings.compressionEngine === 'oracle' || globalSettings.useOracle) && oracleHealthy) {
           setPdfFiles(prev => prev.map(file => 
             file.id === pdfFile.id 
-              ? { ...file, progress: 10 }
+              ? { ...file, progress: 5 }
               : file
           ));
 
-          compressedFile = await compressWithServer(pdfFile.file, pdfFile.compressionSettings.level);
+          try {
+            console.log('🔥 Starting Oracle Cloud compression...');
+            
+            const oracleResult = await compressWithOracle(pdfFile.file, globalSettings.oracleProfile);
+            
+            if (oracleResult.success && oracleResult.blob) {
+              compressedFile = new File([oracleResult.blob], `compressed_${pdfFile.file.name}`, {
+                type: 'application/pdf',
+                lastModified: Date.now()
+              });
+              
+              console.log('🚀 Oracle compression successful:', {
+                original: pdfFile.file.size,
+                compressed: compressedFile.size,
+                ratio: oracleResult.compressionRatio + '%',
+                executionTime: oracleResult.executionTime,
+                profile: globalSettings.oracleProfile
+              });
+              
+              setPdfFiles(prev => prev.map(file => 
+                file.id === pdfFile.id 
+                  ? { ...file, progress: 95 }
+                  : file
+              ));
+            } else {
+              throw new Error(oracleResult.error || 'Oracle compression failed');
+            }
+            
+          } catch (oracleError) {
+            console.warn('🔄 Oracle compression failed, falling back to Revolutionary Engine:', oracleError);
+            
+            // Fallback to Revolutionary Engine
+            const revolutionaryResult = await RevolutionaryPDFCompressor.compress(
+              pdfFile.file,
+              {
+                compressionProfile: 'web',
+                imageQuality: 0.7,
+                enableImageDownsampling: true,
+                enableFontOptimization: true,
+                enableContentCompression: true,
+                enableDuplicateRemoval: true
+              }
+            );
+            
+            compressedFile = revolutionaryResult.compressedFile;
+            
+            setPdfFiles(prev => prev.map(file => 
+              file.id === pdfFile.id 
+                ? { ...file, progress: 90 }
+                : file
+            ));
+          }
+        }
+        // Advanced AI compression with Revolutionary Engine
+        else if (globalSettings.useAI && globalSettings.aiCompressionLevel === 'advanced') {
+          setPdfFiles(prev => prev.map(file => 
+            file.id === pdfFile.id 
+              ? { ...file, progress: 5 }
+              : file
+          ));
+
+          try {
+            // First try Revolutionary Compression (client-side advanced)
+            const revolutionaryResult = await RevolutionaryPDFCompressor.compress(
+              pdfFile.file,
+              {
+                compressionProfile: 'web',
+                imageQuality: 0.7,
+                enableImageDownsampling: true,
+                enableFontOptimization: true,
+                enableContentCompression: true,
+                enableDuplicateRemoval: true
+              }
+            );
+            
+            setPdfFiles(prev => prev.map(file => 
+              file.id === pdfFile.id 
+                ? { ...file, progress: 70 }
+                : file
+            ));
+            
+            compressedFile = revolutionaryResult.compressedFile;
+            
+            console.log('🚀 Revolutionary compression successful:', {
+              original: pdfFile.file.size,
+              compressed: compressedFile.size,
+              ratio: revolutionaryResult.compressionRatio.toFixed(1) + '%',
+              profile: revolutionaryResult.analysis
+            });
+            
+          } catch (revolutionaryError) {
+            console.warn('🔄 Revolutionary compression failed, falling back to enhanced client:', revolutionaryError);
+            
+            // Fallback to enhanced client compression instead of server
+            const ratio = compressionLevels[pdfFile.compressionSettings.level].ratio;
+            compressedFile = await compressPDF(pdfFile.file, ratio);
+          }
           
           setPdfFiles(prev => prev.map(file => 
             file.id === pdfFile.id 
@@ -661,7 +790,7 @@ export default function PDFCompress() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {/* AI Toggle */}
             <div className="bg-white/60 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
@@ -785,6 +914,90 @@ export default function PDFCompress() {
                   </label>
                 ))}
               </div>
+            </div>
+
+            {/* Oracle Cloud Compression */}
+            <div className="bg-white/60 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <CloudArrowUpIcon className="h-5 w-5 text-orange-600 mr-2" />
+                  <span className="font-medium text-gray-900">Oracle Cloud</span>
+                  {oracleHealthy !== null && (
+                    <div className={`ml-2 w-2 h-2 rounded-full ${oracleHealthy ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  )}
+                </div>
+                <button
+                  onClick={() => setGlobalSettings(prev => ({ 
+                    ...prev, 
+                    useOracle: !prev.useOracle,
+                    compressionEngine: !prev.useOracle ? 'oracle' : 'revolutionary'
+                  }))}
+                  disabled={oracleHealthy === false}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    globalSettings.useOracle ? 'bg-orange-600' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`${
+                      globalSettings.useOracle ? 'translate-x-6' : 'translate-x-1'
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                {globalSettings.useOracle 
+                  ? '🔥 iLovePDF seviyesinde %80-90 sıkıştırma'
+                  : '☁️ Oracle Cloud ile professional compression'
+                }
+              </p>
+              
+              {/* Oracle Quality Profile Selection */}
+              {globalSettings.useOracle && oracleHealthy && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    ⚙️ Compression Profile
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(COMPRESSION_PROFILES).map(([profile, config]) => (
+                      <label
+                        key={profile}
+                        className={`cursor-pointer p-3 border-2 rounded-lg transition-all duration-200 text-center ${
+                          globalSettings.oracleProfile === profile
+                            ? 'border-orange-500 bg-orange-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="oracleProfile"
+                          value={profile}
+                          checked={globalSettings.oracleProfile === profile}
+                          onChange={(e) => setGlobalSettings(prev => ({ 
+                            ...prev, 
+                            oracleProfile: e.target.value as CompressionProfile
+                          }))}
+                          className="sr-only"
+                        />
+                        <div className="text-lg mb-1">{config.icon}</div>
+                        <div className="text-xs font-medium text-gray-900">{config.name}</div>
+                        <div className="text-xs text-gray-600">{config.expectedRatio}</div>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    {COMPRESSION_PROFILES[globalSettings.oracleProfile]?.description}
+                  </p>
+                </div>
+              )}
+              
+              {/* Oracle Offline Warning */}
+              {oracleHealthy === false && (
+                <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-xs text-yellow-800">
+                    ⚠️ Oracle Cloud API offline. Revolutionary Engine kullanılacak.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
