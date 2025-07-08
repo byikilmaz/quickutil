@@ -1,0 +1,764 @@
+[debug] [2025-07-08T18:46:43.393Z] ----------------------------------------------------------------------
+[debug] [2025-07-08T18:46:43.395Z] Command:       /opt/homebrew/Cellar/node/24.2.0/bin/node /opt/homebrew/bin/firebase deploy --only functions
+[debug] [2025-07-08T18:46:43.395Z] CLI Version:   14.9.0
+[debug] [2025-07-08T18:46:43.395Z] Platform:      darwin
+[debug] [2025-07-08T18:46:43.395Z] Node Version:  v24.2.0
+[debug] [2025-07-08T18:46:43.395Z] Time:          Tue Jul 08 2025 21:46:43 GMT+0300 (GMT+03:00)
+[debug] [2025-07-08T18:46:43.395Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-07-08T18:46:43.504Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-08T18:46:43.505Z] > authorizing via signed-in user (yikilmaz.bilal@gmail.com)
+[debug] [2025-07-08T18:46:43.505Z] [iam] checking project quickutil-d2998 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-07-08T18:46:43.505Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:43.505Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:43.506Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions [none]
+[debug] [2025-07-08T18:46:43.506Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions x-goog-quota-user=projects/quickutil-d2998
+[debug] [2025-07-08T18:46:43.506Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-07-08T18:46:44.503Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions 200
+[debug] [2025-07-08T18:46:44.503Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-07-08T18:46:44.504Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:44.504Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:44.504Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-07-08T18:46:44.504Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-07-08T18:46:45.404Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2025-07-08T18:46:45.404Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'quickutil-d2998'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2025-07-08T18:46:46.654Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:46.654Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:46.654Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 [none]
+[debug] [2025-07-08T18:46:46.871Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 200
+[debug] [2025-07-08T18:46:46.871Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 {"projectNumber":"768751015182","projectId":"quickutil-d2998","lifecycleState":"ACTIVE","name":"quickutil","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-07-05T10:13:28.741001Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2025-07-08T18:46:46.872Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:46.872Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:46.872Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998/adminSdkConfig [none]
+[debug] [2025-07-08T18:46:47.435Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998/adminSdkConfig 200
+[debug] [2025-07-08T18:46:47.435Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998/adminSdkConfig {"projectId":"quickutil-d2998","storageBucket":"quickutil-d2998.firebasestorage.app"}
+[debug] [2025-07-08T18:46:47.435Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.435Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.435Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs [none]
+[debug] [2025-07-08T18:46:47.761Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs 200
+[debug] [2025-07-08T18:46:47.761Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs {"configs":[{"name":"projects/quickutil-d2998/configs/google"},{"name":"projects/quickutil-d2998/configs/resend"}]}
+[debug] [2025-07-08T18:46:47.762Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.762Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.762Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.762Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.762Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables [none]
+[debug] [2025-07-08T18:46:47.762Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables [none]
+[debug] [2025-07-08T18:46:47.980Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables 200
+[debug] [2025-07-08T18:46:47.980Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables {"variables":[{"name":"projects/quickutil-d2998/configs/google/variables/private_key_id","updateTime":"2025-07-06T15:00:57.144638947Z"},{"name":"projects/quickutil-d2998/configs/google/variables/client_email","updateTime":"2025-07-06T15:26:33.398316081Z"},{"name":"projects/quickutil-d2998/configs/google/variables/client_id","updateTime":"2025-07-06T15:01:14.607908860Z"}]}
+[debug] [2025-07-08T18:46:47.980Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.980Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.980Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.980Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.980Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.980Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:47.980Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/private_key_id [none]
+[debug] [2025-07-08T18:46:47.981Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_email [none]
+[debug] [2025-07-08T18:46:47.982Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_id [none]
+[debug] [2025-07-08T18:46:48.047Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables 200
+[debug] [2025-07-08T18:46:48.047Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables {"variables":[{"name":"projects/quickutil-d2998/configs/resend/variables/key","updateTime":"2025-07-06T12:36:29.804327859Z"}]}
+[debug] [2025-07-08T18:46:48.047Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:48.047Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:48.047Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables/key [none]
+[debug] [2025-07-08T18:46:48.219Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/private_key_id 200
+[debug] [2025-07-08T18:46:48.219Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/private_key_id {"name":"projects/quickutil-d2998/configs/google/variables/private_key_id","updateTime":"2025-07-06T15:00:57.144638947Z","text":"3fcd81d8b7fb825f7b38477126a38a46d032ce0d"}
+[debug] [2025-07-08T18:46:48.267Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables/key 200
+[debug] [2025-07-08T18:46:48.267Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables/key {"name":"projects/quickutil-d2998/configs/resend/variables/key","updateTime":"2025-07-06T12:36:29.804327859Z","text":"re_YgufSHZ3_BBdMFAdaBPwWUFvtLcZk7KLk"}
+[debug] [2025-07-08T18:46:48.276Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_email 200
+[debug] [2025-07-08T18:46:48.276Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_email {"name":"projects/quickutil-d2998/configs/google/variables/client_email","updateTime":"2025-07-06T15:26:33.398316081Z","text":"quickutil-drive@quickutil-d2998.iam.gserviceaccount.com"}
+[debug] [2025-07-08T18:46:48.281Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_id 200
+[debug] [2025-07-08T18:46:48.281Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_id {"name":"projects/quickutil-d2998/configs/google/variables/client_id","updateTime":"2025-07-06T15:01:14.607908860Z","text":"101417693301424652030"}
+[debug] [2025-07-08T18:46:48.282Z] Validating nodejs source
+[warn] ⚠  functions: Runtime Node.js 18 was deprecated on 2025-04-30 and will be decommissioned on 2025-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-07-08T18:46:48.656Z] > [functions] package.json contents: {
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "abbrev": "^2.0.0",
+    "abort-controller": "^3.0.0",
+    "accepts": "^1.3.8",
+    "agent-base": "^7.1.3",
+    "ansi-regex": "^6.1.0",
+    "ansi-styles": "^6.2.1",
+    "array-flatten": "^1.1.1",
+    "arrify": "^2.0.1",
+    "async-retry": "^1.3.3",
+    "asynckit": "^0.4.0",
+    "balanced-match": "^1.0.2",
+    "base64-js": "^1.5.1",
+    "bignumber.js": "^9.3.0",
+    "body-parser": "^1.20.3",
+    "brace-expansion": "^2.0.2",
+    "buffer-equal-constant-time": "^1.0.1",
+    "bytes": "^3.1.2",
+    "call-bind-apply-helpers": "^1.0.2",
+    "call-bound": "^1.0.4",
+    "cliui": "^8.0.1",
+    "color-convert": "^2.0.1",
+    "color-name": "^1.1.4",
+    "combined-stream": "^1.0.8",
+    "commander": "^10.0.1",
+    "condense-newlines": "^0.2.1",
+    "config-chain": "^1.1.13",
+    "content-disposition": "^0.5.4",
+    "content-type": "^1.0.5",
+    "cookie": "^0.7.1",
+    "cookie-signature": "^1.0.6",
+    "cors": "^2.8.5",
+    "cross-spawn": "^7.0.6",
+    "debug": "^2.6.9",
+    "deepmerge": "^4.3.1",
+    "delayed-stream": "^1.0.0",
+    "depd": "^2.0.0",
+    "destroy": "^1.2.0",
+    "dom-serializer": "^2.0.0",
+    "domelementtype": "^2.3.0",
+    "domhandler": "^5.0.3",
+    "domutils": "^3.2.2",
+    "dunder-proto": "^1.0.1",
+    "duplexify": "^4.1.3",
+    "eastasianwidth": "^0.2.0",
+    "ecdsa-sig-formatter": "^1.0.11",
+    "editorconfig": "^1.0.4",
+    "ee-first": "^1.1.1",
+    "emoji-regex": "^9.2.2",
+    "encodeurl": "^2.0.0",
+    "end-of-stream": "^1.4.5",
+    "entities": "^4.5.0",
+    "es-define-property": "^1.0.1",
+    "es-errors": "^1.3.0",
+    "es-object-atoms": "^1.1.1",
+    "es-set-tostringtag": "^2.1.0",
+    "escalade": "^3.2.0",
+    "escape-html": "^1.0.3",
+    "etag": "^1.8.1",
+    "event-target-shim": "^5.0.1",
+    "express": "^4.21.2",
+    "extend": "^3.0.2",
+    "extend-shallow": "^2.0.1",
+    "farmhash-modern": "^1.1.0",
+    "fast-deep-equal": "^3.1.3",
+    "fast-xml-parser": "^4.5.3",
+    "faye-websocket": "^0.11.4",
+    "finalhandler": "^1.3.1",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^4.9.0",
+    "foreground-child": "^3.3.1",
+    "form-data": "^2.5.3",
+    "forwarded": "^0.2.0",
+    "fresh": "^0.5.2",
+    "function-bind": "^1.1.2",
+    "functional-red-black-tree": "^1.0.1",
+    "gcp-metadata": "^6.1.1",
+    "get-caller-file": "^2.0.5",
+    "get-intrinsic": "^1.3.0",
+    "get-proto": "^1.0.1",
+    "glob": "^10.4.5",
+    "google-auth-library": "^9.15.1",
+    "google-logging-utils": "^0.0.2",
+    "gopd": "^1.2.0",
+    "gtoken": "^7.1.0",
+    "has-symbols": "^1.1.0",
+    "has-tostringtag": "^1.0.2",
+    "hasown": "^2.0.2",
+    "html-entities": "^2.6.0",
+    "html-to-text": "^9.0.5",
+    "htmlparser2": "^8.0.2",
+    "http-errors": "^2.0.0",
+    "http-parser-js": "^0.5.10",
+    "http-proxy-agent": "^5.0.0",
+    "https-proxy-agent": "^7.0.6",
+    "iconv-lite": "^0.4.24",
+    "inherits": "^2.0.4",
+    "ini": "^1.3.8",
+    "ipaddr.js": "^1.9.1",
+    "is-buffer": "^1.1.6",
+    "is-extendable": "^0.1.1",
+    "is-fullwidth-code-point": "^3.0.0",
+    "is-stream": "^2.0.1",
+    "is-whitespace": "^0.3.0",
+    "isexe": "^2.0.0",
+    "jackspeak": "^3.4.3",
+    "jose": "^4.15.9",
+    "js-beautify": "^1.15.4",
+    "js-cookie": "^3.0.5",
+    "js-tokens": "^4.0.0",
+    "json-bigint": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwa": "^1.4.2",
+    "jwks-rsa": "^3.2.0",
+    "jws": "^3.2.2",
+    "kind-of": "^3.2.2",
+    "leac": "^0.6.0",
+    "limiter": "^1.1.5",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.includes": "^4.3.0",
+    "lodash.isboolean": "^3.0.3",
+    "lodash.isinteger": "^4.0.4",
+    "lodash.isnumber": "^3.0.3",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.isstring": "^4.0.1",
+    "lodash.once": "^4.1.1",
+    "long": "^5.3.2",
+    "loose-envify": "^1.4.0",
+    "lru-cache": "^6.0.0",
+    "lru-memoizer": "^2.3.0",
+    "math-intrinsics": "^1.1.0",
+    "media-typer": "^0.3.0",
+    "merge-descriptors": "^1.0.3",
+    "methods": "^1.1.2",
+    "mime": "^1.6.0",
+    "mime-db": "^1.52.0",
+    "mime-types": "^2.1.35",
+    "minimatch": "^9.0.1",
+    "minipass": "^7.1.2",
+    "ms": "^2.0.0",
+    "negotiator": "^0.6.3",
+    "node-fetch": "^2.7.0",
+    "node-forge": "^1.3.1",
+    "nopt": "^7.2.1",
+    "object-assign": "^4.1.1",
+    "object-hash": "^3.0.0",
+    "object-inspect": "^1.13.4",
+    "on-finished": "^2.4.1",
+    "once": "^1.4.0",
+    "p-limit": "^3.1.0",
+    "package-json-from-dist": "^1.0.1",
+    "parseley": "^0.12.1",
+    "parseurl": "^1.3.3",
+    "path-key": "^3.1.1",
+    "path-scurry": "^1.11.1",
+    "path-to-regexp": "^0.1.12",
+    "pdf-lib": "^1.17.1",
+    "peberminta": "^0.9.0",
+    "pretty": "^2.0.0",
+    "proto-list": "^1.2.4",
+    "proto3-json-serializer": "^2.0.2",
+    "protobufjs": "^7.5.3",
+    "proxy-addr": "^2.0.7",
+    "qs": "^6.13.0",
+    "range-parser": "^1.2.1",
+    "raw-body": "^2.5.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "readable-stream": "^3.6.2",
+    "require-directory": "^2.1.1",
+    "resend": "^2.1.0",
+    "retry": "^0.13.1",
+    "retry-request": "^7.0.2",
+    "safe-buffer": "^5.2.1",
+    "safer-buffer": "^2.1.2",
+    "scheduler": "^0.23.2",
+    "selderee": "^0.11.0",
+    "semver": "^7.7.2",
+    "serve-static": "^1.16.2",
+    "setprototypeof": "^1.2.0",
+    "shebang-command": "^2.0.0",
+    "shebang-regex": "^3.0.0",
+    "side-channel": "^1.1.0",
+    "side-channel-list": "^1.0.0",
+    "side-channel-map": "^1.0.1",
+    "side-channel-weakmap": "^1.0.2",
+    "signal-exit": "^4.1.0",
+    "statuses": "^2.0.1",
+    "stream-events": "^1.0.5",
+    "stream-shift": "^1.0.3",
+    "string_decoder": "^1.3.0",
+    "string-width": "^5.1.2",
+    "string-width-cjs": "^4.2.3",
+    "strip-ansi": "^7.1.0",
+    "strip-ansi-cjs": "^6.0.1",
+    "strnum": "^1.1.2",
+    "stubs": "^3.0.0",
+    "toidentifier": "^1.0.1",
+    "tr46": "^0.0.3",
+    "tslib": "^2.8.1",
+    "type-is": "^1.6.18",
+    "typescript": "^4.9.5",
+    "undici-types": "^5.26.5",
+    "unpipe": "^1.0.0",
+    "util-deprecate": "^1.0.2",
+    "utils-merge": "^1.0.1",
+    "uuid": "^10.0.0",
+    "vary": "^1.1.2",
+    "webidl-conversions": "^3.0.1",
+    "websocket-driver": "^0.7.4",
+    "websocket-extensions": "^0.1.4",
+    "whatwg-url": "^5.0.0",
+    "which": "^2.0.2",
+    "wrap-ansi": "^8.1.0",
+    "wrap-ansi-cjs": "^7.0.0",
+    "wrappy": "^1.0.2",
+    "y18n": "^5.0.8",
+    "yallist": "^4.0.0",
+    "yargs": "^17.7.2",
+    "yargs-parser": "^21.1.1",
+    "yocto-queue": "^0.1.0"
+  },
+  "scripts": {
+    "lint": "eslint src --ext .js,.ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
+[debug] [2025-07-08T18:46:48.656Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-07-08T18:46:48.657Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-07-08T18:46:48.660Z] Found firebase-functions binary at '/Users/bilalyikilmaz/Desktop/quickutil/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8084
+
+[debug] [2025-07-08T18:46:48.960Z] Got response from /__/functions.yaml {"endpoints":{"compressPDFAdvanced":{"platform":"gcfv1","labels":{},"availableMemoryMb":2048,"timeoutSeconds":540,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["us-central1"],"callableTrigger":{},"entryPoint":"compressPDFAdvanced"},"healthCheck":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["us-central1"],"httpsTrigger":{},"entryPoint":"healthCheck"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged /Users/bilalyikilmaz/Desktop/quickutil/functions (55.42 KB) for uploading 
+[debug] [2025-07-08T18:46:52.994Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:52.994Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:52.994Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/-/functions [none]
+[debug] [2025-07-08T18:46:53.667Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/-/functions 200
+[debug] [2025-07-08T18:46:53.667Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/-/functions {"functions":[{"name":"projects/quickutil-d2998/locations/us-central1/functions/getQuotaInfo","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/getQuotaInfo","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"getQuotaInfo","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:22:23.877846947Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/getQuotaInfo"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/downloadFile","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/downloadFile","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"downloadFile","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:21:44.384770431Z","versionId":"1","labels":{"firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6","deployment-tool":"cli-firebase"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/downloadFile"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/uploadFile","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/uploadFile","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"uploadFile","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:18:51.781887112Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/uploadFile"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/healthCheck","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/healthCheck","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"healthCheck","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:16:57.577Z","versionId":"4","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/healthCheck"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/deleteFile","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/deleteFile","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"deleteFile","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:21:09.080041488Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/deleteFile"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/listFiles","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/listFiles","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"listFiles","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:20:22.384514025Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/listFiles"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true}]}
+[debug] [2025-07-08T18:46:53.668Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:53.668Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:53.668Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/quickutil-d2998/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2025-07-08T18:46:54.722Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/quickutil-d2998/locations/-/functions 200
+[debug] [2025-07-08T18:46:54.722Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/quickutil-d2998/locations/-/functions {"functions":[{"name":"projects/quickutil-d2998/locations/us-central1/functions/cleanupExpiredFiles","buildConfig":{"build":"projects/768751015182/locations/us-central1/builds/0c988955-5384-4339-bf3b-62752ae8e023","runtime":"nodejs18","entryPoint":"cleanupExpiredFiles","source":{"storageSource":{"bucket":"gcf-v2-sources-768751015182-us-central1","object":"cleanupExpiredFiles/function-source.zip","generation":"1751814468698384"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/quickutil-d2998/locations/us-central1/repositories/gcf-artifacts","serviceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/quickutil-d2998/locations/us-central1/services/cleanupexpiredfiles","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/services/cleanupExpiredFiles","FUNCTION_TARGET":"cleanupExpiredFiles","LOG_EXECUTION_ID":"true","FUNCTION_SIGNATURE_TYPE":"http"},"maxInstanceCount":20,"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"768751015182-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"revision":"cleanupexpiredfiles-00001-qon","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","updateTime":"2025-07-06T15:07:56.545800595Z","labels":{"deployment-tool":"cli-firebase","deployment-scheduled":"true","firebase-functions-hash":"511bfc93c08dc772ffbde444ec8363e3fa4d545a"},"environment":"GEN_2","url":"https://us-central1-quickutil-d2998.cloudfunctions.net/cleanupExpiredFiles","createTime":"2025-07-06T15:05:01.078521290Z","satisfiesPzi":true}]}
+[debug] [2025-07-08T18:46:54.725Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:54.726Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:54.726Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 [none]
+[debug] [2025-07-08T18:46:55.664Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 200
+[debug] [2025-07-08T18:46:55.664Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 {"projectNumber":"768751015182","projectId":"quickutil-d2998","lifecycleState":"ACTIVE","name":"quickutil","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-07-05T10:13:28.741001Z"}
+[debug] [2025-07-08T18:46:55.665Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:55.665Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:46:55.665Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2025-07-08T18:46:55.665Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/us-central1/functions:generateUploadUrl {}
+[debug] [2025-07-08T18:46:56.289Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2025-07-08T18:46:56.289Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/78df5c7a-002b-40ec-a124-5962c37f924c.zip?GoogleAccessId=service-768751015182@gcf-admin-robot.iam.gserviceaccount.com&Expires=1752002216&Signature=L3qh0Dw9POameWxDKLoDscBhONGlK8mFBU8IpEYo9tEn5gJI5qRyHGcdd370Yb29MiVNohWk2ifzkH85mALxN3jJ1u2pn5C8rZRkq%2FYsFxVCyc9%2FakBb4PQqxwk13TiwW2UEBNNVKloDirgRML02hbFntBeNRInuv3uSycrwXPyYTVxfr9Wl8M0sCrFjgv7NX2f9n4s0COXUdAY3lJi%2Fzjyu5JszzGPhH68TzRNV5LN%2FE1AL%2BPnT0XSkYLVwN3y%2BAaY%2FPFI%2FiJ16bynKHr5YSdZ6tZOQ7vk66U7rlFzEbdnWWQwFeidSm8GzPT3jcQckpD2Xk2N0l%2F8DdWdwEZUjSQ%3D%3D"}
+[debug] [2025-07-08T18:46:56.290Z] >>> [apiv2][query] PUT https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/78df5c7a-002b-40ec-a124-5962c37f924c.zip GoogleAccessId=service-768751015182%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1752002216&Signature=L3qh0Dw9POameWxDKLoDscBhONGlK8mFBU8IpEYo9tEn5gJI5qRyHGcdd370Yb29MiVNohWk2ifzkH85mALxN3jJ1u2pn5C8rZRkq%2FYsFxVCyc9%2FakBb4PQqxwk13TiwW2UEBNNVKloDirgRML02hbFntBeNRInuv3uSycrwXPyYTVxfr9Wl8M0sCrFjgv7NX2f9n4s0COXUdAY3lJi%2Fzjyu5JszzGPhH68TzRNV5LN%2FE1AL%2BPnT0XSkYLVwN3y%2BAaY%2FPFI%2FiJ16bynKHr5YSdZ6tZOQ7vk66U7rlFzEbdnWWQwFeidSm8GzPT3jcQckpD2Xk2N0l%2F8DdWdwEZUjSQ%3D%3D
+[debug] [2025-07-08T18:46:56.290Z] >>> [apiv2][body] PUT https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/78df5c7a-002b-40ec-a124-5962c37f924c.zip [stream]
+[debug] [2025-07-08T18:46:57.564Z] <<< [apiv2][status] PUT https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/78df5c7a-002b-40ec-a124-5962c37f924c.zip 200
+[debug] [2025-07-08T18:46:57.564Z] <<< [apiv2][body] PUT https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/78df5c7a-002b-40ec-a124-5962c37f924c.zip [omitted]
+[info] ✔  functions: functions folder uploaded successfully 
+[info] 
+The following functions are found in your project but do not exist in your local source code:
+	cleanupExpiredFiles(us-central1)
+	deleteFile(us-central1)
+	downloadFile(us-central1)
+	getQuotaInfo(us-central1)
+	listFiles(us-central1)
+	uploadFile(us-central1)
+
+If you are renaming a function or changing its region, it is recommended that you create the new function first before deleting the old one to prevent event loss. For more info, visit https://firebase.google.com/docs/functions/manage-functions#modify
+
+[debug] [2025-07-08T18:59:46.467Z] ----------------------------------------------------------------------
+[debug] [2025-07-08T18:59:46.469Z] Command:       /opt/homebrew/Cellar/node/24.2.0/bin/node /opt/homebrew/bin/firebase deploy --force
+[debug] [2025-07-08T18:59:46.469Z] CLI Version:   14.9.0
+[debug] [2025-07-08T18:59:46.469Z] Platform:      darwin
+[debug] [2025-07-08T18:59:46.469Z] Node Version:  v24.2.0
+[debug] [2025-07-08T18:59:46.469Z] Time:          Tue Jul 08 2025 21:59:46 GMT+0300 (GMT+03:00)
+[debug] [2025-07-08T18:59:46.469Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-07-08T18:59:46.585Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-08T18:59:46.585Z] > authorizing via signed-in user (yikilmaz.bilal@gmail.com)
+[debug] [2025-07-08T18:59:46.585Z] [iam] checking project quickutil-d2998 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2025-07-08T18:59:46.585Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:46.585Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:46.586Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions [none]
+[debug] [2025-07-08T18:59:46.586Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions x-goog-quota-user=projects/quickutil-d2998
+[debug] [2025-07-08T18:59:46.586Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2025-07-08T18:59:47.586Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions 200
+[debug] [2025-07-08T18:59:47.587Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2025-07-08T18:59:47.587Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:47.587Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:47.587Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-07-08T18:59:47.587Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-07-08T18:59:48.543Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2025-07-08T18:59:48.543Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/quickutil-d2998/serviceAccounts/quickutil-d2998@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-07-08T18:59:48.544Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:48.544Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:48.544Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998 [none]
+[debug] [2025-07-08T18:59:48.967Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998 200
+[debug] [2025-07-08T18:59:48.967Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998 {"projectId":"quickutil-d2998","projectNumber":"768751015182","displayName":"quickutil","name":"projects/quickutil-d2998","resources":{"hostingSite":"quickutil-d2998"},"state":"ACTIVE","etag":"1_5d60fb1e-811b-4246-86b2-7bdd424bdb04"}
+[info] 
+[info] === Deploying to 'quickutil-d2998'...
+[info] 
+[info] i  deploying storage, firestore, functions, hosting 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] ✔  functions: Finished running predeploy script. 
+[info] i  storage: ensuring required API firebasestorage.googleapis.com is enabled... 
+[debug] [2025-07-08T18:59:50.350Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:50.350Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:50.350Z] >>> [apiv2][query] GET https://firebasestorage.googleapis.com/v1alpha/projects/quickutil-d2998/defaultBucket [none]
+[debug] [2025-07-08T18:59:50.820Z] <<< [apiv2][status] GET https://firebasestorage.googleapis.com/v1alpha/projects/quickutil-d2998/defaultBucket 200
+[debug] [2025-07-08T18:59:50.820Z] <<< [apiv2][body] GET https://firebasestorage.googleapis.com/v1alpha/projects/quickutil-d2998/defaultBucket {"name":"projects/quickutil-d2998/defaultBucket","location":"US-CENTRAL1","bucket":{"name":"projects/quickutil-d2998/buckets/quickutil-d2998.firebasestorage.app"},"storageClass":"REGIONAL"}
+[info] i  firebase.storage: checking storage.rules for compilation errors... 
+[debug] [2025-07-08T18:59:50.821Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:50.821Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:50.822Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test [none]
+[debug] [2025-07-08T18:59:50.822Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test [omitted]
+[debug] [2025-07-08T18:59:51.674Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test 200
+[debug] [2025-07-08T18:59:51.674Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test {}
+[info] ✔  firebase.storage: rules file storage.rules compiled successfully 
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2025-07-08T18:59:51.676Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:51.676Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:51.676Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test [none]
+[debug] [2025-07-08T18:59:51.676Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test [omitted]
+[debug] [2025-07-08T18:59:52.422Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test 200
+[debug] [2025-07-08T18:59:52.422Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/quickutil-d2998:test {}
+[info] ✔  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2025-07-08T18:59:52.423Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:52.423Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:52.423Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 [none]
+[debug] [2025-07-08T18:59:52.662Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 200
+[debug] [2025-07-08T18:59:52.662Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 {"projectNumber":"768751015182","projectId":"quickutil-d2998","lifecycleState":"ACTIVE","name":"quickutil","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-07-05T10:13:28.741001Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2025-07-08T18:59:52.664Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:52.664Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:52.664Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998/adminSdkConfig [none]
+[debug] [2025-07-08T18:59:53.119Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998/adminSdkConfig 200
+[debug] [2025-07-08T18:59:53.119Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/quickutil-d2998/adminSdkConfig {"projectId":"quickutil-d2998","storageBucket":"quickutil-d2998.firebasestorage.app"}
+[debug] [2025-07-08T18:59:53.120Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.120Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.120Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs [none]
+[debug] [2025-07-08T18:59:53.558Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs 200
+[debug] [2025-07-08T18:59:53.558Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs {"configs":[{"name":"projects/quickutil-d2998/configs/google"},{"name":"projects/quickutil-d2998/configs/resend"}]}
+[debug] [2025-07-08T18:59:53.558Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.558Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.558Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.558Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.559Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables [none]
+[debug] [2025-07-08T18:59:53.559Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables [none]
+[debug] [2025-07-08T18:59:53.795Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables 200
+[debug] [2025-07-08T18:59:53.795Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables {"variables":[{"name":"projects/quickutil-d2998/configs/google/variables/client_id","updateTime":"2025-07-06T15:01:14.607908860Z"},{"name":"projects/quickutil-d2998/configs/google/variables/private_key_id","updateTime":"2025-07-06T15:00:57.144638947Z"},{"name":"projects/quickutil-d2998/configs/google/variables/client_email","updateTime":"2025-07-06T15:26:33.398316081Z"}]}
+[debug] [2025-07-08T18:59:53.796Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.796Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.796Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.796Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.796Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.796Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.796Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_id [none]
+[debug] [2025-07-08T18:59:53.796Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/private_key_id [none]
+[debug] [2025-07-08T18:59:53.797Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_email [none]
+[debug] [2025-07-08T18:59:53.860Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables 200
+[debug] [2025-07-08T18:59:53.860Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables {"variables":[{"name":"projects/quickutil-d2998/configs/resend/variables/key","updateTime":"2025-07-06T12:36:29.804327859Z"}]}
+[debug] [2025-07-08T18:59:53.860Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.860Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:53.860Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables/key [none]
+[debug] [2025-07-08T18:59:54.010Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_id 200
+[debug] [2025-07-08T18:59:54.010Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_id {"name":"projects/quickutil-d2998/configs/google/variables/client_id","updateTime":"2025-07-06T15:01:14.607908860Z","text":"101417693301424652030"}
+[debug] [2025-07-08T18:59:54.086Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables/key 200
+[debug] [2025-07-08T18:59:54.086Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/resend/variables/key {"name":"projects/quickutil-d2998/configs/resend/variables/key","updateTime":"2025-07-06T12:36:29.804327859Z","text":"re_YgufSHZ3_BBdMFAdaBPwWUFvtLcZk7KLk"}
+[debug] [2025-07-08T18:59:54.089Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_email 200
+[debug] [2025-07-08T18:59:54.089Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/client_email {"name":"projects/quickutil-d2998/configs/google/variables/client_email","updateTime":"2025-07-06T15:26:33.398316081Z","text":"quickutil-drive@quickutil-d2998.iam.gserviceaccount.com"}
+[debug] [2025-07-08T18:59:54.100Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/private_key_id 200
+[debug] [2025-07-08T18:59:54.100Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/quickutil-d2998/configs/google/variables/private_key_id {"name":"projects/quickutil-d2998/configs/google/variables/private_key_id","updateTime":"2025-07-06T15:00:57.144638947Z","text":"3fcd81d8b7fb825f7b38477126a38a46d032ce0d"}
+[debug] [2025-07-08T18:59:54.100Z] Validating nodejs source
+[warn] ⚠  functions: Runtime Node.js 18 was deprecated on 2025-04-30 and will be decommissioned on 2025-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2025-07-08T18:59:54.542Z] > [functions] package.json contents: {
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "abbrev": "^2.0.0",
+    "abort-controller": "^3.0.0",
+    "accepts": "^1.3.8",
+    "agent-base": "^7.1.3",
+    "ansi-regex": "^6.1.0",
+    "ansi-styles": "^6.2.1",
+    "array-flatten": "^1.1.1",
+    "arrify": "^2.0.1",
+    "async-retry": "^1.3.3",
+    "asynckit": "^0.4.0",
+    "balanced-match": "^1.0.2",
+    "base64-js": "^1.5.1",
+    "bignumber.js": "^9.3.0",
+    "body-parser": "^1.20.3",
+    "brace-expansion": "^2.0.2",
+    "buffer-equal-constant-time": "^1.0.1",
+    "bytes": "^3.1.2",
+    "call-bind-apply-helpers": "^1.0.2",
+    "call-bound": "^1.0.4",
+    "cliui": "^8.0.1",
+    "color-convert": "^2.0.1",
+    "color-name": "^1.1.4",
+    "combined-stream": "^1.0.8",
+    "commander": "^10.0.1",
+    "condense-newlines": "^0.2.1",
+    "config-chain": "^1.1.13",
+    "content-disposition": "^0.5.4",
+    "content-type": "^1.0.5",
+    "cookie": "^0.7.1",
+    "cookie-signature": "^1.0.6",
+    "cors": "^2.8.5",
+    "cross-spawn": "^7.0.6",
+    "debug": "^2.6.9",
+    "deepmerge": "^4.3.1",
+    "delayed-stream": "^1.0.0",
+    "depd": "^2.0.0",
+    "destroy": "^1.2.0",
+    "dom-serializer": "^2.0.0",
+    "domelementtype": "^2.3.0",
+    "domhandler": "^5.0.3",
+    "domutils": "^3.2.2",
+    "dunder-proto": "^1.0.1",
+    "duplexify": "^4.1.3",
+    "eastasianwidth": "^0.2.0",
+    "ecdsa-sig-formatter": "^1.0.11",
+    "editorconfig": "^1.0.4",
+    "ee-first": "^1.1.1",
+    "emoji-regex": "^9.2.2",
+    "encodeurl": "^2.0.0",
+    "end-of-stream": "^1.4.5",
+    "entities": "^4.5.0",
+    "es-define-property": "^1.0.1",
+    "es-errors": "^1.3.0",
+    "es-object-atoms": "^1.1.1",
+    "es-set-tostringtag": "^2.1.0",
+    "escalade": "^3.2.0",
+    "escape-html": "^1.0.3",
+    "etag": "^1.8.1",
+    "event-target-shim": "^5.0.1",
+    "express": "^4.21.2",
+    "extend": "^3.0.2",
+    "extend-shallow": "^2.0.1",
+    "farmhash-modern": "^1.1.0",
+    "fast-deep-equal": "^3.1.3",
+    "fast-xml-parser": "^4.5.3",
+    "faye-websocket": "^0.11.4",
+    "finalhandler": "^1.3.1",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^4.9.0",
+    "foreground-child": "^3.3.1",
+    "form-data": "^2.5.3",
+    "forwarded": "^0.2.0",
+    "fresh": "^0.5.2",
+    "function-bind": "^1.1.2",
+    "functional-red-black-tree": "^1.0.1",
+    "gcp-metadata": "^6.1.1",
+    "get-caller-file": "^2.0.5",
+    "get-intrinsic": "^1.3.0",
+    "get-proto": "^1.0.1",
+    "glob": "^10.4.5",
+    "google-auth-library": "^9.15.1",
+    "google-logging-utils": "^0.0.2",
+    "gopd": "^1.2.0",
+    "gtoken": "^7.1.0",
+    "has-symbols": "^1.1.0",
+    "has-tostringtag": "^1.0.2",
+    "hasown": "^2.0.2",
+    "html-entities": "^2.6.0",
+    "html-to-text": "^9.0.5",
+    "htmlparser2": "^8.0.2",
+    "http-errors": "^2.0.0",
+    "http-parser-js": "^0.5.10",
+    "http-proxy-agent": "^5.0.0",
+    "https-proxy-agent": "^7.0.6",
+    "iconv-lite": "^0.4.24",
+    "inherits": "^2.0.4",
+    "ini": "^1.3.8",
+    "ipaddr.js": "^1.9.1",
+    "is-buffer": "^1.1.6",
+    "is-extendable": "^0.1.1",
+    "is-fullwidth-code-point": "^3.0.0",
+    "is-stream": "^2.0.1",
+    "is-whitespace": "^0.3.0",
+    "isexe": "^2.0.0",
+    "jackspeak": "^3.4.3",
+    "jose": "^4.15.9",
+    "js-beautify": "^1.15.4",
+    "js-cookie": "^3.0.5",
+    "js-tokens": "^4.0.0",
+    "json-bigint": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwa": "^1.4.2",
+    "jwks-rsa": "^3.2.0",
+    "jws": "^3.2.2",
+    "kind-of": "^3.2.2",
+    "leac": "^0.6.0",
+    "limiter": "^1.1.5",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.includes": "^4.3.0",
+    "lodash.isboolean": "^3.0.3",
+    "lodash.isinteger": "^4.0.4",
+    "lodash.isnumber": "^3.0.3",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.isstring": "^4.0.1",
+    "lodash.once": "^4.1.1",
+    "long": "^5.3.2",
+    "loose-envify": "^1.4.0",
+    "lru-cache": "^6.0.0",
+    "lru-memoizer": "^2.3.0",
+    "math-intrinsics": "^1.1.0",
+    "media-typer": "^0.3.0",
+    "merge-descriptors": "^1.0.3",
+    "methods": "^1.1.2",
+    "mime": "^1.6.0",
+    "mime-db": "^1.52.0",
+    "mime-types": "^2.1.35",
+    "minimatch": "^9.0.1",
+    "minipass": "^7.1.2",
+    "ms": "^2.0.0",
+    "negotiator": "^0.6.3",
+    "node-fetch": "^2.7.0",
+    "node-forge": "^1.3.1",
+    "nopt": "^7.2.1",
+    "object-assign": "^4.1.1",
+    "object-hash": "^3.0.0",
+    "object-inspect": "^1.13.4",
+    "on-finished": "^2.4.1",
+    "once": "^1.4.0",
+    "p-limit": "^3.1.0",
+    "package-json-from-dist": "^1.0.1",
+    "parseley": "^0.12.1",
+    "parseurl": "^1.3.3",
+    "path-key": "^3.1.1",
+    "path-scurry": "^1.11.1",
+    "path-to-regexp": "^0.1.12",
+    "pdf-lib": "^1.17.1",
+    "peberminta": "^0.9.0",
+    "pretty": "^2.0.0",
+    "proto-list": "^1.2.4",
+    "proto3-json-serializer": "^2.0.2",
+    "protobufjs": "^7.5.3",
+    "proxy-addr": "^2.0.7",
+    "qs": "^6.13.0",
+    "range-parser": "^1.2.1",
+    "raw-body": "^2.5.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "readable-stream": "^3.6.2",
+    "require-directory": "^2.1.1",
+    "resend": "^2.1.0",
+    "retry": "^0.13.1",
+    "retry-request": "^7.0.2",
+    "safe-buffer": "^5.2.1",
+    "safer-buffer": "^2.1.2",
+    "scheduler": "^0.23.2",
+    "selderee": "^0.11.0",
+    "semver": "^7.7.2",
+    "serve-static": "^1.16.2",
+    "setprototypeof": "^1.2.0",
+    "shebang-command": "^2.0.0",
+    "shebang-regex": "^3.0.0",
+    "side-channel": "^1.1.0",
+    "side-channel-list": "^1.0.0",
+    "side-channel-map": "^1.0.1",
+    "side-channel-weakmap": "^1.0.2",
+    "signal-exit": "^4.1.0",
+    "statuses": "^2.0.1",
+    "stream-events": "^1.0.5",
+    "stream-shift": "^1.0.3",
+    "string_decoder": "^1.3.0",
+    "string-width": "^5.1.2",
+    "string-width-cjs": "^4.2.3",
+    "strip-ansi": "^7.1.0",
+    "strip-ansi-cjs": "^6.0.1",
+    "strnum": "^1.1.2",
+    "stubs": "^3.0.0",
+    "toidentifier": "^1.0.1",
+    "tr46": "^0.0.3",
+    "tslib": "^2.8.1",
+    "type-is": "^1.6.18",
+    "typescript": "^4.9.5",
+    "undici-types": "^5.26.5",
+    "unpipe": "^1.0.0",
+    "util-deprecate": "^1.0.2",
+    "utils-merge": "^1.0.1",
+    "uuid": "^10.0.0",
+    "vary": "^1.1.2",
+    "webidl-conversions": "^3.0.1",
+    "websocket-driver": "^0.7.4",
+    "websocket-extensions": "^0.1.4",
+    "whatwg-url": "^5.0.0",
+    "which": "^2.0.2",
+    "wrap-ansi": "^8.1.0",
+    "wrap-ansi-cjs": "^7.0.0",
+    "wrappy": "^1.0.2",
+    "y18n": "^5.0.8",
+    "yallist": "^4.0.0",
+    "yargs": "^17.7.2",
+    "yargs-parser": "^21.1.1",
+    "yocto-queue": "^0.1.0"
+  },
+  "scripts": {
+    "lint": "eslint src --ext .js,.ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
+[debug] [2025-07-08T18:59:54.542Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
+[debug] [2025-07-08T18:59:54.542Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-07-08T18:59:54.546Z] Found firebase-functions binary at '/Users/bilalyikilmaz/Desktop/quickutil/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8147
+
+[debug] [2025-07-08T18:59:54.850Z] Got response from /__/functions.yaml {"endpoints":{"compressPDFAdvanced":{"platform":"gcfv1","labels":{},"availableMemoryMb":2048,"timeoutSeconds":540,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["us-central1"],"callableTrigger":{},"entryPoint":"compressPDFAdvanced"},"healthCheck":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["us-central1"],"httpsTrigger":{},"entryPoint":"healthCheck"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged /Users/bilalyikilmaz/Desktop/quickutil/functions (55.87 KB) for uploading 
+[debug] [2025-07-08T18:59:58.941Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:58.941Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:58.941Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/-/functions [none]
+[debug] [2025-07-08T18:59:59.699Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/-/functions 200
+[debug] [2025-07-08T18:59:59.699Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/quickutil-d2998/locations/-/functions {"functions":[{"name":"projects/quickutil-d2998/locations/us-central1/functions/getQuotaInfo","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/getQuotaInfo","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"getQuotaInfo","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:22:23.877846947Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/getQuotaInfo"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/downloadFile","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/downloadFile","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"downloadFile","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:21:44.384770431Z","versionId":"1","labels":{"firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6","deployment-tool":"cli-firebase"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/downloadFile"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/uploadFile","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/uploadFile","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"uploadFile","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:18:51.781887112Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/uploadFile"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/healthCheck","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/healthCheck","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"healthCheck","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:16:57.577Z","versionId":"4","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/healthCheck"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/deleteFile","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/deleteFile","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"deleteFile","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:21:09.080041488Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/deleteFile"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true},{"name":"projects/quickutil-d2998/locations/us-central1/functions/listFiles","httpsTrigger":{"url":"https://us-central1-quickutil-d2998.cloudfunctions.net/listFiles","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"listFiles","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"quickutil-d2998@appspot.gserviceaccount.com","updateTime":"2025-07-06T16:20:22.384514025Z","versionId":"1","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"061a48b4edcf815684cc24e4358539b23eeb3ed6"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-546672387594.us-central1.cloudfunctions.appspot.com/55b3d1da-aed8-479b-b85a-98b52b6be476.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/functions/listFiles"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"3d39e9f3-bd65-47b0-a377-9d4da885e357","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/768751015182/locations/us-central1/builds/3d39e9f3-bd65-47b0-a377-9d4da885e357","dockerRegistry":"ARTIFACT_REGISTRY","automaticUpdatePolicy":{},"buildServiceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","satisfiesPzi":true}]}
+[debug] [2025-07-08T18:59:59.700Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:59.700Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T18:59:59.700Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/quickutil-d2998/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2025-07-08T19:00:00.946Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/quickutil-d2998/locations/-/functions 200
+[debug] [2025-07-08T19:00:00.946Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/quickutil-d2998/locations/-/functions {"functions":[{"name":"projects/quickutil-d2998/locations/us-central1/functions/cleanupExpiredFiles","buildConfig":{"build":"projects/768751015182/locations/us-central1/builds/0c988955-5384-4339-bf3b-62752ae8e023","runtime":"nodejs18","entryPoint":"cleanupExpiredFiles","source":{"storageSource":{"bucket":"gcf-v2-sources-768751015182-us-central1","object":"cleanupExpiredFiles/function-source.zip","generation":"1751814468698384"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/quickutil-d2998/locations/us-central1/repositories/gcf-artifacts","serviceAccount":"projects/quickutil-d2998/serviceAccounts/768751015182-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/quickutil-d2998/locations/us-central1/services/cleanupexpiredfiles","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"quickutil-d2998\",\"storageBucket\":\"quickutil-d2998.firebasestorage.app\"}","GCLOUD_PROJECT":"quickutil-d2998","EVENTARC_CLOUD_EVENT_SOURCE":"projects/quickutil-d2998/locations/us-central1/services/cleanupExpiredFiles","FUNCTION_TARGET":"cleanupExpiredFiles","LOG_EXECUTION_ID":"true","FUNCTION_SIGNATURE_TYPE":"http"},"maxInstanceCount":20,"ingressSettings":"ALLOW_ALL","serviceAccountEmail":"768751015182-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"revision":"cleanupexpiredfiles-00001-qon","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","updateTime":"2025-07-06T15:07:56.545800595Z","labels":{"deployment-tool":"cli-firebase","deployment-scheduled":"true","firebase-functions-hash":"511bfc93c08dc772ffbde444ec8363e3fa4d545a"},"environment":"GEN_2","url":"https://us-central1-quickutil-d2998.cloudfunctions.net/cleanupExpiredFiles","createTime":"2025-07-06T15:05:01.078521290Z","satisfiesPzi":true}]}
+[debug] [2025-07-08T19:00:00.949Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T19:00:00.949Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T19:00:00.949Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 [none]
+[debug] [2025-07-08T19:00:01.896Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 200
+[debug] [2025-07-08T19:00:01.896Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/quickutil-d2998 {"projectNumber":"768751015182","projectId":"quickutil-d2998","lifecycleState":"ACTIVE","name":"quickutil","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-07-05T10:13:28.741001Z"}
+[debug] [2025-07-08T19:00:01.898Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T19:00:01.898Z] Checked if tokens are valid: true, expires at: 1752003152512
+[debug] [2025-07-08T19:00:01.898Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/quickutil-d2998/versions [none]
+[debug] [2025-07-08T19:00:01.898Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/quickutil-d2998/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}

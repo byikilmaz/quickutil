@@ -37,6 +37,7 @@ import {
   calculateCompressionRatio,
   formatFileSize 
 } from '@/lib/pdfUtils';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { 
   aiEngine, 
   AIProcessingResult, 
@@ -86,6 +87,7 @@ export default function PDFCompress() {
   const [globalSettings, setGlobalSettings] = useState({
     level: 'medium' as 'light' | 'medium' | 'high',
     useAI: true,
+    useServerCompression: false,
     applyToAll: false
   });
 
@@ -142,6 +144,50 @@ export default function PDFCompress() {
     }
   };
 
+  // Server-side compression with Firebase Functions
+  const compressWithServer = async (file: File, compressionLevel: string): Promise<File> => {
+    try {
+      // Convert file to base64
+      const fileBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // Remove data:application/pdf;base64, prefix
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Call Firebase Function
+      const functions = getFunctions();
+      const compressPDFAdvanced = httpsCallable(functions, 'compressPDFAdvanced');
+      
+      const result = await compressPDFAdvanced({
+        pdfBase64: fileBase64,
+        compressionLevel,
+        fileName: file.name
+      });
+
+      const responseData = result.data as any;
+      
+      if (!responseData.success) {
+        throw new Error(responseData.error || 'Server compression failed');
+      }
+
+      // Convert base64 back to File
+      const compressedBytes = Uint8Array.from(atob(responseData.compressedBase64), c => c.charCodeAt(0));
+      const compressedFile = new File([compressedBytes], `compressed_${file.name}`, {
+        type: 'application/pdf',
+        lastModified: Date.now()
+      });
+
+      return compressedFile;
+    } catch (error) {
+      console.error('Server compression error:', error);
+      throw new Error(`🔥 iLovePDF Seviyesi Sıkıştırma Hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+    }
+  };
+
   // AI analizi
   const analyzeFileWithAI = async (fileId: string) => {
     const fileIndex = pdfFiles.findIndex(f => f.id === fileId);
@@ -193,8 +239,24 @@ export default function PDFCompress() {
         const startTime = Date.now();
         let compressedFile: File;
 
+        // Server-side compression (iLovePDF seviyesi)
+        if (globalSettings.useServerCompression) {
+          setPdfFiles(prev => prev.map(file => 
+            file.id === pdfFile.id 
+              ? { ...file, progress: 10 }
+              : file
+          ));
+
+          compressedFile = await compressWithServer(pdfFile.file, pdfFile.compressionSettings.level);
+          
+          setPdfFiles(prev => prev.map(file => 
+            file.id === pdfFile.id 
+              ? { ...file, progress: 90 }
+              : file
+          ));
+        }
         // Web Worker ile sıkıştırma (daha performanslı)
-        if (isWorkerReady) {
+        else if (isWorkerReady) {
           const result = await compressWithWorker(
             pdfFile.file,
             {
@@ -572,7 +634,7 @@ export default function PDFCompress() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* AI Toggle */}
             <div className="bg-white/60 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
@@ -597,6 +659,34 @@ export default function PDFCompress() {
                 {globalSettings.useAI 
                   ? t('aiModeDesc.enabled')
                   : t('aiModeDesc.disabled')
+                }
+              </p>
+            </div>
+
+            {/* Server Compression Toggle */}
+            <div className="bg-white/60 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <BoltIcon className="h-5 w-5 text-red-600 mr-2" />
+                  <span className="font-medium text-gray-900">🔥 Server Compression</span>
+                </div>
+                <button
+                  onClick={() => setGlobalSettings(prev => ({ ...prev, useServerCompression: !prev.useServerCompression }))}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
+                    globalSettings.useServerCompression ? 'bg-red-600' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`${
+                      globalSettings.useServerCompression ? 'translate-x-6' : 'translate-x-1'
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  />
+                </button>
+              </div>
+              <p className="text-sm text-gray-600">
+                {globalSettings.useServerCompression 
+                  ? '⚡ iLovePDF seviyesi sıkıştırma aktif'
+                  : '📱 Client-side compression aktif'
                 }
               </p>
             </div>
