@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { getPageSEOData, generatePageMetadata } from "@/lib/seoUtils";
+import { ADSENSE_CONFIG } from "@/lib/adsenseUtils";
 import ClientLayout from "./ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -13,42 +13,8 @@ export const viewport: Viewport = {
   themeColor: '#3B82F6'
 };
 
-// Dynamic metadata based on page
+// Basic metadata - locale-specific metadata will be in [locale]/layout.tsx
 export const metadata: Metadata = {
-  ...generatePageMetadata(getPageSEOData('home')),
-  title: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
-  description: 'PDF sıkıştırma, resim düzenleme ve format dönüştürme araçları. Tamamen ücretsiz, güvenli ve hızlı.',
-  keywords: 'PDF sıkıştırma, resim düzenleme, format dönüştürme, ücretsiz araçlar',
-  authors: [{ name: 'QuickUtil Team' }],
-  robots: 'index, follow',
-  openGraph: {
-    title: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
-    description: 'PDF ve resim işleme araçlarının tamamı ücretsiz! Hemen başlayın.',
-    url: 'https://quickutil.app',
-    siteName: 'QuickUtil.app',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
-      },
-    ],
-    locale: 'tr_TR',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'QuickUtil.app - Ücretsiz PDF ve Resim Araçları',
-    description: 'PDF sıkıştırma, resim düzenleme ve format dönüştürme araçları. Tamamen ücretsiz!',
-    images: ['/og-image.jpg'],
-  },
-  alternates: {
-    canonical: 'https://quickutil.app',
-    languages: {
-      'tr-TR': 'https://quickutil.app',
-    },
-  },
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -66,11 +32,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className={inter.className}>
+    <html className={inter.className}>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
+        
+        {/* Google Consent Mode & AdSense */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Google Consent Mode v2
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              
+              gtag('consent', 'default', {
+                analytics_storage: 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                wait_for_update: 500,
+              });
+              
+              gtag('set', 'ads_data_redaction', true);
+              gtag('set', 'url_passthrough', false);
+            `,
+          }}
+        />
         {/* Service Worker Registration */}
         <script
           dangerouslySetInnerHTML={{
@@ -114,7 +102,31 @@ export default function RootLayout({
         />
       </head>
       <body>
+{/* LocaleDetector removed - now using URL-based routing */}
         <ClientLayout>{children}</ClientLayout>
+        
+        {/* Google AdSense - Manual Loading */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window !== 'undefined') {
+                  var script = document.createElement('script');
+                  script.src = '${ADSENSE_CONFIG.scriptSrc}';
+                  script.async = true;
+                  script.crossOrigin = '${ADSENSE_CONFIG.crossOrigin}';
+                  script.onload = function() {
+                    console.log('AdSense script loaded successfully');
+                  };
+                  script.onerror = function() {
+                    console.log('AdSense script failed to load');
+                  };
+                  document.head.appendChild(script);
+                }
+              })();
+            `,
+          }}
+        />
       </body>
     </html>
   );

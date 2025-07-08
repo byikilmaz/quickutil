@@ -2,6 +2,10 @@
 const CACHE_NAME = `quickutil-cache-${Date.now()}`;
 const CACHE_VERSION = '1.0.0';
 
+// Production mode - reduce console logs
+const IS_PRODUCTION = location.hostname === 'quickutil.app' || location.hostname === 'quickutil-d2998.web.app';
+const log = IS_PRODUCTION ? () => {} : console.log;
+
 // Static assets to cache
 const STATIC_ASSETS = [
   '/',
@@ -20,7 +24,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+        log('Opened cache');
         return cache.addAll(STATIC_ASSETS);
       })
       .catch((error) => {
@@ -39,7 +43,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME && cacheName.includes('quickutil-cache')) {
-            console.log('Deleting old cache:', cacheName);
+            log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -74,13 +78,21 @@ self.addEventListener('fetch', (event) => {
               return response;
             }
             
+            // Don't cache POST, PUT, DELETE requests - only GET
+            if (event.request.method !== 'GET') {
+              return response;
+            }
+            
             // Clone the response
             const responseToCache = response.clone();
             
-            // Add to cache
+            // Add to cache (only GET requests)
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(event.request, responseToCache);
+              })
+              .catch((error) => {
+                log('Cache put failed:', error);
               });
             
             return response;

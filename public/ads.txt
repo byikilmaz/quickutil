@@ -1,0 +1,11 @@
+# ads.txt for QuickUtil.app
+# Google AdSense verification file
+# Last updated: January 2025
+
+# Google AdSense
+google.com, pub-5137151204032748, DIRECT, f08c47fec0942fa0
+
+# Additional authorized sellers can be added here
+# Format: <AdvertisingSystemDomain>, <PublisherAccountID>, <AccountType>, <CertificationAuthorityID>
+
+# This file is placed at: https://quickutil.app/ads.txt 

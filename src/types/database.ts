@@ -280,4 +280,31 @@ export interface FileFilter {
   status?: FileMetadata['status'][];
   limit?: number;
   offset?: number;
+}
+
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  publishedAt: string;
+  updatedAt: string;
+  readingTime: number;
+  category: string;
+  tags: string[];
+  image: string;
+  locale: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
+}
+
+export interface BlogCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  locale: string;
 } 

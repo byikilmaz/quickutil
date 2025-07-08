@@ -10,6 +10,8 @@ import StructuredData from "@/components/StructuredData";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AuthModal from "@/components/AuthModal";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default function ClientLayout({
   children,
@@ -23,30 +25,44 @@ export default function ClientLayout({
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <AuthProvider>
-      <QuotaProvider>
-        <StorageProvider>
-          <StructuredData type="website" />
-          <StructuredData type="webapp" />
-          
-          <div className="min-h-screen flex flex-col">
-            {!isAdminPage && <Header onAuthClick={() => setShowAuthModal(true)} />}
-            <main className="flex-grow">
-              {children}
-            </main>
-            {!isAdminPage && <Footer />}
-          </div>
-          
-          {/* Global Auth Modal */}
-          {showAuthModal && (
-            <AuthModal 
-              onClose={() => setShowAuthModal(false)}
-            />
-          )}
-          
-          <Toaster position="top-right" />
-        </StorageProvider>
-      </QuotaProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <QuotaProvider>
+          <StorageProvider>
+            <div className="min-h-screen flex flex-col">
+              <StructuredData />
+              
+              {!isAdminPage && (
+                <ErrorBoundary>
+                  <Header onAuthClick={() => setShowAuthModal(true)} />
+                </ErrorBoundary>
+              )}
+              
+              <main className="flex-grow">
+                {children}
+              </main>
+              
+              {!isAdminPage && (
+                <ErrorBoundary>
+                  <Footer />
+                </ErrorBoundary>
+              )}
+            </div>
+            
+            {showAuthModal && (
+              <ErrorBoundary>
+                <AuthModal onClose={() => setShowAuthModal(false)} />
+              </ErrorBoundary>
+            )}
+            
+            <ErrorBoundary>
+              <CookieConsentBanner />
+            </ErrorBoundary>
+            
+            <Toaster position="top-right" />
+          </StorageProvider>
+        </QuotaProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 } 

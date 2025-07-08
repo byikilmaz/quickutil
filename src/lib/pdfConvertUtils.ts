@@ -8,32 +8,113 @@ export interface ConversionResult {
 }
 
 /**
- * PDF'den basit metin çıkarma
+ * PDF'den gerçek metin çıkarma (PDF.js kullanarak)
  * @param file - PDF dosyası
  * @returns Çıkarılan metin
  */
 export const extractTextFromPDF = async (file: File): Promise<string> => {
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const pages = pdfDoc.getPages();
+    // PDF dosyası boyut kontrolü
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+      throw new Error('PDF dosyası çok büyük (maksimum 50MB)');
+    }
+
+    // Dinamik olarak PDF.js'i import et
+    const pdfjsLib = await import('pdfjs-dist');
     
+    // PDF.js worker'ını güncel version ile kur (cache buster)
+    const timestamp = Date.now();
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `/js/pdf.worker.min.js?v=5.3.93&t=${timestamp}`;
+    
+    console.log('PDF.js Worker configured for text extraction:', pdfjsLib.GlobalWorkerOptions.workerSrc);
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument({ 
+      data: arrayBuffer,
+      verbosity: 0, // Sessiz mod
+      isEvalSupported: false,
+      cMapPacked: true
+    });
+    
+    const pdf = await loadingTask.promise;
     let fullText = '';
-    for (let i = 0; i < pages.length; i++) {
-      const page = pages[i];
-      const { width, height } = page.getSize();
-      
-      fullText += `=== Sayfa ${i + 1} ===\n`;
-      fullText += `Boyut: ${Math.round(width)} x ${Math.round(height)}\n`;
-      fullText += `Sayfa içeriği: PDF'den metin çıkarma işlevi aktif\n\n`;
-      
-      // TODO: Gerçek metin çıkarma için pdf-parse veya OCR kütüphanesi gerekir
+    
+    console.log(`PDF yüklendi: ${pdf.numPages} sayfa - Text extraction başlıyor...`);
+    
+    // Her sayfa için text content çıkar
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      try {
+        console.log(`Sayfa ${pageNum} text extraction işleniyor...`);
+        
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        
+        // Text items'ları birleştir
+        const pageText = textContent.items
+          .map(item => {
+            // TextItem tipinde 'str' property'si var
+            return ('str' in item) ? item.str : '';
+          })
+          .filter(text => text.trim().length > 0) // Boş metinleri filtrele
+          .join(' ');
+        
+        // Sayfa başlığı ve metin ekle
+        fullText += `=== Sayfa ${pageNum} ===\n`;
+        
+        if (pageText.trim().length > 0) {
+          // Metni paragraflar halinde düzenle
+          const paragraphs = pageText
+            .split(/\s{3,}|\n{2,}/) // 3+ boşluk veya 2+ newline ile böl
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+          
+          if (paragraphs.length > 0) {
+            fullText += paragraphs.join('\n\n') + '\n\n';
+          } else {
+            fullText += pageText + '\n\n';
+          }
+        } else {
+          fullText += '[Bu sayfada metin bulunamadı - görsel içerik olabilir]\n\n';
+        }
+        
+        console.log(`Sayfa ${pageNum} text extraction tamamlandı (${pageText.length} karakter)`);
+        
+        // Memory cleanup
+        page.cleanup();
+        
+      } catch (pageError) {
+        console.error(`Sayfa ${pageNum} text extraction error:`, pageError);
+        fullText += `[Sayfa ${pageNum}: Metin çıkarılamadı - ${pageError instanceof Error ? pageError.message : 'Bilinmeyen hata'}]\n\n`;
+      }
     }
     
-    return fullText || 'PDF işlendi. Detaylı metin çıkarma için OCR özelliği gerekir.';
+    console.log(`PDF text extraction tamamlandı: ${fullText.length} karakter`);
+    
+    if (fullText.trim().length === 0 || fullText.includes('[Bu sayfada metin bulunamadı')) {
+      return 'Bu PDF dosyasından metin çıkarılamadı.\n\nMuhtemel sebepler:\n• PDF görsel/resim içeriyor (OCR gerekir)\n• Şifrelenmiş veya korumalı PDF\n• PDF formatı desteklenmiyor\n\nLütfen farklı bir PDF dosyası deneyin.';
+    }
+    
+    return fullText;
+    
   } catch (error) {
-    console.error('Text extraction error:', error);
-    throw new Error('PDF\'den metin çıkarılamadı');
+    console.error('PDF text extraction failed:', error);
+    
+    // Detaylı error mesajları
+    if (error instanceof Error) {
+      if (error.message.includes('Invalid PDF')) {
+        throw new Error('Geçersiz PDF dosyası. Lütfen başka bir PDF deneyin.');
+      } else if (error.message.includes('Worker')) {
+        throw new Error('PDF işleme motoru yüklenemedi. Lütfen sayfayı yenileyin.');
+      } else if (error.message.includes('network')) {
+        throw new Error('Ağ bağlantısı sorunu. Lütfen internet bağlantınızı kontrol edin.');
+      } else if (error.message.includes('çok büyük')) {
+        throw new Error(error.message);
+      } else {
+        throw new Error(`PDF metin çıkarma hatası: ${error.message}`);
+      }
+    } else {
+      throw new Error('PDF metin çıkarma işlemi beklenmedik bir şekilde başarısız oldu.');
+    }
   }
 };
 
@@ -120,67 +201,114 @@ export const convertPDFToImages = async (
   scale: number = 2.0
 ): Promise<ConversionResult[]> => {
   try {
+    // PDF dosyası boyut kontrolü
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+      throw new Error('PDF dosyası çok büyük (maksimum 50MB)');
+    }
+
     // Dinamik olarak PDF.js'i import et
     const pdfjsLib = await import('pdfjs-dist');
     
-    // PDF.js worker'ını local dosyadan kur (ES module için + cache buster)
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js?v=5.3.31';
+    // PDF.js worker'ını güncel version ile kur (cache buster)
+    const timestamp = Date.now();
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `/js/pdf.worker.min.js?v=5.3.93&t=${timestamp}`;
+    
+    console.log('PDF.js Worker configured:', pdfjsLib.GlobalWorkerOptions.workerSrc);
     
     const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const loadingTask = pdfjsLib.getDocument({ 
+      data: arrayBuffer,
+      verbosity: 0, // Sessiz mod
+      isEvalSupported: false,
+      cMapPacked: true
+    });
+    
+    const pdf = await loadingTask.promise;
     const results: ConversionResult[] = [];
     const fileBaseName = file.name.replace('.pdf', '');
     
+    console.log(`PDF yüklendi: ${pdf.numPages} sayfa`);
+    
     // Her sayfayı işle
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      const page = await pdf.getPage(pageNum);
-      const viewport = page.getViewport({ scale });
-      
-      // Canvas oluştur
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      
-      if (!context) {
-        throw new Error('Canvas context oluşturulamadı');
+      try {
+        console.log(`Sayfa ${pageNum} işleniyor...`);
+        
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale });
+        
+        // Canvas oluştur
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        
+        if (!context) {
+          throw new Error(`Sayfa ${pageNum}: Canvas context oluşturulamadı`);
+        }
+        
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        // PDF sayfasını canvas'a render et
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+          intent: 'display'
+        };
+        
+        await page.render(renderContext).promise;
+        
+        // Canvas'ı blob'a dönüştür
+        const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+        const blob = await new Promise<Blob>((resolve, reject) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error(`Sayfa ${pageNum}: Canvas to blob dönüştürme başarısız`));
+            }
+          }, mimeType, quality);
+        });
+        
+        const url = URL.createObjectURL(blob);
+        
+        results.push({
+          name: `${fileBaseName}_sayfa_${pageNum}.${format}`,
+          url,
+          size: blob.size,
+          type: mimeType
+        });
+        
+        console.log(`Sayfa ${pageNum} başarıyla dönüştürüldü (${Math.round(blob.size / 1024)}KB)`);
+        
+        // Memory cleanup
+        page.cleanup();
+        
+      } catch (pageError) {
+        console.error(`Sayfa ${pageNum} error:`, pageError);
+        throw new Error(`Sayfa ${pageNum} işlenirken hata: ${pageError instanceof Error ? pageError.message : 'Bilinmeyen hata'}`);
       }
-      
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      
-      // PDF sayfasını canvas'a render et
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      };
-      
-      await page.render(renderContext).promise;
-      
-      // Canvas'ı blob'a dönüştür
-      const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Canvas to blob dönüştürme başarısız'));
-          }
-        }, mimeType, quality);
-      });
-      
-      const url = URL.createObjectURL(blob);
-      
-      results.push({
-        name: `${fileBaseName}_sayfa_${pageNum}.${format}`,
-        url,
-        size: blob.size,
-        type: mimeType
-      });
     }
     
+    console.log(`PDF to Images tamamlandı: ${results.length} sayfa`);
     return results;
+    
   } catch (error) {
-    console.error('PDF to images error:', error);
-    throw new Error(`PDF'den resim dönüştürme işlemi başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+    console.error('PDF to images conversion failed:', error);
+    
+    // Detaylı error mesajları
+    if (error instanceof Error) {
+      if (error.message.includes('Invalid PDF')) {
+        throw new Error('Geçersiz PDF dosyası. Lütfen başka bir PDF deneyin.');
+      } else if (error.message.includes('Worker')) {
+        throw new Error('PDF işleme motoru yüklenemedi. Lütfen sayfayı yenileyin.');
+      } else if (error.message.includes('network')) {
+        throw new Error('Ağ bağlantısı sorunu. Lütfen internet bağlantınızı kontrol edin.');
+      } else {
+        throw new Error(`PDF dönüştürme hatası: ${error.message}`);
+      }
+    } else {
+      throw new Error('PDF dönüştürme işlemi beklenmedik bir şekilde başarısız oldu.');
+    }
   }
 };
 

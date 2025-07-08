@@ -1,0 +1,322 @@
+{
+  "common": {
+    "upload": "Upload",
+    "download": "Download",
+    "processing": "Processing...",
+    "done": "Done",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "free": "Free",
+    "secure": "Secure",
+    "fast": "Fast",
+    "unlimited": "Unlimited",
+    "selectFile": "Select File",
+    "dropFile": "Drop file here",
+    "or": "or",
+    "fileSize": "File Size",
+    "fileName": "File Name",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "close": "Close",
+    "open": "Open",
+    "share": "Share",
+    "copy": "Copy",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "help": "Help",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+
+  "navigation": {
+    "home": "Home",
+    "tools": "Tools",
+    "pdfTools": "PDF Tools",
+    "imageTools": "Image Tools",
+    "batchProcessing": "Batch Processing",
+    "profile": "Profile",
+    "admin": "Admin",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "PDF and Image Tools",
+    "menu": "Menu"
+  },
+
+  "footer": {
+    "copyright": "© QuickUtil, Turkey",
+    "allRightsReserved": "All rights reserved",
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "company": "Company",
+    "support": "Support",
+    "followUs": "Follow Us",
+    "newsletter": "Newsletter",
+    "subscribe": "Subscribe",
+    "enterEmail": "Enter your email address"
+  },
+
+  "auth": {
+    "loginTitle": "Login",
+    "registerTitle": "Register",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "confirmPassword": "Confirm Password",
+    "rememberMe": "Remember Me",
+    "forgotPassword": "Forgot Password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
+    "loggingIn": "Logging in...",
+    "registering": "Registering...",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "nameRequired": "Name is required",
+    "invalidEmail": "Invalid email address",
+    "weakPassword": "Password too weak. Use at least 6 characters.",
+    "emailAlreadyInUse": "This email is already in use. Try signing in.",
+    "userNotFound": "No user found with this email address.",
+    "wrongPassword": "Incorrect password. Please try again.",
+    "tooManyRequests": "Too many failed attempts. Please try again later.",
+    "networkError": "Check your internet connection.",
+    "genericError": "An error occurred. Please try again."
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "Process your PDFs and images",
+      "subtitle": "Free, secure, and fast file processing tools",
+      "cta": "Get started now",
+      "features": ["100% Free", "Secure Processing", "Fast Results"]
+    },
+    "categories": {
+      "pdfTools": "PDF Tools",
+      "pdfToolsDesc": "Compress, convert, and edit your PDF files",
+      "imageTools": "Image Tools", 
+      "imageToolsDesc": "Compress, resize, and edit your images",
+      "batchTools": "Batch Processing",
+      "batchToolsDesc": "Process multiple files at once"
+    },
+    "tools": {
+      "pdfCompress": {
+        "title": "PDF Compression",
+        "description": "Reduce PDF file size without losing quality"
+      },
+      "pdfConvert": {
+        "title": "PDF Conversion", 
+        "description": "Convert PDF to images, text, or other formats"
+      },
+      "imageCompress": {
+        "title": "Image Compression",
+        "description": "Reduce image file size without losing quality"
+      },
+      "imageResize": {
+        "title": "Image Resize",
+        "description": "Resize images to your desired dimensions"
+      },
+      "imageCrop": {
+        "title": "Image Crop",
+        "description": "Crop images to focus on specific areas"
+      },
+      "imageRotate": {
+        "title": "Image Rotate",
+        "description": "Rotate images to any angle"
+      }
+    },
+    "features": {
+      "title": "Why QuickUtil?",
+      "free": {
+        "title": "Completely Free",
+        "description": "All tools are free with unlimited usage"
+      },
+      "secure": {
+        "title": "100% Secure",
+        "description": "Files are not uploaded to servers, processed in your browser"
+      },
+      "fast": {
+        "title": "Instant Processing",
+        "description": "Get results in seconds with fast processing algorithms"
+      },
+      "quality": {
+        "title": "Quality Preserved",
+        "description": "Advanced algorithms minimize quality loss"
+      }
+    },
+    "stats": {
+      "title": "Trusted Platform",
+      "processedFiles": "Processed Files",
+      "happyUsers": "Happy Users",
+      "supportedFormats": "Supported Formats",
+      "uptime": "Uptime"
+    }
+  },
+
+  "tools": {
+    "pdfCompress": {
+      "title": "PDF Compression",
+      "description": "Compress PDF files up to 90%",
+      "uploadText": "Select or drag your PDF file",
+      "maxSize": "Maximum 50MB",
+      "supportedFormats": "PDF format supported",
+      "processing": "Compressing PDF...",
+      "success": "PDF compressed successfully!",
+      "compressionRatio": "Compression Ratio",
+      "originalSize": "Original Size",
+      "compressedSize": "Compressed Size",
+      "savedSpace": "Space Saved"
+    },
+    "pdfConvert": {
+      "title": "PDF Conversion",
+      "description": "Convert PDF to different formats",
+      "convertTo": "Convert To",
+      "toImages": "Convert to Images",
+      "toText": "Convert to Text",
+      "split": "Split Pages",
+      "merge": "Merge",
+      "imageFormat": "Image Format",
+      "imageQuality": "Image Quality",
+      "processing": "Converting PDF...",
+      "downloadAll": "Download All",
+      "downloadZip": "Download as ZIP"
+    },
+    "imageCompress": {
+      "title": "Image Compression",
+      "description": "Reduce image file size without losing quality",
+      "uploadText": "Select or drag your image file",
+      "supportedFormats": "JPEG/JPG, PNG, WebP, GIF",
+      "quality": "Quality",
+      "processing": "Compressing image..."
+    },
+    "imageResize": {
+      "title": "Image Resize",
+      "description": "Resize images to your desired dimensions",
+      "resizeMode": "Resize Mode",
+      "byPixels": "By Pixels",
+      "byPercentage": "By Percentage",
+      "width": "Width",
+      "height": "Height",
+      "percentage": "Percentage",
+      "maintainAspectRatio": "Maintain aspect ratio",
+      "doNotEnlarge": "Don't enlarge if smaller"
+    },
+    "imageCrop": {
+      "title": "Image Crop",
+      "description": "Crop images to focus on specific areas",
+      "cropArea": "Crop Area",
+      "coordinates": "Coordinates",
+      "presets": "Presets"
+    },
+    "imageRotate": {
+      "title": "Image Rotate", 
+      "description": "Rotate images to any angle",
+      "rotationAngle": "Rotation Angle",
+      "quickRotate": "Quick Rotate",
+      "customAngle": "Custom Angle"
+    }
+  },
+
+  "profile": {
+    "title": "Profile",
+    "overview": "Overview",
+    "files": "My Files",
+    "settings": "Settings",
+    "memberSince": "Member Since",
+    "totalFiles": "Total Files",
+    "storageUsed": "Storage Used",
+    "activities": "Activities",
+    "recentFiles": "Recent Files",
+    "accountSettings": "Account Settings",
+    "languageSettings": "Language Settings",
+    "privacySettings": "Privacy Settings"
+  },
+
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "users": "Users",
+    "activities": "Activities",
+    "reports": "Reports",
+    "totalUsers": "Total Users",
+    "totalActivities": "Total Activities",
+    "todayActivities": "Today's Activities",
+    "successRate": "Success Rate",
+    "popularFeatures": "Popular Features",
+    "recentErrors": "Recent Errors"
+  },
+
+  "errors": {
+    "fileTooBig": "File too large. Maximum file size is {maxSize}.",
+    "unsupportedFormat": "Unsupported file format. Please use one of {formats}.",
+    "processingFailed": "Error processing file. Please try again.",
+    "networkError": "Network connection error. Check your internet connection.",
+    "serverError": "Server error. Please try again later.",
+    "invalidFile": "Invalid file. Please try another file.",
+    "uploadFailed": "File upload failed. Please try again.",
+    "downloadFailed": "File download failed. Please try again."
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil.app - Free PDF and Image Tools",
+      "description": "PDF compression, image editing, and format conversion tools. Completely free, secure, and fast.",
+      "keywords": "PDF compression, image editing, format conversion, free tools"
+    },
+    "pdfCompress": {
+      "title": "PDF Compression - Free PDF Size Reducer Tool",
+      "description": "Compress PDF files up to 90%. Completely free, secure, and fast PDF compression tool.",
+      "keywords": "PDF compression, reduce PDF size, compress PDF online"
+    },
+    "pdfConvert": {
+      "title": "PDF Conversion - Convert PDF to Image and Text",
+      "description": "Convert PDF to JPG, PNG, or extract text. Free PDF conversion tool.",
+      "keywords": "PDF conversion, PDF to JPG, PDF to PNG, PDF to text"
+    },
+    "imageCompress": {
+      "title": "Image Compression - Free Image Size Reducer",
+      "description": "Compress JPEG, PNG, WebP images without losing quality. Free image compression tool.",
+      "keywords": "image compression, JPEG compression, PNG compression"
+    },
+    "imageResize": {
+      "title": "Image Resize - Change Image Dimensions",
+      "description": "Resize images to desired dimensions. Pixel or percentage-based image resizing.",
+      "keywords": "image resize, change image size, resize images online"
+    }
+  },
+
+  "legal": {
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookiePolicy": "Cookie Policy",
+    "about": "About",
+    "contact": "Contact",
+    "lastUpdated": "Last Updated: {date}"
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "Select Language",
+    "currentLanguage": "English",
+    "languages": {
+      "tr": "Türkçe",
+      "en": "English",
+      "es": "Español", 
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "ja": "日本語",
+      "ko": "한국어"
+    }
+  }
+} 

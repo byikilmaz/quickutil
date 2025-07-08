@@ -1,0 +1,402 @@
+{
+  "common": {
+    "upload": "Subir",
+    "download": "Descargar",
+    "processing": "Procesando...",
+    "done": "Completado",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "retry": "Reintentar",
+    "free": "Gratis",
+    "secure": "Seguro",
+    "fast": "Rápido",
+    "unlimited": "Ilimitado",
+    "selectFile": "Seleccionar Archivo",
+    "dropFile": "Arrastra el archivo aquí",
+    "or": "o",
+    "fileSize": "Tamaño del Archivo",
+    "fileName": "Nombre del Archivo",
+    "loading": "Cargando...",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "share": "Compartir",
+    "copy": "Copiar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "help": "Ayuda",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "confirm": "Confirmar",
+    "and": "y",
+    "premium": "Premium"
+  },
+
+  "navigation": {
+    "home": "Inicio",
+    "tools": "Herramientas",
+    "pdfTools": "Herramientas PDF",
+    "imageTools": "Herramientas de Imagen",
+    "batchProcessing": "Procesamiento en Lote",
+    "profile": "Perfil",
+    "admin": "Admin",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "privacy": "Privacidad",
+    "terms": "Términos de Servicio"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "Herramientas PDF e Imagen",
+    "menu": "Menú",
+    "logo": "QuickUtil",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "register": "Registrarse",
+    "close": "Cerrar"
+  },
+
+  "footer": {
+    "copyright": "© 2025 QuickUtil. Turquía.",
+    "allRightsReserved": "Todos los derechos reservados.",
+    "quickLinks": "Enlaces Rápidos",
+    "legal": "Legal",
+    "company": "Empresa",
+    "support": "Soporte",
+    "followUs": "Síguenos",
+    "newsletter": "Boletín",
+    "subscribe": "Suscribirse",
+    "enterEmail": "Ingresa tu correo electrónico",
+    "description": "Herramientas de procesamiento PDF e imagen",
+    "tools": "Herramientas",
+    "email": "hello@quickutil.app"
+  },
+
+  "auth": {
+    "loginTitle": "Iniciar Sesión",
+    "registerTitle": "Registrarse",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "confirmPassword": "Confirmar Contraseña",
+    "rememberMe": "Recordarme",
+    "forgotPassword": "Olvidé mi Contraseña",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "signUp": "Registrarse",
+    "signIn": "Iniciar Sesión",
+    "loggingIn": "Iniciando sesión...",
+    "registering": "Registrando...",
+    "emailRequired": "El correo electrónico es requerido",
+    "passwordRequired": "La contraseña es requerida",
+    "nameRequired": "El nombre es requerido",
+    "invalidEmail": "Correo electrónico inválido",
+    "weakPassword": "Contraseña muy débil. Use al menos 6 caracteres.",
+    "emailAlreadyInUse": "Este correo ya está en uso. Intenta iniciar sesión.",
+    "userNotFound": "No se encontró usuario con este correo.",
+    "wrongPassword": "Contraseña incorrecta. Inténtalo de nuevo.",
+    "tooManyRequests": "Demasiados intentos fallidos. Inténtalo más tarde.",
+    "networkError": "Verifica tu conexión a internet.",
+    "genericError": "Ocurrió un error. Inténtalo de nuevo.",
+    "signOut": "Cerrar Sesión",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "createAccount": "Crear Cuenta",
+    "emailVerification": "Verificación de Correo",
+    "verifyEmail": "Verificar Correo",
+    "emailSent": "Correo de verificación enviado",
+    "loginSuccess": "Sesión iniciada exitosamente",
+    "registerSuccess": "Cuenta creada exitosamente"
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "Procesa tus PDFs e imágenes",
+      "subtitle": "Herramientas de procesamiento de archivos gratuitas, seguras y rápidas",
+      "cta": "Comenzar ahora",
+      "features": ["100% Gratis", "Procesamiento Seguro", "Resultados Rápidos"]
+    },
+    "categories": {
+      "pdfTools": "Herramientas PDF",
+      "pdfToolsDesc": "Comprime, convierte y edita tus archivos PDF",
+      "imageTools": "Herramientas de Imagen", 
+      "imageToolsDesc": "Comprime, redimensiona y edita tus imágenes",
+      "batchTools": "Procesamiento en Lote",
+      "batchToolsDesc": "Procesa múltiples archivos a la vez"
+    },
+    "tools": {
+      "pdfCompress": {
+        "title": "Compresión PDF",
+        "description": "Reduce el tamaño del archivo PDF sin perder calidad"
+      },
+      "pdfConvert": {
+        "title": "Conversión PDF", 
+        "description": "Convierte PDF a imágenes, texto u otros formatos"
+      },
+      "imageCompress": {
+        "title": "Compresión de Imagen",
+        "description": "Reduce el tamaño del archivo de imagen sin perder calidad"
+      },
+      "imageResize": {
+        "title": "Redimensionar Imagen",
+        "description": "Redimensiona imágenes a las dimensiones deseadas"
+      },
+      "imageCrop": {
+        "title": "Recortar Imagen",
+        "description": "Recorta imágenes para enfocar áreas específicas"
+      },
+      "imageRotate": {
+        "title": "Rotar Imagen",
+        "description": "Rota imágenes a cualquier ángulo"
+      }
+    },
+    "features": {
+      "title": "¿Por qué QuickUtil?",
+      "free": {
+        "title": "Completamente Gratis",
+        "description": "Todas las herramientas son gratuitas con uso ilimitado"
+      },
+      "secure": {
+        "title": "100% Seguro",
+        "description": "Los archivos no se suben a servidores, se procesan en tu navegador"
+      },
+      "fast": {
+        "title": "Procesamiento Instantáneo",
+        "description": "Obtén resultados en segundos con algoritmos de procesamiento rápido"
+      },
+      "quality": {
+        "title": "Calidad Preservada",
+        "description": "Los algoritmos avanzados minimizan la pérdida de calidad"
+      }
+    },
+    "stats": {
+      "title": "Plataforma de Confianza",
+      "processedFiles": "Archivos Procesados",
+      "happyUsers": "Usuarios Satisfechos",
+      "supportedFormats": "Formatos Soportados",
+      "uptime": "Tiempo de Actividad"
+    },
+    "title": "Herramientas de Procesamiento PDF e Imagen",
+    "subtitle": "Herramientas gratuitas, seguras y rápidas para procesar archivos",
+    "description": "Compresión PDF, conversión, redimensionamiento de imágenes y más. Procesa de forma segura en tu navegador.",
+    "getStarted": "Comenzar",
+    "featuresTitle": "Características",
+    "toolsTitle": "Herramientas",
+    "whyChooseUs": "¿Por qué QuickUtil?",
+    "userCount": "2M+ Usuarios",
+    "filesProcessed": "10M+ Archivos Procesados",
+    "satisfied": "Usuarios Satisfechos"
+  },
+
+  "tools": {
+    "pdfCompress": {
+      "title": "Compresión PDF",
+      "description": "Comprime archivos PDF hasta un 90%",
+      "uploadText": "Selecciona o arrastra tu archivo PDF",
+      "maxSize": "Máximo 50MB",
+      "supportedFormats": "Formato PDF soportado",
+      "processing": "Comprimiendo PDF...",
+      "success": "¡PDF comprimido con éxito!",
+      "compressionRatio": "Ratio de Compresión",
+      "originalSize": "Tamaño Original",
+      "compressedSize": "Tamaño Comprimido",
+      "savedSpace": "Espacio Ahorrado",
+      "action": "Comprimir PDF"
+    },
+    "pdfConvert": {
+      "title": "Conversión PDF",
+      "description": "Convierte PDF a diferentes formatos",
+      "convertTo": "Convertir a",
+      "toImages": "Convertir a Imágenes",
+      "toText": "Convertir a Texto",
+      "split": "Dividir Páginas",
+      "merge": "Fusionar",
+      "imageFormat": "Formato de Imagen",
+      "imageQuality": "Calidad de Imagen",
+      "processing": "Convirtiendo PDF...",
+      "downloadAll": "Descargar Todo",
+      "downloadZip": "Descargar como ZIP",
+      "action": "Convertir PDF"
+    },
+    "imageCompress": {
+      "title": "Compresión de Imagen",
+      "description": "Reduce el tamaño del archivo de imagen sin perder calidad",
+      "uploadText": "Selecciona o arrastra tu archivo de imagen",
+      "supportedFormats": "JPEG/JPG, PNG, WebP, GIF",
+      "quality": "Calidad",
+      "processing": "Comprimiendo imagen...",
+      "action": "Comprimir Imagen"
+    },
+    "imageResize": {
+      "title": "Redimensionar Imagen",
+      "description": "Redimensiona imágenes a las dimensiones deseadas",
+      "resizeMode": "Modo de Redimensionado",
+      "byPixels": "Por Píxeles",
+      "byPercentage": "Por Porcentaje",
+      "width": "Ancho",
+      "height": "Alto",
+      "percentage": "Porcentaje",
+      "maintainAspectRatio": "Mantener proporción",
+      "doNotEnlarge": "No agrandar si es menor",
+      "action": "Redimensionar Imagen"
+    },
+    "imageCrop": {
+      "title": "Recortar Imagen",
+      "description": "Recorta imágenes para enfocar áreas específicas",
+      "cropArea": "Área de Recorte",
+      "coordinates": "Coordenadas",
+      "presets": "Preajustes",
+      "action": "Recortar Imagen"
+    },
+    "imageRotate": {
+      "title": "Rotar Imagen", 
+      "description": "Rota imágenes a cualquier ángulo",
+      "rotationAngle": "Ángulo de Rotación",
+      "quickRotate": "Rotación Rápida",
+      "customAngle": "Ángulo Personalizado",
+      "action": "Rotar Imagen"
+    },
+    "batchProcess": {
+      "title": "Procesamiento por Lotes",
+      "description": "Procesa múltiples archivos a la vez",
+      "action": "Procesar por Lotes"
+    }
+  },
+
+  "profile": {
+    "title": "Perfil",
+    "overview": "Resumen",
+    "files": "Mis Archivos",
+    "settings": "Configuración",
+    "memberSince": "Miembro Desde",
+    "totalFiles": "Total de Archivos",
+    "storageUsed": "Almacenamiento Usado",
+    "activities": "Actividades",
+    "recentFiles": "Archivos Recientes",
+    "accountSettings": "Configuración de Cuenta",
+    "languageSettings": "Configuración de Idioma",
+    "privacySettings": "Configuración de Privacidad",
+    "activity": "Actividad",
+    "storage": "Almacenamiento",
+    "statistics": "Estadísticas",
+    "personalInfo": "Información Personal",
+    "editProfile": "Editar Perfil",
+    "changePassword": "Cambiar Contraseña",
+    "deleteAccount": "Eliminar Cuenta"
+  },
+
+  "admin": {
+    "dashboard": "Panel de Administración",
+    "users": "Usuarios",
+    "activities": "Actividades",
+    "reports": "Reportes",
+    "totalUsers": "Total de Usuarios",
+    "totalActivities": "Total de Actividades",
+    "todayActivities": "Actividades de Hoy",
+    "successRate": "Tasa de Éxito",
+    "popularFeatures": "Características Populares",
+    "recentErrors": "Errores Recientes",
+    "analytics": "Analíticas",
+    "settings": "Configuración"
+  },
+
+  "errors": {
+    "fileTooBig": "Archivo demasiado grande. El tamaño máximo es {maxSize}.",
+    "unsupportedFormat": "Formato de archivo no soportado. Use uno de {formats}.",
+    "processingFailed": "Error al procesar archivo. Inténtalo de nuevo.",
+    "networkError": "Error de conexión de red. Verifica tu conexión a internet.",
+    "serverError": "Error del servidor. Inténtalo más tarde.",
+    "invalidFile": "Archivo inválido. Intenta con otro archivo.",
+    "uploadFailed": "Falló la subida del archivo. Inténtalo de nuevo.",
+    "downloadFailed": "Falló la descarga del archivo. Inténtalo de nuevo.",
+    "generic": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+    "fileNotFound": "Archivo no encontrado",
+    "fileTooLarge": "Archivo demasiado grande",
+    "invalidFileType": "Tipo de archivo inválido",
+    "authRequired": "Necesitas iniciar sesión",
+    "unauthorized": "No tienes permiso para esta acción",
+    "emailAlreadyExists": "Esta dirección de correo ya está en uso. Intenta iniciar sesión.",
+    "weakPassword": "La contraseña es muy débil. Usa al menos 6 caracteres.",
+    "userNotFound": "No se encontró usuario con esta dirección de correo.",
+    "wrongPassword": "Contraseña incorrecta. Por favor, inténtalo de nuevo."
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil.app - Herramientas Gratuitas PDF e Imagen",
+      "description": "Herramientas de compresión PDF, edición de imagen y conversión de formato. Completamente gratis, seguro y rápido.",
+      "keywords": "compresión PDF, edición de imagen, conversión de formato, herramientas gratuitas"
+    },
+    "pdfCompress": {
+      "title": "Compresión PDF - Herramienta Gratuita para Reducir Tamaño PDF",
+      "description": "Comprime archivos PDF hasta un 90%. Herramienta de compresión PDF completamente gratuita, segura y rápida.",
+      "keywords": "compresión PDF, reducir tamaño PDF, comprimir PDF en línea"
+    },
+    "pdfConvert": {
+      "title": "Conversión PDF - Convertir PDF a Imagen y Texto",
+      "description": "Convierte PDF a JPG, PNG o extrae texto. Herramienta gratuita de conversión PDF.",
+      "keywords": "conversión PDF, PDF a JPG, PDF a PNG, PDF a texto"
+    },
+    "imageCompress": {
+      "title": "Compresión de Imagen - Reductor Gratuito de Tamaño de Imagen",
+      "description": "Comprime imágenes JPEG, PNG, WebP sin perder calidad. Herramienta gratuita de compresión de imagen.",
+      "keywords": "compresión de imagen, compresión JPEG, compresión PNG"
+    },
+    "imageResize": {
+      "title": "Redimensionar Imagen - Cambiar Dimensiones de Imagen",
+      "description": "Redimensiona imágenes a las dimensiones deseadas. Redimensionado de imagen basado en píxeles o porcentaje.",
+      "keywords": "redimensionar imagen, cambiar tamaño de imagen, redimensionar imágenes en línea"
+    },
+    "defaultTitle": "QuickUtil - Herramientas de Procesamiento PDF e Imagen",
+    "defaultDescription": "Herramientas gratuitas de compresión PDF, conversión y procesamiento de imágenes. Seguro, rápido y basado en navegador.",
+    "keywords": "compresión PDF, conversión PDF, compresión imagen, redimensionar imagen, gratis"
+  },
+
+  "legal": {
+    "privacyPolicy": "Política de Privacidad",
+    "termsOfService": "Términos de Servicio",
+    "cookiePolicy": "Política de Cookies",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "lastUpdated": "Última Actualización: {date}",
+    "aboutUs": {
+      "title": "Acerca de Nosotros",
+      "subtitle": "Equipo desarrollando herramientas de procesamiento PDF e imagen"
+    },
+    "privacy": {
+      "title": "Política de Privacidad",
+      "subtitle": "Protección de tus datos personales"
+    },
+    "terms": {
+      "title": "Términos de Servicio",
+      "subtitle": "Condiciones de uso del servicio"
+    }
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "Seleccionar Idioma",
+    "currentLanguage": "Idioma Actual",
+    "changeLanguage": "Cambiar Idioma",
+    "languages": {
+      "tr": "Türkçe",
+      "en": "English",
+      "es": "Español", 
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "ja": "日本語",
+      "ko": "한국어"
+    }
+  }
+} 

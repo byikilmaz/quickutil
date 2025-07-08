@@ -1,0 +1,365 @@
+{
+  "common": {
+    "upload": "Yükle",
+    "download": "İndir",
+    "processing": "İşleniyor...",
+    "done": "Tamamlandı",
+    "error": "Hata",
+    "success": "Başarılı",
+    "cancel": "İptal",
+    "retry": "Tekrar Dene",
+    "free": "Ücretsiz",
+    "secure": "Güvenli",
+    "fast": "Hızlı",
+    "unlimited": "Sınırsız",
+    "selectFile": "Dosya Seç",
+    "dropFile": "Dosyayı buraya sürükleyin",
+    "or": "veya",
+    "fileSize": "Dosya Boyutu",
+    "fileName": "Dosya Adı",
+    "loading": "Yükleniyor...",
+    "back": "Geri",
+    "next": "İleri",
+    "save": "Kaydet",
+    "close": "Kapat",
+    "open": "Aç",
+    "share": "Paylaş",
+    "copy": "Kopyala",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "view": "Görüntüle",
+    "help": "Yardım",
+    "about": "Hakkında",
+    "contact": "İletişim",
+    "privacy": "Gizlilik",
+    "terms": "Şartlar",
+    "confirm": "Onayla",
+    "and": "ve",
+    "premium": "Premium"
+  },
+
+  "navigation": {
+    "home": "Ana Sayfa",
+    "tools": "Araçlar",
+    "pdfTools": "PDF Araçları",
+    "imageTools": "Resim Araçları",
+    "batchProcessing": "Toplu İşlem",
+    "profile": "Profil",
+    "admin": "Admin",
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "privacy": "Gizlilik",
+    "terms": "Kullanım Şartları"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "PDF ve Resim Araçları",
+    "menu": "Menü",
+    "logo": "QuickUtil",
+    "login": "Giriş Yap",
+    "logout": "Çıkış Yap",
+    "register": "Kayıt Ol",
+    "close": "Kapat"
+  },
+
+  "footer": {
+    "copyright": "© QuickUtil, Türkiye",
+    "allRightsReserved": "Tüm hakları saklıdır",
+    "quickLinks": "Hızlı Bağlantılar",
+    "legal": "Yasal",
+    "company": "Şirket",
+    "support": "Destek",
+    "followUs": "Bizi Takip Edin",
+    "newsletter": "Bülten",
+    "subscribe": "Abone Ol",
+    "enterEmail": "E-posta adresinizi girin",
+    "description": "PDF ve resim işleme araçları",
+    "tools": "Araçlar",
+    "email": "hello@quickutil.app"
+  },
+
+  "auth": {
+    "loginTitle": "Giriş Yap",
+    "registerTitle": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "confirmPassword": "Şifre Tekrar",
+    "rememberMe": "Beni Hatırla",
+    "forgotPassword": "Şifremi Unuttum",
+    "noAccount": "Hesabınız yok mu?",
+    "hasAccount": "Zaten hesabınız var mı?",
+    "signUp": "Kayıt Ol",
+    "signIn": "Giriş Yap",
+    "loggingIn": "Giriş yapılıyor...",
+    "registering": "Kayıt olunuyor...",
+    "emailRequired": "E-posta adresi gerekli",
+    "passwordRequired": "Şifre gerekli",
+    "nameRequired": "Ad gerekli",
+    "invalidEmail": "Geçersiz e-posta adresi",
+    "weakPassword": "Şifre çok zayıf. En az 6 karakter kullanın.",
+    "emailAlreadyInUse": "Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.",
+    "userNotFound": "Bu e-posta adresine kayıtlı kullanıcı bulunamadı.",
+    "wrongPassword": "Hatalı şifre. Lütfen tekrar deneyin.",
+    "tooManyRequests": "Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.",
+    "networkError": "İnternet bağlantınızı kontrol edin.",
+    "genericError": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "signOut": "Çıkış Yap",
+    "alreadyHaveAccount": "Zaten hesabın var mı?",
+    "dontHaveAccount": "Hesabın yok mu?",
+    "createAccount": "Hesap Oluştur",
+    "emailVerification": "E-posta Doğrulama",
+    "verifyEmail": "E-postanı Doğrula",
+    "emailSent": "Doğrulama e-postası gönderildi",
+    "loginSuccess": "Başarıyla giriş yapıldı",
+    "registerSuccess": "Hesap başarıyla oluşturuldu"
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "PDF ve resimlerinizi işleyin",
+      "subtitle": "Ücretsiz, güvenli ve hızlı dosya işleme araçları",
+      "cta": "Hemen başlayın",
+      "features": ["100% Ücretsiz", "Güvenli İşleme", "Hızlı Sonuçlar"]
+    },
+    "categories": {
+      "pdfTools": "PDF Araçları",
+      "pdfToolsDesc": "PDF dosyalarınızı sıkıştırın, dönüştürün ve düzenleyin",
+      "imageTools": "Resim Araçları", 
+      "imageToolsDesc": "Resimlerinizi sıkıştırın, boyutlandırın ve düzenleyin",
+      "batchTools": "Toplu İşlemler",
+      "batchToolsDesc": "Birden fazla dosyayı aynı anda işleyin"
+    },
+    "tools": {
+      "pdfCompress": {
+        "title": "PDF Sıkıştırma",
+        "description": "PDF dosyalarınızı kalite kaybetmeden küçültün"
+      },
+      "pdfConvert": {
+        "title": "PDF Dönüştürme", 
+        "description": "PDF'yi resimlere, metne veya diğer formatlara dönüştürün"
+      },
+      "imageCompress": {
+        "title": "Resim Sıkıştırma",
+        "description": "Resimlerinizi kalite kaybetmeden küçültün"
+      },
+      "imageResize": {
+        "title": "Resim Boyutlandırma",
+        "description": "Resimlerinizi istediğiniz boyutlara getirin"
+      },
+      "imageCrop": {
+        "title": "Resim Kırpma",
+        "description": "Resimlerinizin istediğiniz kısımlarını kesin"
+      },
+      "imageRotate": {
+        "title": "Resim Döndürme",
+        "description": "Resimlerinizi istediğiniz açıda döndürün"
+      }
+    },
+    "features": {
+      "title": "Neden QuickUtil?",
+      "free": {
+        "title": "Tamamen Ücretsiz",
+        "description": "Tüm araçlar ücretsiz, sınırsız kullanım"
+      },
+      "secure": {
+        "title": "100% Güvenli",
+        "description": "Dosyalarınız sunucuya yüklenmez, tarayıcınızda işlenir"
+      },
+      "fast": {
+        "title": "Anında İşlem",
+        "description": "Hızlı işleme algoritmaları ile saniyeler içinde sonuç"
+      },
+      "quality": {
+        "title": "Kalite Korunur",
+        "description": "Gelişmiş algoritmalar ile kalite kaybı minimuma iner"
+      }
+    },
+    "stats": {
+      "title": "Güvenilir Platform",
+      "processedFiles": "İşlenen Dosya",
+      "happyUsers": "Mutlu Kullanıcı",
+      "supportedFormats": "Desteklenen Format",
+      "uptime": "Çalışma Süresi"
+    },
+    "title": "PDF ve Resim İşleme Araçları",
+    "subtitle": "Ücretsiz, güvenli ve hızlı dosya işleme araçları",
+    "description": "PDF sıkıştırma, dönüştürme, resim boyutlandırma ve daha fazlası. Tarayıcınızda güvenli şekilde işleyin.",
+    "getStarted": "Hemen Başlayın",
+    "featuresTitle": "Özellikler",
+    "toolsTitle": "Araçlar",
+    "whyChooseUs": "Neden QuickUtil?",
+    "userCount": "2M+ Kullanıcı",
+    "filesProcessed": "10M+ İşlenmiş Dosya",
+    "satisfied": "Memnun Kullanıcılar"
+  },
+
+  "tools": {
+    "pdfCompress": {
+      "title": "PDF Sıkıştırma",
+      "description": "PDF dosyalarınızı kalite kaybetmeden sıkıştırın",
+      "action": "PDF Sıkıştır"
+    },
+    "pdfConvert": {
+      "title": "PDF Dönüştürme",
+      "description": "PDF'yi resimlere, metne çevirin veya ayırın",
+      "action": "PDF Dönüştür"
+    },
+    "imageCompress": {
+      "title": "Resim Sıkıştırma",
+      "description": "Resimlerinizi %90'a kadar sıkıştırın",
+      "action": "Resim Sıkıştır"
+    },
+    "imageResize": {
+      "title": "Resim Boyutlandırma",
+      "description": "Resimlerinizi istediğiniz boyutlara getirin",
+      "action": "Resim Boyutlandır"
+    },
+    "imageCrop": {
+      "title": "Resim Kırpma",
+      "description": "Resimlerinizi keserek boyutlandırın",
+      "action": "Resim Kırp"
+    },
+    "imageRotate": {
+      "title": "Resim Döndürme",
+      "description": "Resimlerinizi istediğiniz açıda döndürün",
+      "action": "Resim Döndür"
+    },
+    "batchProcess": {
+      "title": "Toplu İşlem",
+      "description": "Birden fazla dosyayı aynı anda işleyin",
+      "action": "Toplu İşlem Yap"
+    }
+  },
+
+  "profile": {
+    "title": "Profil",
+    "overview": "Genel Bakış",
+    "files": "Dosyalarım",
+    "settings": "Ayarlar",
+    "memberSince": "Üyelik Tarihi",
+    "totalFiles": "Toplam Dosya",
+    "storageUsed": "Kullanılan Depolama",
+    "activities": "Aktiviteler",
+    "recentFiles": "Son Dosyalar",
+    "accountSettings": "Hesap Ayarları",
+    "languageSettings": "Dil Ayarları",
+    "privacySettings": "Gizlilik Ayarları",
+    "activity": "Aktivite",
+    "storage": "Depolama",
+    "statistics": "İstatistikler",
+    "personalInfo": "Kişisel Bilgiler",
+    "editProfile": "Profili Düzenle",
+    "changePassword": "Şifre Değiştir",
+    "deleteAccount": "Hesabı Sil"
+  },
+
+  "admin": {
+    "dashboard": "Yönetim Paneli",
+    "users": "Kullanıcılar",
+    "activities": "Aktiviteler",
+    "reports": "Raporlar",
+    "analytics": "Analitikler",
+    "settings": "Ayarlar",
+    "totalUsers": "Toplam Kullanıcı",
+    "totalActivities": "Toplam Aktivite",
+    "todayActivities": "Bugünkü Aktiviteler",
+    "successRate": "Başarı Oranı",
+    "popularFeatures": "Popüler Özellikler",
+    "recentErrors": "Son Hatalar"
+  },
+
+  "errors": {
+    "fileTooBig": "Dosya çok büyük. Maksimum {maxSize} boyutunda dosya yükleyebilirsiniz.",
+    "unsupportedFormat": "Desteklenmeyen dosya formatı. Lütfen {formats} formatlarından birini kullanın.",
+    "processingFailed": "Dosya işlenirken hata oluştu. Lütfen tekrar deneyin.",
+    "networkError": "Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin.",
+    "serverError": "Sunucu hatası. Lütfen daha sonra tekrar deneyin.",
+    "invalidFile": "Geçersiz dosya. Lütfen başka bir dosya deneyin.",
+    "uploadFailed": "Dosya yüklenemedi. Lütfen tekrar deneyin.",
+    "downloadFailed": "Dosya indirilemedi. Lütfen tekrar deneyin.",
+    "generic": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "fileNotFound": "Dosya bulunamadı",
+    "fileTooLarge": "Dosya çok büyük",
+    "invalidFileType": "Geçersiz dosya türü",
+    "authRequired": "Giriş yapmanız gerekiyor",
+    "unauthorized": "Bu işlem için yetkiniz yok",
+    "emailAlreadyExists": "Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.",
+    "weakPassword": "Şifre çok zayıf. En az 6 karakter kullanın.",
+    "userNotFound": "Bu e-posta adresine kayıtlı kullanıcı bulunamadı.",
+    "wrongPassword": "Hatalı şifre. Lütfen tekrar deneyin."
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil.app - Ücretsiz PDF ve Resim Araçları",
+      "description": "PDF sıkıştırma, resim düzenleme ve format dönüştürme araçları. Tamamen ücretsiz, güvenli ve hızlı.",
+      "keywords": "PDF sıkıştırma, resim düzenleme, format dönüştürme, ücretsiz araçlar"
+    },
+    "pdfCompress": {
+      "title": "PDF Sıkıştırma - Ücretsiz PDF Küçültme Aracı",
+      "description": "PDF dosyalarınızı %90'a kadar sıkıştırın. Tamamen ücretsiz, güvenli ve hızlı PDF sıkıştırma aracı.",
+      "keywords": "PDF sıkıştırma, PDF küçültme, PDF boyut azaltma"
+    },
+    "pdfConvert": {
+      "title": "PDF Dönüştürme - PDF'yi Resim ve Metne Çevir",
+      "description": "PDF'yi JPG, PNG'ye dönüştürün veya metne çevirin. Ücretsiz PDF dönüştürme aracı.",
+      "keywords": "PDF dönüştürme, PDF to JPG, PDF to PNG, PDF to text"
+    },
+    "imageCompress": {
+      "title": "Resim Sıkıştırma - Ücretsiz Resim Küçültme",
+      "description": "JPEG, PNG, WebP resimlerinizi kalite kaybetmeden sıkıştırın. Ücretsiz resim sıkıştırma aracı.",
+      "keywords": "resim sıkıştırma, JPEG sıkıştırma, PNG küçültme"
+    },
+    "imageResize": {
+      "title": "Resim Boyutlandırma - Resim Boyutu Değiştir",
+      "description": "Resimlerinizi istediğiniz boyutlara getirin. Piksel veya yüzde bazlı resim boyutlandırma.",
+      "keywords": "resim boyutlandırma, resim boyutu değiştir, image resize"
+    },
+    "defaultTitle": "QuickUtil - PDF ve Resim İşleme Araçları",
+    "defaultDescription": "Ücretsiz PDF sıkıştırma, dönüştürme ve resim işleme araçları. Güvenli, hızlı ve tarayıcı tabanlı.",
+    "keywords": "PDF sıkıştırma, PDF dönüştürme, resim sıkıştırma, resim boyutlandırma, ücretsiz"
+  },
+
+  "legal": {
+    "privacyPolicy": "Gizlilik Sözleşmesi",
+    "termsOfService": "Kullanım Şartları",
+    "cookiePolicy": "Çerez Politikası",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "lastUpdated": "Son Güncelleme: {date}",
+    "aboutUs": {
+      "title": "Hakkımızda",
+      "subtitle": "PDF ve resim işleme araçları geliştiren ekip"
+    },
+    "privacy": {
+      "title": "Gizlilik Sözleşmesi",
+      "subtitle": "Kişisel verilerinizin korunması"
+    },
+    "terms": {
+      "title": "Kullanım Şartları",
+      "subtitle": "Hizmet kullanım koşulları"
+    }
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "Dil Seç",
+    "currentLanguage": "Mevcut Dil",
+    "changeLanguage": "Dili Değiştir",
+    "languages": {
+      "tr": "Türkçe",
+      "en": "English",
+      "es": "Español", 
+      "fr": "Français",
+      "de": "Deutsch",
+      "ar": "العربية",
+      "ja": "日本語",
+      "ko": "한국어"
+    }
+  }
+} 
