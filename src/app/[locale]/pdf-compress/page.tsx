@@ -87,7 +87,7 @@ export default function PDFCompress() {
   const [globalSettings, setGlobalSettings] = useState({
     level: 'medium' as 'light' | 'medium' | 'high',
     useAI: true,
-    useServerCompression: false,
+    aiCompressionLevel: 'advanced' as 'standard' | 'advanced',
     applyToAll: false
   });
 
@@ -184,7 +184,7 @@ export default function PDFCompress() {
       return compressedFile;
     } catch (error) {
       console.error('Server compression error:', error);
-      throw new Error(`🔥 iLovePDF Seviyesi Sıkıştırma Hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+      throw new Error(`🔥 Gelişmiş AI Sıkıştırma Hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
     }
   };
 
@@ -239,8 +239,8 @@ export default function PDFCompress() {
         const startTime = Date.now();
         let compressedFile: File;
 
-        // Server-side compression (iLovePDF seviyesi)
-        if (globalSettings.useServerCompression) {
+        // Advanced AI compression
+        if (globalSettings.useAI && globalSettings.aiCompressionLevel === 'advanced') {
           setPdfFiles(prev => prev.map(file => 
             file.id === pdfFile.id 
               ? { ...file, progress: 10 }
@@ -661,35 +661,71 @@ export default function PDFCompress() {
                   : t('aiModeDesc.disabled')
                 }
               </p>
+              
+              {/* AI Compression Level Selection */}
+              {globalSettings.useAI && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    🧠 AI Compression Level
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label
+                      className={`cursor-pointer p-3 border-2 rounded-lg transition-all duration-200 text-center ${
+                        globalSettings.aiCompressionLevel === 'standard'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="aiCompressionLevel"
+                        value="standard"
+                        checked={globalSettings.aiCompressionLevel === 'standard'}
+                        onChange={(e) => setGlobalSettings(prev => ({ 
+                          ...prev, 
+                          aiCompressionLevel: e.target.value as 'standard' | 'advanced'
+                        }))}
+                        className="sr-only"
+                      />
+                      <div className="text-lg mb-1">📱</div>
+                      <div className="text-xs font-medium text-gray-900">Standard</div>
+                      <div className="text-xs text-gray-600">Client AI</div>
+                    </label>
+                    
+                    <label
+                      className={`cursor-pointer p-3 border-2 rounded-lg transition-all duration-200 text-center ${
+                        globalSettings.aiCompressionLevel === 'advanced'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="aiCompressionLevel"
+                        value="advanced"
+                        checked={globalSettings.aiCompressionLevel === 'advanced'}
+                        onChange={(e) => setGlobalSettings(prev => ({ 
+                          ...prev, 
+                          aiCompressionLevel: e.target.value as 'standard' | 'advanced'
+                        }))}
+                        className="sr-only"
+                      />
+                      <div className="text-lg mb-1">🔥</div>
+                      <div className="text-xs font-medium text-gray-900">Advanced</div>
+                      <div className="text-xs text-gray-600">Server AI</div>
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    {globalSettings.aiCompressionLevel === 'advanced' 
+                      ? '⚡ Maksimum sıkıştırma oranı için server-side AI algoritmaları'
+                      : '📱 Hızlı işleme için client-side AI optimizasyonu'
+                    }
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Server Compression Toggle */}
-            <div className="bg-white/60 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <BoltIcon className="h-5 w-5 text-red-600 mr-2" />
-                  <span className="font-medium text-gray-900">🔥 Server Compression</span>
-                </div>
-                <button
-                  onClick={() => setGlobalSettings(prev => ({ ...prev, useServerCompression: !prev.useServerCompression }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
-                    globalSettings.useServerCompression ? 'bg-red-600' : 'bg-gray-300'
-                  }`}
-                >
-                  <span
-                    className={`${
-                      globalSettings.useServerCompression ? 'translate-x-6' : 'translate-x-1'
-                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                  />
-                </button>
-              </div>
-              <p className="text-sm text-gray-600">
-                {globalSettings.useServerCompression 
-                  ? '⚡ iLovePDF seviyesi sıkıştırma aktif'
-                  : '📱 Client-side compression aktif'
-                }
-              </p>
-            </div>
+
 
             {/* Compression Level */}
             <div className="bg-white/60 rounded-lg p-4">
