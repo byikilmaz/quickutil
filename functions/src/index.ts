@@ -114,21 +114,56 @@ async function performAdvancedCompression(
     // 4. CONTENT STREAM OPTIMIZATION
     await optimizeContentStreams(pdfDoc, compressionSettings);
     
-    // 5. STRUCTURE OPTIMIZATION
-    const optimizedBytes = await pdfDoc.save({
-      useObjectStreams: compressionSettings.useObjectStreams,
-      addDefaultPage: false,
-      objectsPerTick: compressionSettings.objectsPerTick,
-      updateFieldAppearances: false,
-    });
+    // 5. STRUCTURE OPTIMIZATION WITH FALLBACK
+    let optimizedBytes: Uint8Array;
+    
+    try {
+      // Primary compression attempt
+      optimizedBytes = await pdfDoc.save({
+        useObjectStreams: false, // Disabled due to PDF-lib bug
+        addDefaultPage: false,
+        objectsPerTick: compressionSettings.objectsPerTick,
+        updateFieldAppearances: false,
+      });
+    } catch (saveError) {
+      functions.logger.warn('⚠️ Primary save failed, trying fallback...', saveError);
+      
+      // Fallback with minimal settings
+      optimizedBytes = await pdfDoc.save({
+        useObjectStreams: false,
+        addDefaultPage: false,
+        objectsPerTick: 50,
+        updateFieldAppearances: false,
+      });
+    }
 
     // 6. FINAL OPTIMIZATION
     functions.logger.info('🎯 Advanced compression completed');
     return Buffer.from(optimizedBytes);
 
   } catch (error) {
-    functions.logger.error('❌ Advanced compression error:', error);
-    throw error;
+    functions.logger.error('❌ Advanced compression error, trying basic fallback:', error);
+    
+    // Fallback to basic compression
+    try {
+      const { PDFDocument } = await import('pdf-lib');
+      const pdfDoc = await PDFDocument.load(buffer);
+      
+      // Basic compression only
+      const basicBytes = await pdfDoc.save({
+        useObjectStreams: false,
+        addDefaultPage: false,
+        objectsPerTick: 25,
+        updateFieldAppearances: false,
+      });
+      
+      functions.logger.info('✅ Fallback compression successful');
+      return Buffer.from(basicBytes);
+      
+    } catch (fallbackError) {
+      functions.logger.error('❌ Even fallback compression failed:', fallbackError);
+      throw fallbackError;
+    }
   }
 }
 
@@ -138,29 +173,29 @@ async function performAdvancedCompression(
 function getAdvancedCompressionSettings(level: string) {
   const settings = {
     light: {
-      useObjectStreams: true,
-      objectsPerTick: 200,
+      useObjectStreams: false,
+      objectsPerTick: 100,
       imageQuality: 0.85,
       removeAnnotations: false,
       optimizeFonts: false
     },
     medium: {
-      useObjectStreams: true,
-      objectsPerTick: 500,
+      useObjectStreams: false,
+      objectsPerTick: 200,
       imageQuality: 0.70,
       removeAnnotations: true,
       optimizeFonts: true
     },
     high: {
-      useObjectStreams: true,
-      objectsPerTick: 1000,
+      useObjectStreams: false,
+      objectsPerTick: 300,
       imageQuality: 0.55,
       removeAnnotations: true,
       optimizeFonts: true
     },
     maximum: {
-      useObjectStreams: true,
-      objectsPerTick: 2000,
+      useObjectStreams: false,
+      objectsPerTick: 500,
       imageQuality: 0.40,
       removeAnnotations: true,
       optimizeFonts: true

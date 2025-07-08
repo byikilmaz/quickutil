@@ -144,7 +144,7 @@ export default function PDFCompress() {
     }
   };
 
-  // Server-side compression with Firebase Functions
+  // Server-side compression with Firebase Functions + Client Fallback
   const compressWithServer = async (file: File, compressionLevel: string): Promise<File> => {
     try {
       // Convert file to base64
@@ -158,17 +158,22 @@ export default function PDFCompress() {
         reader.readAsDataURL(file);
       });
 
-      // Call Firebase Function
+      // Call Firebase Function with timeout
       const functions = getFunctions();
       const compressPDFAdvanced = httpsCallable(functions, 'compressPDFAdvanced');
       
-      const result = await compressPDFAdvanced({
-        pdfBase64: fileBase64,
-        compressionLevel,
-        fileName: file.name
-      });
+      const result = await Promise.race([
+        compressPDFAdvanced({
+          pdfBase64: fileBase64,
+          compressionLevel,
+          fileName: file.name
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Server timeout')), 30000) // 30 second timeout
+        )
+      ]);
 
-      const responseData = result.data as any;
+      const responseData = (result as any).data;
       
       if (!responseData.success) {
         throw new Error(responseData.error || 'Server compression failed');
@@ -181,10 +186,32 @@ export default function PDFCompress() {
         lastModified: Date.now()
       });
 
+      console.log('✅ Server compression successful:', {
+        original: file.size,
+        compressed: compressedFile.size,
+        ratio: ((file.size - compressedFile.size) / file.size * 100).toFixed(1) + '%'
+      });
+
       return compressedFile;
     } catch (error) {
-      console.error('Server compression error:', error);
-      throw new Error(`🔥 Gelişmiş AI Sıkıştırma Hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+      console.error('🔥 Server compression failed, falling back to client:', error);
+      
+      // Fallback to client-side compression
+      try {
+        const ratio = compressionLevels[compressionLevel as keyof typeof compressionLevels]?.ratio || 0.7;
+        const fallbackFile = await compressPDF(file, ratio);
+        
+        console.log('✅ Client fallback successful:', {
+          original: file.size,
+          compressed: fallbackFile.size,
+          ratio: ((file.size - fallbackFile.size) / file.size * 100).toFixed(1) + '%'
+        });
+        
+        return fallbackFile;
+      } catch (fallbackError) {
+        console.error('❌ Both server and client compression failed:', fallbackError);
+        throw new Error(`Sıkıştırma başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+      }
     }
   };
 
