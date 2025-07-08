@@ -538,7 +538,7 @@ export default function PDFCompress() {
 
             {/* Free Badge */}
             <div className="inline-flex items-center bg-black text-white px-6 py-3 rounded-full text-lg font-medium">
-              ✨ Ücretsiz - {getMaxFileSize()}MB'a kadar dosya
+              ✨ {t('freeBadge').replace('{size}', getMaxFileSize().toString())}
             </div>
           </div>
         </div>
@@ -595,8 +595,8 @@ export default function PDFCompress() {
               </div>
               <p className="text-sm text-gray-600">
                 {globalSettings.useAI 
-                  ? 'Neural network ile optimal ayarlar otomatik belirlenir'
-                  : 'Manuel sıkıştırma seviyesi kullanılır'
+                  ? t('aiModeDesc.enabled')
+                  : t('aiModeDesc.disabled')
                 }
               </p>
             </div>
@@ -604,7 +604,7 @@ export default function PDFCompress() {
             {/* Compression Level */}
             <div className="bg-white/60 rounded-lg p-4">
               <label className="block text-sm font-medium text-gray-900 mb-3">
-                📊 Sıkıştırma Seviyesi
+                📊 {t('compressionLevel')}
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {Object.entries(compressionLevels).map(([level, config]) => (
@@ -642,7 +642,7 @@ export default function PDFCompress() {
                 onClick={applyGlobalSettings}
                 className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium"
               >
-                🔄 Ayarları Tüm Dosyalara Uygula
+                🔄 {t('applyToAll')}
               </button>
             </div>
           )}
@@ -700,8 +700,8 @@ export default function PDFCompress() {
                 </div>
                 
                 <div className="text-sm text-gray-500 space-y-1">
-                  <p>• Maksimum {getMaxFileSize()}MB dosya boyutu</p>
-                  <p>• 50 dosyaya kadar toplu işlem</p>
+                  <p>• {t('maxFileSize').replace('{size}', getMaxFileSize().toString())}</p>
+                  <p>• {t('maxFiles')}</p>
                   <p>• {t('aiCompressionZip')}</p>
                 </div>
               </div>
