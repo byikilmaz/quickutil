@@ -24,22 +24,36 @@ class PDFCompressionWorker {
       // Configure compression settings based on level
       const settings = this.getCompressionSettings(compressionLevel);
       
-      this.updateProgress(50, 'Applying compression...');
+      this.updateProgress(50, 'Applying enhanced compression...');
       
-      // Apply metadata removal if requested
+      // Apply comprehensive metadata removal if requested
       if (removeMetadata) {
         this.removeMetadata(pdfDoc);
       }
       
-      this.updateProgress(70, 'Optimizing structure...');
+      this.updateProgress(60, 'Applying advanced optimizations...');
       
-      // Save with compression
-      const compressedBytes = await pdfDoc.save({
+      // Apply additional optimizations for medium/high compression
+      if (settings.optimizeSize) {
+        this.applyAdvancedOptimizations(pdfDoc, compressionLevel);
+      }
+      
+      this.updateProgress(80, 'Finalizing compression...');
+      
+      // Enhanced save with compression
+      const saveOptions = {
         useObjectStreams: settings.useObjectStreams,
         addDefaultPage: false,
         objectsPerTick: settings.objectsPerTick,
         updateFieldAppearances: settings.updateFieldAppearances,
-      });
+      };
+      
+      // Add aggressive compression for high levels
+      if (compressionLevel === 'high' || compressionLevel === 'maximum') {
+        saveOptions.compress = true;
+      }
+      
+      const compressedBytes = await pdfDoc.save(saveOptions);
       
       this.updateProgress(90, 'Finalizing...');
       
@@ -67,31 +81,91 @@ class PDFCompressionWorker {
       light: {
         useObjectStreams: false,
         objectsPerTick: 25,
-        updateFieldAppearances: true
+        updateFieldAppearances: true,
+        optimizeSize: false
       },
       medium: {
         useObjectStreams: true,
-        objectsPerTick: 50,
-        updateFieldAppearances: false
+        objectsPerTick: 100,
+        updateFieldAppearances: false,
+        optimizeSize: true
       },
       high: {
         useObjectStreams: true,
-        objectsPerTick: 100,
-        updateFieldAppearances: false
+        objectsPerTick: 500,
+        updateFieldAppearances: false,
+        optimizeSize: true
+      },
+      maximum: {
+        useObjectStreams: true,
+        objectsPerTick: 1000,
+        updateFieldAppearances: false,
+        optimizeSize: true
       }
     };
     
-    return settingsMap[level] || settingsMap.medium;
+    return settingsMap[level] || settingsMap.high; // Default to high compression
   }
 
   removeMetadata(pdfDoc) {
     try {
+      // Remove all document metadata
       pdfDoc.setTitle('');
       pdfDoc.setAuthor('');
       pdfDoc.setSubject('');
       pdfDoc.setKeywords([]);
+      pdfDoc.setProducer('');
+      pdfDoc.setCreator('');
+      
+      // Try to remove additional metadata
+      try {
+        const documentRef = pdfDoc.context.trailerInfo;
+        if (documentRef && documentRef.Info) {
+          const infoDict = documentRef.Info;
+          if (infoDict.delete) {
+            infoDict.delete('CreationDate');
+            infoDict.delete('ModDate');
+            infoDict.delete('Trapped');
+          }
+        }
+      } catch (e) {
+        console.warn('Could not remove advanced metadata:', e);
+      }
+      
     } catch (e) {
       console.warn('Could not remove metadata:', e);
+    }
+  }
+
+  applyAdvancedOptimizations(pdfDoc, compressionLevel) {
+    try {
+      const pages = pdfDoc.getPages();
+      
+      // Remove annotations for maximum compression
+      if (compressionLevel === 'high' || compressionLevel === 'maximum') {
+        pages.forEach((page, index) => {
+          try {
+            const pageRef = page.ref;
+            const pageDict = pdfDoc.context.lookup(pageRef);
+            
+            // Remove annotations if they exist
+            if (pageDict && pageDict.has && pageDict.has('Annots')) {
+              pageDict.delete('Annots');
+            }
+            
+            // Remove thumbnails for size reduction
+            if (pageDict && pageDict.has && pageDict.has('Thumb')) {
+              pageDict.delete('Thumb');
+            }
+            
+          } catch (e) {
+            console.warn(`Could not optimize page ${index + 1}:`, e);
+          }
+        });
+      }
+      
+    } catch (e) {
+      console.warn('Advanced optimizations failed:', e);
     }
   }
 
