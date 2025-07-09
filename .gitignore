@@ -123,6 +123,19 @@ jspm_packages/
 firebase-debug.log*
 firebase-debug.*.log*
 
+# 🚨 SECURITY: Credential files (prevent exposure like quickutil-d2998-d24a37e3c545.json)
+*service*account*.json
+*private*key*
+*.pem
+*.key
+*.p12
+*.pfx
+set-private-key.sh
+temp_private_key.txt
+*credentials*.json
+*quickutil*.json
+functions/*quickutil*.json
+
 # Sentry
 .sentryclirc
 
