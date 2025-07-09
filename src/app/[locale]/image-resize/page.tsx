@@ -30,7 +30,7 @@ interface ResizeResult {
 
 type ResizeMode = 'pixels' | 'percentage';
 
-// Interactive Resize Component
+// Interactive Resize Box Component - FIXED VERSION
 function InteractiveResizeBox({ 
   imageUrl, 
   originalDimensions, 
@@ -46,56 +46,117 @@ function InteractiveResizeBox({
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragHandle, setDragHandle] = useState<string | null>(null);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
   const calculateDimensions = (clientX: number, clientY: number) => {
-    if (!containerRef.current || !imageRef.current) return;
+    if (!containerRef.current || !imageRef.current || !dragStart || !dragHandle) return;
     
-    const containerRect = containerRef.current.getBoundingClientRect();
     const imageRect = imageRef.current.getBoundingClientRect();
     
-    // Calculate relative position within the image
-    const relativeX = (clientX - imageRect.left) / imageRect.width;
-    const relativeY = (clientY - imageRect.top) / imageRect.height;
+    // Calculate mouse delta from drag start
+    const deltaX = clientX - dragStart.x;
+    const deltaY = clientY - dragStart.y;
     
-    // Convert to actual pixel dimensions
-    const newWidth = Math.round(relativeX * originalDimensions.width);
-    const newHeight = Math.round(relativeY * originalDimensions.height);
+    // Calculate scale factor between displayed image and original dimensions
+    const scaleX = originalDimensions.width / imageRect.width;
+    const scaleY = originalDimensions.height / imageRect.height;
     
-    onDimensionsChange(
-      Math.max(10, Math.min(newWidth, originalDimensions.width)),
-      Math.max(10, Math.min(newHeight, originalDimensions.height))
-    );
+    // Convert pixel deltas to original image coordinates
+    const deltaOriginalX = deltaX * scaleX;
+    const deltaOriginalY = deltaY * scaleY;
+    
+    let newWidth = dragStart.width;
+    let newHeight = dragStart.height;
+    
+    // Apply dimension changes based on which handle is being dragged
+    switch (dragHandle) {
+      case 'bottom-right':
+        newWidth = dragStart.width + deltaOriginalX;
+        newHeight = dragStart.height + deltaOriginalY;
+        break;
+      case 'bottom-left':
+        newWidth = dragStart.width - deltaOriginalX;
+        newHeight = dragStart.height + deltaOriginalY;
+        break;
+      case 'top-right':
+        newWidth = dragStart.width + deltaOriginalX;
+        newHeight = dragStart.height - deltaOriginalY;
+        break;
+      case 'top-left':
+        newWidth = dragStart.width - deltaOriginalX;
+        newHeight = dragStart.height - deltaOriginalY;
+        break;
+      case 'right':
+        newWidth = dragStart.width + deltaOriginalX;
+        break;
+      case 'bottom':
+        newHeight = dragStart.height + deltaOriginalY;
+        break;
+      case 'left':
+        newWidth = dragStart.width - deltaOriginalX;
+        break;
+      case 'top':
+        newHeight = dragStart.height - deltaOriginalY;
+        break;
+    }
+    
+    // Ensure minimum dimensions and don't exceed original
+    const finalWidth = Math.max(50, Math.min(newWidth, originalDimensions.width * 2));
+    const finalHeight = Math.max(50, Math.min(newHeight, originalDimensions.height * 2));
+    
+    onDimensionsChange(Math.round(finalWidth), Math.round(finalHeight));
   };
 
   const handleMouseDown = (e: React.MouseEvent, handle: string) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     setIsDragging(true);
     setDragHandle(handle);
+    setDragStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: width || originalDimensions.width,
+      height: height || originalDimensions.height
+    });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !dragHandle) return;
+    e.preventDefault();
     calculateDimensions(e.clientX, e.clientY);
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
     setDragHandle(null);
+    setDragStart(null);
   };
 
+  // Global mouse events for better drag experience
   useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isDragging || !dragHandle) return;
+      calculateDimensions(e.clientX, e.clientY);
+    };
+
     const handleGlobalMouseUp = () => {
       setIsDragging(false);
       setDragHandle(null);
+      setDragStart(null);
     };
 
     if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
       document.addEventListener('mouseup', handleGlobalMouseUp);
-      return () => document.removeEventListener('mouseup', handleGlobalMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleGlobalMouseMove);
+        document.removeEventListener('mouseup', handleGlobalMouseUp);
+      };
     }
-  }, [isDragging]);
+  }, [isDragging, dragHandle, dragStart]);
 
   // Calculate preview dimensions for the resize box
   const previewWidth = width || originalDimensions.width;
@@ -104,8 +165,7 @@ function InteractiveResizeBox({
   return (
     <div 
       ref={containerRef}
-      className="relative bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-[400px] flex items-center justify-center cursor-crosshair"
-      onMouseMove={handleMouseMove}
+      className="relative bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-[400px] flex items-center justify-center"
       onMouseUp={handleMouseUp}
     >
       <div className="relative">
@@ -119,7 +179,7 @@ function InteractiveResizeBox({
         
         {/* Interactive Resize Overlay */}
         <div 
-          className="absolute top-0 left-0 border-2 border-purple-500 bg-purple-500/10 rounded"
+          className="absolute top-0 left-0 border-2 border-purple-500 bg-purple-500/10 rounded pointer-events-none"
           style={{
             width: `${(previewWidth / originalDimensions.width) * 100}%`,
             height: `${(previewHeight / originalDimensions.height) * 100}%`,
@@ -127,29 +187,37 @@ function InteractiveResizeBox({
         >
           {/* Corner handles */}
           <div 
-            className="absolute -bottom-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-se-resize shadow-lg hover:bg-purple-600 transition-colors"
+            className="absolute -bottom-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-se-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
             onMouseDown={(e) => handleMouseDown(e, 'bottom-right')}
           />
           <div 
-            className="absolute -bottom-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-sw-resize shadow-lg hover:bg-purple-600 transition-colors"
+            className="absolute -bottom-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-sw-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
             onMouseDown={(e) => handleMouseDown(e, 'bottom-left')}
           />
           <div 
-            className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-ne-resize shadow-lg hover:bg-purple-600 transition-colors"
+            className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-ne-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
             onMouseDown={(e) => handleMouseDown(e, 'top-right')}
           />
           <div 
-            className="absolute -top-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-nw-resize shadow-lg hover:bg-purple-600 transition-colors"
+            className="absolute -top-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-nw-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
             onMouseDown={(e) => handleMouseDown(e, 'top-left')}
           />
           
           {/* Edge handles */}
           <div 
-            className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-4 h-6 bg-purple-500 border-2 border-white rounded cursor-e-resize shadow-lg hover:bg-purple-600 transition-colors"
+            className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-4 h-6 bg-purple-500 border-2 border-white rounded cursor-w-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
+            onMouseDown={(e) => handleMouseDown(e, 'left')}
+          />
+          <div 
+            className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-purple-500 border-2 border-white rounded cursor-n-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
+            onMouseDown={(e) => handleMouseDown(e, 'top')}
+          />
+          <div 
+            className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-4 h-6 bg-purple-500 border-2 border-white rounded cursor-e-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
             onMouseDown={(e) => handleMouseDown(e, 'right')}
           />
           <div 
-            className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-purple-500 border-2 border-white rounded cursor-s-resize shadow-lg hover:bg-purple-600 transition-colors"
+            className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-purple-500 border-2 border-white rounded cursor-s-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
             onMouseDown={(e) => handleMouseDown(e, 'bottom')}
           />
         </div>
@@ -260,10 +328,7 @@ export default function ImageResize() {
   const startResize = async () => {
     if (!file || !originalDimensions) return;
 
-    if (!user || !canUseFeature('image_resize')) {
-      setShowAuthModal(true);
-      return;
-    }
+    // Note: Image resize is a free feature, no authentication required
 
     setCurrentStep('processing');
     setIsProcessing(true);
@@ -596,7 +661,18 @@ export default function ImageResize() {
                               type="number"
                               value={width || ''}
                               onChange={(e) => handleWidthChange(e.target.value)}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-700"
+                              onFocus={(e) => {
+                                if (e.target.placeholder) {
+                                  e.target.setAttribute('data-placeholder', e.target.placeholder);
+                                  e.target.placeholder = '';
+                                }
+                              }}
+                              onBlur={(e) => {
+                                if (!e.target.value && e.target.getAttribute('data-placeholder')) {
+                                  e.target.placeholder = e.target.getAttribute('data-placeholder') || '';
+                                }
+                              }}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
                               placeholder="Enter width..."
                             />
                           </div>
@@ -608,7 +684,18 @@ export default function ImageResize() {
                               type="number"
                               value={height || ''}
                               onChange={(e) => handleHeightChange(e.target.value)}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-700"
+                              onFocus={(e) => {
+                                if (e.target.placeholder) {
+                                  e.target.setAttribute('data-placeholder', e.target.placeholder);
+                                  e.target.placeholder = '';
+                                }
+                              }}
+                              onBlur={(e) => {
+                                if (!e.target.value && e.target.getAttribute('data-placeholder')) {
+                                  e.target.placeholder = e.target.getAttribute('data-placeholder') || '';
+                                }
+                              }}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
                               placeholder="Enter height..."
                             />
                           </div>
@@ -622,7 +709,18 @@ export default function ImageResize() {
                             type="number"
                             value={percentageValue || ''}
                             onChange={(e) => setPercentageValue(parseFloat(e.target.value) || 100)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-700"
+                            onFocus={(e) => {
+                              if (e.target.placeholder) {
+                                e.target.setAttribute('data-placeholder', e.target.placeholder);
+                                e.target.placeholder = '';
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (!e.target.value && e.target.getAttribute('data-placeholder')) {
+                                e.target.placeholder = e.target.getAttribute('data-placeholder') || '';
+                              }
+                            }}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
                             min="1"
                             max="500"
                             placeholder="Enter percentage..."
