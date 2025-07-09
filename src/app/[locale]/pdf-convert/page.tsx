@@ -51,6 +51,11 @@ function PDFConvert({ locale }: { locale: string }) {
   const { user } = useAuth();
   const { uploadFile } = useStorage();
   const { canUseFeature } = useQuota();
+
+  // Get localized text helper function
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
   
   // Component state
   const [currentStep, setCurrentStep] = useState<'upload' | 'configure' | 'processing' | 'result'>('upload');
@@ -72,8 +77,8 @@ function PDFConvert({ locale }: { locale: string }) {
   const conversionTools = [
     {
       id: 'pdf-to-images',
-      title: 'PDF to Images',
-      description: 'PDF sayfalarını yüksek kaliteli PNG/JPG formatına dönüştürün',
+      title: getText('pdfToImages.title', 'PDF to Images'),
+      description: getText('pdfToImages.description', 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu'),
       icon: PhotoIcon,
       color: 'from-blue-500 to-cyan-500',
       multiple: false,
@@ -81,8 +86,8 @@ function PDFConvert({ locale }: { locale: string }) {
     },
     {
       id: 'pdf-to-text',
-      title: 'PDF to Text',
-      description: 'PDF içeriğini düzenlenebilir metin formatına çıkarın',
+      title: getText('pdfToText.title', 'PDF to Text'),
+      description: getText('pdfToText.description', 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma'),
       icon: DocumentTextIcon,
       color: 'from-green-500 to-emerald-500',
       multiple: false,
@@ -90,8 +95,8 @@ function PDFConvert({ locale }: { locale: string }) {
     },
     {
       id: 'pdf-split',
-      title: 'PDF Ayırma',
-      description: 'PDF sayfalarını ayrı dosyalar halinde bölün',
+      title: getText('pdfSplit.title', 'PDF Böl'),
+      description: getText('pdfSplit.description', 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem'),
       icon: ScissorsIcon,
       color: 'from-purple-500 to-violet-500',
       multiple: false,
@@ -99,8 +104,8 @@ function PDFConvert({ locale }: { locale: string }) {
     },
     {
       id: 'pdf-merge',
-      title: 'PDF Birleştirme',
-      description: 'Birden fazla PDF dosyasını tek dosyada birleştirin',
+      title: getText('pdfMerge.title', 'PDF Birleştir'),
+      description: getText('pdfMerge.description', 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği'),
       icon: Square2StackIcon,
       color: 'from-orange-500 to-red-500',
       multiple: true,
@@ -126,7 +131,7 @@ function PDFConvert({ locale }: { locale: string }) {
   // Handle file selection
   const handleFileSelect = (files: File[]) => {
     if (!canUseFeature('pdf_convert')) {
-      setError('Günlük PDF dönüştürme limitiniz doldu. Lütfen yarın tekrar deneyin.');
+      setError(getText('pdfConvert.errorQuota', 'Günlük PDF dönüştürme limitiniz doldu. Lütfen yarın tekrar deneyin.'));
       return;
     }
 
@@ -136,13 +141,13 @@ function PDFConvert({ locale }: { locale: string }) {
     // File size validation (20MB limit)
     const oversizedFiles = files.filter(file => file.size > 20 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      setError('Dosya boyutu 20MB\'dan büyük olamaz. Lütfen daha küçük bir dosya seçin.');
+      setError(getText('pdfTools.errors.fileTooLarge', 'Dosya boyutu 20MB\'dan büyük olamaz. Lütfen daha küçük bir dosya seçin.'));
       return;
     }
 
     // Multiple file validation
     if (!tool.multiple && files.length > 1) {
-      setError('Bu araç için sadece tek dosya seçebilirsiniz.');
+      setError(getText('pdfTools.errors.singleFileOnly', 'Bu araç için sadece tek dosya seçebilirsiniz.'));
       return;
     }
 
@@ -230,7 +235,7 @@ function PDFConvert({ locale }: { locale: string }) {
 
     } catch (error) {
       console.error('Conversion error:', error);
-      setError(error instanceof Error ? error.message : 'Dönüştürme sırasında hata oluştu');
+      setError(error instanceof Error ? error.message : getText('pdfTools.errors.conversionFailed', 'Dönüştürme başarısız oldu.'));
     } finally {
       clearInterval(progressInterval);
       setIsProcessing(false);
@@ -271,7 +276,7 @@ function PDFConvert({ locale }: { locale: string }) {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error('ZIP creation error:', err);
-      setError('ZIP oluşturulurken hata oluştu');
+      setError(getText('pdfConvert.errorZip', 'ZIP dosyası oluşturulamadı.'));
     } finally {
       setIsDownloadingZip(false);
     }
@@ -305,10 +310,10 @@ function PDFConvert({ locale }: { locale: string }) {
               </div>
               
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 px-4">
-                AI PDF Dönüştürme
+                {getText('pdfConvert.title', 'AI PDF Dönüştürme')}
               </h1>
-              <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
-                PDF dosyalarınızı yapay zeka destekli araçlarla istediğiniz formata dönüştürün
+              <p className="text-base md:text-xl text-gray-700 max-w-2xl mx-auto px-4">
+                {getText('pdfConvert.subtitle', 'PDF dosyalarınızı yapay zeka destekli araçlarla istediğiniz formata dönüştürün')}
               </p>
             </div>
 
@@ -327,12 +332,12 @@ function PDFConvert({ locale }: { locale: string }) {
                   </div>
                   
                   <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">{tool.title}</h3>
-                  <p className="text-sm md:text-base text-gray-600 mb-4">{tool.description}</p>
+                  <p className="text-sm md:text-base text-gray-700 mb-4">{tool.description}</p>
                   
                   {/* Format badges */}
                   <div className="flex flex-wrap gap-2">
                     {tool.formats.map(format => (
-                      <span key={format} className="px-2 md:px-3 py-1 bg-gray-100 text-gray-700 text-xs md:text-sm rounded-full font-medium">
+                      <span key={format} className="px-2 md:px-3 py-1 bg-gray-100 text-gray-800 text-xs md:text-sm rounded-full font-medium">
                         {format}
                       </span>
                     ))}
@@ -341,11 +346,11 @@ function PDFConvert({ locale }: { locale: string }) {
               ))}
             </div>
 
-            {/* Next step - Remove this section */}
+            {/* Next step indicator */}
             {selectedTool && (
               <div className="text-center animate-bounce-in">
                 <p className="text-purple-600 font-medium text-sm md:text-base">
-                  ✨ {conversionTools.find(t => t.id === selectedTool)?.title} seçildi! Dosya yükleniyor...
+                  ✨ {conversionTools.find(t => t.id === selectedTool)?.title} {getText('pdfConvert.toolSelected', 'seçildi! Dosya yükleniyor...')}
                 </p>
               </div>
             )}
@@ -369,26 +374,26 @@ function PDFConvert({ locale }: { locale: string }) {
                           <tool.icon className="h-6 md:h-8 w-6 md:w-8 text-white" />
                         </div>
                         <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">{tool.title}</h2>
-                        <p className="text-sm md:text-base text-gray-600 mb-4">{tool.description}</p>
+                        <p className="text-sm md:text-base text-gray-700 mb-4">{tool.description}</p>
                         
                         {/* Features */}
                         <div className="space-y-2 text-left">
-                          <div className="flex items-center text-xs md:text-sm text-gray-600">
+                          <div className="flex items-center text-xs md:text-sm text-gray-700">
                             <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                            <span>Yüksek kalite dönüştürme</span>
+                            <span>{getText('pdfTools.features.highQuality')}</span>
                           </div>
-                          <div className="flex items-center text-xs md:text-sm text-gray-600">
+                          <div className="flex items-center text-xs md:text-sm text-gray-700">
                             <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                            <span>20MB'a kadar dosya</span>
+                            <span>{getText('pdfTools.features.maxSize')} 20MB</span>
                           </div>
-                          <div className="flex items-center text-xs md:text-sm text-gray-600">
+                          <div className="flex items-center text-xs md:text-sm text-gray-700">
                             <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                            <span>Hızlı işleme süresi</span>
+                            <span>{getText('pdfTools.features.fastProcessing')}</span>
                           </div>
                           {tool.multiple && (
-                            <div className="flex items-center text-xs md:text-sm text-gray-600">
+                            <div className="flex items-center text-xs md:text-sm text-gray-700">
                               <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                              <span>Çoklu dosya desteği</span>
+                              <span>{getText('pdfTools.features.multipleFileSupport')}</span>
                             </div>
                           )}
                         </div>
@@ -401,37 +406,24 @@ function PDFConvert({ locale }: { locale: string }) {
               {/* File Upload - Right Side */}
               <div className="lg:col-span-2">
                 <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200 p-4 md:p-8">
-                  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Dosya Yükleme</h3>
+                  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">{getText('pdfConvert.fileUpload')}</h3>
                   
                   {!selectedFiles.length ? (
-                    <div className="relative">
-                      <div className="border-2 border-dashed border-purple-300 rounded-2xl p-8 md:p-16 text-center hover:border-purple-400 hover:bg-purple-50/30 transition-all duration-300">
-                        <FileUpload
-                          onFileSelect={(file) => {
-                            // Handle both single file and file array
-                            const files = Array.isArray(file) ? file : [file];
-                            handleFileSelect(files);
-                          }}
-                          acceptedTypes={['application/pdf']}
-                          maxSize={20 * 1024 * 1024}
-                          multiple={conversionTools.find(t => t.id === selectedTool)?.multiple || false}
-                          title=""
-                          description=""
-                        />
-                      </div>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <CloudArrowUpIcon className="h-12 md:h-16 w-12 md:w-16 text-purple-500 mb-4" />
-                        <div className="text-center px-4">
-                          <p className="text-base md:text-lg font-medium text-gray-900 mb-2">
-                            PDF dosyasını seç veya sürükle
-                          </p>
-                          <p className="text-sm md:text-base text-gray-500">
-                            {conversionTools.find(t => t.id === selectedTool)?.multiple 
-                              ? 'Birden fazla dosya seçebilirsiniz' 
-                              : 'Tek dosya seçimi'} • Maksimum 20MB
-                          </p>
-                        </div>
-                      </div>
+                    <div className="mb-6">
+                      <FileUpload
+                        onFileSelect={(file) => {
+                          // Handle both single file and file array
+                          const files = Array.isArray(file) ? file : [file];
+                          handleFileSelect(files);
+                        }}
+                        acceptedTypes={['application/pdf']}
+                        maxSize={20 * 1024 * 1024}
+                        multiple={conversionTools.find(t => t.id === selectedTool)?.multiple || false}
+                        title={getText('pdfConvert.selectOrDrag')}
+                        description={`${conversionTools.find(t => t.id === selectedTool)?.multiple 
+                          ? getText('pdfConvert.multipleFiles') 
+                          : getText('pdfConvert.singleFile')} • ${getText('pdfConvert.maxSize')}`}
+                      />
                     </div>
                   ) : (
                     <div>
@@ -459,7 +451,7 @@ function PDFConvert({ locale }: { locale: string }) {
                           onClick={handleConvert}
                           className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 md:py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base"
                         >
-                          ✨ Dönüştürmeyi Başlat
+                          ✨ {getText('pdfConvert.startConversion')}
                         </button>
                         <button
                           onClick={() => setSelectedFiles([])}
@@ -493,10 +485,10 @@ function PDFConvert({ locale }: { locale: string }) {
 
               {/* Processing Text */}
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4">
-                PDF dönüştürülüyor...
+                {getText('pdfConvert.processing')}
               </h2>
-              <p className="text-sm md:text-base text-gray-600 mb-6 md:mb-8">
-                Yapay zeka algoritmalarımız dosyanızı işliyor
+              <p className="text-sm md:text-base text-gray-700 mb-6 md:mb-8">
+                {getText('pdfConvert.processingDesc')}
               </p>
 
               {/* Progress Bar */}
@@ -506,16 +498,16 @@ function PDFConvert({ locale }: { locale: string }) {
                   style={{ width: `${processingProgress}%` }}
                 ></div>
               </div>
-              <p className="text-xs md:text-sm text-gray-500 mb-6 md:mb-8">%{processingProgress} tamamlandı</p>
+              <p className="text-xs md:text-sm text-gray-600 mb-6 md:mb-8">%{processingProgress} {getText('pdfTools.progress.completed')}</p>
 
               {/* Processing Steps */}
               <div className="space-y-2 md:space-y-3 text-left">
                 {[
-                  '📄 PDF yapısı analiz ediliyor...',
-                  '🤖 AI dönüştürme algoritması çalışıyor...',
-                  '⚡ Yüksek kaliteli çıktı hazırlanıyor...'
+                  `📄 ${getText('pdfConvert.processingSteps.analyze')}`,
+                  `🤖 ${getText('pdfConvert.processingSteps.ai')}`,
+                  `⚡ ${getText('pdfConvert.processingSteps.optimize')}`
                 ].map((step, index) => (
-                  <div key={index} className="flex items-center text-xs md:text-sm text-gray-600">
+                  <div key={index} className="flex items-center text-xs md:text-sm text-gray-700">
                     <div className="w-1.5 md:w-2 h-1.5 md:h-2 bg-purple-500 rounded-full mr-2 md:mr-3 animate-pulse"></div>
                     {step}
                   </div>
@@ -536,10 +528,10 @@ function PDFConvert({ locale }: { locale: string }) {
                   <CheckCircleIcon className="h-10 md:h-12 w-10 md:w-12 text-green-600" />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                  Dönüştürme Tamamlandı! 🎉
+                  {getText('pdfConvert.completed')} 🎉
                 </h2>
-                <p className="text-sm md:text-base text-gray-600">
-                  {conversionResult.convertedCount} dosya başarıyla dönüştürüldü
+                <p className="text-sm md:text-base text-gray-700">
+                  {conversionResult.convertedCount} {getText('pdfConvert.filesConverted')}
                 </p>
               </div>
 
@@ -547,19 +539,19 @@ function PDFConvert({ locale }: { locale: string }) {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
                 <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-200">
                   <div className="text-xl md:text-2xl font-bold text-purple-600">{conversionResult.convertedCount}</div>
-                  <div className="text-xs md:text-sm text-gray-600">Dönüştürülen Dosya</div>
+                  <div className="text-xs md:text-sm text-gray-700">{getText('pdfConvert.stats.converted')}</div>
                 </div>
                 <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-200">
                   <div className="text-xl md:text-2xl font-bold text-green-600">
                     {(conversionResult.totalSize / 1024 / 1024).toFixed(1)}MB
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600">Toplam Boyut</div>
+                  <div className="text-xs md:text-sm text-gray-700">{getText('pdfConvert.stats.totalSize')}</div>
                 </div>
                 <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-200 md:col-span-1 col-span-2">
                   <div className="text-xl md:text-2xl font-bold text-blue-600">
                     {(conversionResult.processingTime / 1000).toFixed(1)}s
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600">İşlem Süresi</div>
+                  <div className="text-xs md:text-sm text-gray-700">{getText('pdfConvert.stats.processingTime')}</div>
                 </div>
               </div>
 
@@ -579,7 +571,7 @@ function PDFConvert({ locale }: { locale: string }) {
                         <p className="text-xs md:text-sm text-gray-600">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                       </div>
                     </div>
-                    <ArrowDownTrayIcon className="h-4 md:h-5 w-4 md:w-5 text-gray-400 group-hover:text-purple-600 transition-colors duration-200 ml-2" />
+                    <ArrowDownTrayIcon className="h-4 md:h-5 w-4 md:w-5 text-gray-500 group-hover:text-purple-600 transition-colors duration-200 ml-2" />
                   </a>
                 ))}
               </div>
@@ -595,12 +587,12 @@ function PDFConvert({ locale }: { locale: string }) {
                     {isDownloadingZip ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>ZIP Hazırlanıyor...</span>
+                        <span>{getText('pdfConvert.downloadPreparingZip')}</span>
                       </>
                     ) : (
                       <>
                         <ArrowDownTrayIcon className="h-4 md:h-5 w-4 md:w-5" />
-                        <span>🗂️ Tümünü İndir (ZIP)</span>
+                        <span>🗂️ {getText('pdfConvert.downloadAll')}</span>
                       </>
                     )}
                   </button>
@@ -613,21 +605,21 @@ function PDFConvert({ locale }: { locale: string }) {
                   onClick={handleReset}
                   className="px-6 md:px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base"
                 >
-                  🚀 Yeni Dönüştürme
+                  🚀 {getText('pdfConvert.newConversion')}
                 </button>
                 <button
                   onClick={() => setCurrentStep('upload')}
                   className="px-6 md:px-8 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center text-sm md:text-base"
                 >
                   <ArrowLeftIcon className="h-4 md:h-5 w-4 md:w-5 mr-2" />
-                  Araç Değiştir
+                  {getText('pdfConvert.changeTool')}
                 </button>
               </div>
 
               {/* Other Tools Section */}
               <div className="pt-6 border-t border-gray-200">
                 <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-3 text-center">
-                  Şu araca geçiş yap:
+                  {getText('pdfConvert.otherTools')}
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 max-w-3xl mx-auto">
                   <Link
@@ -637,7 +629,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
                       <DocumentIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">PDF Sıkıştır</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.pdfCompress')}</span>
                   </Link>
                   
                   <Link
@@ -647,7 +639,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
                       <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim Dönüştür</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageConvert')}</span>
                   </Link>
 
                   <Link
@@ -657,7 +649,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
                       <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim Sıkıştır</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageCompress')}</span>
                   </Link>
 
                   <Link
@@ -667,7 +659,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
                       <ScissorsIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim Kırp</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageCrop')}</span>
                   </Link>
 
                   <Link
@@ -677,7 +669,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
                       <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim Boyutlandır</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageResize')}</span>
                   </Link>
 
                   <Link
@@ -687,7 +679,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
                       <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim Döndür</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageRotate')}</span>
                   </Link>
                 </div>
               </div>

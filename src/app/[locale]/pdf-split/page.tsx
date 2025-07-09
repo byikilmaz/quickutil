@@ -336,12 +336,29 @@ function PDFSplit({ locale }: { locale: string }) {
                 }}
                 acceptedTypes={['application/pdf']}
                 maxSize={50 * 1024 * 1024}
-                title=""
-                description=""
+                title={getText('pdfSplit.selectFile', 'PDF Dosyasını Seçin')}
+                description={getText('pdfSplit.selectDescription', 'Ayırmak istediğiniz PDF dosyasını seçin')}
+                locale={locale}
+                texts={{
+                  selectFiles: getText('pdfSplit.selectFiles', 'PDF Dosyalarını Seç'),
+                  selectFile: getText('pdfSplit.selectFile', 'PDF Dosyasını Seç'),
+                  dragDrop: getText('pdfSplit.dragDrop', 'PDF dosyasını buraya sürükleyin'),
+                  maxSize: getText('common.maxSize', 'Maks. Boyut'),
+                  supportedFormats: getText('common.supportedFormats', 'Desteklenen Format'),
+                  maxFiles: getText('common.maxFiles', 'Maks. Dosya'),
+                  securityNotice: getText('common.securityNotice', 'Dosyalarınız güvenle işlenir'),
+                  fileUploaded: getText('common.fileUploaded', 'Dosya Yüklendi!'),
+                  readyToProcess: getText('common.readyToProcess', 'işleme hazır'),
+                  fileReady: getText('common.fileReady', 'Dosya hazır'),
+                  size: getText('common.size', 'Boyut'),
+                  fileRequirements: getText('common.fileRequirements', 'Dosya Gereksinimleri'),
+                  uploadFailed: getText('common.uploadFailed', 'Yükleme başarısız'),
+                  or: getText('common.or', 'veya')
+                }}
               />
             </div>
             
-            <p className="text-sm text-gray-700 mt-4">
+            <p className="text-sm text-gray-800 mt-4">
               {getText('pdfConvert.selectOrDrag', 'veya PDF\'i buraya bırak')}
             </p>
           </div>

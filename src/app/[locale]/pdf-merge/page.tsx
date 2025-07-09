@@ -295,12 +295,29 @@ function PDFMerge({ locale }: { locale: string }) {
                 acceptedTypes={['application/pdf']}
                 maxSize={100 * 1024 * 1024}
                 multiple={true}
-                title=""
-                description=""
+                title={getText('pdfMerge.selectFiles', 'PDF Dosyalarını Seçin')}
+                description={getText('pdfMerge.selectDescription', 'Birleştirmek istediğiniz PDF dosyalarını seçin')}
+                locale={locale}
+                texts={{
+                  selectFiles: getText('pdfMerge.selectFiles', 'PDF Dosyalarını Seç'),
+                  selectFile: getText('pdfMerge.selectFile', 'PDF Dosyasını Seç'),
+                  dragDrop: getText('pdfMerge.dragDrop', 'Dosyaları buraya sürükleyip bırakın'),
+                  maxSize: getText('common.maxSize', 'Maks. Boyut'),
+                  supportedFormats: getText('common.supportedFormats', 'Desteklenen Format'),
+                  maxFiles: getText('common.maxFiles', 'Maks. Dosya'),
+                  securityNotice: getText('common.securityNotice', 'Dosyalarınız güvenle işlenir'),
+                  fileUploaded: getText('common.fileUploaded', 'Dosya Yüklendi!'),
+                  readyToProcess: getText('common.readyToProcess', 'işleme hazır'),
+                  fileReady: getText('common.fileReady', 'Dosya hazır'),
+                  size: getText('common.size', 'Boyut'),
+                  fileRequirements: getText('common.fileRequirements', 'Dosya Gereksinimleri'),
+                  uploadFailed: getText('common.uploadFailed', 'Yükleme başarısız'),
+                  or: getText('common.or', 'veya')
+                }}
               />
             </div>
             
-            <p className="text-sm text-gray-700 mt-4">
+            <p className="text-sm text-gray-800 mt-4">
               {getText('pdfMerge.selectMultiple', 'En az 2, en fazla 10 PDF seçin')}
             </p>
           </div>

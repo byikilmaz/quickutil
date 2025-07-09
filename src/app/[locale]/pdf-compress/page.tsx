@@ -18,7 +18,7 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { getTranslations } from '@/lib/translations';
-import { compressPDF, formatFileSize, calculateCompressionRatio } from '@/lib/pdfUtils';
+import { compressPDF, formatFileSize, calculateCompressionRatio, type CompressionResult } from '@/lib/pdfUtils';
 
 interface CompressionResultDisplay {
   compressedBlob: Blob;
@@ -149,33 +149,9 @@ function PDFCompress({ locale }: { locale: string }) {
     return messages[locale as keyof typeof messages]?.[type as keyof typeof messages.tr] || messages.tr[type as keyof typeof messages.tr];
   };
 
-  // Helper to convert File to base64
-  const fileToBase64 = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const result = reader.result as string;
-        // Remove data URL prefix to get pure base64
-        const base64 = result.split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = (error) => reject(error);
-    });
-  };
+  // Helper functions are now handled by pdfUtils.ts
 
-  // Helper to convert base64 to Blob
-  const base64ToBlob = (base64: string, type: string): Blob => {
-    const byteCharacters = atob(base64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: type });
-  };
-
-  // Handle compression with Firebase Functions (server-side)
+  // Handle compression with NEW PDF Utils v3.0
   const handleCompress = async () => {
     if (!selectedFile) return;
     
@@ -185,100 +161,98 @@ function PDFCompress({ locale }: { locale: string }) {
     setCompressionProgress(0);
     
     try {
-      // Import Firebase Functions
-      const { getFunctions, httpsCallable } = await import('firebase/functions');
-      const functions = getFunctions();
-      
-      // Progress simulation for upload phase
+      // Progress simulation
       const progressInterval = setInterval(() => {
         setCompressionProgress(prev => {
-          if (prev >= 80) {
-            return 80; // Stop at 80% until server responds
-          }
+          if (prev >= 80) return 80; // Stop at 80% until server responds
           return prev + 15;
         });
       }, 500);
 
-      // Convert file to base64 for server transmission
-      const base64PDF = await fileToBase64(selectedFile);
-      
-      // Determine compression level based on quality
-      let compressionLevel: 'light' | 'medium' | 'high' | 'maximum' = 'medium';
+      // Map quality setting to compression level
+      let compressionQuality: 'light' | 'medium' | 'high' | 'maximum' = 'medium';
       switch (quality) {
         case 'screen':
-          compressionLevel = 'maximum'; // High compression
+          compressionQuality = 'maximum'; // Maximum compression
           break;
         case 'ebook':
-          compressionLevel = 'medium'; // Balanced
+          compressionQuality = 'medium'; // Recommended
           break;
         case 'printer':
-          compressionLevel = 'light'; // Light compression
+          compressionQuality = 'light'; // Light compression
           break;
+        default:
+          compressionQuality = 'medium';
       }
 
-      const startTime = Date.now();
+      console.log('🚀 Starting QuickUtil PDF Compression v3.0');
+      console.log('📁 File:', selectedFile.name, 'Quality:', compressionQuality);
       
-      // Call Firebase Functions for server-side compression
-      const compressFunction = httpsCallable(functions, 'compressPDFAdvanced');
-      const result = await compressFunction({
-        pdfBase64: base64PDF,
-        compressionLevel: compressionLevel,
+      // Call NEW PDF Compression API
+      const result: CompressionResult = await compressPDF(selectedFile, {
+        quality: compressionQuality,
         fileName: selectedFile.name
       });
       
-      const endTime = Date.now();
-      const processingTime = endTime - startTime;
-      
-      // Clear progress interval and set to 100%
+      // Clear progress and set to 100%
       clearInterval(progressInterval);
       setCompressionProgress(100);
       
-      // Process server response
-      const serverResult = result.data as any;
-      if (!serverResult.success) {
-        throw new Error(serverResult.error || 'Server compression failed');
-      }
+      console.log('✅ Compression successful:', {
+        original: formatFileSize(result.originalSize),
+        compressed: formatFileSize(result.compressedSize),
+        ratio: result.compressionRatio + '%',
+        time: result.processingTime + 'ms'
+      });
       
-      // Convert base64 back to blob
-      const compressedBlob = base64ToBlob(serverResult.compressedBase64, 'application/pdf');
-      
-      // Create download URL
-      const downloadUrl = URL.createObjectURL(compressedBlob);
-      
+      // Update state with results
       const compressionResultData: CompressionResultDisplay = {
-        compressedBlob: compressedBlob,
-        originalSize: serverResult.originalSize,
-        compressedSize: serverResult.compressedSize,
-        compressionRatio: serverResult.compressionRatio,
-        processingTime,
-        downloadUrl
+        compressedBlob: result.compressedBlob,
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        compressionRatio: result.compressionRatio,
+        processingTime: result.processingTime,
+        downloadUrl: result.downloadUrl
       };
       
       setCompressionResult(compressionResultData);
       setCurrentStep('result');
       
-      // Track analytics and upload compressed file
+      // Upload compressed file if user is logged in
       if (user) {
-        // Convert Blob to File for upload
-        const compressedFile = new File([compressedBlob], `compressed_${selectedFile.name}`, {
-          type: 'application/pdf',
-          lastModified: Date.now()
-        });
-        await uploadFile(compressedFile, 'pdf');
+        try {
+          const compressedFile = new File([result.compressedBlob], `compressed_${selectedFile.name}`, {
+            type: 'application/pdf',
+            lastModified: Date.now()
+          });
+          await uploadFile(compressedFile, 'pdf');
+          console.log('📤 Compressed file uploaded to storage');
+        } catch (uploadErr) {
+          console.warn('⚠️ File upload failed:', uploadErr);
+          // Don't throw error, compression was successful
+        }
       }
       
     } catch (err: any) {
-      console.error('Server compression error:', err);
+      console.error('❌ PDF compression failed:', err);
+      
       let errorMessage = getErrorMessage('compressionFailed', locale);
       
-      if (err.message.includes('PDF compression failed')) {
+      // Parse specific error messages
+      if (err.message?.includes('Server compression failed')) {
         errorMessage = 'Server sıkıştırma hatası: ' + err.message;
-      } else if (err.message.includes('invalid-argument')) {
+      } else if (err.message?.includes('invalid-argument')) {
         errorMessage = 'Geçersiz dosya parametreleri';
-      } else if (err.message.includes('unauthenticated')) {
+      } else if (err.message?.includes('unauthenticated')) {
         errorMessage = 'Kimlik doğrulama hatası';
-      } else if (err.message.includes('resource-exhausted')) {
+      } else if (err.message?.includes('resource-exhausted')) {
         errorMessage = 'Server yoğunluğu, lütfen tekrar deneyin';
+      } else if (err.message?.includes('File size cannot exceed')) {
+        errorMessage = 'Dosya boyutu 20MB\'ı aşamaz';
+      } else if (err.message?.includes('File must be a PDF')) {
+        errorMessage = 'Sadece PDF dosyaları desteklenir';
+      } else if (err.message) {
+        errorMessage = err.message;
       }
       
       setError(errorMessage);

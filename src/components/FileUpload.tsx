@@ -17,6 +17,23 @@ interface FileUploadProps {
   description: string;
   multiple?: boolean;
   currentFiles?: File[];
+  locale?: string;
+  texts?: {
+    selectFiles: string;
+    selectFile: string;
+    dragDrop: string;
+    maxSize: string;
+    supportedFormats: string;
+    maxFiles: string;
+    securityNotice: string;
+    fileUploaded: string;
+    readyToProcess: string;
+    fileReady: string;
+    size: string;
+    fileRequirements: string;
+    uploadFailed: string;
+    or: string;
+  };
 }
 
 export default function FileUpload({
@@ -26,7 +43,24 @@ export default function FileUpload({
   title,
   description,
   multiple = false,
-  currentFiles = []
+  currentFiles = [],
+  locale = 'en',
+  texts = {
+    selectFiles: 'Select Files',
+    selectFile: 'Select File',
+    dragDrop: 'Drag & Drop',
+    maxSize: 'Max Size',
+    supportedFormats: 'Supported Formats',
+    maxFiles: 'Max Files',
+    securityNotice: 'Your files are processed securely in your browser',
+    fileUploaded: 'File Uploaded Successfully!',
+    readyToProcess: 'Ready to Process',
+    fileReady: 'File Ready',
+    size: 'Size',
+    fileRequirements: 'File Requirements',
+    uploadFailed: 'Upload Failed',
+    or: 'or',
+  }
 }: FileUploadProps) {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -96,19 +130,19 @@ export default function FileUpload({
             </div>
             
             <div className="space-y-2">
-              <h3 className="text-xl font-semibold text-green-900">Dosya Başarıyla Yüklendi!</h3>
+              <h3 className="text-xl font-semibold text-green-900">{texts.fileUploaded}</h3>
               <p className="text-green-700">
-                <span className="font-medium">{currentFiles[0].name}</span> işleme hazır
+                <span className="font-medium">{currentFiles[0].name}</span> {texts.readyToProcess}
               </p>
               <p className="text-sm text-green-600">
-                Boyut: {formatFileSize(currentFiles[0].size)}
+                {texts.size}: {formatFileSize(currentFiles[0].size)}
               </p>
             </div>
 
             {/* File ready indicator */}
             <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 border border-green-200">
               <DocumentCheckIcon className="h-5 w-5 text-green-600" />
-              <span className="text-green-800 font-medium">Dosya işlemeye hazır</span>
+              <span className="text-green-800 font-medium">{texts.fileReady}</span>
             </div>
           </div>
         </div>
@@ -155,30 +189,33 @@ export default function FileUpload({
                 type="button"
                 className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
               >
-                {multiple ? 'Dosyalar Seç' : 'Dosya Seç'}
+                {multiple ? texts.selectFiles : texts.selectFile}
               </button>
-              <span className="text-gray-500 font-medium">veya</span>
+              <span className="text-gray-500 font-medium">{texts.or}</span>
               <span className="text-blue-600 font-medium">
-                {isDragActive ? 'Dosyayı buraya bırakın' : 'sürükleyip bırakın'}
+                {isDragActive ? texts.dragDrop : texts.dragDrop}
               </span>
             </div>
             
             {/* File requirements */}
-            <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 space-y-2">
+            <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 space-y-2 max-w-md mx-auto">
+              <div className="text-center">
+                <div className="text-xs text-gray-500 mb-2 font-medium">{texts.fileRequirements}</div>
+              </div>
               <div className="flex items-center justify-between">
-                <span className="font-medium">Maksimum boyut:</span>
+                <span className="font-medium">{texts.maxSize}:</span>
                 <span className="text-gray-800">{formatFileSize(maxSize)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-medium">Desteklenen formatlar:</span>
+                <span className="font-medium">{texts.supportedFormats}:</span>
                 <span className="text-gray-800">{getFileTypesDisplay()}</span>
               </div>
-              {multiple && (
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Maksimum dosya sayısı:</span>
-                  <span className="text-gray-800">10 dosya</span>
-                </div>
-              )}
+                {multiple && (
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{texts.maxFiles}:</span>
+                    <span className="text-gray-800">{texts.maxFiles === 'Max Files' ? '10 files' : '10 dosya'}</span>
+                  </div>
+                )}
             </div>
 
             {/* Security notice */}
@@ -186,7 +223,7 @@ export default function FileUpload({
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
               </svg>
-              <span>Dosyalarınız tarayıcınızda güvenle işlenir</span>
+              <span>{texts.securityNotice}</span>
             </div>
           </div>
         </div>
@@ -197,7 +234,7 @@ export default function FileUpload({
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 animate-fade-in">
           <div className="flex items-center space-x-2 mb-3">
             <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />
-            <h4 className="font-medium text-red-900">Dosya Yüklenemedi</h4>
+            <h4 className="font-medium text-red-900">{texts.uploadFailed}</h4>
           </div>
           <div className="space-y-2">
             {fileRejections.map(({ file, errors }) => (
@@ -209,9 +246,9 @@ export default function FileUpload({
                       <span className="text-red-500 mr-2">•</span>
                       <span>
                         {error.code === 'file-too-large'
-                          ? `Dosya çok büyük (${formatFileSize(file.size)}). Maksimum: ${formatFileSize(maxSize)}`
+                          ? `${texts.uploadFailed}: ${formatFileSize(file.size)}. ${texts.maxSize}: ${formatFileSize(maxSize)}`
                           : error.code === 'file-invalid-type'
-                          ? `Desteklenmeyen dosya formatı. Desteklenen formatlar: ${getFileTypesDisplay()}`
+                          ? `${texts.uploadFailed}: ${getFileTypesDisplay()}`
                           : error.message}
                       </span>
                     </li>
