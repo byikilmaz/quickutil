@@ -260,7 +260,13 @@ export default function ImageCompress() {
               </div>
 
               <FileUpload
-                onFileSelect={handleFileSelect}
+                onFileSelect={(file) => {
+                  if (Array.isArray(file)) {
+                    handleFileSelect(file[0]);
+                  } else {
+                    handleFileSelect(file);
+                  }
+                }}
                 acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
                 maxSize={50 * 1024 * 1024} // 50MB
                 title="Sıkıştırılacak Resmi Yükleyin"
@@ -283,7 +289,13 @@ export default function ImageCompress() {
             <>
               {/* Success Upload State */}
               <FileUpload
-                onFileSelect={handleFileSelect}
+                onFileSelect={(file) => {
+                  if (Array.isArray(file)) {
+                    handleFileSelect(file[0]);
+                  } else {
+                    handleFileSelect(file);
+                  }
+                }}
                 acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
                 maxSize={50 * 1024 * 1024}
                 title="Sıkıştırılacak Resmi Yükleyin"

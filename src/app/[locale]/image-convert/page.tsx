@@ -178,7 +178,13 @@ export default function ImageConvert() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           {!file ? (
             <FileUpload
-              onFileSelect={handleFileSelect}
+              onFileSelect={(file) => {
+                if (Array.isArray(file)) {
+                  handleFileSelect(file[0]);
+                } else {
+                  handleFileSelect(file);
+                }
+              }}
               acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp']}
               maxSize={50 * 1024 * 1024} // 50MB
               title="Resim Dosyası Yükleyin"
@@ -189,7 +195,13 @@ export default function ImageConvert() {
             <>
               {/* Success Upload State */}
               <FileUpload
-                onFileSelect={handleFileSelect}
+                onFileSelect={(file) => {
+                  if (Array.isArray(file)) {
+                    handleFileSelect(file[0]);
+                  } else {
+                    handleFileSelect(file);
+                  }
+                }}
                 acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp']}
                 maxSize={50 * 1024 * 1024}
                 title="Resim Dosyası Yükleyin"

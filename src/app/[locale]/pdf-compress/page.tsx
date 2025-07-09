@@ -1,1585 +1,589 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
-import { 
-  DocumentArrowDownIcon, 
-  ArrowUpTrayIcon, 
-  InformationCircleIcon,
-  ShieldCheckIcon,
-  BoltIcon,
-  CheckCircleIcon,
-  UserGroupIcon,
-  StarIcon,
-  CpuChipIcon,
-  SparklesIcon,
-  AdjustmentsHorizontalIcon,
-  ExclamationTriangleIcon,
-  XMarkIcon,
-  Cog6ToothIcon,
-  DocumentDuplicateIcon,
-  ArrowsUpDownIcon,
-  ClockIcon,
-  CloudArrowUpIcon,
-  PlayIcon,
-  PauseIcon
-} from '@heroicons/react/24/outline';
-import BatchFileUpload, { BatchFile } from '@/components/BatchFileUpload';
-import Breadcrumb from '@/components/Breadcrumb';
-import StructuredData from '@/components/StructuredData';
-import AuthModal from '@/components/AuthModal';
+
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { useQuota } from '@/contexts/QuotaContext';
-import { ActivityTracker } from '@/lib/activityTracker';
+import FileUpload from '@/components/FileUpload';
+import StructuredData from '@/components/StructuredData';
+import Breadcrumb from '@/components/Breadcrumb';
 import { 
-  compressPDF, 
-  compressPDFWithAI,
-  analyzePDF,
-  calculateCompressionRatio,
-  formatFileSize 
-} from '@/lib/pdfUtils';
-import { 
-  RevolutionaryPDFCompressor,
-  compressPDFRevolutionary,
-  adaptiveCompressPDF 
-} from '@/lib/revolutionaryPdfCompression';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { 
-  aiEngine, 
-  AIProcessingResult, 
-  SmartPreset,
-  UserPreferences
-} from '@/lib/ai/aiEngine';
-import { 
-  OracleCompressionService,
-  useOracleCompression,
-  COMPRESSION_PROFILES,
-  type CompressionProfile
-} from '@/lib/oracleCompression';
-import { usePDFWorker, arrayBufferToFile } from '@/hooks/usePDFWorker';
-import JSZip from 'jszip';
-import { useTranslations, getTranslations } from '@/lib/translations';
-import { useParams } from 'next/navigation';
+  ArrowDownTrayIcon, 
+  SparklesIcon, 
+  CheckCircleIcon,
+  ArrowLeftIcon,
+  CloudArrowUpIcon,
+  DocumentIcon,
+  TrashIcon
+} from '@heroicons/react/24/outline';
+import { getTranslations } from '@/lib/translations';
 
-interface PDFFile extends BatchFile {
-  compressionSettings: {
-    level: 'light' | 'medium' | 'high';
-    useAI: boolean;
-    selectedPreset?: SmartPreset;
-  };
-  analysis?: {
-    pageCount: number;
-    fileSize: string;
-    hasImages: boolean;
-    hasText: boolean;
-    isEncrypted: boolean;
-  };
-  aiResult?: AIProcessingResult;
-  compressionResult?: {
-    originalSize: number;
-    compressedSize: number;
-    savedBytes: number;
-    savedPercentage: number;
-    storageDownloadURL?: string;
-  };
+interface CompressionResultDisplay {
+  compressedBlob: Blob;
+  originalSize: number;
+  compressedSize: number;
+  compressionRatio: number;
+  processingTime: number;
+  downloadUrl: string;
 }
 
-export default function PDFCompress() {
+// formatFileSize utility function
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+// Server wrapper component to handle async params
+export default async function PDFCompressPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return <PDFCompress locale={locale} />;
+}
+
+// Client component with direct locale prop
+function PDFCompress({ locale }: { locale: string }) {
+  const t = getTranslations(locale);
   const { user } = useAuth();
-  const { uploadFile: uploadToStorage } = useStorage();
-  const { checkFileSize, getMaxFileSize } = useQuota();
-  const { compressFile: compressWithWorker, isWorkerReady } = usePDFWorker();
-  const { compressPDF: compressWithOracle, checkHealth: checkOracleHealth } = useOracleCompression();
-  const params = useParams();
-  const locale = params?.locale as string || 'tr';
-  const t = useTranslations('pdfCompress', locale);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [pdfFiles, setPdfFiles] = useState<PDFFile[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState('');
-  const [oracleHealthy, setOracleHealthy] = useState<boolean | null>(null);
-  const [globalSettings, setGlobalSettings] = useState({
-    level: 'medium' as 'light' | 'medium' | 'high',
-    useAI: true,
-    aiCompressionLevel: 'advanced' as 'standard' | 'advanced',
-    useOracle: false,
-    oracleProfile: '/screen' as CompressionProfile,
-    compressionEngine: 'revolutionary' as 'revolutionary' | 'oracle' | 'standard',
-    applyToAll: false
-  });
+  const { uploadFile } = useStorage();
+  const { canUseFeature } = useQuota();
+  
+  // Remove async translations loading since we get it from server
+  // const [t, setT] = useState<any>({});
+  // useEffect(() => {
+  //   const loadTranslations = async () => {
+  //     const translations = await getTranslations(params.locale);
+  //     setT(translations);
+  //   };
+  //   loadTranslations();
+  // }, [params.locale]);
+  
+  // Render.com integration hooks
+  // const { isHealthy, healthData, compressPDF: compressWithRender } = useRenderCompression();
+  
+  // Refs for auto-scrolling
+  const uploadRef = useRef<HTMLDivElement>(null);
+  const configureRef = useRef<HTMLDivElement>(null);
+  const processingRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+  
+  // Component state
+  const [currentStep, setCurrentStep] = useState<'upload' | 'configure' | 'processing' | 'result'>('upload');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionResult, setCompressionResult] = useState<CompressionResultDisplay | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [quality, setQuality] = useState('ebook'); // Default to recommended
 
-  const compressionLevels = {
-    light: { ratio: 0.9, label: t('light'), description: t('lightDesc'), icon: '📄' },
-    medium: { ratio: 0.7, label: t('medium'), description: t('mediumDesc'), icon: '📋' },
-    high: { ratio: 0.5, label: t('high'), description: t('highDesc'), icon: '📰' },
-  };
-
-  // Oracle Cloud health check on component mount
+  // Auto-scroll to current step
   useEffect(() => {
-    const checkOracleStatus = async () => {
-      try {
-        const health = await checkOracleHealth();
-        setOracleHealthy(health.status === 'healthy');
-      } catch (error) {
-        console.error('Oracle health check failed:', error);
-        setOracleHealthy(false);
+    const scrollToStep = () => {
+      let targetRef;
+      switch (currentStep) {
+        case 'upload':
+          targetRef = uploadRef;
+          break;
+        case 'configure':
+          targetRef = configureRef;
+          break;
+        case 'processing':
+          targetRef = processingRef;
+          break;
+        case 'result':
+          targetRef = resultRef;
+          break;
+      }
+      
+      if (targetRef?.current) {
+        targetRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
       }
     };
-
-    if (globalSettings.useOracle || globalSettings.compressionEngine === 'oracle') {
-      checkOracleStatus();
-    }
-  }, [globalSettings.useOracle, globalSettings.compressionEngine, checkOracleHealth]);
-
-  // Dosya ekleme handler'ı
-  const handleFilesSelect = (newFiles: File[]) => {
-    const validFiles = newFiles.filter(file => {
-      if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
-        setError(t('error.onlyPDF') || 'Only PDF files are supported');
-        return false;
-      }
-      
-      if (!checkFileSize(file.size)) {
-        setError(t('error.fileSizeLimit') || `File size must not exceed ${getMaxFileSize()}MB`);
-        return false;
-      }
-      
-      return true;
-    });
-
-    const newPdfFiles: PDFFile[] = validFiles.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
-      file,
-      status: 'pending',
-      progress: 0,
-      compressionSettings: {
-        level: globalSettings.level,
-        useAI: globalSettings.useAI
-      }
-    }));
-
-    setPdfFiles(prev => [...prev, ...newPdfFiles]);
-
-    // Auto-start AI analysis for new files if AI is enabled
-    if (globalSettings.useAI) {
-      setTimeout(() => {
-        newPdfFiles.forEach(pdfFile => {
-          analyzeFileWithAI(pdfFile.id);
-        });
-      }, 500); // Small delay to ensure state is updated
-    }
-    setError('');
-
-    // Her dosya için otomatik analiz yap
-    if (globalSettings.useAI) {
-      newPdfFiles.forEach(pdfFile => {
-        analyzeFileWithAI(pdfFile.id);
-      });
-    }
-  };
-
-  // Server-side compression with Firebase Functions + Client Fallback
-  const compressWithServer = async (file: File, compressionLevel: string): Promise<File> => {
-    try {
-      // Convert file to base64
-      const fileBase64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1]); // Remove data:application/pdf;base64, prefix
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      // Call Firebase Function with timeout
-      const functions = getFunctions();
-      const compressPDFAdvanced = httpsCallable(functions, 'compressPDFAdvanced');
-      
-      const result = await Promise.race([
-        compressPDFAdvanced({
-          pdfBase64: fileBase64,
-          compressionLevel,
-          fileName: file.name
-        }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Server timeout')), 30000) // 30 second timeout
-        )
-      ]);
-
-      const responseData = (result as any).data;
-      
-      if (!responseData.success) {
-        throw new Error(responseData.error || 'Server compression failed');
-      }
-
-      // Convert base64 back to File
-      const compressedBytes = Uint8Array.from(atob(responseData.compressedBase64), c => c.charCodeAt(0));
-      const compressedFile = new File([compressedBytes], `compressed_${file.name}`, {
-        type: 'application/pdf',
-        lastModified: Date.now()
-      });
-
-      console.log('✅ Server compression successful:', {
-        original: file.size,
-        compressed: compressedFile.size,
-        ratio: ((file.size - compressedFile.size) / file.size * 100).toFixed(1) + '%'
-      });
-
-      return compressedFile;
-    } catch (error) {
-      console.error('🔥 Server compression failed, falling back to client:', error);
-      
-      // Fallback to client-side compression
-      try {
-        const ratio = compressionLevels[compressionLevel as keyof typeof compressionLevels]?.ratio || 0.7;
-        const fallbackFile = await compressPDF(file, ratio);
-        
-        console.log('✅ Client fallback successful:', {
-          original: file.size,
-          compressed: fallbackFile.size,
-          ratio: ((file.size - fallbackFile.size) / file.size * 100).toFixed(1) + '%'
-        });
-        
-        return fallbackFile;
-      } catch (fallbackError) {
-        console.error('❌ Both server and client compression failed:', fallbackError);
-        throw new Error(`Sıkıştırma başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
-      }
-    }
-  };
-
-  // AI analizi
-  const analyzeFileWithAI = async (fileId: string) => {
-    const fileIndex = pdfFiles.findIndex(f => f.id === fileId);
-    if (fileIndex === -1) return;
-
-    try {
-      const result = await aiEngine.processFile(pdfFiles[fileIndex].file, { priority: 'balanced' });
-      
-      setPdfFiles(prev => prev.map(file => 
-        file.id === fileId 
-          ? { 
-              ...file, 
-              aiResult: result,
-              compressionSettings: {
-                ...file.compressionSettings,
-                selectedPreset: result.recommendedPreset.preset
-              }
-            }
-          : file
-      ));
-    } catch (error) {
-      console.error('AI analysis failed:', error);
-    }
-  };
-
-  // Dosya kaldırma
-  const handleFileRemove = (fileId: string) => {
-    setPdfFiles(prev => prev.filter(file => file.id !== fileId));
-  };
-
-  // Batch işlem başlatma
-  const handleBatchStart = async () => {
-    if (pdfFiles.length === 0) return;
-
-    setIsProcessing(true);
-    setError('');
-
-    for (const pdfFile of pdfFiles) {
-      if (pdfFile.status === 'completed') continue;
-
-      // Dosyayı işleniyor olarak işaretle
-      setPdfFiles(prev => prev.map(file => 
-        file.id === pdfFile.id 
-          ? { ...file, status: 'processing', progress: 0 }
-          : file
-      ));
-
-      try {
-        const startTime = Date.now();
-        let compressedFile: File;
-
-        // Oracle Cloud compression (highest priority for iLovePDF-level compression)
-        if ((globalSettings.compressionEngine === 'oracle' || globalSettings.useOracle) && oracleHealthy) {
-          setPdfFiles(prev => prev.map(file => 
-            file.id === pdfFile.id 
-              ? { ...file, progress: 5 }
-              : file
-          ));
-
-          try {
-            console.log('🔥 Starting Oracle Cloud compression...');
-            
-            const oracleResult = await compressWithOracle(pdfFile.file, globalSettings.oracleProfile);
-            
-            if (oracleResult.success && oracleResult.blob) {
-              compressedFile = new File([oracleResult.blob], `compressed_${pdfFile.file.name}`, {
-                type: 'application/pdf',
-                lastModified: Date.now()
-              });
-              
-              console.log('🚀 Oracle compression successful:', {
-                original: pdfFile.file.size,
-                compressed: compressedFile.size,
-                ratio: oracleResult.compressionRatio + '%',
-                executionTime: oracleResult.executionTime,
-                profile: globalSettings.oracleProfile
-              });
-              
-              setPdfFiles(prev => prev.map(file => 
-                file.id === pdfFile.id 
-                  ? { ...file, progress: 95 }
-                  : file
-              ));
-            } else {
-              throw new Error(oracleResult.error || 'Oracle compression failed');
-            }
-            
-          } catch (oracleError) {
-            console.warn('🔄 Oracle compression failed, falling back to Revolutionary Engine:', oracleError);
-            
-            // Fallback to Revolutionary Engine
-            const revolutionaryResult = await RevolutionaryPDFCompressor.compress(
-              pdfFile.file,
-              {
-                compressionProfile: 'web',
-                imageQuality: 0.7,
-                enableImageDownsampling: true,
-                enableFontOptimization: true,
-                enableContentCompression: true,
-                enableDuplicateRemoval: true
-              }
-            );
-            
-            compressedFile = revolutionaryResult.compressedFile;
-            
-            setPdfFiles(prev => prev.map(file => 
-              file.id === pdfFile.id 
-                ? { ...file, progress: 90 }
-                : file
-            ));
-          }
-        }
-        // Advanced AI compression with Revolutionary Engine
-        else if (globalSettings.useAI && globalSettings.aiCompressionLevel === 'advanced') {
-          setPdfFiles(prev => prev.map(file => 
-            file.id === pdfFile.id 
-              ? { ...file, progress: 5 }
-              : file
-          ));
-
-          try {
-            // First try Revolutionary Compression (client-side advanced)
-            const revolutionaryResult = await RevolutionaryPDFCompressor.compress(
-              pdfFile.file,
-              {
-                compressionProfile: 'web',
-                imageQuality: 0.7,
-                enableImageDownsampling: true,
-                enableFontOptimization: true,
-                enableContentCompression: true,
-                enableDuplicateRemoval: true
-              }
-            );
-            
-            setPdfFiles(prev => prev.map(file => 
-              file.id === pdfFile.id 
-                ? { ...file, progress: 70 }
-                : file
-            ));
-            
-            compressedFile = revolutionaryResult.compressedFile;
-            
-            console.log('🚀 Revolutionary compression successful:', {
-              original: pdfFile.file.size,
-              compressed: compressedFile.size,
-              ratio: revolutionaryResult.compressionRatio.toFixed(1) + '%',
-              profile: revolutionaryResult.analysis
-            });
-            
-          } catch (revolutionaryError) {
-            console.warn('🔄 Revolutionary compression failed, falling back to enhanced client:', revolutionaryError);
-            
-            // Fallback to enhanced client compression instead of server
-            const ratio = compressionLevels[pdfFile.compressionSettings.level].ratio;
-            compressedFile = await compressPDF(pdfFile.file, ratio);
-          }
-          
-          setPdfFiles(prev => prev.map(file => 
-            file.id === pdfFile.id 
-              ? { ...file, progress: 90 }
-              : file
-          ));
-        }
-        // Web Worker ile sıkıştırma (daha performanslı)
-        else if (isWorkerReady) {
-          const result = await compressWithWorker(
-            pdfFile.file,
-            {
-              compressionLevel: pdfFile.compressionSettings.level,
-              removeMetadata: true,
-              optimizeStructure: true
-            },
-            // Progress callback
-            (progressUpdate) => {
-              setPdfFiles(prev => prev.map(file => 
-                file.id === pdfFile.id 
-                  ? { ...file, progress: progressUpdate.progress }
-                  : file
-              ));
-            }
-          );
-
-          if (result.success && result.compressedBuffer) {
-            compressedFile = arrayBufferToFile(
-              result.compressedBuffer,
-              pdfFile.file.name,
-              'application/pdf'
-            );
-          } else {
-            throw new Error(result.error || 'Web Worker compression failed');
-          }
-        } else {
-          // Fallback: Ana thread'de sıkıştırma
-          const progressInterval = setInterval(() => {
-            setPdfFiles(prev => prev.map(file => 
-              file.id === pdfFile.id 
-                ? { ...file, progress: Math.min(file.progress + 10, 90) }
-                : file
-            ));
-          }, 200);
-
-          if (pdfFile.compressionSettings.useAI && pdfFile.compressionSettings.selectedPreset) {
-            compressedFile = await compressPDFWithAI(pdfFile.file, pdfFile.compressionSettings.selectedPreset.settings);
-          } else {
-            const ratio = compressionLevels[pdfFile.compressionSettings.level].ratio;
-            compressedFile = await compressPDF(pdfFile.file, ratio);
-          }
-
-          clearInterval(progressInterval);
-        }
-
-        // Firebase Storage'a yükleme (eğer kullanıcı giriş yaptıysa)
-        let storageDownloadURL: string | undefined;
-        if (user && uploadToStorage) {
-          try {
-            const compressedFileName = `compressed_${pdfFile.file.name}`;
-            const renamedCompressed = new File([compressedFile], compressedFileName, {
-              type: 'application/pdf',
-              lastModified: Date.now(),
-            });
-            
-            const uploadResult = await uploadToStorage(renamedCompressed, 'pdf', compressedFileName);
-            storageDownloadURL = uploadResult.downloadURL;
-          } catch (uploadError) {
-            console.error('Firebase Storage upload failed:', uploadError);
-          }
-        }
-
-        // Sonuçları hesapla
-        const originalSize = pdfFile.file.size;
-        const compressedSize = compressedFile.size;
-        const savedBytes = originalSize - compressedSize;
-        const savedPercentage = calculateCompressionRatio(originalSize, compressedSize);
-        const processingTime = Date.now() - startTime;
-
-        const compressionResult = {
-          originalSize,
-          compressedSize,
-          savedBytes,
-          savedPercentage,
-          storageDownloadURL
-        };
-
-        // Dosyayı tamamlandı olarak işaretle
-        setPdfFiles(prev => prev.map(file => 
-          file.id === pdfFile.id 
-            ? { 
-                ...file, 
-                status: 'completed', 
-                progress: 100,
-                result: {
-                  file: compressedFile,
-                  size: compressedFile.size,
-                  type: 'application/pdf'
-                },
-                compressionResult,
-                processingTime
-              }
-            : file
-        ));
-
-        // Activity tracking
-        if (user) {
-          try {
-            await ActivityTracker.createActivity(user.uid, {
-              type: 'pdf_compress',
-              fileName: pdfFile.file.name,
-              originalFileName: pdfFile.file.name,
-              fileSize: originalSize,
-              processedSize: compressedSize,
-              status: 'success',
-              category: 'PDF',
-              processingTime,
-              compressionRatio: savedPercentage,
-              downloadUrl: storageDownloadURL
-            });
-          } catch (activityError) {
-            console.error('Activity tracking failed:', activityError);
-          }
-        }
-
-      } catch (error) {
-        console.error('Compression failed:', error);
-        
-        setPdfFiles(prev => prev.map(file => 
-          file.id === pdfFile.id 
-            ? { 
-                ...file, 
-                status: 'error', 
-                progress: 0,
-                error: error instanceof Error ? error.message : 'Bilinmeyen hata'
-              }
-            : file
-        ));
-
-        // Failed activity tracking
-        if (user) {
-          try {
-            await ActivityTracker.createActivity(user.uid, {
-              type: 'pdf_compress',
-              fileName: pdfFile.file.name,
-              originalFileName: pdfFile.file.name,
-              fileSize: pdfFile.file.size,
-              status: 'error',
-              category: 'PDF',
-              errorMessage: error instanceof Error ? error.message : 'Bilinmeyen hata'
-            });
-          } catch (activityError) {
-            console.error('Failed activity tracking failed:', activityError);
-          }
-        }
-      }
-    }
-
-    setIsProcessing(false);
-  };
-
-  // Batch işlem durdurma
-  const handleBatchPause = () => {
-    setIsProcessing(false);
-    setPdfFiles(prev => prev.map(file => 
-      file.status === 'processing' 
-        ? { ...file, status: 'pending', progress: 0 }
-        : file
-    ));
-  };
-
-  // Tümünü temizle
-  const handleBatchClear = () => {
-    setPdfFiles([]);
-    setError('');
-  };
-
-  // Dosya indirme
-  const downloadFile = (file: File, filename?: string) => {
-    const url = URL.createObjectURL(file);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename || file.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  // Tüm dosyaları indirme (ZIP olarak)
-  const downloadAllCompressed = async () => {
-    const completedFiles = pdfFiles.filter(file => file.status === 'completed' && file.result?.file);
     
-    if (completedFiles.length === 0) {
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(scrollToStep, 100);
+    return () => clearTimeout(timer);
+  }, [currentStep]);
+
+  // Check feature access on mount
+  useEffect(() => {
+    canUseFeature('pdf_compress');
+  }, [canUseFeature]);
+
+  // Handle file selection
+  const handleFileSelect = (file: File) => {
+    if (!file) return;
+    
+    setError(null);
+    
+    // File size limit
+    if (file.size > 20 * 1024 * 1024) {
+      setError('Dosya boyutu 20MB\'dan büyük olamaz.');
       return;
     }
     
-    if (completedFiles.length === 1) {
-      // Tek dosya varsa normal indirme
-      const file = completedFiles[0];
-      if (file.result?.file) {
-        downloadFile(file.result.file, `compressed_${file.file.name}`);
-      }
-      return;
-    }
+    setSelectedFile(file);
+    setCurrentStep('configure');
+  };
+
+  // Handle compression
+  const handleCompress = async () => {
+    if (!selectedFile) return;
+    
+    setIsCompressing(true);
+    setError(null);
+    setCurrentStep('processing');
     
     try {
-      // Birden fazla dosya varsa ZIP oluştur
-      const zip = new JSZip();
+      // const result = await compressWithRender(selectedFile, quality);
       
-      // Her dosyayı ZIP'e ekle
-      completedFiles.forEach(file => {
-        if (file.result?.file) {
-          const fileName = `compressed_${file.file.name}`;
-          zip.file(fileName, file.result.file);
-        }
-      });
+      // if (result.success && result.data) {
+      //   const downloadUrl = URL.createObjectURL(result.data);
       
-      // ZIP dosyasını oluştur ve indir
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const currentDate = new Date().toISOString().split('T')[0];
-      const zipFileName = `compressed-pdfs-${currentDate}.zip`;
+      //   const compressionResultData: CompressionResultDisplay = {
+      //     compressedBlob: result.data,
+      //     originalSize: result.originalSize || selectedFile.size,
+      //     compressedSize: result.compressedSize || result.data.size,
+      //     compressionRatio: result.compressionRatio || 0,
+      //     processingTime: result.processingTime || 0,
+      //     downloadUrl
+      //   };
       
-      // ZIP dosyasını indir
-      const url = URL.createObjectURL(zipBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = zipFileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      //   setCompressionResult(compressionResultData);
+      //   setCurrentStep('result');
       
-    } catch (error) {
-      console.error('ZIP oluşturma hatası:', error);
-      setError('ZIP dosyası oluşturulurken hata oluştu');
-    }
-  };
+      //   // Track analytics
+      //   if (user) {
+      //     const compressedFile = new File([result.data], `compressed_${selectedFile.name}`, {
+      //       type: 'application/pdf',
+      //       lastModified: Date.now()
+      //     });
+      //     await uploadFile(compressedFile, 'pdf');
+      //   }
+      // } else {
+      //   throw new Error(result.error || 'Sıkıştırma başarısız oldu');
+      // }
+      // Placeholder for compression logic
+      console.log('Compressing file:', selectedFile.name);
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate compression
 
-  // Global ayarları dosyalara uygula
-  const applyGlobalSettings = () => {
-    setPdfFiles(prev => prev.map(file => ({
-      ...file,
-      compressionSettings: {
-        ...file.compressionSettings,
-        level: globalSettings.level,
-        useAI: globalSettings.useAI
+      const downloadUrl = URL.createObjectURL(selectedFile!); // Simulate compressed file
+
+      const compressionResultData: CompressionResultDisplay = {
+        compressedBlob: selectedFile!,
+        originalSize: selectedFile!.size,
+        compressedSize: selectedFile!.size, // Simulate compressed size
+        compressionRatio: 0, // No compression ratio available
+        processingTime: 0, // Simulate processing time
+        downloadUrl
+      };
+
+      setCompressionResult(compressionResultData);
+      setCurrentStep('result');
+
+      // Track analytics
+      if (user) {
+        const compressedFile = new File([selectedFile!], `compressed_${selectedFile!.name}`, {
+          type: 'application/pdf',
+          lastModified: Date.now()
+        });
+        await uploadFile(compressedFile, 'pdf');
       }
-    })));
 
-    // AI açıksa yeniden analiz yap
-    if (globalSettings.useAI) {
-      pdfFiles.forEach(file => {
-        if (!file.aiResult) {
-          analyzeFileWithAI(file.id);
-        }
-      });
+    } catch (err: any) {
+      console.error('Compression error:', err);
+      let errorMessage = err.message || 'Sıkıştırma sırasında hata oluştu';
+      
+      if (errorMessage.includes('timeout') || errorMessage.includes('too large')) {
+        errorMessage = 'Dosya çok büyük veya karmaşık. Lütfen tekrar deneyin.';
+      }
+      
+      setError(errorMessage);
+      setCurrentStep('configure');
+    } finally {
+      setIsCompressing(false);
     }
   };
 
-  // İstatistikler
-  const stats = {
-    total: pdfFiles.length,
-    completed: pdfFiles.filter(f => f.status === 'completed').length,
-    processing: pdfFiles.filter(f => f.status === 'processing').length,
-    errors: pdfFiles.filter(f => f.status === 'error').length,
-    pending: pdfFiles.filter(f => f.status === 'pending').length,
-    totalOriginalSize: pdfFiles.reduce((sum, f) => sum + f.file.size, 0),
-    totalCompressedSize: pdfFiles.reduce((sum, f) => {
-      return sum + (f.compressionResult?.compressedSize || 0);
-    }, 0)
+  // Reset to start
+  const handleReset = () => {
+    setCurrentStep('upload');
+    setSelectedFile(null);
+    setCompressionResult(null);
+    setError(null);
   };
-
-  const overallSavings = stats.totalOriginalSize > 0 
-    ? ((stats.totalOriginalSize - stats.totalCompressedSize) / stats.totalOriginalSize) * 100 
-    : 0;
 
   return (
-    <div className="min-h-screen bg-white page-transition">
-      {/* Hero Section */}
-      <div className="bg-gray-50 border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50">
+      {/* SEO */}
+      <StructuredData type="howto" />
+      
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Breadcrumb />
-          
-          <StructuredData 
-            page="pdf-compress"
-            type="howto"
-          />
-
-          <div className="text-center animate-fade-in">
-            {/* Main Icon */}
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-black text-white mb-8 shadow-lg">
-              <DocumentDuplicateIcon className="h-12 w-12" />
-            </div>
-
-            {/* Hero Text */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight">
-              {t('title')}
-            </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-6 sm:mb-8 leading-relaxed px-2">
-              {t('subtitle')}
-            </p>
-
-            {/* Trust Signals */}
-            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 px-2">
-              <div className="flex items-center space-x-2 text-gray-700">
-                <UserGroupIcon className="h-5 w-5" />
-                <span className="font-medium">{t('trustSignals.users')}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-700">
-                <StarIcon className="h-5 w-5 text-yellow-500" />
-                <span className="font-medium">{t('trustSignals.rating')}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-700">
-                <ShieldCheckIcon className="h-5 w-5" />
-                <span className="font-medium">{t('trustSignals.ssl')}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-700">
-                <BoltIcon className="h-5 w-5" />
-                <span className="font-medium">{t('trustSignals.batch')}</span>
-              </div>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12 px-2">
-              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3 sm:mb-4 mx-auto">
-                  <DocumentDuplicateIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{t('features.batchTitle')}</h3>
-                <p className="text-gray-700 text-xs sm:text-sm">{t('features.batchDesc')}</p>
-              </div>
-              
-              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3 sm:mb-4 mx-auto">
-                  <CpuChipIcon className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{t('features.aiTitle')}</h3>
-                <p className="text-gray-700 text-xs sm:text-sm">{t('features.aiDesc')}</p>
-              </div>
-              
-              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3 sm:mb-4 mx-auto">
-                  <DocumentArrowDownIcon className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{t('zipDownload')}</h3>
-                <p className="text-gray-700 text-xs sm:text-sm">{t('batchZipFeature')}</p>
-              </div>
-            </div>
-
-            {/* Free Badge */}
-            <div className="inline-flex items-center bg-black text-white px-6 py-3 rounded-full text-lg font-medium">
-              ✨ {t('freeBadge').replace('{size}', getMaxFileSize().toString())}
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Main Tool Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-        
-        {/* Global Settings Panel */}
-        <div className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-200">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <div className="bg-purple-600 p-3 rounded-lg mr-4">
-                <Cog6ToothIcon className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  🎛️ {t('globalSettings')}
-                </h3>
-                <p className="text-gray-600">
-                  {t('globalSettingsDesc')}
-                </p>
-                {/* Web Worker Status */}
-                <div className="mt-2 flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${isWorkerReady ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-                  <span className="text-xs text-gray-600">
-                    {isWorkerReady ? t('workerStatus.ready') : t('workerStatus.loading')}
-                  </span>
-                </div>
-              </div>
-            </div>
+      {/* STEP 1: UPLOAD - QuickUtil Purple Theme */}
+      <div ref={uploadRef} className={`py-16 transition-all duration-500 ${
+        currentStep === 'upload' ? 'opacity-100' : 'opacity-50 pointer-events-none'
+      }`}>
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          
+          {/* Header - QuickUtil Purple Gradient */}
+          <div className="mb-16">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+              PDF Sıkıştırma
+            </h1>
+            <p className="text-xl text-gray-700">
+              Maksimum PDF kalitesi için optimize ederken dosya boyutunu küçültebilirsin.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {/* AI Toggle */}
-            <div className="bg-white/60 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <CpuChipIcon className="h-5 w-5 text-purple-600 mr-2" />
-                  <span className="font-medium text-gray-900">{t('aiMode')}</span>
-                </div>
-                <button
-                  onClick={() => setGlobalSettings(prev => ({ ...prev, useAI: !prev.useAI }))}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
-                    globalSettings.useAI ? 'bg-purple-600' : 'bg-gray-300'
-                  }`}
-                >
-                  <span
-                    className={`${
-                      globalSettings.useAI ? 'translate-x-6' : 'translate-x-1'
-                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                  />
-                </button>
+          {/* Single Upload Button - Purple Gradient */}
+          <div className="max-w-sm mx-auto">
+            <div className="relative group cursor-pointer">
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg px-8 py-4 text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center transform hover:scale-105">
+                <SparklesIcon className="h-5 w-5 mr-2" />
+                PDF dosyasını seç
               </div>
-              <p className="text-sm text-gray-600">
-                {globalSettings.useAI 
-                  ? t('aiModeDesc.enabled')
-                  : t('aiModeDesc.disabled')
-                }
-              </p>
-              
-              {/* AI Compression Level Selection */}
-              {globalSettings.useAI && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
-                    🧠 AI Compression Level
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <label
-                      className={`cursor-pointer p-3 border-2 rounded-lg transition-all duration-200 text-center ${
-                        globalSettings.aiCompressionLevel === 'standard'
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="aiCompressionLevel"
-                        value="standard"
-                        checked={globalSettings.aiCompressionLevel === 'standard'}
-                        onChange={(e) => setGlobalSettings(prev => ({ 
-                          ...prev, 
-                          aiCompressionLevel: e.target.value as 'standard' | 'advanced'
-                        }))}
-                        className="sr-only"
-                      />
-                      <div className="text-lg mb-1">📱</div>
-                      <div className="text-xs font-medium text-gray-900">Standard</div>
-                      <div className="text-xs text-gray-600">Client AI</div>
-                    </label>
-                    
-                    <label
-                      className={`cursor-pointer p-3 border-2 rounded-lg transition-all duration-200 text-center ${
-                        globalSettings.aiCompressionLevel === 'advanced'
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="aiCompressionLevel"
-                        value="advanced"
-                        checked={globalSettings.aiCompressionLevel === 'advanced'}
-                        onChange={(e) => setGlobalSettings(prev => ({ 
-                          ...prev, 
-                          aiCompressionLevel: e.target.value as 'standard' | 'advanced'
-                        }))}
-                        className="sr-only"
-                      />
-                      <div className="text-lg mb-1">🔥</div>
-                      <div className="text-xs font-medium text-gray-900">Advanced</div>
-                      <div className="text-xs text-gray-600">Server AI</div>
-                    </label>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    {globalSettings.aiCompressionLevel === 'advanced' 
-                      ? '⚡ Maksimum sıkıştırma oranı için server-side AI algoritmaları'
-                      : '📱 Hızlı işleme için client-side AI optimizasyonu'
-                    }
-                  </p>
-                </div>
-              )}
+              <FileUpload
+                                    onFileSelect={(file) => {
+                      if (Array.isArray(file)) {
+                        handleFileSelect(file[0]);
+                      } else {
+                        handleFileSelect(file);
+                      }
+                    }}
+                acceptedTypes={['application/pdf']}
+                maxSize={20 * 1024 * 1024}
+                title=""
+                description=""
+              />
             </div>
-
-
-
-            {/* Compression Level */}
-            <div className="bg-white/60 rounded-lg p-4">
-              <label className="block text-sm font-medium text-gray-900 mb-3">
-                📊 {t('compressionLevel')}
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {Object.entries(compressionLevels).map(([level, config]) => (
-                  <label
-                    key={level}
-                    className={`cursor-pointer p-2 border-2 rounded-lg transition-all duration-200 text-center ${
-                      globalSettings.level === level
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="globalCompressionLevel"
-                      value={level}
-                      checked={globalSettings.level === level}
-                      onChange={(e) => setGlobalSettings(prev => ({ 
-                        ...prev, 
-                        level: e.target.value as 'light' | 'medium' | 'high' 
-                      }))}
-                      className="sr-only"
-                    />
-                    <div className="text-lg mb-1">{config.icon}</div>
-                    <div className="text-xs font-medium text-gray-900">{config.label.split(' ')[0]}</div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Oracle Cloud Compression */}
-            <div className="bg-white/60 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                  <CloudArrowUpIcon className="h-5 w-5 text-orange-600 mr-2" />
-                  <span className="font-medium text-gray-900">Oracle Cloud</span>
-                  {oracleHealthy !== null && (
-                    <div className={`ml-2 w-2 h-2 rounded-full ${oracleHealthy ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                  )}
-                </div>
-                <button
-                  onClick={() => setGlobalSettings(prev => ({ 
-                    ...prev, 
-                    useOracle: !prev.useOracle,
-                    compressionEngine: !prev.useOracle ? 'oracle' : 'revolutionary'
-                  }))}
-                  disabled={oracleHealthy === false}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    globalSettings.useOracle ? 'bg-orange-600' : 'bg-gray-300'
-                  }`}
-                >
-                  <span
-                    className={`${
-                      globalSettings.useOracle ? 'translate-x-6' : 'translate-x-1'
-                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                  />
-                </button>
-              </div>
-              <p className="text-sm text-gray-600 mb-3">
-                {globalSettings.useOracle 
-                  ? '🔥 iLovePDF seviyesinde %80-90 sıkıştırma'
-                  : '☁️ Oracle Cloud ile professional compression'
-                }
-              </p>
-              
-              {/* Oracle Quality Profile Selection */}
-              {globalSettings.useOracle && oracleHealthy && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
-                    ⚙️ Compression Profile
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(COMPRESSION_PROFILES).map(([profile, config]) => (
-                      <label
-                        key={profile}
-                        className={`cursor-pointer p-3 border-2 rounded-lg transition-all duration-200 text-center ${
-                          globalSettings.oracleProfile === profile
-                            ? 'border-orange-500 bg-orange-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="oracleProfile"
-                          value={profile}
-                          checked={globalSettings.oracleProfile === profile}
-                          onChange={(e) => setGlobalSettings(prev => ({ 
-                            ...prev, 
-                            oracleProfile: e.target.value as CompressionProfile
-                          }))}
-                          className="sr-only"
-                        />
-                        <div className="text-lg mb-1">{config.icon}</div>
-                        <div className="text-xs font-medium text-gray-900">{config.name}</div>
-                        <div className="text-xs text-gray-600">{config.expectedRatio}</div>
-                      </label>
-                    ))}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    {COMPRESSION_PROFILES[globalSettings.oracleProfile]?.description}
-                  </p>
-                </div>
-              )}
-              
-              {/* Oracle Offline Warning */}
-              {oracleHealthy === false && (
-                <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-xs text-yellow-800">
-                    ⚠️ Oracle Cloud API offline. Revolutionary Engine kullanılacak.
-                  </p>
-                </div>
-              )}
-            </div>
+            
+            <p className="text-sm text-gray-600 mt-4">
+              veya PDF'i buraya bırak
+            </p>
           </div>
 
-          {/* Apply to All Button */}
-          {pdfFiles.length > 0 && (
-            <div className="mt-4 text-center">
-              <button
-                onClick={applyGlobalSettings}
-                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium"
-              >
-                🔄 {t('applyToAll')}
-              </button>
+          {/* Error Display */}
+          {error && (
+            <div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto">
+              <p className="text-red-800 text-center">{error}</p>
             </div>
           )}
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl animate-fade-in">
-            <div className="flex items-center">
-              <InformationCircleIcon className="h-6 w-6 mr-3" />
-              <span>{error}</span>
-            </div>
-          </div>
-        )}
-
-        {/* iLovePDF Style File Upload Area */}
-        {pdfFiles.length === 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-8">
-            <div 
-              onDrop={(e) => {
-                e.preventDefault();
-                const files = Array.from(e.dataTransfer.files);
-                handleFilesSelect(files);
-              }}
-              onDragOver={(e) => e.preventDefault()}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 cursor-pointer group"
-              onClick={() => document.getElementById('file-input')?.click()}
-            >
-              <input
-                id="file-input"
-                type="file"
-                multiple
-                accept=".pdf"
-                onChange={(e) => {
-                  if (e.target.files) {
-                    handleFilesSelect(Array.from(e.target.files));
-                  }
-                }}
-                className="hidden"
-              />
-              
-              <div className="space-y-6">
-                <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto group-hover:bg-red-200 transition-colors">
-                  <DocumentDuplicateIcon className="h-12 w-12 text-red-600" />
-                </div>
-                
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{t('uploadTitle')}</h3>
-                  <p className="text-gray-600 mb-6">{t('uploadDescription')}</p>
-                  
-                  <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center space-x-2">
-                    <CloudArrowUpIcon className="w-5 h-5" />
-                    <span>{t('uploadTitle')}</span>
-                  </button>
-                </div>
-                
-                <div className="text-sm text-gray-500 space-y-1">
-                  <p>• {t('maxFileSize').replace('{size}', getMaxFileSize().toString())}</p>
-                  <p>• {t('maxFiles')}</p>
-                  <p>• {t('aiCompressionZip')}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Batch Processing Controls */}
-        {pdfFiles.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                  <DocumentDuplicateIcon className="h-6 w-6 text-red-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">
-                    {t('filesSelected').replace('{count}', pdfFiles.length.toString())}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {t('totalSize').replace('{size}', formatFileSize(stats.totalOriginalSize))}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-3">
-                {!isProcessing ? (
-                  <>
-                    <button
-                      onClick={handleBatchStart}
-                      disabled={pdfFiles.length === 0}
-                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                    >
-                      <PlayIcon className="w-4 h-4" />
-                      <span>{t('startCompression')}</span>
-                    </button>
-                    <button
-                      onClick={() => document.getElementById('file-input')?.click()}
-                      className="border border-gray-300 hover:border-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-                    >
-{t('moreFiles')}
-                    </button>
-                    <button
-                      onClick={handleBatchClear}
-                      className="text-gray-500 hover:text-red-600 px-3 py-2 rounded-lg transition-colors"
-                    >
-{t('clear')}
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={handleBatchPause}
-                    className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
-                  >
-                    <PauseIcon className="w-4 h-4" />
-<span>{t('stop')}</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* File Processing Area - iLovePDF Style */}
-        {pdfFiles.length > 0 && (
-          <div className="space-y-6">
-            {/* Progress Overview */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-<h3 className="text-lg font-semibold text-gray-900">{t('progress.title')}</h3>
-                                  <div className="text-sm text-gray-600">
-                    {t('progress.completed').replace('{completed}', stats.completed.toString()).replace('{total}', stats.total.toString())}
-                  </div>
-              </div>
-              
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-                <div className="bg-blue-50 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-                  <div className="text-sm text-blue-600">{t('totalFiles')}</div>
-                </div>
-                <div className="bg-green-50 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-                  <div className="text-sm text-green-600">{t('completed')}</div>
-                </div>
-                <div className="bg-yellow-50 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-yellow-600">{formatFileSize(stats.totalOriginalSize)}</div>
-                  <div className="text-sm text-yellow-600">{t('originalSize')}</div>
-                </div>
-                <div className="bg-purple-50 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {overallSavings > 0 ? `${overallSavings.toFixed(1)}%` : '-%'}
-                  </div>
-                  <div className="text-sm text-purple-600">{t('totalSavings')}</div>
-                </div>
-              </div>
-
-              {/* Overall Progress Bar */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* File Cards - iLovePDF Style */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {pdfFiles.map((pdfFile) => (
-                <div
-                  key={pdfFile.id}
-                  className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-                >
-                  {/* Status Bar */}
-                  <div className={`h-2 w-full ${
-                    pdfFile.status === 'completed' ? 'bg-green-500' :
-                    pdfFile.status === 'error' ? 'bg-red-500' :
-                    pdfFile.status === 'processing' ? 'bg-blue-500' :
-                    'bg-gray-300'
-                  }`}>
-                    {pdfFile.status === 'processing' && (
-                      <div 
-                        className="h-full bg-blue-600 transition-all duration-300"
-                        style={{ width: `${pdfFile.progress}%` }}
-                      ></div>
-                    )}
-                  </div>
-
-                  {/* File Content */}
-                  <div className="p-6">
-                    {/* File Info */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-3 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <DocumentDuplicateIcon className="h-6 w-6 text-red-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-semibold text-gray-900 truncate">
-                            {pdfFile.file.name}
-                          </h4>
-                          <p className="text-xs text-gray-500">
-                            {formatFileSize(pdfFile.file.size)}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      {/* Status Icon */}
-                      <div className="flex-shrink-0 ml-3">
-                        {pdfFile.status === 'completed' ? (
-                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                          </div>
-                        ) : pdfFile.status === 'error' ? (
-                          <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                            <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />
-                          </div>
-                        ) : pdfFile.status === 'processing' ? (
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <ArrowsUpDownIcon className="h-5 w-5 text-blue-600 animate-spin" />
-                          </div>
-                        ) : (
-                          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                            <ClockIcon className="h-5 w-5 text-gray-600" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Enhanced AI Analysis Results */}
-                    {pdfFile.aiResult && pdfFile.compressionSettings.useAI && (
-                      <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-4 mb-4 border border-purple-200">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-1.5 rounded-full">
-                              <CpuChipIcon className="h-4 w-4 text-white" />
-                            </div>
-<span className="text-sm font-semibold text-purple-900">🧠 {t('ai.analysis')}</span>
-                          </div>
-                          <div className="bg-purple-100 px-2.5 py-1 rounded-full">
-                                                          <span className="text-xs font-medium text-purple-700">
-                                {(pdfFile.aiResult.processingMetrics.aiConfidence * 100).toFixed(0)}% {t('ai.reliable')}
-                              </span>
-                          </div>
-                        </div>
-                        
-                        {/* AI Stats Grid */}
-                        <div className="grid grid-cols-2 gap-2 mb-3">
-                          <div className="bg-white/80 rounded-lg p-2 text-center">
-                            <div className="text-sm font-bold text-gray-900">
-                              {pdfFile.aiResult.uiData.summaryStats.sizeReduction.toFixed(0)}%
-                            </div>
-<div className="text-xs text-gray-600">{t('ai.estimatedReduction')}</div>
-                          </div>
-                          <div className="bg-white/80 rounded-lg p-2 text-center">
-                            <div className="text-sm font-bold text-gray-900">
-                              {(pdfFile.aiResult.uiData.summaryStats.qualityScore * 100).toFixed(0)}%
-                            </div>
-<div className="text-xs text-gray-600">{t('ai.qualityScore')}</div>
-                          </div>
-                        </div>
-
-                        {/* AI Insights */}
-                        {pdfFile.aiResult.uiData.insights.length > 0 && (
-                          <div className="bg-blue-50 rounded-lg p-2 mb-2">
-<div className="text-xs font-medium text-blue-900 mb-1">💡 {t('ai.suggestion')}</div>
-                            <div className="text-xs text-blue-700">
-                              {pdfFile.aiResult.uiData.insights[0]}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Processing Time */}
-                        <div className="text-xs text-gray-500 text-center">
-                          {t('ai.analysisTime').replace('{time}', pdfFile.aiResult.processingMetrics.totalProcessingTime.toFixed(0))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* AI Analysis Loading */}
-                    {pdfFile.compressionSettings.useAI && !pdfFile.aiResult && pdfFile.status === 'pending' && (
-                      <div className="bg-purple-50 rounded-lg p-3 mb-4 border border-purple-200">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 bg-purple-600 rounded-full animate-pulse"></div>
-<span className="text-sm font-medium text-purple-900">🔄 {t('ai.analyzing')}</span>
-                        </div>
-                        <div className="mt-2 w-full bg-purple-200 rounded-full h-1">
-                          <div className="bg-purple-600 h-1 rounded-full animate-pulse w-1/2"></div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Compression Settings */}
-                    <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <AdjustmentsHorizontalIcon className="h-4 w-4 text-gray-600" />
-<span className="text-sm font-medium text-gray-900">{t('settings.title')}</span>
-                      </div>
-                                              <div className="text-xs text-gray-700">
-                          <p>{t('settings.level')} {compressionLevels[pdfFile.compressionSettings.level].label}</p>
-                          <p>Mod: {pdfFile.compressionSettings.useAI ? t('settings.mode.ai') : t('settings.mode.manual')}</p>
-                        </div>
-                    </div>
-
-                    {/* Compression Results */}
-                    {pdfFile.compressionResult && (
-                      <div className="bg-green-50 rounded-lg p-3 mb-4">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <SparklesIcon className="h-4 w-4 text-green-600" />
-<span className="text-sm font-medium text-green-900">{t('results.title')}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                                                      <div>
-                              <div className="text-gray-600">{t('results.newSize')}</div>
-                              <div className="font-medium text-green-700">
-                                {formatFileSize(pdfFile.compressionResult.compressedSize)}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-gray-600">{t('results.savings')}</div>
-                              <div className="font-medium text-green-700">
-                                {pdfFile.compressionResult.savedPercentage.toFixed(1)}%
-                              </div>
-                            </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Error Message */}
-                    {pdfFile.status === 'error' && pdfFile.error && (
-                      <div className="bg-red-50 rounded-lg p-3 mb-4">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <ExclamationTriangleIcon className="h-4 w-4 text-red-600" />
-<span className="text-sm font-medium text-red-900">{t('error.title')}</span>
-                        </div>
-                        <p className="text-xs text-red-700">{pdfFile.error}</p>
-                      </div>
-                    )}
-
-                    {/* Download Button */}
-                    {pdfFile.status === 'completed' && pdfFile.result?.file && (
-                      <button
-                        onClick={() => downloadFile(pdfFile.result!.file!, `compressed_${pdfFile.file.name}`)}
-                        className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium text-sm flex items-center justify-center space-x-2"
-                      >
-                        <ArrowUpTrayIcon className="h-4 w-4" />
-<span>{t('download.pdf')}</span>
-                      </button>
-                    )}
-
-                    {/* Remove Button */}
-                    {!isProcessing && pdfFile.status !== 'processing' && (
-                      <button
-                        onClick={() => handleFileRemove(pdfFile.id)}
-                        className="w-full mt-2 text-gray-500 hover:text-red-600 text-sm py-2 transition-colors"
-                      >
-{t('remove.file')}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Bulk Download */}
-            {stats.completed > 0 && (
-              <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold text-green-900 mb-1">🎉 {t('filesReady').replace('{count}', stats.completed.toString())}</h4>
-                    <p className="text-green-700 text-sm">
-                      {t('totalCompressed').replace('{size}', formatFileSize(stats.totalCompressedSize))}
-                    </p>
-                    {stats.completed > 1 && (
-                      <p className="text-green-600 text-xs mt-1">
-                        {t('zipNotice')}
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    onClick={downloadAllCompressed}
-                    className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center space-x-2"
-                  >
-                    <DocumentArrowDownIcon className="h-5 w-5" />
-                    <span>{stats.completed > 1 ? t('zipDownload') : t('downloadFile')}</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
       </div>
 
-      {/* Benefits Section - iLovePDF Style */}
-      <div className="bg-gray-50 py-16 mt-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-12 px-2">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
-              {t('benefits.title')}
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-              {t('benefits.subtitle')}
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12">
-            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <DocumentDuplicateIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-red-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.batch.title')}</h3>
-                  <p className="text-gray-700 mb-4">
-                    {t('benefits.batch.desc')}
-                  </p>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• {t('benefits.batch.feature1')}</li>
-                    <li>• {t('benefits.batch.feature2')}</li>
-                    <li>• {t('zipFormatDownload')}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <CpuChipIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.ai.title')}</h3>
-                  <p className="text-gray-700 mb-4">
-                    {t('benefits.ai.desc')}
-                  </p>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• {t('benefits.ai.feature1')}</li>
-                    <li>• {t('benefits.ai.feature2')}</li>
-                    <li>• {t('benefits.ai.feature3')}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <ShieldCheckIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.security.title')}</h3>
-                  <p className="text-gray-700 mb-4">
-                    {t('benefits.security.desc')}
-                  </p>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• {t('benefits.security.feature1')}</li>
-                    <li>• {t('benefits.security.feature2')}</li>
-                    <li>• {t('benefits.security.feature3')}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <BoltIcon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-purple-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900">{t('benefits.performance.title')}</h3>
-                  <p className="text-gray-700 mb-4">
-                    {t('benefits.performance.desc')}
-                  </p>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• {t('benefits.performance.feature1')}</li>
-                    <li>• {t('benefits.performance.feature2')}</li>
-                    <li>• {t('benefits.performance.feature3')}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Statistics */}
-          <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-200">
-            <div className="text-center mb-6 sm:mb-8 px-2">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{t('stats.title')}</h3>
-              <p className="text-sm sm:text-base text-gray-600">{t('stats.subtitle')}</p>
-            </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-red-600 mb-2">1M+</div>
-                <div className="text-sm text-gray-600">{t('stats.monthlyUsers')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">50M+</div>
-                <div className="text-sm text-gray-600">{t('stats.processedPdfs')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">4.8⭐</div>
-                <div className="text-sm text-gray-600">{t('stats.userRating')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-2">99.9%</div>
-                <div className="text-sm text-gray-600">{t('stats.uptime')}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Section - iLovePDF Style */}
-      <div className="py-8 sm:py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl p-6 sm:p-8 lg:p-12 text-white relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-black/10"></div>
-            <div className="absolute top-0 left-0 w-full h-full">
-              <div className="absolute top-4 left-4 w-8 h-8 bg-white/20 rounded-full"></div>
-              <div className="absolute top-8 right-8 w-6 h-6 bg-white/20 rounded-full"></div>
-              <div className="absolute bottom-4 left-8 w-4 h-4 bg-white/20 rounded-full"></div>
-              <div className="absolute bottom-8 right-4 w-10 h-10 bg-white/20 rounded-full"></div>
-            </div>
+      {/* STEP 2: CONFIGURE - Purple Theme Layout */}
+      <div ref={configureRef} className={`py-8 min-h-screen transition-all duration-500 ${
+        currentStep === 'configure' ? 'opacity-100' : 'opacity-50 pointer-events-none'
+      }`}>
+        {selectedFile && (
+          <div className="max-w-6xl mx-auto px-4">
             
-            <div className="relative z-10">
-              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <DocumentDuplicateIcon className="h-10 w-10 text-white" />
-              </div>
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                Küçültme düzeyi
+              </h1>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
-                {t('cta.title')}
-              </h3>
-              <p className="text-red-100 text-base sm:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
-                {t('cta.description').replace('{multipleFiles}', t('multipleFilesZip'))}
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <button
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="bg-white text-red-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-colors shadow-lg text-lg flex items-center space-x-2"
-                >
-                  <CloudArrowUpIcon className="w-6 h-6" />
-                  <span>{t('cta.selectFiles')}</span>
-                </button>
-                
-                <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 text-red-100">
-                  <div className="flex items-center space-x-1">
-                    <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-xs sm:text-sm">{t('cta.features.free')}</span>
+              {/* Left: File Preview - Purple Theme */}
+              <div className="lg:col-span-1">
+                <div className="bg-white/70 backdrop-blur-sm rounded-lg shadow-md border border-purple-200 p-6 sticky top-8">
+                  
+                  {/* File Icon and Number */}
+                  <div className="relative mx-auto w-32 h-40 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center mb-4">
+                    <DocumentIcon className="h-16 w-16 text-purple-600" />
+                    <div className="absolute top-2 right-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                      1
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <ShieldCheckIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-xs sm:text-sm">{t('cta.features.secure')}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <BoltIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-xs sm:text-sm">{t('cta.features.fast')}</span>
+                  
+                  {/* File Info */}
+                  <div className="text-center">
+                    <h3 className="font-medium text-gray-900 mb-1 text-sm truncate">
+                      {selectedFile.name}
+                    </h3>
+                    <p className="text-xs text-gray-600 mb-4">
+                      {formatFileSize(selectedFile.size)}
+                    </p>
+
+                    <button
+                      onClick={() => setSelectedFile(null)}
+                      className="text-purple-600 hover:text-purple-700 text-xs flex items-center justify-center mx-auto transition-colors"
+                    >
+                      <TrashIcon className="h-3 w-3 mr-1" />
+                      Dosyayı kaldır
+                    </button>
                   </div>
                 </div>
               </div>
-              
-              <div className="mt-8 text-red-100 text-sm">
-                {t('cta.notice')}
+
+              {/* Right: Quality Options - Purple Theme */}
+              <div className="lg:col-span-3">
+                <div className="space-y-4">
+                  {[
+                    { 
+                      id: 'screen', 
+                      name: 'AŞIRI SIKIŞTIRMA',
+                      desc: 'Daha az kaliteli, yüksek sıkıştırma',
+                      recommended: false
+                    },
+                    { 
+                      id: 'ebook', 
+                      name: 'ÖNERİLEN SIKIŞTIRMA',
+                      desc: 'Kaliteli, iyi sıkıştırma',
+                      recommended: true
+                    },
+                    { 
+                      id: 'printer', 
+                      name: 'DÜŞÜK SIKIŞTIRMA',
+                      desc: 'Yüksek kaliteli, daha az sıkıştırma',
+                      recommended: false
+                    }
+                  ].map((level) => (
+                    <button
+                      key={level.id}
+                      onClick={() => setQuality(level.id)}
+                      className={`w-full p-4 border rounded-lg text-left transition-all duration-200 ${
+                        quality === level.id
+                          ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50'
+                          : 'border-gray-200 hover:border-purple-300 bg-white/70 backdrop-blur-sm'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold text-gray-900 text-sm">{level.name}</div>
+                          <div className="text-sm text-gray-600">{level.desc}</div>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          quality === level.id 
+                            ? 'border-purple-500 bg-gradient-to-r from-purple-500 to-pink-500' 
+                            : 'border-gray-300'
+                        }`}>
+                          {quality === level.id && (
+                            <div className="w-full h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                              <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {level.recommended && (
+                        <div className="mt-2">
+                          <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                            ✓ ÖNERİLEN
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Error Display */}
+                {error && (
+                  <div className="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-800 text-center">{error}</p>
+                  </div>
+                )}
+
+                {/* Compress Button - Purple Gradient */}
+                <div className="mt-8">
+                  <button
+                    onClick={handleCompress}
+                    disabled={!selectedFile || isCompressing}
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <SparklesIcon className="h-4 w-4 mr-2" />
+                    PDF Küçültme
+                    <ArrowLeftIcon className="h-4 w-4 ml-2 rotate-180" />
+                  </button>
+                </div>
               </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* STEP 3: PROCESSING - Purple Theme */}
+      <div ref={processingRef} className={`fixed inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 flex items-center justify-center z-40 transition-all duration-500 ${
+        currentStep === 'processing' ? 'opacity-100 visible' : 'opacity-0 invisible'
+      }`}>
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-12 border border-purple-200">
+            
+            {/* Animated Icon - Purple Gradient */}
+            <div className="relative mb-8">
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-full p-6 mx-auto w-20 h-20 flex items-center justify-center animate-pulse">
+                <SparklesIcon className="h-10 w-10 text-white" />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping opacity-20"></div>
+            </div>
+
+            {/* Processing Text */}
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              PDF küçültülüyor...
+            </h2>
+            <p className="text-gray-700 mb-6">
+              Dosyanız işleniyor, lütfen bekleyin
+            </p>
+
+            {/* Progress - Purple Gradient */}
+            <div className="mb-6">
+              <div className="bg-gray-200 rounded-full h-2 w-full mb-2 overflow-hidden">
+                <div className="bg-gradient-to-r from-purple-600 to-pink-600 h-full rounded-full animate-pulse" style={{ width: '70%' }}></div>
+              </div>
+              <p className="text-sm text-gray-600">
+                {selectedFile?.name}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <AuthModal onClose={() => setShowAuthModal(false)} />
-      )}
+      {/* STEP 4: RESULT - Purple Theme */}
+      <div ref={resultRef} className={`fixed inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 flex items-center justify-center z-40 transition-all duration-500 ${
+        currentStep === 'result' ? 'opacity-100 visible' : 'opacity-0 invisible'
+      }`}>
+        {compressionResult && (
+          <div className="text-center max-w-lg mx-auto px-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-12 border border-purple-200">
+              
+              {/* Success Icon - Green with Purple accent */}
+              <div className="mb-8">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full p-6 mx-auto w-20 h-20 flex items-center justify-center mb-4 animate-bounce">
+                  <CheckCircleIcon className="h-10 w-10 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  PDF küçültüldü!
+                </h2>
+              </div>
+
+              {/* Stats - Purple Gradient Circle */}
+              <div className="mb-8">
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                  <div className="w-full h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="text-2xl font-bold">
+                        {Math.round(compressionResult.compressionRatio)}%
+                      </div>
+                      <div className="text-xs uppercase tracking-wide">
+                        Azalma
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-1 text-sm text-gray-700">
+                  <p>
+                    <span className="font-medium">Orijinal:</span> {formatFileSize(compressionResult.originalSize)}
+                  </p>
+                  <p>
+                    <span className="font-medium">Sıkıştırılmış:</span> {formatFileSize(compressionResult.compressedSize)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Other Tools Suggestions - iLovePDF Style */}
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <h3 className="text-base font-semibold text-gray-900 mb-3 text-center">
+                  Şu araca geçiş yap:
+                </h3>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-2 max-w-3xl mx-auto">
+                  <Link
+                    href="/pdf-convert" 
+                    className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                      <DocumentIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">PDF dönüştür</span>
+                  </Link>
+
+                  <Link
+                    href="/image-convert"
+                    className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                      <SparklesIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim dönüştür</span>
+                  </Link>
+
+                  <Link
+                    href="/image-compress"
+                    className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                      <ArrowDownTrayIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim sıkıştır</span>
+                  </Link>
+
+                  <Link
+                    href="/image-crop"
+                    className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                      <CheckCircleIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim kırp</span>
+                  </Link>
+
+                  <Link
+                    href="/image-resize"
+                    className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                      <DocumentIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim boyutlandır</span>
+                  </Link>
+
+                  <Link
+                    href="/image-rotate"
+                    className="flex flex-col items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                      <ArrowLeftIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim döndür</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <a
+                  href={compressionResult.downloadUrl}
+                  download={`compressed_${selectedFile?.name}`}
+                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
+                >
+                  <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                  Sıkıştırılmış PDF indir
+                </a>
+                
+                <button
+                  onClick={handleReset}
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-purple-300 text-purple-700 font-semibold rounded-xl hover:bg-purple-50 hover:border-purple-400 transition-all duration-200"
+                >
+                  <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                  Yeni PDF Sıkıştır
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 

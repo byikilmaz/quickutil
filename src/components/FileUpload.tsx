@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface FileUploadProps {
-  onFileSelect: (file: File) => void;
+  onFileSelect: (file: File | File[]) => void;
   acceptedTypes: string[];
   maxSize: number;
   title: string;
@@ -33,10 +33,15 @@ export default function FileUpload({
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log('FileUpload onDrop called:', acceptedFiles);
     if (acceptedFiles.length > 0) {
-      console.log('Calling onFileSelect with:', acceptedFiles[0]);
-      onFileSelect(acceptedFiles[0]);
+      if (multiple) {
+        console.log('Calling onFileSelect with multiple files:', acceptedFiles);
+        onFileSelect(acceptedFiles);
+      } else {
+        console.log('Calling onFileSelect with single file:', acceptedFiles[0]);
+        onFileSelect(acceptedFiles[0]);
+      }
     }
-  }, [onFileSelect]);
+  }, [onFileSelect, multiple]);
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,

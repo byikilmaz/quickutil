@@ -10,8 +10,8 @@ import {
   XMarkIcon,
   ChartBarIcon,
   ChevronDownIcon,
-  CpuChipIcon,
-  SparklesIcon
+  SparklesIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import CacheManager from './CacheManager';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -58,173 +58,180 @@ export default function Header({ onAuthClick }: HeaderProps) {
   };
 
   return (
-    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex justify-between items-center h-20 sm:h-24">
+    <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           
-          {/* Logo with AI Badge */}
+          {/* Logo */}
           <div className="flex items-center">
-            <Link href={`/${locale}`} className="flex items-center space-x-3 sm:space-x-4 group">
-              <div className="relative w-10 h-10 sm:w-12 sm:h-12 transition-transform duration-300 group-hover:scale-110">
+            <Link href={`/${locale}`} className="flex items-center space-x-3 group">
+              <div className="relative w-8 h-8 transition-transform duration-200 group-hover:scale-110">
                 <Image
                   src="/images/logo.svg"
-                  alt="QuickUtil.app AI-Powered Logo"
-                  width={48}
-                  height={48}
+                  alt="QuickUtil"
+                  width={32}
+                  height={32}
                   className="object-contain"
                 />
               </div>
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-black group-hover:text-blue-600 transition-colors duration-300">
-                  QuickUtil
-                </span>
-                {/* AI Badge */}
-                <div className="flex items-center bg-gradient-to-r from-blue-500 to-purple-600 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium">
-                  <CpuChipIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                  <span>AI</span>
-                </div>
-              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                QuickUtil
+              </span>
             </Link>
           </div>
 
-          {/* Desktop Navigation with AI Icons */}
-          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
-            <Link href={`/${locale}/pdf-compress`} className="text-gray-800 hover:text-blue-600 px-3 py-2 apple-link-hover flex items-center space-x-1 transition-all duration-200 hover:bg-blue-50 rounded-lg">
-              <span>🤖</span>
-              <span>{t('aiPdfTools')}</span>
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-8">
+            <Link 
+              href={`/${locale}/pdf-compress`} 
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200"
+            >
+              PDF Araçları
             </Link>
-            <Link href={`/${locale}/image-compress`} className="text-gray-800 hover:text-blue-600 px-3 py-2 apple-link-hover flex items-center space-x-1 transition-all duration-200 hover:bg-blue-50 rounded-lg">
-              <span>✨</span>
-              <span>{t('aiImageTools')}</span>
+            <Link 
+              href={`/${locale}/image-convert`} 
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200"
+            >
+              Resim Araçları
             </Link>
-            <Link href={`/${locale}/image-batch`} className="text-gray-800 hover:text-blue-600 px-3 py-2 apple-link-hover flex items-center space-x-1 transition-all duration-200 hover:bg-blue-50 rounded-lg">
-              <span>⚡</span>
-              <span>{t('aiBatchProcessing')}</span>
+            <Link 
+              href={`/${locale}/blog`} 
+              className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200"
+            >
+              Blog
             </Link>
-            <Link href={`/${locale}/blog`} className="text-gray-800 hover:text-blue-600 px-3 py-2 apple-link-hover flex items-center space-x-1 transition-all duration-200 hover:bg-blue-50 rounded-lg">
-              <span>🧠</span>
-              <span>{t('aiBlog')}</span>
-            </Link>
-
-            {process.env.NODE_ENV === 'development' && (
-              <CacheManager className="ml-4" />
+            
+            {/* Admin Link */}
+            {isAdmin && (
+              <Link
+                href={`/${locale}/admin`}
+                className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200 flex items-center space-x-1"
+              >
+                <ChartBarIcon className="h-4 w-4" />
+                <span>Admin</span>
+              </Link>
             )}
           </nav>
 
-          {/* Right Side: Language Switcher & User Menu */}
-          <div className="flex items-center space-x-3 sm:space-x-6">
+          {/* Right Side */}
+          <div className="flex items-center space-x-4">
             
             {/* Language Switcher */}
             <LanguageSwitcher />
             
-            {/* User Account Area */}
+            {/* User Account */}
             {user ? (
-              <div className="flex items-center space-x-4">
-                {/* Admin Panel Button - sadece admin kullanıcılar için */}
-                {isAdmin && (
-                  <Link
-                    href={`/${locale}/admin`}
-                    className="text-gray-800 hover:text-blue-600 px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center space-x-2"
-                  >
-                    <ChartBarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span className="text-sm sm:text-base">{t('admin')}</span>
-                  </Link>
-                )}
-                
-                {/* Profile Menu */}
-                <div className="relative" ref={userMenuRef}>
-                  <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center space-x-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium text-sm sm:text-base">
-                        {getUserInitials()}
-                      </span>
-                    </div>
-                    <div className="hidden lg:block text-left">
-                      <div className="text-sm font-medium text-gray-900 max-w-32 truncate">
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-medium text-sm">
+                      {getUserInitials()}
+                    </span>
+                  </div>
+                  <ChevronDownIcon className="w-4 h-4 text-gray-500" />
+                </button>
+
+                {/* User Dropdown */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-10">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <div className="text-sm font-medium text-gray-900 truncate">
                         {userProfile?.firstName ? `${userProfile.firstName} ${userProfile.lastName}` : user.email}
                       </div>
+                      <div className="text-xs text-gray-500 truncate">{user.email}</div>
                     </div>
-                    <ChevronDownIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
-                  </button>
-
-                  {/* User Dropdown Menu */}
-                  {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <div className="text-sm font-medium text-gray-900">
-                          {userProfile?.firstName ? `${userProfile.firstName} ${userProfile.lastName}` : user.email}
-                        </div>
-                        <div className="text-xs text-gray-700">{user.email}</div>
-                      </div>
-                      
-                      <Link 
-                        href={`/${locale}/profile`} 
-                        className="block px-4 py-2 text-gray-800 apple-link-hover"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        👤 {tProfile('title')}
-                      </Link>
-                      
-                      <button
-                        onClick={() => {
-                          logout();
-                          setIsUserMenuOpen(false);
-                        }}
-                        className="w-full text-left px-4 py-2 text-gray-800 apple-link-hover"
-                      >
-                        🚪 {t('logout')}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                    
+                    <Link 
+                      href={`/${locale}/profile`} 
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <UserIcon className="h-4 w-4 mr-2" />
+                      Profil
+                    </Link>
+                    
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <span className="mr-2">↗️</span>
+                      Çıkış Yap
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <button
                 onClick={onAuthClick}
-                className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-6 py-3 sm:px-8 sm:py-3.5 rounded-full text-sm sm:text-base font-medium hover:from-blue-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-2"
               >
-                <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span>{t('loginAI')}</span>
+                <SparklesIcon className="h-4 w-4" />
+                <span>Giriş</span>
               </button>
             )}
 
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2.5 sm:p-3 rounded-lg text-gray-800 hover:bg-gray-50 transition-colors"
+              className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors duration-200"
             >
               {isMenuOpen ? (
-                <XMarkIcon className="h-6 w-6 sm:h-7 sm:w-7" />
+                <XMarkIcon className="h-6 w-6" />
               ) : (
-                <Bars3Icon className="h-6 w-6 sm:h-7 sm:w-7" />
+                <Bars3Icon className="h-6 w-6" />
               )}
             </button>
+
+            {/* Dev Cache Manager */}
+            {process.env.NODE_ENV === 'development' && (
+              <CacheManager className="hidden lg:block" />
+            )}
           </div>
         </div>
 
-        {/* Mobile Menu with AI Icons */}
+        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div ref={menuRef} className="lg:hidden border-t border-gray-100 py-6 animate-fade-in">
-            <div className="space-y-3">
-              <Link href={`/${locale}/pdf-compress`} className="block px-4 py-3 text-gray-800 hover:text-blue-600 apple-link-hover flex items-center space-x-3 rounded-lg hover:bg-gray-50">
-                <span className="text-lg">🤖</span>
-                <span className="text-base">{t('aiPdfTools')}</span>
+          <div ref={menuRef} className="lg:hidden border-t border-gray-200 py-4 bg-white">
+            <div className="space-y-2">
+              <Link 
+                href={`/${locale}/pdf-compress`} 
+                className="block px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                PDF Araçları
               </Link>
-              <Link href={`/${locale}/image-compress`} className="block px-4 py-3 text-gray-800 hover:text-blue-600 apple-link-hover flex items-center space-x-3 rounded-lg hover:bg-gray-50">
-                <span className="text-lg">✨</span>
-                <span className="text-base">{t('aiImageTools')}</span>
+              <Link 
+                href={`/${locale}/image-convert`} 
+                className="block px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Resim Araçları
               </Link>
-              <Link href={`/${locale}/image-batch`} className="block px-4 py-3 text-gray-800 hover:text-blue-600 apple-link-hover flex items-center space-x-3 rounded-lg hover:bg-gray-50">
-                <span className="text-lg">⚡</span>
-                <span className="text-base">{t('aiBatchProcessing')}</span>
+              <Link 
+                href={`/${locale}/blog`} 
+                className="block px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Blog
               </Link>
-              <Link href={`/${locale}/blog`} className="block px-4 py-3 text-gray-800 hover:text-blue-600 apple-link-hover flex items-center space-x-3 rounded-lg hover:bg-gray-50">
-                <span className="text-lg">🧠</span>
-                <span className="text-base">{t('aiBlog')}</span>
-              </Link>
+              
+              {/* Mobile Admin Link */}
+              {isAdmin && (
+                <Link
+                  href={`/${locale}/admin`}
+                  className="flex items-center px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <ChartBarIcon className="h-4 w-4 mr-2" />
+                  <span>Admin</span>
+                </Link>
+              )}
             </div>
           </div>
         )}
