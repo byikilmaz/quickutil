@@ -72,6 +72,7 @@ function PDFConvert({ locale }: { locale: string }) {
   const configureRef = useRef<HTMLDivElement>(null);
   const processingRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+  const processButtonRef = useRef<HTMLButtonElement>(null);
 
   // Conversion tools configuration
   const conversionTools = [
@@ -174,6 +175,17 @@ function PDFConvert({ locale }: { locale: string }) {
 
     setSelectedFiles(files);
     setError(null);
+    
+    // Auto-scroll to process button after file selection
+    setTimeout(() => {
+      if (processButtonRef.current) {
+        processButtonRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        processButtonRef.current.focus();
+      }
+    }, 500); // Small delay to allow UI to update
   };
 
   // Handle tool selection
@@ -581,9 +593,10 @@ function PDFConvert({ locale }: { locale: string }) {
 
                     {/* Process Button */}
                     <button
+                      ref={processButtonRef}
                       onClick={handleConvert}
                       disabled={isProcessing}
-                      className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                      className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105 focus:ring-4 focus:ring-purple-300 focus:outline-none"
                     >
                       <SparklesIcon className="h-4 w-4 mr-2" />
                       {isProcessing 
