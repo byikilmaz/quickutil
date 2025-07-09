@@ -135,6 +135,7 @@ temp_private_key.txt
 *credentials*.json
 *quickutil*.json
 functions/*quickutil*.json
+functions/quickutil-d2998-2d5b967ac0e5.json
 
 # Sentry
 .sentryclirc

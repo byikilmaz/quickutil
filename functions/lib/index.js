@@ -32,8 +32,12 @@ const admin = __importStar(require("firebase-admin"));
 const cors_1 = __importDefault(require("cors"));
 const form_data_1 = __importDefault(require("form-data"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
-// Initialize Firebase Admin
-admin.initializeApp();
+// Initialize Firebase Admin with new secure service account
+const serviceAccount = require('../quickutil-d2998-2d5b967ac0e5.json');
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    projectId: 'quickutil-d2998',
+});
 const corsHandler = (0, cors_1.default)({ origin: true });
 /**
  * Advanced PDF Compression Function - Gelişmiş AI Destekli Sıkıştırma

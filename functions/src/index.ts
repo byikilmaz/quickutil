@@ -4,8 +4,13 @@ import cors from 'cors';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
 
-// Initialize Firebase Admin
-admin.initializeApp();
+// Initialize Firebase Admin with new secure service account
+const serviceAccount = require('../quickutil-d2998-2d5b967ac0e5.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  projectId: 'quickutil-d2998',
+});
 
 const corsHandler = cors({ origin: true });
 
