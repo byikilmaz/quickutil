@@ -9,6 +9,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { getTranslations } from '@/lib/translations';
+import { 
+  compressImageWithServer, 
+  checkAPIHealth, 
+  validateImageFile,
+  formatFileSize as serverFormatFileSize,
+  getCompressionSavings,
+  type ServerCompressionOptions,
+  type ServerCompressionResult
+} from '@/lib/serverImageUtils';
 
 interface CompressionResult {
   originalFile: File;
@@ -114,41 +123,61 @@ function ImageCompress({ locale }: { locale: string }) {
     }, 100);
 
     try {
-      // Simulate processing progress
+      // Start progress simulation
       const progressInterval = setInterval(() => {
         setProcessingProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(progressInterval);
-            return 100;
-          }
-          return prev + Math.random() * 15;
+          const newProgress = prev + Math.random() * 10;
+          return newProgress > 85 ? 85 : newProgress;
         });
-      }, 200);
+      }, 300);
 
-      // Simulate actual compression (replace with real implementation)
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Validate image file
+      const validation = validateImageFile(selectedFile);
+      if (!validation.isValid) {
+        throw new Error(validation.error);
+      }
+
+      // Check if server API is available
+      const serverAvailable = await checkAPIHealth();
       
-      // Clear progress interval
+      let result: CompressionResult;
+
+      if (serverAvailable) {
+        // Use server compression (professional quality)
+        const serverOptions: ServerCompressionOptions = {
+          quality: Math.round(quality * 100),
+          format: format.toUpperCase() as 'JPEG' | 'PNG' | 'WEBP',
+          mode: 'aggressive'
+        };
+
+        const serverResult = await compressImageWithServer(selectedFile, serverOptions);
+        
+        result = {
+          originalFile: serverResult.originalFile,
+          compressedBlob: serverResult.compressedBlob,
+          originalSize: serverResult.originalSize,
+          compressedSize: serverResult.compressedSize,
+          compressionRatio: serverResult.compressionRatio,
+          downloadUrl: serverResult.downloadUrl
+        };
+      } else {
+        // Fallback to client compression
+        const { compressImage } = await import('@/lib/imageUtils');
+        const clientResult = await compressImage(selectedFile, quality);
+        
+        result = {
+          originalFile: selectedFile,
+          compressedBlob: new Blob([clientResult.file]),
+          originalSize: clientResult.originalSize,
+          compressedSize: clientResult.newSize,
+          compressionRatio: (1 - clientResult.compressionRatio) * 100,
+          downloadUrl: URL.createObjectURL(clientResult.file)
+        };
+      }
+      
+      // Clear progress interval and set to 100%
       clearInterval(progressInterval);
       setProcessingProgress(100);
-
-      // Create mock compression result
-      const originalSize = selectedFile.size;
-      const compressedSize = Math.floor(originalSize * (1 - quality * 0.7));
-      const compressionRatio = ((originalSize - compressedSize) / originalSize) * 100;
-
-      // Create compressed blob (mock)
-      const compressedBlob = selectedFile.slice(0, compressedSize);
-      const downloadUrl = URL.createObjectURL(compressedBlob);
-
-      const result: CompressionResult = {
-        originalFile: selectedFile,
-        compressedBlob,
-        originalSize,
-        compressedSize,
-        compressionRatio,
-        downloadUrl
-      };
 
       setCompressionResult(result);
       setCurrentStep('result');
@@ -163,7 +192,8 @@ function ImageCompress({ locale }: { locale: string }) {
       }, 500);
 
     } catch (err) {
-      setError('Resim sıkıştırılırken bir hata oluştu. Lütfen tekrar deneyin.');
+      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
+      setError(`Resim sıkıştırılırken bir hata oluştu: ${errorMessage}`);
       setIsProcessing(false);
       setCurrentStep('configure');
       console.error('Image compression error:', err);
