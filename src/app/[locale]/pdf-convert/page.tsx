@@ -856,17 +856,27 @@ function PDFConvert({ locale }: { locale: string }) {
                   </div>
                 </button>
                 
-                <Link 
-                  href="/pdf-compress"
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl px-8 py-4 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-blue-500/30 flex items-center justify-center transform hover:scale-105"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <DocumentIcon className="h-5 w-5 text-white" />
+                {/* ZIP Download Button - Only show if multiple files */}
+                {conversionResult && conversionResult.results.length > 1 && (
+                  <button
+                    onClick={handleDownloadAll}
+                    disabled={isDownloadingZip}
+                    className="bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:via-orange-700 hover:to-amber-600 disabled:opacity-50 text-white rounded-2xl px-8 py-4 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-orange-500/30 flex items-center justify-center transform hover:scale-105"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        {isDownloadingZip ? (
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <ArrowDownTrayIcon className="h-5 w-5 text-white" />
+                        )}
+                      </div>
+                      <span>
+                        {isDownloadingZip ? '📦 ZIP Hazırlanıyor...' : '📦 Hepsini İndir (ZIP)'}
+                      </span>
                     </div>
-                    <span>📦 PDF Sıkıştır</span>
-                  </div>
-                </Link>
+                  </button>
+                )}
               </div>
 
               {/* Other Tools Section - Enhanced */}
