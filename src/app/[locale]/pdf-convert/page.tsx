@@ -82,7 +82,12 @@ function PDFConvert({ locale }: { locale: string }) {
       icon: PhotoIcon,
       color: 'from-blue-500 to-cyan-500',
       multiple: false,
-      formats: ['PNG', 'JPG']
+      formats: ['PNG', 'JPG'],
+      features: [
+        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
+        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
+        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem')
+      ]
     },
     {
       id: 'pdf-to-text',
@@ -91,7 +96,12 @@ function PDFConvert({ locale }: { locale: string }) {
       icon: DocumentTextIcon,
       color: 'from-green-500 to-emerald-500',
       multiple: false,
-      formats: ['TXT']
+      formats: ['TXT'],
+      features: [
+        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
+        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
+        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem')
+      ]
     },
     {
       id: 'pdf-split',
@@ -100,7 +110,12 @@ function PDFConvert({ locale }: { locale: string }) {
       icon: ScissorsIcon,
       color: 'from-purple-500 to-violet-500',
       multiple: false,
-      formats: ['PDF']
+      formats: ['PDF'],
+      features: [
+        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
+        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
+        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem')
+      ]
     },
     {
       id: 'pdf-merge',
@@ -109,7 +124,13 @@ function PDFConvert({ locale }: { locale: string }) {
       icon: Square2StackIcon,
       color: 'from-orange-500 to-red-500',
       multiple: true,
-      formats: ['PDF']
+      formats: ['PDF'],
+      features: [
+        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
+        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
+        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem'),
+        getText('pdfTools.features.multipleFileSupport', 'Çoklu Dosya Desteği')
+      ]
     }
   ];
 
@@ -153,7 +174,6 @@ function PDFConvert({ locale }: { locale: string }) {
 
     setSelectedFiles(files);
     setError(null);
-    setCurrentStep('configure');
   };
 
   // Handle tool selection
@@ -291,6 +311,14 @@ function PDFConvert({ locale }: { locale: string }) {
     setProcessingProgress(0);
   };
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50">
       <StructuredData 
@@ -301,14 +329,14 @@ function PDFConvert({ locale }: { locale: string }) {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Breadcrumb />
 
-        {/* Step 1: Upload - Tool Selection */}
-        {currentStep === 'upload' && (
-          <div ref={uploadRef} className="min-h-screen flex flex-col justify-center py-8">
-            <div className="text-center mb-8 md:mb-12 animate-fade-in">
-              <div className="inline-flex items-center justify-center w-16 md:w-20 h-16 md:h-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full mb-4 md:mb-6">
-                <SparklesIcon className="h-8 md:h-10 w-8 md:w-10 text-white" />
-              </div>
-              
+        {/* STEP 1: UPLOAD - Clean Design Like PDF Compress */}
+        <div ref={uploadRef} className={`py-16 transition-all duration-500 ${
+          currentStep === 'upload' ? 'opacity-100' : 'opacity-50 pointer-events-none'
+        }`}>
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            
+            {/* Header */}
+            <div className="mb-16">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 px-4">
                 {getText('pdfConvert.title', 'AI PDF Dönüştürme')}
               </h1>
@@ -317,370 +345,547 @@ function PDFConvert({ locale }: { locale: string }) {
               </p>
             </div>
 
-            {/* Tool Selection Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
-              {conversionTools.map((tool, index) => (
+            {/* Tool Selection Grid - Visual Cards with Large Icons */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+              {conversionTools.map((tool) => (
                 <button
                   key={tool.id}
-                  onClick={() => handleToolSelect(tool.id)}
-                  className={`group p-6 md:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 text-left transform hover:scale-105 ${
-                    selectedTool === tool.id ? 'border-purple-500 bg-purple-50/70 shadow-lg' : ''
+                  onClick={() => {
+                    setSelectedTool(tool.id);
+                    setCurrentStep('configure');
+                  }}
+                  className={`group relative bg-white rounded-2xl border-2 p-8 text-left transition-all duration-300 hover:shadow-2xl hover:scale-105 transform ${
+                    selectedTool === tool.id 
+                      ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50 shadow-xl' 
+                      : 'border-gray-200 hover:border-purple-300 hover:shadow-lg'
                   }`}
                 >
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r ${tool.color} mb-4`}>
-                    <tool.icon className="h-6 w-6 text-white" />
+                  {/* Large Tool Icon with Gradient Background */}
+                  <div className="text-center mb-6">
+                    <div className={`relative mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br ${tool.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                      <tool.icon className="h-10 w-10 text-white" />
+                      
+                      {/* Sparkle Effect */}
+                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
+                        <SparklesIcon className="h-3 w-3 text-white" />
+                      </div>
+                    </div>
+                    
+                    {/* Tool Title with Gradient Text */}
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3">
+                      {tool.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                      {tool.description}
+                    </p>
                   </div>
                   
-                  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">{tool.title}</h3>
-                  <p className="text-sm md:text-base text-gray-700 mb-4">{tool.description}</p>
-                  
-                  {/* Format badges */}
-                  <div className="flex flex-wrap gap-2">
+                  {/* Visual Features with Icons */}
+                  <div className="space-y-3">
+                    {tool.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center bg-green-50 rounded-lg p-3 border border-green-100">
+                        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                          <CheckCircleIcon className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Format Badges */}
+                  <div className="flex flex-wrap gap-2 mt-6">
                     {tool.formats.map(format => (
-                      <span key={format} className="px-2 md:px-3 py-1 bg-gray-100 text-gray-800 text-xs md:text-sm rounded-full font-medium">
-                        {format}
+                      <span key={format} className="px-3 py-1 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 text-xs font-semibold rounded-full border border-blue-200">
+                        📄 {format}
                       </span>
                     ))}
                   </div>
+
+                  {/* Selected indicator with Animation */}
+                  {selectedTool === tool.id && (
+                    <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center animate-bounce shadow-lg">
+                      <CheckCircleIcon className="h-5 w-5 text-white" />
+                    </div>
+                  )}
+
+                  {/* Hover Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </button>
               ))}
             </div>
 
-            {/* Next step indicator */}
+            {/* Continue Button with Enhanced Visual */}
             {selectedTool && (
-              <div className="text-center animate-bounce-in">
-                <p className="text-purple-600 font-medium text-sm md:text-base">
-                  ✨ {conversionTools.find(t => t.id === selectedTool)?.title} {getText('pdfConvert.toolSelected', 'seçildi! Dosya yükleniyor...')}
-                </p>
+              <div className="max-w-sm mx-auto animate-bounce-in">
+                <button
+                  onClick={() => setCurrentStep('configure')}
+                  className="w-full bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-2xl px-8 py-5 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-purple-500/30 flex items-center justify-center transform hover:scale-105"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
+                    </div>
+                    <span>{getText('pdfConvert.continue', 'Devam Et')}</span>
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <ArrowLeftIcon className="h-5 w-5 text-white rotate-180" />
+                    </div>
+                  </div>
+                </button>
               </div>
             )}
           </div>
-        )}
+        </div>
 
-        {/* Step 2: Configure - File Upload */}
-        {selectedTool && currentStep === 'configure' && (
-          <div ref={configureRef} className="min-h-screen flex flex-col justify-center py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* STEP 2: CONFIGURE - Clean Upload Like PDF Compress */}
+        <div ref={configureRef} className={`py-16 transition-all duration-500 ${
+          currentStep === 'configure' ? 'opacity-100' : 'opacity-50 pointer-events-none'
+        }`}>
+          {selectedTool && (
+            <div className="max-w-4xl mx-auto px-4">
               
-              {/* Tool Info - Left Side */}
-              <div className="lg:col-span-1 bg-white/70 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-gray-200 h-fit">
-                <div className="text-center">
-                  {(() => {
-                    const tool = conversionTools.find(t => t.id === selectedTool);
-                    if (!tool) return null;
-                    return (
-                      <>
-                        <div className={`inline-flex items-center justify-center w-12 md:w-16 h-12 md:h-16 rounded-xl bg-gradient-to-r ${tool.color} mb-4`}>
-                          <tool.icon className="h-6 md:h-8 w-6 md:w-8 text-white" />
-                        </div>
-                        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">{tool.title}</h2>
-                        <p className="text-sm md:text-base text-gray-700 mb-4">{tool.description}</p>
-                        
-                        {/* Features */}
-                        <div className="space-y-2 text-left">
-                          <div className="flex items-center text-xs md:text-sm text-gray-700">
-                            <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                            <span>{getText('pdfTools.features.highQuality')}</span>
-                          </div>
-                          <div className="flex items-center text-xs md:text-sm text-gray-700">
-                            <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                            <span>{getText('pdfTools.features.maxSize')} 20MB</span>
-                          </div>
-                          <div className="flex items-center text-xs md:text-sm text-gray-700">
-                            <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                            <span>{getText('pdfTools.features.fastProcessing')}</span>
-                          </div>
-                          {tool.multiple && (
-                            <div className="flex items-center text-xs md:text-sm text-gray-700">
-                              <CheckCircleIcon className="h-3 md:h-4 w-3 md:w-4 text-green-500 mr-2" />
-                              <span>{getText('pdfTools.features.multipleFileSupport')}</span>
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    );
-                  })()}
+              {/* Header */}
+              <div className="text-center mb-12">
+                <div className="mb-4">
+                  <p className="text-purple-600 font-medium text-sm md:text-base">
+                    ✨ {conversionTools.find(t => t.id === selectedTool)?.title} {getText('pdfConvert.toolSelected', 'seçildi! Dosya yükleniyor...')}
+                  </p>
                 </div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                  {getText('pdfConvert.uploadFiles', 'Dosya Yükleme')}
+                </h1>
               </div>
 
-              {/* File Upload - Right Side */}
-              <div className="lg:col-span-2">
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200 p-4 md:p-8">
-                  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">{getText('pdfConvert.fileUpload')}</h3>
+              {/* Enhanced Upload Button with Visuals */}
+              <div className="max-w-md mx-auto text-center">
+                <div className="relative group cursor-pointer">
+                  {/* Main Upload Button with Gradient and Effects */}
+                  <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-3xl px-12 py-8 text-xl font-bold transition-all duration-500 shadow-2xl hover:shadow-purple-500/40 flex flex-col items-center justify-center transform hover:scale-105 group-hover:rotate-1">
+                    
+                    {/* Animated Upload Icon */}
+                    <div className="relative mb-4">
+                      <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <CloudArrowUpIcon className="h-8 w-8 text-white group-hover:animate-bounce" />
+                      </div>
+                      
+                      {/* Floating Plus Icons */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
+                        <span className="text-white text-xs font-bold">+</span>
+                      </div>
+                      <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-green-400 rounded-full flex items-center justify-center animate-ping opacity-75">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    </div>
+                    
+                    {/* Dynamic Text */}
+                    <div className="text-center">
+                      <div className="text-lg font-bold mb-2">
+                        {conversionTools.find(t => t.id === selectedTool)?.multiple 
+                          ? '📂 PDF Dosyalarını Seç'
+                          : '📄 PDF Dosyasını Seç'
+                        }
+                      </div>
+                      <div className="text-sm opacity-90">
+                        ✨ Yapay Zeka Destekli Dönüştürme
+                      </div>
+                    </div>
+
+                    {/* Animated Border */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm"></div>
+                  </div>
+
+                  {/* Hidden FileUpload Component */}
+                  <FileUpload
+                    onFileSelect={(file) => {
+                      const files = Array.isArray(file) ? file : [file];
+                      handleFileSelect(files);
+                    }}
+                    acceptedTypes={['application/pdf']}
+                    maxSize={20 * 1024 * 1024}
+                    multiple={conversionTools.find(t => t.id === selectedTool)?.multiple || false}
+                    title=""
+                    description=""
+                  />
+
+                  {/* Orbit Animation */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-dashed border-purple-300 rounded-full animate-spin opacity-30 transform -translate-x-1/2 -translate-y-1/2"></div>
+                  </div>
+                </div>
+                
+                {/* Enhanced Description with Icons */}
+                <div className="mt-6 space-y-3">
+                  <p className="text-lg text-gray-700 font-medium">
+                    🎯 veya PDF'i buraya sürükle & bırak
+                  </p>
                   
-                  {!selectedFiles.length ? (
-                    <div className="mb-6">
-                      <FileUpload
-                        onFileSelect={(file) => {
-                          // Handle both single file and file array
-                          const files = Array.isArray(file) ? file : [file];
-                          handleFileSelect(files);
-                        }}
-                        acceptedTypes={['application/pdf']}
-                        maxSize={20 * 1024 * 1024}
-                        multiple={conversionTools.find(t => t.id === selectedTool)?.multiple || false}
-                        title={getText('pdfConvert.selectOrDrag')}
-                        description={`${conversionTools.find(t => t.id === selectedTool)?.multiple 
-                          ? getText('pdfConvert.multipleFiles') 
-                          : getText('pdfConvert.singleFile')} • ${getText('pdfConvert.maxSize')}`}
-                      />
+                  {/* File Requirements with Visual Elements */}
+                  <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-4 border border-blue-200">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="space-y-1">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg mx-auto flex items-center justify-center">
+                          <DocumentIcon className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="text-xs text-gray-600">PDF Format</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg mx-auto flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">20</span>
+                        </div>
+                        <div className="text-xs text-gray-600">Max 20MB</div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg mx-auto flex items-center justify-center">
+                          <SparklesIcon className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="text-xs text-gray-600">AI Powered</div>
+                      </div>
                     </div>
-                  ) : (
-                    <div>
-                      {/* Selected Files */}
-                      <div className="space-y-3 mb-4 md:mb-6">
-                        {selectedFiles.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 md:p-4 bg-green-50 border border-green-200 rounded-xl">
-                            <div className="flex items-center space-x-3">
-                              <DocumentIcon className="h-6 md:h-8 w-6 md:w-8 text-green-600" />
-                              <div>
-                                <p className="font-medium text-gray-900 text-sm md:text-base truncate max-w-48 md:max-w-none">{file.name}</p>
-                                <p className="text-xs md:text-sm text-gray-600">
-                                  {(file.size / 1024 / 1024).toFixed(2)} MB
-                                </p>
-                              </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* File List - If files selected */}
+              {selectedFiles.length > 0 && (
+                <div className="mt-8 max-w-2xl mx-auto">
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <h3 className="font-semibold text-gray-900 mb-4">
+                      {getText('pdfConvert.selectedFiles', 'Seçilen Dosyalar')} ({selectedFiles.length})
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {selectedFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center">
+                            <DocumentIcon className="h-8 w-8 text-red-500 mr-3" />
+                            <div>
+                              <p className="font-medium text-sm text-gray-900 truncate max-w-48">
+                                {file.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {formatFileSize(file.size)}
+                              </p>
                             </div>
-                            <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-green-500" />
                           </div>
-                        ))}
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                        <button
-                          onClick={handleConvert}
-                          className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 md:py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base"
-                        >
-                          ✨ {getText('pdfConvert.startConversion')}
-                        </button>
-                        <button
-                          onClick={() => setSelectedFiles([])}
-                          className="px-4 md:px-6 py-3 md:py-4 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
-                        >
-                          <TrashIcon className="h-4 md:h-5 w-4 md:w-5" />
-                        </button>
-                      </div>
+                          <button
+                            onClick={() => {
+                              const newFiles = selectedFiles.filter((_, i) => i !== index);
+                              setSelectedFiles(newFiles);
+                            }}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Step 3: Processing */}
-        {currentStep === 'processing' && (
-          <div ref={processingRef} className="min-h-screen flex flex-col justify-center px-4">
-            <div className="text-center max-w-md mx-auto">
-              
-              {/* Processing Animation */}
-              <div className="relative mb-6 md:mb-8">
-                <div className="w-24 md:w-32 h-24 md:h-32 mx-auto">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full animate-pulse"></div>
-                  <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-                    <SparklesIcon className="h-8 md:h-12 w-8 md:w-12 text-purple-600 animate-bounce" />
+                    {/* Process Button */}
+                    <button
+                      onClick={handleConvert}
+                      disabled={isProcessing}
+                      className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      <SparklesIcon className="h-4 w-4 mr-2" />
+                      {isProcessing 
+                        ? getText('pdfConvert.processing', 'İşleniyor...') 
+                        : getText('pdfConvert.startConversion', 'Dönüştürmeyi Başlat')
+                      }
+                    </button>
                   </div>
-                </div>
-              </div>
-
-              {/* Processing Text */}
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4">
-                {getText('pdfConvert.processing')}
-              </h2>
-              <p className="text-sm md:text-base text-gray-700 mb-6 md:mb-8">
-                {getText('pdfConvert.processingDesc')}
-              </p>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-gray-200 rounded-full h-2 md:h-3 mb-3 md:mb-4">
-                <div 
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 h-2 md:h-3 rounded-full transition-all duration-300"
-                  style={{ width: `${processingProgress}%` }}
-                ></div>
-              </div>
-              <p className="text-xs md:text-sm text-gray-600 mb-6 md:mb-8">%{processingProgress} {getText('pdfTools.progress.completed')}</p>
-
-              {/* Processing Steps */}
-              <div className="space-y-2 md:space-y-3 text-left">
-                {[
-                  `📄 ${getText('pdfConvert.processingSteps.analyze')}`,
-                  `🤖 ${getText('pdfConvert.processingSteps.ai')}`,
-                  `⚡ ${getText('pdfConvert.processingSteps.optimize')}`
-                ].map((step, index) => (
-                  <div key={index} className="flex items-center text-xs md:text-sm text-gray-700">
-                    <div className="w-1.5 md:w-2 h-1.5 md:h-2 bg-purple-500 rounded-full mr-2 md:mr-3 animate-pulse"></div>
-                    {step}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 4: Result */}
-        {currentStep === 'result' && conversionResult && (
-          <div ref={resultRef} className="min-h-screen flex flex-col justify-center px-4 py-8">
-            <div className="text-center max-w-2xl mx-auto">
-              
-              {/* Success Animation */}
-              <div className="mb-6 md:mb-8">
-                <div className="inline-flex items-center justify-center w-20 md:w-24 h-20 md:h-24 bg-green-100 rounded-full mb-4">
-                  <CheckCircleIcon className="h-10 md:h-12 w-10 md:w-12 text-green-600" />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                  {getText('pdfConvert.completed')} 🎉
-                </h2>
-                <p className="text-sm md:text-base text-gray-700">
-                  {conversionResult.convertedCount} {getText('pdfConvert.filesConverted')}
-                </p>
-              </div>
-
-              {/* Results Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
-                <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-200">
-                  <div className="text-xl md:text-2xl font-bold text-purple-600">{conversionResult.convertedCount}</div>
-                  <div className="text-xs md:text-sm text-gray-700">{getText('pdfConvert.stats.converted')}</div>
-                </div>
-                <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-200">
-                  <div className="text-xl md:text-2xl font-bold text-green-600">
-                    {(conversionResult.totalSize / 1024 / 1024).toFixed(1)}MB
-                  </div>
-                  <div className="text-xs md:text-sm text-gray-700">{getText('pdfConvert.stats.totalSize')}</div>
-                </div>
-                <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-200 md:col-span-1 col-span-2">
-                  <div className="text-xl md:text-2xl font-bold text-blue-600">
-                    {(conversionResult.processingTime / 1000).toFixed(1)}s
-                  </div>
-                  <div className="text-xs md:text-sm text-gray-700">{getText('pdfConvert.stats.processingTime')}</div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
-                {conversionResult.downloadUrls.map((file, index) => (
-                  <a
-                    key={index}
-                    href={file.url}
-                    download={file.name}
-                    className="flex items-center justify-between p-3 md:p-4 bg-white/70 backdrop-blur-sm rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-200 group"
-                  >
-                    <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      <DocumentIcon className="h-6 md:h-8 w-6 md:w-8 text-purple-600" />
-                      <div className="text-left flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 text-sm md:text-base truncate">{file.name}</p>
-                        <p className="text-xs md:text-sm text-gray-600">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                      </div>
-                    </div>
-                    <ArrowDownTrayIcon className="h-4 md:h-5 w-4 md:w-5 text-gray-500 group-hover:text-purple-600 transition-colors duration-200 ml-2" />
-                  </a>
-                ))}
-              </div>
-
-              {/* Download All Button */}
-              {conversionResult.results.length > 1 && (
-                <div className="mb-6 md:mb-8">
-                  <button
-                    onClick={handleDownloadAll}
-                    disabled={isDownloadingZip}
-                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 md:py-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                  >
-                    {isDownloadingZip ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>{getText('pdfConvert.downloadPreparingZip')}</span>
-                      </>
-                    ) : (
-                      <>
-                        <ArrowDownTrayIcon className="h-4 md:h-5 w-4 md:w-5" />
-                        <span>🗂️ {getText('pdfConvert.downloadAll')}</span>
-                      </>
-                    )}
-                  </button>
                 </div>
               )}
 
-              {/* Control Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-6 md:mb-8">
+              {/* Error Display */}
+              {error && (
+                <div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto">
+                  <p className="text-red-800 text-center">{error}</p>
+                </div>
+              )}
+
+              {/* Back Button */}
+              <div className="text-center mt-8">
                 <button
-                  onClick={handleReset}
-                  className="px-6 md:px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base"
+                  onClick={() => {
+                    setCurrentStep('upload');
+                    setSelectedTool('');
+                    setSelectedFiles([]);
+                    setError(null);
+                  }}
+                  className="text-purple-600 hover:text-purple-700 font-medium text-sm inline-flex items-center"
                 >
-                  🚀 {getText('pdfConvert.newConversion')}
-                </button>
-                <button
-                  onClick={() => setCurrentStep('upload')}
-                  className="px-6 md:px-8 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center text-sm md:text-base"
-                >
-                  <ArrowLeftIcon className="h-4 md:h-5 w-4 md:w-5 mr-2" />
-                  {getText('pdfConvert.changeTool')}
+                  <ArrowLeftIcon className="h-4 w-4 mr-1" />
+                  {getText('pdfConvert.backToTools', 'Araç Seçimine Dön')}
                 </button>
               </div>
+            </div>
+          )}
+        </div>
 
-              {/* Other Tools Section */}
-              <div className="pt-6 border-t border-gray-200">
-                <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-3 text-center">
-                  {getText('pdfConvert.otherTools')}
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 max-w-3xl mx-auto">
-                  <Link
-                    href="/pdf-compress" 
-                    className="flex flex-col items-center p-2 md:p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
+        {/* STEP 3: PROCESSING - Enhanced Visual Processing */}
+        <div ref={processingRef} className={`py-16 transition-all duration-500 ${
+          currentStep === 'processing' ? 'opacity-100' : 'opacity-50 pointer-events-none'
+        }`}>
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            
+            {/* Processing Header with Animations */}
+            <div className="mb-12">
+              <div className="relative mb-8">
+                {/* Central Processing Icon with Rotation */}
+                <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-3xl flex items-center justify-center shadow-2xl animate-pulse">
+                  <SparklesIcon className="h-12 w-12 text-white animate-spin" />
+                </div>
+                
+                {/* Orbital Animation */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-1/2 left-1/2 w-32 h-32 border-4 border-dotted border-purple-300 rounded-full animate-spin opacity-60 transform -translate-x-1/2 -translate-y-1/2"></div>
+                  <div className="absolute top-1/2 left-1/2 w-48 h-48 border-2 border-dashed border-pink-300 rounded-full animate-spin opacity-40 transform -translate-x-1/2 -translate-y-1/2" style={{ animationDirection: 'reverse', animationDuration: '3s' }}></div>
+                </div>
+                
+                {/* Floating Elements */}
+                <div className="absolute top-0 left-1/4 w-4 h-4 bg-yellow-400 rounded-full animate-bounce opacity-70" style={{ animationDelay: '0.5s' }}>
+                  <span className="text-xs">📄</span>
+                </div>
+                <div className="absolute bottom-0 right-1/4 w-4 h-4 bg-green-400 rounded-full animate-bounce opacity-70" style={{ animationDelay: '1s' }}>
+                  <span className="text-xs">✨</span>
+                </div>
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                {getText('pdfConvert.processing', 'Yapay Zeka ile İşleniyor...')}
+              </h2>
+              <p className="text-lg text-gray-700 mb-8">
+                {getText('pdfConvert.processingDesc', 'AI algoritmaları dosyalarınızı optimize ediyor')}
+              </p>
+            </div>
+
+            {/* Enhanced Progress Section */}
+            <div className="max-w-2xl mx-auto mb-12">
+              {/* Progress Bar with Gradient */}
+              <div className="relative mb-6">
+                <div className="w-full bg-gray-200 rounded-full h-4 shadow-inner">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 h-4 rounded-full shadow-lg transition-all duration-300 relative overflow-hidden"
+                    style={{ width: `${processingProgress}%` }}
                   >
-                    <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
-                      <DocumentIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
+                    {/* Animated shine effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+                  </div>
+                </div>
+                
+                {/* Progress Percentage with Visual */}
+                <div className="flex items-center justify-center mt-3">
+                  <div className="bg-white rounded-full px-4 py-2 shadow-lg border border-purple-200">
+                    <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      {processingProgress}% 
+                    </span>
+                    <span className="text-sm text-gray-600 ml-1">
+                      {getText('pdfTools.progress.completed', 'tamamlandı')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Processing Steps with Icons */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { icon: '📄', label: 'Dosya Yükleniyor', step: 1 },
+                  { icon: '🤖', label: 'AI Analiz Yapıyor', step: 2 },
+                  { icon: '⚡', label: 'Dönüştürme Tamamlanıyor', step: 3 }
+                ].map((item, idx) => (
+                  <div key={idx} className={`relative p-4 rounded-2xl border-2 transition-all duration-500 ${
+                    processingProgress > (idx + 1) * 33 
+                      ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 scale-105' 
+                      : processingProgress > idx * 33 
+                      ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-300 animate-pulse' 
+                      : 'bg-gray-50 border-gray-200'
+                  }`}>
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">{item.icon}</div>
+                      <div className="text-sm font-medium text-gray-700">{item.label}</div>
                     </div>
-                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.pdfCompress')}</span>
-                  </Link>
+                    
+                    {/* Step completion indicator */}
+                    {processingProgress > (idx + 1) * 33 && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-bounce">
+                        <CheckCircleIcon className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Fun Processing Messages */}
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200">
+              <div className="flex items-center justify-center space-x-3 text-blue-700">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
+                  <SparklesIcon className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-lg font-medium">
+                  ✨ Yapay zeka dosyalarınızı en iyi şekilde optimize ediyor...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* STEP 4: RESULT - Enhanced Visual Success */}
+        {currentStep === 'result' && (
+          <div ref={resultRef} className="min-h-screen flex flex-col justify-center px-4">
+            <div className="text-center max-w-4xl mx-auto">
+              
+              {/* Success Animation */}
+              <div className="relative mb-12">
+                {/* Celebration Background */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                  {[...Array(8)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-4 h-4 bg-yellow-400 rounded-full animate-bounce opacity-70"
+                      style={{
+                        left: `${20 + i * 10}%`,
+                        top: `${10 + (i % 2) * 20}%`,
+                        animationDelay: `${i * 0.2}s`,
+                        animationDuration: '2s'
+                      }}
+                    >
+                      {['🎉', '✨', '🎊', '⭐'][i % 4]}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Main Success Icon */}
+                <div className="relative z-10 w-32 h-32 mx-auto mb-8">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 rounded-full animate-pulse shadow-2xl"></div>
+                  <div className="absolute inset-4 bg-white rounded-full flex items-center justify-center">
+                    <CheckCircleIcon className="h-16 w-16 text-green-500 animate-bounce" />
+                  </div>
                   
-                  <Link
-                    href="/image-convert" 
-                    className="flex flex-col items-center p-2 md:p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
-                  >
-                    <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
-                      <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageConvert')}</span>
-                  </Link>
+                  {/* Success Rings */}
+                  <div className="absolute inset-0 border-4 border-green-300 rounded-full animate-ping opacity-75"></div>
+                  <div className="absolute -inset-4 border-2 border-green-200 rounded-full animate-pulse opacity-50"></div>
+                </div>
+                
+                <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
+                  🎉 Başarıyla Tamamlandı!
+                </h2>
+                <p className="text-xl text-gray-700 mb-8">
+                  ✨ PDF dosyalarınız yapay zeka ile dönüştürüldü
+                </p>
+              </div>
 
-                  <Link
-                    href="/image-compress" 
-                    className="flex flex-col items-center p-2 md:p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
-                  >
-                    <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
-                      <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageCompress')}</span>
-                  </Link>
+              {/* Conversion Results */}
+              {conversionResult && conversionResult.results.length > 0 && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center justify-center">
+                    <span className="mr-3">📁</span>
+                    Dönüştürülen Dosyalar
+                    <span className="ml-3 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 px-3 py-1 rounded-full text-lg">
+                      {conversionResult.convertedCount}
+                    </span>
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {conversionResult.results.map((result, index) => (
+                      <div key={index} className="group bg-white rounded-2xl border-2 border-gray-200 p-6 hover:border-purple-300 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        {/* File Icon */}
+                        <div className="text-center mb-4">
+                          <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                            {result.type.includes('image') ? (
+                              <PhotoIcon className="h-8 w-8 text-white" />
+                            ) : result.type.includes('text') ? (
+                              <DocumentTextIcon className="h-8 w-8 text-white" />
+                            ) : (
+                              <DocumentIcon className="h-8 w-8 text-white" />
+                            )}
+                          </div>
+                          
+                          <h4 className="font-semibold text-gray-900 mb-2 truncate">
+                            {result.name}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            📏 {(result.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                        
+                        {/* Download Button */}
+                        <a
+                          href={result.url}
+                          download={result.name}
+                          className="w-full bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center transform hover:scale-105"
+                        >
+                          <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                          ⬇️ İndir
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-                  <Link
-                    href="/image-crop" 
-                    className="flex flex-col items-center p-2 md:p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
-                  >
-                    <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
-                      <ScissorsIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <button
+                  onClick={() => {
+                    setCurrentStep('upload');
+                    setSelectedFiles([]);
+                    setConversionResult(null);
+                    setSelectedTool('');
+                    setError(null);
+                  }}
+                  className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-2xl px-8 py-4 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-purple-500/30 flex items-center justify-center transform hover:scale-105"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
                     </div>
-                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageCrop')}</span>
-                  </Link>
+                    <span>🔄 Yeni Dönüştürme</span>
+                  </div>
+                </button>
+                
+                <Link 
+                  href="/pdf-compress"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl px-8 py-4 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-blue-500/30 flex items-center justify-center transform hover:scale-105"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <DocumentIcon className="h-5 w-5 text-white" />
+                    </div>
+                    <span>📦 PDF Sıkıştır</span>
+                  </div>
+                </Link>
+              </div>
 
-                  <Link
-                    href="/image-resize" 
-                    className="flex flex-col items-center p-2 md:p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
-                  >
-                    <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
-                      <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageResize')}</span>
-                  </Link>
-
-                  <Link
-                    href="/image-rotate" 
-                    className="flex flex-col items-center p-2 md:p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
-                  >
-                    <div className="w-6 md:w-8 h-6 md:h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
-                      <PhotoIcon className="h-3 md:h-4 w-3 md:w-4 text-white" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">{getText('tools.imageRotate')}</span>
-                  </Link>
+              {/* Other Tools Section - Enhanced */}
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 border border-gray-200">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                  <span className="mr-3">🛠️</span>
+                  Diğer PDF Araçları
+                  <span className="ml-3">✨</span>
+                </h3>
+                
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                  {[
+                    { href: '/pdf-compress', icon: '📦', title: 'PDF Sıkıştır', color: 'from-red-500 to-orange-500' },
+                    { href: '/pdf-merge', icon: '📑', title: 'PDF Birleştir', color: 'from-green-500 to-emerald-500' },
+                    { href: '/pdf-split', icon: '✂️', title: 'PDF Böl', color: 'from-blue-500 to-cyan-500' },
+                    { href: '/image-convert', icon: '🖼️', title: 'Resim Dönüştür', color: 'from-purple-500 to-pink-500' },
+                    { href: '/image-compress', icon: '📷', title: 'Resim Sıkıştır', color: 'from-yellow-500 to-orange-500' },
+                    { href: '/image-resize', icon: '📐', title: 'Resim Boyutlandır', color: 'from-indigo-500 to-purple-500' }
+                  ].map((tool) => (
+                    <Link
+                      key={tool.href}
+                      href={tool.href}
+                      className="group bg-white rounded-2xl p-4 text-center hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-purple-300 transform hover:scale-105"
+                    >
+                      <div className={`w-12 h-12 mx-auto bg-gradient-to-r ${tool.color} rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                        <span className="text-2xl">{tool.icon}</span>
+                      </div>
+                      <p className="text-xs font-medium text-gray-700 group-hover:text-purple-600 transition-colors">
+                        {tool.title}
+                      </p>
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>
