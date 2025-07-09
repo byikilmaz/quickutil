@@ -119,21 +119,21 @@ async function applyCompression(pdfDoc: PDFDocument, level: 'light' | 'medium' |
   const settings = {
     light: {
       useObjectStreams: false,
-      objectsPerTick: 25,
-      updateFieldAppearances: true,
+      objectsPerTick: 50,
+      updateFieldAppearances: false,
       removeMetadata: false,
       optimizeSize: false
     },
     medium: {
-      useObjectStreams: true,
-      objectsPerTick: 100,
+      useObjectStreams: false,
+      objectsPerTick: 50,
       updateFieldAppearances: false,
       removeMetadata: true,
-      optimizeSize: true
+      optimizeSize: false
     },
     high: {
       useObjectStreams: true,
-      objectsPerTick: 200,
+      objectsPerTick: 50,
       updateFieldAppearances: false,
       removeMetadata: true,
       optimizeSize: true
@@ -176,30 +176,23 @@ async function applyCompression(pdfDoc: PDFDocument, level: 'light' | 'medium' |
     }
   }
   
-  // Additional optimizations for high compression
+  // Simplified optimizations - aggressive optimization can increase size
   if (config.optimizeSize && level === 'high') {
     try {
-      console.log('⚡ Applying advanced optimizations...');
+      console.log('⚡ Applying safe optimizations...');
       
-      // Remove unused resources and optimize structure
+      // Only remove thumbnails - don't touch annotations or page structure
       const pages = pdfDoc.getPages();
-      console.log(`📄 Processing ${pages.length} pages for optimization...`);
+      console.log(`📄 Processing ${pages.length} pages for safe optimization...`);
       
-      // Try to remove annotations for maximum compression
       pages.forEach((page, index) => {
         try {
           const pageRef = page.ref;
           const pageDict = pdfDoc.context.lookup(pageRef);
           
-          // Remove annotations if they exist
-          if ((pageDict as any).has?.('Annots')) {
-            console.log(`📝 Removing annotations from page ${index + 1}`);
-            (pageDict as any).delete?.('Annots');
-          }
-          
-          // Remove other optional elements for size reduction
+          // Only remove thumbnails - they are safe to remove
           if ((pageDict as any).has?.('Thumb')) {
-            (pageDict as any).delete?.('Thumb'); // Remove thumbnail
+            (pageDict as any).delete?.('Thumb');
           }
           
         } catch (e) {
@@ -208,24 +201,19 @@ async function applyCompression(pdfDoc: PDFDocument, level: 'light' | 'medium' |
       });
       
     } catch (e) {
-      console.warn('⚠️ Advanced optimizations failed:', e);
+      console.warn('⚠️ Safe optimizations failed:', e);
     }
   }
   
-  // Enhanced save options for maximum compression
+  // Fixed save options - simpler and more effective
   const saveOptions: any = {
     useObjectStreams: config.useObjectStreams,
-    addDefaultPage: false,
     objectsPerTick: config.objectsPerTick,
     updateFieldAppearances: config.updateFieldAppearances,
   };
   
-  // Add compression-specific options
-  if (level === 'high') {
-    // These options help with file size reduction
-    saveOptions.compress = true;
-    saveOptions.objectsPerTick = 500; // Process more objects per tick for better compression
-  }
+  // Don't use internal compression for 'high' - it causes size increase
+  // The PDF structure optimization is enough
   
   console.log('💾 Saving PDF with optimized settings...');
   
