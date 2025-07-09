@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ArrowPathIcon, SparklesIcon, PhotoIcon, CloudArrowUpIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import FileUpload from '@/components/FileUpload';
@@ -45,11 +45,29 @@ function ImageCompress({ locale }: { locale: string }) {
   const [compressionResult, setCompressionResult] = useState<CompressionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Refs for smooth scrolling
+  // Refs for smooth scrolling and auto-focus
+  const uploadRef = useRef<HTMLDivElement>(null);
   const configureRef = useRef<HTMLDivElement>(null);
   const processingRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const processButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Auto-focus to upload area on page load
+  useEffect(() => {
+    if (currentStep === 'upload' && uploadRef.current) {
+      setTimeout(() => {
+        uploadRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'center'
+        });
+        // Focus on the upload area for accessibility
+        const fileInput = uploadRef.current?.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.focus();
+        }
+      }, 500);
+    }
+  }, [currentStep]);
 
   // File selection handler
   const handleFileSelect = (file: File) => {
@@ -204,7 +222,7 @@ function ImageCompress({ locale }: { locale: string }) {
       <div className="relative z-10">
         
         {/* STEP 1: UPLOAD */}
-        <div className={`py-16 transition-all duration-500 ${
+        <div ref={uploadRef} className={`py-16 transition-all duration-500 ${
           currentStep === 'upload' ? 'opacity-100' : 'opacity-50 pointer-events-none'
         }`}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
