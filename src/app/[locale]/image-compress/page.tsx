@@ -377,11 +377,14 @@ function ImageCompress({ locale }: { locale: string }) {
                     <div className="space-y-4">
                       {/* File Preview */}
                       <div className="relative bg-gray-50 rounded-xl p-4 text-center">
-                        <img
-                          src={URL.createObjectURL(selectedFile)}
-                          alt="Preview"
-                          className="max-w-full max-h-48 mx-auto rounded-lg shadow-sm"
-                        />
+                        <div className="w-full h-48 flex items-center justify-center">
+                          <img
+                            src={URL.createObjectURL(selectedFile)}
+                            alt="Preview"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                            style={{ maxWidth: '100%', maxHeight: '100%' }}
+                          />
+                        </div>
                       </div>
                       
                       {/* File Info */}
@@ -644,7 +647,18 @@ function ImageCompress({ locale }: { locale: string }) {
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                     📤 Orijinal Resim
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
+                    {/* Original Image Preview */}
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <div className="w-full h-32 flex items-center justify-center">
+                        <img
+                          src={URL.createObjectURL(compressionResult.originalFile)}
+                          alt="Original"
+                          className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                          style={{ maxWidth: '100%', maxHeight: '100%' }}
+                        />
+                      </div>
+                    </div>
                     <div className="bg-red-50 rounded-lg p-4 text-center">
                       <div className="text-2xl font-bold text-red-600 mb-1">
                         {formatFileSize(compressionResult.originalSize)}
@@ -658,7 +672,18 @@ function ImageCompress({ locale }: { locale: string }) {
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                     📥 Sıkıştırılmış Resim
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
+                    {/* Compressed Image Preview */}
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <div className="w-full h-32 flex items-center justify-center">
+                        <img
+                          src={compressionResult.downloadUrl}
+                          alt="Compressed"
+                          className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                          style={{ maxWidth: '100%', maxHeight: '100%' }}
+                        />
+                      </div>
+                    </div>
                     <div className="bg-green-50 rounded-lg p-4 text-center">
                       <div className="text-2xl font-bold text-green-600 mb-1">
                         {formatFileSize(compressionResult.compressedSize)}
