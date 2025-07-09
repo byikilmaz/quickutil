@@ -278,40 +278,102 @@ function PDFCompress({ locale }: { locale: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
+      {/* Enhanced Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-4 h-4 bg-purple-300/20 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.5}s`,
+              animationDuration: `${3 + Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
       {/* SEO */}
       <StructuredData type="howto" />
       
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-200">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-200 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Breadcrumb />
         </div>
       </div>
 
-      {/* STEP 1: UPLOAD - QuickUtil Purple Theme */}
-      <div ref={uploadRef} className={`py-16 transition-all duration-500 ${
+      {/* STEP 1: UPLOAD - Enhanced Visual Design */}
+      <div ref={uploadRef} className={`py-16 transition-all duration-500 relative z-10 ${
         currentStep === 'upload' ? 'opacity-100' : 'opacity-50 pointer-events-none'
       }`}>
         <div className="max-w-4xl mx-auto px-4 text-center">
           
-          {/* Header - QuickUtil Purple Gradient */}
-          <div className="mb-16">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          {/* Enhanced Header with Visual Elements */}
+          <div className="mb-16 relative">
+            {/* Floating Background Elements */}
+            <div className="absolute inset-0 pointer-events-none">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-3 h-3 bg-yellow-400/40 rounded-full animate-bounce"
+                  style={{
+                    left: `${20 + i * 12}%`,
+                    top: `${30 + (i % 2) * 20}%`,
+                    animationDelay: `${i * 0.3}s`,
+                    animationDuration: '2s'
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* AI Badge */}
+            <div className="relative mb-8">
+              <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-300 rounded-2xl px-6 py-3 animate-fade-in">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mr-3">
+                  <SparklesIcon className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-purple-800 font-bold text-lg">AI PDF Sıkıştırma</span>
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
+                  <SparklesIcon className="h-3 w-3 text-white" />
+                </div>
+              </div>
+            </div>
+
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 bg-clip-text text-transparent mb-4 animate-slide-in">
               {getText('pdfCompress.title', 'PDF Sıkıştırma')}
             </h1>
-            <p className="text-xl text-gray-800">
+            <p className="text-base md:text-xl text-gray-800 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
               {getText('pdfCompress.subtitle', 'Maksimum PDF kalitesi için optimize ederken dosya boyutunu küçültebilirsin.')}
             </p>
           </div>
 
-          {/* Single Upload Button - Purple Gradient */}
-          <div className="max-w-sm mx-auto">
+          {/* Enhanced Upload Button with Visual Effects */}
+          <div className="max-w-md mx-auto animate-bounce-in" style={{ animationDelay: '0.4s' }}>
             <div className="relative group cursor-pointer">
-              <div className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg px-8 py-4 text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center transform hover:scale-105">
-                <SparklesIcon className="h-5 w-5 mr-2" />
-                {getText('pdfCompress.uploadTitle', 'PDF dosyasını seç')}
+              {/* Main Upload Button */}
+              <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-3xl px-12 py-8 text-xl font-bold transition-all duration-500 shadow-2xl hover:shadow-purple-500/40 flex flex-col items-center justify-center transform hover:scale-105 group-hover:rotate-1">
+                
+                {/* Animated Upload Icon */}
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                    <CloudArrowUpIcon className="h-10 w-10 text-white" />
+                  </div>
+                  
+                  {/* Orbital Animation Elements */}
+                  <div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-2xl animate-spin" style={{ animationDuration: '8s' }}></div>
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full animate-pulse">
+                    <SparklesIcon className="h-2 w-2 text-white m-1" />
+                  </div>
+                </div>
+
+                <span className="text-lg">PDF dosyasını seç</span>
+                <span className="text-sm text-white/80 mt-1">veya buraya bırak</span>
               </div>
+
+              {/* FileUpload Component */}
               <FileUpload
                 onFileSelect={(file) => {
                   if (Array.isArray(file)) {
@@ -327,15 +389,23 @@ function PDFCompress({ locale }: { locale: string }) {
               />
             </div>
             
-            <p className="text-sm text-gray-700 mt-4">
-              {getText('pdfCompress.uploadDescription', 'veya PDF\'i buraya bırak')}
-            </p>
+            {/* File Requirements */}
+            <div className="mt-6 text-sm text-gray-700 space-y-1">
+              <p className="flex items-center justify-center">
+                <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
+                Maksimum 20MB PDF dosyası
+              </p>
+              <p className="flex items-center justify-center">
+                <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
+                Güvenli ve gizli işleme
+              </p>
+            </div>
           </div>
 
           {/* Error Display */}
           {error && (
-            <div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto">
-              <p className="text-red-800 text-center">{error}</p>
+            <div className="mt-8 bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl p-6 max-w-md mx-auto animate-shake">
+              <p className="text-red-800 text-center font-medium">{error}</p>
             </div>
           )}
         </div>
@@ -474,40 +544,81 @@ function PDFCompress({ locale }: { locale: string }) {
         )}
       </div>
 
-      {/* STEP 3: PROCESSING - Purple Theme */}
+      {/* STEP 3: PROCESSING - Enhanced Visual Processing */}
       <div ref={processingRef} className={`fixed inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 flex items-center justify-center z-40 transition-all duration-500 ${
         currentStep === 'processing' ? 'opacity-100 visible' : 'opacity-0 invisible'
       }`}>
         <div className="text-center max-w-md mx-auto px-4">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-12 border border-purple-200">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-12 border-2 border-purple-200 relative overflow-hidden">
             
-            {/* Animated Icon - Purple Gradient */}
-            <div className="relative mb-8">
-              <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-full p-6 mx-auto w-20 h-20 flex items-center justify-center animate-pulse">
-                <SparklesIcon className="h-10 w-10 text-white" />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping opacity-20"></div>
+            {/* Background Animation Elements */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-purple-300/30 rounded-full animate-bounce"
+                  style={{
+                    left: `${10 + i * 12}%`,
+                    top: `${20 + (i % 3) * 25}%`,
+                    animationDelay: `${i * 0.2}s`,
+                    animationDuration: '1.5s'
+                  }}
+                />
+              ))}
             </div>
 
-            {/* Processing Text */}
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-              {getText('pdfCompress.processing', 'PDF küçültülüyor...')}
-            </h2>
-            <p className="text-gray-800 mb-6">
-              {getText('pdfCompress.processingDesc', 'Dosyanız işleniyor, lütfen bekleyin')}
-            </p>
-
-            {/* Progress - Purple Gradient */}
-            <div className="mb-6">
-              <div className="bg-gray-200 rounded-full h-2 w-full mb-2 overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 h-full rounded-full transition-all duration-300" 
-                  style={{ width: `${compressionProgress}%` }}
-                ></div>
+            {/* Central Processing Icon with Enhanced Animation */}
+            <div className="relative mb-8 z-10">
+              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-3xl flex items-center justify-center shadow-2xl animate-pulse">
+                <SparklesIcon className="h-12 w-12 text-white animate-spin" />
               </div>
-              <p className="text-sm text-gray-700">
-                {selectedFile?.name} - {compressionProgress}%
+              
+              {/* Multiple Ring Animations */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-3xl animate-ping opacity-20"></div>
+              <div className="absolute inset-2 border-2 border-dashed border-purple-400/50 rounded-2xl animate-spin" style={{ animationDuration: '3s' }}></div>
+              
+              {/* Floating Sparkles */}
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-bounce">
+                <SparklesIcon className="h-3 w-3 text-white m-1.5" />
+              </div>
+              <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-green-400 rounded-full animate-pulse">
+                <CheckCircleIcon className="h-2 w-2 text-white m-1" />
+              </div>
+            </div>
+
+            {/* Enhanced Processing Text */}
+            <div className="relative z-10 mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 bg-clip-text text-transparent mb-3 animate-pulse">
+                {getText('pdfCompress.processing', 'PDF küçültülüyor...')}
+              </h2>
+              <p className="text-gray-800 text-lg mb-2">
+                {getText('pdfCompress.processingDesc', 'Dosyanız işleniyor, lütfen bekleyin')}
               </p>
+              <p className="text-sm text-purple-600 font-medium">
+                AI teknolojisi ile optimize ediliyor ✨
+              </p>
+            </div>
+
+            {/* Enhanced Progress Bar */}
+            <div className="relative z-10">
+              <div className="bg-gray-200 rounded-full h-3 w-full mb-4 overflow-hidden shadow-inner">
+                <div 
+                  className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 h-full rounded-full transition-all duration-500 relative overflow-hidden" 
+                  style={{ width: `${compressionProgress}%` }}
+                >
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" style={{ animationDuration: '2s' }}></div>
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-700 font-medium truncate max-w-[200px]">
+                  {selectedFile?.name}
+                </span>
+                <span className="text-purple-600 font-bold text-lg">
+                  {compressionProgress}%
+                </span>
+              </div>
             </div>
           </div>
         </div>
