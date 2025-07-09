@@ -180,11 +180,19 @@ function PDFSplit({ locale }: { locale: string }) {
                 <ScissorsIcon className="h-10 w-10 text-white" />
               </div>
               
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                PDF Ayırma
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 px-4">
+                {locale === 'en' ? 'AI PDF Split' :
+                 locale === 'es' ? 'División PDF con IA' :
+                 locale === 'de' ? 'AI PDF-Aufteilen' :
+                 locale === 'fr' ? 'Division PDF IA' :
+                 'AI PDF Böl'}
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                PDF sayfalarını ayrı dosyalar halinde bölün
+              <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+                {locale === 'en' ? 'Split PDF documents into separate pages or ranges using AI technology. Choose your splitting method.' :
+                 locale === 'es' ? 'Divide documentos PDF en páginas separadas o rangos usando tecnología IA. Elige tu método de división.' :
+                 locale === 'de' ? 'Teilen Sie PDF-Dokumente mit KI-Technologie in separate Seiten oder Bereiche auf. Wählen Sie Ihre Aufteilungsmethode.' :
+                 locale === 'fr' ? 'Divisez les documents PDF en pages séparées ou en plages avec la technologie IA. Choisissez votre méthode de division.' :
+                 'PDF belgelerini yapay zeka teknolojisi ile ayrı sayfalara veya aralıklara bölün'}
               </p>
             </div>
 

@@ -213,11 +213,19 @@ function PDFMerge({ locale }: { locale: string }) {
                 <Square2StackIcon className="h-10 w-10 text-white" />
               </div>
               
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                PDF Birleştirme
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 px-4">
+                {locale === 'en' ? 'AI PDF Merge' :
+                 locale === 'es' ? 'Fusión PDF con IA' :
+                 locale === 'de' ? 'AI PDF-Zusammenführung' :
+                 locale === 'fr' ? 'Fusion PDF IA' :
+                 'AI PDF Birleştir'}
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Birden fazla PDF dosyasını tek dosya halinde birleştirin
+              <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+                {locale === 'en' ? 'Merge multiple PDF documents into one file using AI technology. Drag to reorder files.' :
+                 locale === 'es' ? 'Fusiona múltiples documentos PDF en un archivo usando tecnología IA. Arrastra para reordenar archivos.' :
+                 locale === 'de' ? 'Führen Sie mehrere PDF-Dokumente mit KI-Technologie zu einer Datei zusammen. Ziehen Sie zum Neuordnen der Dateien.' :
+                 locale === 'fr' ? 'Fusionnez plusieurs documents PDF en un seul fichier avec la technologie IA. Glissez pour réorganiser les fichiers.' :
+                 'Birden fazla PDF belgesini yapay zeka teknolojisi ile tek dosyada birleştirin'}
               </p>
             </div>
 

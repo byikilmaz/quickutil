@@ -179,11 +179,19 @@ function PDFToImages({ locale }: { locale: string }) {
                 <PhotoIcon className="h-10 w-10 text-white" />
               </div>
               
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                PDF to Images
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 px-4">
+                {locale === 'en' ? 'AI PDF to Images' :
+                 locale === 'es' ? 'PDF a Imágenes con IA' :
+                 locale === 'de' ? 'AI PDF zu Bildern' :
+                 locale === 'fr' ? 'PDF vers Images IA' :
+                 'AI PDF to Görsel'}
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                PDF sayfalarınızı yüksek kaliteli PNG veya JPG formatına dönüştürün
+              <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+                {locale === 'en' ? 'Convert PDF pages to high-quality images using AI technology. Choose format and quality settings.' :
+                 locale === 'es' ? 'Convierte páginas PDF a imágenes de alta calidad usando tecnología IA. Elige formato y configuración de calidad.' :
+                 locale === 'de' ? 'Konvertieren Sie PDF-Seiten mit KI-Technologie in hochwertige Bilder. Wählen Sie Format und Qualitätseinstellungen.' :
+                 locale === 'fr' ? 'Convertissez les pages PDF en images de haute qualité avec la technologie IA. Choisissez le format et les paramètres de qualité.' :
+                 'PDF sayfalarını yapay zeka teknolojisi ile yüksek kaliteli görsellere dönüştürün'}
               </p>
             </div>
 

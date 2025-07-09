@@ -179,11 +179,19 @@ function PDFToText({ locale }: { locale: string }) {
                 <DocumentTextIcon className="h-10 w-10 text-white" />
               </div>
               
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                PDF to Text
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 px-4">
+                {locale === 'en' ? 'AI PDF to Text' :
+                 locale === 'es' ? 'PDF a Texto con IA' :
+                 locale === 'de' ? 'AI PDF zu Text' :
+                 locale === 'fr' ? 'PDF vers Texte IA' :
+                 'AI PDF to Metin'}
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                PDF içeriğini düzenlenebilir metin formatına çıkarın
+              <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+                {locale === 'en' ? 'Extract text from PDF documents using advanced AI technology. Fast and accurate text extraction.' :
+                 locale === 'es' ? 'Extrae texto de documentos PDF usando tecnología IA avanzada. Extracción de texto rápida y precisa.' :
+                 locale === 'de' ? 'Extrahieren Sie Text aus PDF-Dokumenten mit fortschrittlicher KI-Technologie. Schnelle und genaue Textextraktion.' :
+                 locale === 'fr' ? 'Extrayez le texte des documents PDF avec une technologie IA avancée. Extraction de texte rapide et précise.' :
+                 'PDF belgelerinden gelişmiş yapay zeka teknolojisi ile metin çıkarın'}
               </p>
             </div>
 

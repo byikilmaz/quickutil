@@ -29,6 +29,7 @@ import {
   convertPDFToImages,
   ConversionResult 
 } from '@/lib/pdfConvertUtils';
+import JSZip from 'jszip';
 
 interface ConversionResultDisplay {
   results: ConversionResult[];
@@ -59,6 +60,7 @@ function PDFConvert({ locale }: { locale: string }) {
   const [processingProgress, setProcessingProgress] = useState(0);
   const [conversionResult, setConversionResult] = useState<ConversionResultDisplay | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
   
   // Refs for auto-scroll
   const uploadRef = useRef<HTMLDivElement>(null);
@@ -235,7 +237,46 @@ function PDFConvert({ locale }: { locale: string }) {
     }
   };
 
-  // Reset form
+  // Download all files as ZIP
+  const handleDownloadAll = async () => {
+    if (!conversionResult || conversionResult.results.length === 0) return;
+
+    setIsDownloadingZip(true);
+    
+    try {
+      const zip = new JSZip();
+      
+      // Add each file to ZIP
+      for (const result of conversionResult.results) {
+        try {
+          const response = await fetch(result.url);
+          const blob = await response.blob();
+          zip.file(result.name, blob);
+        } catch (err) {
+          console.error(`Failed to add ${result.name} to ZIP:`, err);
+        }
+      }
+      
+      // Generate ZIP file
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      
+      // Create download link
+      const url = URL.createObjectURL(zipBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `quickutil-converted-files.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('ZIP creation error:', err);
+      setError('ZIP oluşturulurken hata oluştu');
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  };
+
   const handleReset = () => {
     setCurrentStep('upload');
     setSelectedFiles([]);
@@ -542,6 +583,29 @@ function PDFConvert({ locale }: { locale: string }) {
                   </a>
                 ))}
               </div>
+
+              {/* Download All Button */}
+              {conversionResult.results.length > 1 && (
+                <div className="mb-6 md:mb-8">
+                  <button
+                    onClick={handleDownloadAll}
+                    disabled={isDownloadingZip}
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 md:py-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  >
+                    {isDownloadingZip ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>ZIP Hazırlanıyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ArrowDownTrayIcon className="h-4 md:h-5 w-4 md:w-5" />
+                        <span>🗂️ Tümünü İndir (ZIP)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
 
               {/* Control Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-6 md:mb-8">
