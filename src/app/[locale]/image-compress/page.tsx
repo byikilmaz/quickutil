@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { ArrowPathIcon, ArrowUpTrayIcon, SparklesIcon, LockClosedIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ArrowUpTrayIcon, SparklesIcon, LockClosedIcon, BoltIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon, UserGroupIcon, GlobeAltIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -184,104 +184,231 @@ export default function ImageCompress() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Breadcrumb />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
+      {/* Enhanced Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-4 h-4 bg-purple-300/20 rounded-full animate-pulse"
+            style={{
+              left: `${5 + (i * 4.5) % 95}%`,
+              top: `${10 + (i * 7) % 80}%`,
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: '2s'
+            }}
+          />
+        ))}
+      </div>
       
-      {/* Hero Marketing Section */}
-      <div className="bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      {/* SEO */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Breadcrumb />
+        </div>
+      </div>
+      
+      {/* Enhanced Hero Marketing Section */}
+      <div className="relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center animate-fade-in">
-            {/* Trust Badge */}
-            <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-6 animate-bounce-in">
-              <CheckCircleIcon className="h-4 w-4 mr-2" />
-              2M+ Resim Sıkıştırıldı
-            </div>
-
-            {/* Main Headlines */}
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              🗜️ <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Resim Sıkıştırma</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-4 max-w-4xl mx-auto leading-relaxed">
-              Resimlerinizi <span className="font-semibold text-purple-600">%90'a kadar sıkıştırın</span>, 
-              kaliteden ödün vermeden dosya boyutunu <span className="font-semibold">drastik olarak azaltın</span>
-            </p>
             
-            {/* Key Benefits */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto">
-              <div className="flex items-center justify-center bg-white rounded-lg p-4 shadow-sm border border-gray-200 apple-card-hover">
-                <BoltIcon className="h-5 w-5 text-yellow-500 mr-2" />
-                <span className="text-gray-700 font-medium">Anında İşlem</span>
+            {/* AI Badge with Sparkles */}
+            <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-700 px-6 py-3 rounded-2xl text-sm font-medium mb-8 animate-bounce-in shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mr-3 animate-pulse">
+                <SparklesIcon className="h-4 w-4 text-white" />
               </div>
-              <div className="flex items-center justify-center bg-white rounded-lg p-4 shadow-sm border border-gray-200 apple-card-hover">
-                <LockClosedIcon className="h-5 w-5 text-green-500 mr-2" />
-                <span className="text-gray-700 font-medium">%100 Güvenli</span>
-              </div>
-              <div className="flex items-center justify-center bg-white rounded-lg p-4 shadow-sm border border-gray-200 apple-card-hover">
-                <SparklesIcon className="h-5 w-5 text-purple-500 mr-2" />
-                <span className="text-gray-700 font-medium">AI Optimize</span>
+              <CheckCircleIcon className="h-5 w-5 mr-2 text-green-600" />
+              <span className="font-bold">2M+ Resim Sıkıştırıldı • AI Destekli</span>
+              <div className="w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full flex items-center justify-center ml-3 animate-bounce">
+                <SparklesIcon className="h-4 w-4 text-white" />
               </div>
             </div>
 
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-1">2M+</div>
-                <div className="text-gray-600 text-sm">Sıkıştırılan Resim</div>
+            {/* Enhanced Main Headlines */}
+            <div className="mb-12">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 bg-clip-text text-transparent">
+                  ✨ AI Resim Sıkıştırma
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-800 mb-8 max-w-4xl mx-auto leading-relaxed">
+                Resimlerinizi <span className="font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">%90'a kadar sıkıştırın</span>, 
+                kaliteden ödün vermeden dosya boyutunu <span className="font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">drastik olarak azaltın</span>
+              </p>
+            </div>
+            
+            {/* Enhanced Key Benefits with Large Icons */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-5xl mx-auto">
+              <div className="group relative bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-2xl hover:scale-105 transform">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <BoltIcon className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-bounce opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <SparklesIcon className="h-3 w-3 text-white m-1.5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">⚡ Anında İşlem</h3>
+                  <p className="text-gray-700">Saniyeler içinde sıkıştırma</p>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-1">4.9/5</div>
-                <div className="text-gray-600 text-sm">Kullanıcı Puanı</div>
+              
+              <div className="group relative bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-2xl hover:scale-105 transform">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <LockClosedIcon className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="absolute -top-2 -left-2 w-6 h-6 bg-green-400 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <CheckCircleIcon className="h-3 w-3 text-white m-1.5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">🔒 %100 Güvenli</h3>
+                  <p className="text-gray-700">SSL şifrelemeli koruma</p>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-1">256-bit</div>
-                <div className="text-gray-600 text-sm">SSL Güvenlik</div>
+              
+              <div className="group relative bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-2xl hover:scale-105 transform">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <SparklesIcon className="h-8 w-8 text-white animate-spin" style={{ animationDuration: '3s' }} />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-bounce opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <SparklesIcon className="h-3 w-3 text-white m-1.5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">🤖 AI Optimize</h3>
+                  <p className="text-gray-700">Yapay zeka ile optimize</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced Trust Indicators */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-purple-200 hover:shadow-xl transition-all duration-300">
+                <div className="text-center">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">2M+</div>
+                  <div className="text-gray-700 font-medium">Sıkıştırılan Resim</div>
+                </div>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-purple-200 hover:shadow-xl transition-all duration-300">
+                <div className="text-center">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">4.9/5</div>
+                  <div className="text-gray-700 font-medium">Kullanıcı Puanı</div>
+                </div>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-purple-200 hover:shadow-xl transition-all duration-300">
+                <div className="text-center">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent mb-2">256-bit</div>
+                  <div className="text-gray-700 font-medium">SSL Güvenlik</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tool Section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 apple-card-hover">
+      {/* Enhanced Tool Section */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-purple-200 p-8 relative overflow-hidden">
+          
+          {/* Enhanced Background Elements inside card */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-3 h-3 bg-gradient-to-r from-purple-300/30 to-pink-300/30 rounded-full animate-pulse"
+                style={{
+                  left: `${10 + (i * 8) % 80}%`,
+                  top: `${15 + (i % 4) * 20}%`,
+                  animationDelay: `${i * 0.7}s`,
+                  animationDuration: '3s'
+                }}
+              />
+            ))}
+          </div>
+          
           {!file ? (
             <>
-              {/* Upload Section */}
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                  🚀 Ücretsiz & Sınırsız
+              {/* Enhanced Upload Section */}
+              <div className="text-center mb-12 relative z-10">
+                <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-700 px-6 py-3 rounded-2xl text-sm font-medium mb-8 animate-bounce-in shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full flex items-center justify-center mr-3 animate-pulse">
+                    <CheckCircleIcon className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="font-bold">🚀 Ücretsiz & Sınırsız • AI Destekli</span>
+                  <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center ml-3 animate-bounce">
+                    <SparklesIcon className="h-4 w-4 text-white" />
+                  </div>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Resminizi Yükleyin ve Sıkıştırın
+                
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  <span className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 bg-clip-text text-transparent">
+                    ✨ Resminizi Yükleyin ve Sıkıştırın
+                  </span>
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-lg text-gray-800 mb-8 max-w-2xl mx-auto">
                   PNG, JPEG, WebP, GIF formatlarında resimlerinizi yükleyin
                 </p>
               </div>
 
-              <FileUpload
-                onFileSelect={(file) => {
-                  if (Array.isArray(file)) {
-                    handleFileSelect(file[0]);
-                  } else {
-                    handleFileSelect(file);
-                  }
-                }}
-                acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
-                maxSize={50 * 1024 * 1024} // 50MB
-                title="Sıkıştırılacak Resmi Yükleyin"
-                description="PNG, JPEG, WebP veya GIF formatında resminizi buraya sürükleyin"
-                currentFiles={[]}
-              />
+              {/* Enhanced Upload Button */}
+              <div className="max-w-md mx-auto text-center mb-12 relative z-10">
+                <div className="relative group cursor-pointer">
+                  {/* Main Upload Button with Enhanced Visuals */}
+                  <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-3xl px-12 py-10 text-xl font-bold transition-all duration-500 shadow-2xl hover:shadow-purple-500/40 flex flex-col items-center justify-center transform hover:scale-105 group-hover:rotate-1">
+                    
+                    {/* Animated Upload Icon */}
+                    <div className="relative mb-4">
+                      <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center animate-bounce">
+                        <PhotoIcon className="h-8 w-8 text-white" />
+                      </div>
+                      
+                      {/* Orbital Rings */}
+                      <div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-2xl animate-spin" style={{ animationDuration: '8s' }}></div>
+                      <div className="absolute inset-2 border border-dashed border-white/20 rounded-xl animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }}></div>
+                    </div>
 
-              {/* Format Support */}
-              <div className="mt-8 text-center">
-                <p className="text-sm text-gray-500 mb-4">Desteklenen Formatlar:</p>
+                    <span className="text-2xl font-bold mb-2">Resim Yükle</span>
+                    <span className="text-white/80 text-lg">veya buraya sürükle</span>
+                    
+                    {/* Floating Animation Elements */}
+                    <div className="absolute -top-3 -right-3 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
+                      <SparklesIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="absolute -bottom-3 -left-3 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center animate-pulse">
+                      <CheckCircleIcon className="h-3 w-3 text-white" />
+                    </div>
+                  </div>
+                  
+                  {/* Hidden FileUpload component */}
+                  <div className="absolute inset-0 opacity-0">
+                    <FileUpload
+                      onFileSelect={(file) => {
+                        if (Array.isArray(file)) {
+                          handleFileSelect(file[0]);
+                        } else {
+                          handleFileSelect(file);
+                        }
+                      }}
+                      acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
+                      maxSize={50 * 1024 * 1024} // 50MB
+                      title=""
+                      description=""
+                      currentFiles={[]}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced Format Support */}
+              <div className="text-center relative z-10">
+                <p className="text-lg font-medium text-gray-800 mb-6">Desteklenen Formatlar:</p>
                 <div className="flex justify-center items-center space-x-6">
-                  <div className="bg-gray-100 px-3 py-1 rounded text-xs font-medium text-gray-700">JPG</div>
-                  <div className="bg-gray-100 px-3 py-1 rounded text-xs font-medium text-gray-700">PNG</div>
-                  <div className="bg-gray-100 px-3 py-1 rounded text-xs font-medium text-gray-700">WebP</div>
-                  <div className="bg-gray-100 px-3 py-1 rounded text-xs font-medium text-gray-700">GIF</div>
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">JPG</div>
+                  <div className="bg-gradient-to-br from-green-500 to-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">PNG</div>
+                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">WebP</div>
+                  <div className="bg-gradient-to-br from-pink-500 to-pink-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">GIF</div>
                 </div>
               </div>
             </>
