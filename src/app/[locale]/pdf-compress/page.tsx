@@ -149,7 +149,33 @@ function PDFCompress({ locale }: { locale: string }) {
     return messages[locale as keyof typeof messages]?.[type as keyof typeof messages.tr] || messages.tr[type as keyof typeof messages.tr];
   };
 
-  // Handle compression with real functionality
+  // Helper to convert File to base64
+  const fileToBase64 = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Remove data URL prefix to get pure base64
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // Helper to convert base64 to Blob
+  const base64ToBlob = (base64: string, type: string): Blob => {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: type });
+  };
+
+  // Handle compression with Firebase Functions (server-side)
   const handleCompress = async () => {
     if (!selectedFile) return;
     
@@ -159,35 +185,46 @@ function PDFCompress({ locale }: { locale: string }) {
     setCompressionProgress(0);
     
     try {
-      // Progress simulation
+      // Import Firebase Functions
+      const { getFunctions, httpsCallable } = await import('firebase/functions');
+      const functions = getFunctions();
+      
+      // Progress simulation for upload phase
       const progressInterval = setInterval(() => {
         setCompressionProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
+          if (prev >= 80) {
+            return 80; // Stop at 80% until server responds
           }
-          return prev + 10;
+          return prev + 15;
         });
-      }, 300);
+      }, 500);
 
-      // Determine compression ratio based on quality
-      let compressionRatio = 0.7; // Default
+      // Convert file to base64 for server transmission
+      const base64PDF = await fileToBase64(selectedFile);
+      
+      // Determine compression level based on quality
+      let compressionLevel: 'light' | 'medium' | 'high' | 'maximum' = 'medium';
       switch (quality) {
         case 'screen':
-          compressionRatio = 0.3; // High compression
+          compressionLevel = 'maximum'; // High compression
           break;
         case 'ebook':
-          compressionRatio = 0.6; // Balanced
+          compressionLevel = 'medium'; // Balanced
           break;
         case 'printer':
-          compressionRatio = 0.8; // Light compression
+          compressionLevel = 'light'; // Light compression
           break;
       }
 
       const startTime = Date.now();
       
-      // Use real PDF compression from pdfUtils
-      const compressedFile = await compressPDF(selectedFile, compressionRatio);
+      // Call Firebase Functions for server-side compression
+      const compressFunction = httpsCallable(functions, 'compressPDFAdvanced');
+      const result = await compressFunction({
+        pdfBase64: base64PDF,
+        compressionLevel: compressionLevel,
+        fileName: selectedFile.name
+      });
       
       const endTime = Date.now();
       const processingTime = endTime - startTime;
@@ -196,17 +233,23 @@ function PDFCompress({ locale }: { locale: string }) {
       clearInterval(progressInterval);
       setCompressionProgress(100);
       
-      // Create download URL
-      const downloadUrl = URL.createObjectURL(compressedFile);
+      // Process server response
+      const serverResult = result.data as any;
+      if (!serverResult.success) {
+        throw new Error(serverResult.error || 'Server compression failed');
+      }
       
-      // Calculate actual compression ratio
-      const actualRatio = calculateCompressionRatio(selectedFile.size, compressedFile.size);
+      // Convert base64 back to blob
+      const compressedBlob = base64ToBlob(serverResult.compressedBase64, 'application/pdf');
+      
+      // Create download URL
+      const downloadUrl = URL.createObjectURL(compressedBlob);
       
       const compressionResultData: CompressionResultDisplay = {
-        compressedBlob: compressedFile,
-        originalSize: selectedFile.size,
-        compressedSize: compressedFile.size,
-        compressionRatio: actualRatio,
+        compressedBlob: compressedBlob,
+        originalSize: serverResult.originalSize,
+        compressedSize: serverResult.compressedSize,
+        compressionRatio: serverResult.compressionRatio,
         processingTime,
         downloadUrl
       };
@@ -214,17 +257,28 @@ function PDFCompress({ locale }: { locale: string }) {
       setCompressionResult(compressionResultData);
       setCurrentStep('result');
       
-      // Track analytics
+      // Track analytics and upload compressed file
       if (user) {
+        // Convert Blob to File for upload
+        const compressedFile = new File([compressedBlob], `compressed_${selectedFile.name}`, {
+          type: 'application/pdf',
+          lastModified: Date.now()
+        });
         await uploadFile(compressedFile, 'pdf');
       }
       
     } catch (err: any) {
-      console.error('Compression error:', err);
+      console.error('Server compression error:', err);
       let errorMessage = getErrorMessage('compressionFailed', locale);
       
-      if (err.message.includes('PDF sıkıştırma hatası') || err.message.includes('PDF compression error')) {
-        errorMessage = err.message;
+      if (err.message.includes('PDF compression failed')) {
+        errorMessage = 'Server sıkıştırma hatası: ' + err.message;
+      } else if (err.message.includes('invalid-argument')) {
+        errorMessage = 'Geçersiz dosya parametreleri';
+      } else if (err.message.includes('unauthenticated')) {
+        errorMessage = 'Kimlik doğrulama hatası';
+      } else if (err.message.includes('resource-exhausted')) {
+        errorMessage = 'Server yoğunluğu, lütfen tekrar deneyin';
       }
       
       setError(errorMessage);
