@@ -113,6 +113,10 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
     optimizeServerReact: true,
   },
+  env: {
+    // Render.com PDF Compression API - LIVE URL
+    NEXT_PUBLIC_RENDER_API_URL: process.env.NEXT_PUBLIC_RENDER_API_URL || 'https://quickutil-pdf-api.onrender.com',
+  },
 };
 
 export default nextConfig;

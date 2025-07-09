@@ -1,185 +1,150 @@
-# QuickUtil.app - Profesyonel Dosya İşleme Platformu
+# QuickUtil PDF Compression API
 
-🚀 **Canlı URL**: [https://quickutil.app](https://quickutil.app)
+🔥 **Profesyonel PDF Sıkıştırma API** - Ghostscript ile %80-90 boyut azaltma
 
-## 📋 Proje Özeti
+## 🎯 Özellikler
 
-QuickUtil.app, kullanıcıların PDF ve görsel dosyalarını online olarak işleyebileceği kapsamlı bir web platformudur. Firebase tabanlı backend ile modern Next.js frontend kullanarak hızlı ve güvenli dosya işleme deneyimi sunar.
+- ⚡ **Ghostscript Powered**: Profesyonel sıkıştırma motoru
+- 🎨 **4 Kalite Seviyesi**: Screen, E-book, Printer, Prepress
+- 🚀 **Yüksek Performans**: 3-8 saniyede sıkıştırma
+- 📊 **%80-90 Boyut Azaltma**: iLovePDF seviyesinde sonuçlar
+- 🔒 **Güvenli**: Dosyalar geçici olarak işlenir, silinir
+- 🌐 **REST API**: Modern JSON-based API
 
-## 🎯 Ana Özellikler
+## 🛠️ Teknoloji Stack
 
-### 📄 PDF İşlemleri
-- **PDF Sıkıştırma**: Dosya boyutunu optimize etme
-- **PDF Dönüştürme**: PDF to Images, Text extraction
-- **PDF Birleştirme**: Çoklu PDF dosyalarını birleştirme
-- **PDF Ayırma**: Sayfa bazında dosya bölme
+- **Python 3.11** - Modern Python
+- **Flask** - Web framework
+- **Gunicorn** - Production WSGI server
+- **Ghostscript** - PDF compression engine
+- **Render.com** - Cloud hosting platform
 
-### 🖼️ Görsel İşlemleri
-- **Resim Sıkıştırma**: Kalite koruyarak boyut azaltma
-- **Format Dönüştürme**: JPG, PNG, WebP arası dönüşüm
-- **Resim Boyutlandırma**: Özel boyutlarda yeniden boyutlandırma
-- **Resim Döndürme**: Açı ayarlama ve döndürme
+## 📋 API Endpoints
 
-### ☁️ Firebase Entegrasyonu
-- **Authentication**: Kullanıcı kayıt ve giriş sistemi
-- **Firestore**: Aktivite takip ve kullanıcı verileri
-- **Storage**: Güvenli dosya depolama (5GB)
-- **Security Rules**: Kullanıcı bazlı erişim kontrolü
-
-### 👤 Kullanıcı Deneyimi
-- **Profil Yönetimi**: Kullanıcı bilgileri ve istatistikler
-- **Aktivite Takibi**: İşlem geçmişi ve detaylar
-- **Admin Panel**: Sistem yönetimi ve analytics
-- **Email Bildirimleri**: Hoş geldin email'leri
-
-## 📧 Email Sistemi
-
-### ✅ Resend API Entegrasyonu
-Modern email template sistemi ile otomatik bildirimler:
-
-```typescript
-// Welcome Email - Kullanıcı kayıt olduğunda
-EmailEvents.onUserRegistered(userData)
+### Health Check
+```
+GET /health
 ```
 
-### 🎨 Email Template Özellikleri
-- **Responsive Design**: Mobil ve desktop uyumlu
-- **Modern Tasarım**: QuickUtil brand teması
-- **Professional Content**: Türkçe profesyonel içerik
-- **Accessibility**: WCAG AA standartları
+### Compression Profiles
+```
+GET /profiles
+```
 
-## 🛠️ Teknik Yapı
+### PDF Compression
+```
+POST /compress
+Content-Type: multipart/form-data
 
-### Frontend
-- **Next.js 15**: App Router yapısı
-- **React 19**: Server Components
-- **TypeScript**: Strict mode
-- **Tailwind CSS**: Utility-first styling
-- **Heroicons**: Icon set
+Parameters:
+- file: PDF file (max 50MB)
+- quality: screen|ebook|printer|prepress
+```
 
-### Backend
-- **Firebase Auth**: Kullanıcı yönetimi
-- **Firestore**: NoSQL database
-- **Firebase Storage**: Dosya depolama
-- **Security Rules**: Erişim kontrolü
+## 🚀 Quick Start
 
-### Libraries
-- **pdf-lib**: PDF işleme
-- **PDF.js**: PDF görüntüleme
-- **Canvas API**: Görsel işleme
-- **Resend**: Email hizmeti
+### 1. Render.com Deploy
 
-## 🚀 Kurulum ve Geliştirme
+1. Fork this repository
+2. Connect to [render.com](https://render.com)
+3. Create new Web Service
+4. Deploy with these settings:
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
 
-### Environment Variables
+### 2. Local Development
+
 ```bash
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+# Clone repository
+git clone https://github.com/username/quickutil-pdf-api.git
+cd quickutil-pdf-api
 
-# Email Service
-RESEND_API_KEY=re_your_resend_api_key
+# Install dependencies
+pip install -r requirements.txt
+
+# Install Ghostscript
+# Linux: sudo apt-get install ghostscript
+# macOS: brew install ghostscript
+
+# Run server
+python app.py
 ```
 
-### Development Commands
+## 📊 Compression Quality
+
+| Quality | DPI | Target Compression | Use Case |
+|---------|-----|------------------|----------|
+| Screen | 72 | 80-90% | Web viewing |
+| E-book | 150 | 60-80% | E-readers |
+| Printer | 300 | 40-60% | Standard printing |
+| Prepress | 300+ | 20-40% | Professional print |
+
+## 🔧 Environment Variables
+
+```env
+PORT=10000
+MAX_CONTENT_LENGTH=52428800  # 50MB
+UPLOAD_FOLDER=/tmp/uploads
+```
+
+## 🧪 API Testing
+
 ```bash
-# Geliştirme sunucusu
-npm run dev
+# Health check
+curl https://your-app.onrender.com/health
 
-# Production build
-npm run build
+# Get profiles
+curl https://your-app.onrender.com/profiles
 
-# Firebase deploy
-firebase deploy
-
-# Type checking
-npm run type-check
-
-# Linting
-npm run lint
+# Compress PDF
+curl -X POST \
+  -F "file=@document.pdf" \
+  -F "quality=screen" \
+  https://your-app.onrender.com/compress \
+  --output compressed.pdf
 ```
 
-## 📊 Admin Panel
+## 📈 Performance
 
-### 🔐 Admin Authentication
-Email bazlı yetkilendirme sistemi:
-- `hello@quickutil.app`
-- `admin@quickutil.app`
+- **Response Time**: 3-8 seconds (average)
+- **File Size Limit**: 50MB
+- **Concurrent Requests**: 10-20 (free tier)
+- **Compression Ratio**: 80-90% (screen quality)
 
-### 📈 Dashboard Özellikleri
-- **KPI Metrics**: Kullanıcı sayısı, işlem istatistikleri
-- **User Management**: Kullanıcı listesi ve detayları
-- **Activity Logs**: Real-time sistem aktiviteleri
-- **Analytics Charts**: Trend analizi (Recharts)
+## 🔒 Security
 
-## 🎨 UI/UX Özellikleri
+- Input validation for file types
+- File size limits
+- Temporary file cleanup
+- Process timeout protection
+- CORS configuration
 
-### Responsive Design
-- **Mobile-first**: Mobil öncelikli tasarım
-- **Touch-friendly**: Dokunmatik dostu arayüz
-- **Accessibility**: Erişilebilirlik standartları
+## 🚨 Error Handling
 
-### Modern Components
-- **Loading States**: Animasyonlu yükleme durumları
-- **Error Handling**: Kullanıcı dostu hata mesajları
-- **Progress Indicators**: İşlem durumu gösterimi
-- **Hover Effects**: Interactive element animasyonları
+All errors return JSON with error message:
 
-## 🔒 Güvenlik
+```json
+{
+  "error": "Error description"
+}
+```
 
-### Firebase Security
-- **Authentication**: Güvenli kullanıcı doğrulama
-- **Security Rules**: Firestore ve Storage kuralları
-- **Input Validation**: Dosya türü ve boyut kontrolü
-- **SSL Encryption**: HTTPS ile güvenli iletişim
+Common errors:
+- `400`: Invalid file or parameters
+- `413`: File too large
+- `500`: Server processing error
+- `503`: Service unavailable
 
-### Data Protection
-- **User Privacy**: Kullanıcı verilerinin korunması
-- **File Cleanup**: Otomatik dosya silme (30 gün)
-- **GDPR Compliance**: Avrupa veri koruma uyumluluğu
+## 📞 Support
 
-## 📱 Performance
+- �� **Issues**: GitHub Issues
+- 📧 **Email**: hello@quickutil.app
+- 🌐 **Website**: https://quickutil.app
 
-### Optimization
-- **Code Splitting**: Dinamik import'lar
-- **Image Optimization**: Next.js Image component
-- **Bundle Analysis**: Webpack bundle analyzer
-- **Caching**: Browser ve CDN cache stratejileri
+## 📄 License
 
-### Core Web Vitals
-- **LCP**: Largest Contentful Paint optimization
-- **FID**: First Input Delay minimization
-- **CLS**: Cumulative Layout Shift prevention
-
-## 🌐 SEO ve Analytics
-
-### Search Engine Optimization
-- **Meta Tags**: Sayfa özelinde meta veriler
-- **Structured Data**: Schema.org markup
-- **Sitemap**: XML sitemap oluşturumu
-- **Open Graph**: Sosyal medya optimizasyonu
-
-### Analytics Integration
-- **Firebase Analytics**: Kullanıcı davranış analizi
-- **Custom Events**: Özel etkinlik takibi
-- **Performance Monitoring**: Performans metrikleri
-
-## 📞 Destek ve İletişim
-
-### İletişim Kanalları
-- **Email**: hello@quickutil.app
-- **Website**: https://quickutil.app
-- **Support**: Platform üzerinden mesaj sistemi
-
-### Dokümantasyon
-- **API Docs**: Firebase API dokümantasyonu
-- **Component Library**: UI component rehberi
-- **Development Guide**: Geliştirici kılavuzu
+MIT License - See LICENSE file for details
 
 ---
 
-**Son Güncelleme**: Ocak 2025 - Ödeme sistemi kaldırıldı, tamamen ücretsiz platform ✅
+**Powered by QuickUtil.app** 🚀

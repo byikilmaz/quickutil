@@ -18,6 +18,7 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { getTranslations } from '@/lib/translations';
+import { compressPDF, formatFileSize, calculateCompressionRatio } from '@/lib/pdfUtils';
 
 interface CompressionResultDisplay {
   compressedBlob: Blob;
@@ -27,15 +28,6 @@ interface CompressionResultDisplay {
   processingTime: number;
   downloadUrl: string;
 }
-
-// formatFileSize utility function
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
 
 // Server wrapper component to handle async params
 export default async function PDFCompressPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -50,19 +42,6 @@ function PDFCompress({ locale }: { locale: string }) {
   const { uploadFile } = useStorage();
   const { canUseFeature } = useQuota();
   
-  // Remove async translations loading since we get it from server
-  // const [t, setT] = useState<any>({});
-  // useEffect(() => {
-  //   const loadTranslations = async () => {
-  //     const translations = await getTranslations(params.locale);
-  //     setT(translations);
-  //   };
-  //   loadTranslations();
-  // }, [params.locale]);
-  
-  // Render.com integration hooks
-  // const { isHealthy, healthData, compressPDF: compressWithRender } = useRenderCompression();
-  
   // Refs for auto-scrolling
   const uploadRef = useRef<HTMLDivElement>(null);
   const configureRef = useRef<HTMLDivElement>(null);
@@ -76,6 +55,7 @@ function PDFCompress({ locale }: { locale: string }) {
   const [compressionResult, setCompressionResult] = useState<CompressionResultDisplay | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [quality, setQuality] = useState('ebook'); // Default to recommended
+  const [compressionProgress, setCompressionProgress] = useState(0);
 
   // Auto-scroll to current step
   useEffect(() => {
@@ -121,8 +101,9 @@ function PDFCompress({ locale }: { locale: string }) {
     setError(null);
     
     // File size limit
-    if (file.size > 20 * 1024 * 1024) {
-      setError('Dosya boyutu 20MB\'dan büyük olamaz.');
+    const maxSize = 20 * 1024 * 1024; // 20MB
+    if (file.size > maxSize) {
+      setError(getErrorMessage('fileSizeLimit', locale));
       return;
     }
     
@@ -130,80 +111,125 @@ function PDFCompress({ locale }: { locale: string }) {
     setCurrentStep('configure');
   };
 
-  // Handle compression
+  // Get error messages based on locale
+  const getErrorMessage = (type: string, locale: string) => {
+    const messages = {
+      tr: {
+        fileSizeLimit: 'Dosya boyutu 20MB\'dan büyük olamaz.',
+        compressionFailed: 'Sıkıştırma sırasında hata oluştu.',
+        invalidFile: 'Geçersiz PDF dosyası.',
+        networkError: 'Ağ bağlantısı hatası.'
+      },
+      en: {
+        fileSizeLimit: 'File size cannot exceed 20MB.',
+        compressionFailed: 'Compression failed.',
+        invalidFile: 'Invalid PDF file.',
+        networkError: 'Network connection error.'
+      },
+      es: {
+        fileSizeLimit: 'El tamaño del archivo no puede exceder 20MB.',
+        compressionFailed: 'Error en la compresión.',
+        invalidFile: 'Archivo PDF inválido.',
+        networkError: 'Error de conexión de red.'
+      },
+      fr: {
+        fileSizeLimit: 'La taille du fichier ne peut pas dépasser 20 Mo.',
+        compressionFailed: 'Échec de la compression.',
+        invalidFile: 'Fichier PDF invalide.',
+        networkError: 'Erreur de connexion réseau.'
+      },
+      de: {
+        fileSizeLimit: 'Die Dateigröße darf 20MB nicht überschreiten.',
+        compressionFailed: 'Komprimierung fehlgeschlagen.',
+        invalidFile: 'Ungültige PDF-Datei.',
+        networkError: 'Netzwerkverbindungsfehler.'
+      }
+    };
+    
+    return messages[locale as keyof typeof messages]?.[type as keyof typeof messages.tr] || messages.tr[type as keyof typeof messages.tr];
+  };
+
+  // Handle compression with real functionality
   const handleCompress = async () => {
     if (!selectedFile) return;
     
     setIsCompressing(true);
     setError(null);
     setCurrentStep('processing');
+    setCompressionProgress(0);
     
     try {
-      // const result = await compressWithRender(selectedFile, quality);
-      
-      // if (result.success && result.data) {
-      //   const downloadUrl = URL.createObjectURL(result.data);
-      
-      //   const compressionResultData: CompressionResultDisplay = {
-      //     compressedBlob: result.data,
-      //     originalSize: result.originalSize || selectedFile.size,
-      //     compressedSize: result.compressedSize || result.data.size,
-      //     compressionRatio: result.compressionRatio || 0,
-      //     processingTime: result.processingTime || 0,
-      //     downloadUrl
-      //   };
-      
-      //   setCompressionResult(compressionResultData);
-      //   setCurrentStep('result');
-      
-      //   // Track analytics
-      //   if (user) {
-      //     const compressedFile = new File([result.data], `compressed_${selectedFile.name}`, {
-      //       type: 'application/pdf',
-      //       lastModified: Date.now()
-      //     });
-      //     await uploadFile(compressedFile, 'pdf');
-      //   }
-      // } else {
-      //   throw new Error(result.error || 'Sıkıştırma başarısız oldu');
-      // }
-      // Placeholder for compression logic
-      console.log('Compressing file:', selectedFile.name);
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate compression
-
-      const downloadUrl = URL.createObjectURL(selectedFile!); // Simulate compressed file
-
-      const compressionResultData: CompressionResultDisplay = {
-        compressedBlob: selectedFile!,
-        originalSize: selectedFile!.size,
-        compressedSize: selectedFile!.size, // Simulate compressed size
-        compressionRatio: 0, // No compression ratio available
-        processingTime: 0, // Simulate processing time
-        downloadUrl
-      };
-
-      setCompressionResult(compressionResultData);
-      setCurrentStep('result');
-
-      // Track analytics
-      if (user) {
-        const compressedFile = new File([selectedFile!], `compressed_${selectedFile!.name}`, {
-          type: 'application/pdf',
-          lastModified: Date.now()
+      // Progress simulation
+      const progressInterval = setInterval(() => {
+        setCompressionProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
         });
-        await uploadFile(compressedFile, 'pdf');
+      }, 300);
+
+      // Determine compression ratio based on quality
+      let compressionRatio = 0.7; // Default
+      switch (quality) {
+        case 'screen':
+          compressionRatio = 0.3; // High compression
+          break;
+        case 'ebook':
+          compressionRatio = 0.6; // Balanced
+          break;
+        case 'printer':
+          compressionRatio = 0.8; // Light compression
+          break;
       }
 
+      const startTime = Date.now();
+      
+      // Use real PDF compression from pdfUtils
+      const compressedFile = await compressPDF(selectedFile, compressionRatio);
+      
+      const endTime = Date.now();
+      const processingTime = endTime - startTime;
+      
+      // Clear progress interval and set to 100%
+      clearInterval(progressInterval);
+      setCompressionProgress(100);
+      
+      // Create download URL
+      const downloadUrl = URL.createObjectURL(compressedFile);
+      
+      // Calculate actual compression ratio
+      const actualRatio = calculateCompressionRatio(selectedFile.size, compressedFile.size);
+      
+      const compressionResultData: CompressionResultDisplay = {
+        compressedBlob: compressedFile,
+        originalSize: selectedFile.size,
+        compressedSize: compressedFile.size,
+        compressionRatio: actualRatio,
+        processingTime,
+        downloadUrl
+      };
+      
+      setCompressionResult(compressionResultData);
+      setCurrentStep('result');
+      
+      // Track analytics
+      if (user) {
+        await uploadFile(compressedFile, 'pdf');
+      }
+      
     } catch (err: any) {
       console.error('Compression error:', err);
-      let errorMessage = err.message || 'Sıkıştırma sırasında hata oluştu';
+      let errorMessage = getErrorMessage('compressionFailed', locale);
       
-      if (errorMessage.includes('timeout') || errorMessage.includes('too large')) {
-        errorMessage = 'Dosya çok büyük veya karmaşık. Lütfen tekrar deneyin.';
+      if (err.message.includes('PDF sıkıştırma hatası') || err.message.includes('PDF compression error')) {
+        errorMessage = err.message;
       }
       
       setError(errorMessage);
       setCurrentStep('configure');
+      setCompressionProgress(0);
     } finally {
       setIsCompressing(false);
     }
@@ -215,6 +241,12 @@ function PDFCompress({ locale }: { locale: string }) {
     setSelectedFile(null);
     setCompressionResult(null);
     setError(null);
+    setCompressionProgress(0);
+  };
+
+  // Get localized text
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
   };
 
   return (
@@ -238,10 +270,10 @@ function PDFCompress({ locale }: { locale: string }) {
           {/* Header - QuickUtil Purple Gradient */}
           <div className="mb-16">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-              PDF Sıkıştırma
+              {getText('pdfCompress.title', 'PDF Sıkıştırma')}
             </h1>
-            <p className="text-xl text-gray-700">
-              Maksimum PDF kalitesi için optimize ederken dosya boyutunu küçültebilirsin.
+            <p className="text-xl text-gray-800">
+              {getText('pdfCompress.subtitle', 'Maksimum PDF kalitesi için optimize ederken dosya boyutunu küçültebilirsin.')}
             </p>
           </div>
 
@@ -250,16 +282,16 @@ function PDFCompress({ locale }: { locale: string }) {
             <div className="relative group cursor-pointer">
               <div className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg px-8 py-4 text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center transform hover:scale-105">
                 <SparklesIcon className="h-5 w-5 mr-2" />
-                PDF dosyasını seç
+                {getText('pdfCompress.uploadTitle', 'PDF dosyasını seç')}
               </div>
               <FileUpload
-                                    onFileSelect={(file) => {
-                      if (Array.isArray(file)) {
-                        handleFileSelect(file[0]);
-                      } else {
-                        handleFileSelect(file);
-                      }
-                    }}
+                onFileSelect={(file) => {
+                  if (Array.isArray(file)) {
+                    handleFileSelect(file[0]);
+                  } else {
+                    handleFileSelect(file);
+                  }
+                }}
                 acceptedTypes={['application/pdf']}
                 maxSize={20 * 1024 * 1024}
                 title=""
@@ -267,8 +299,8 @@ function PDFCompress({ locale }: { locale: string }) {
               />
             </div>
             
-            <p className="text-sm text-gray-600 mt-4">
-              veya PDF'i buraya bırak
+            <p className="text-sm text-gray-700 mt-4">
+              {getText('pdfCompress.uploadDescription', 'veya PDF\'i buraya bırak')}
             </p>
           </div>
 
@@ -291,7 +323,7 @@ function PDFCompress({ locale }: { locale: string }) {
             {/* Header */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                Küçültme düzeyi
+                {getText('pdfCompress.compressionLevel', 'Küçültme düzeyi')}
               </h1>
             </div>
 
@@ -314,7 +346,7 @@ function PDFCompress({ locale }: { locale: string }) {
                     <h3 className="font-medium text-gray-900 mb-1 text-sm truncate">
                       {selectedFile.name}
                     </h3>
-                    <p className="text-xs text-gray-600 mb-4">
+                    <p className="text-xs text-gray-700 mb-4">
                       {formatFileSize(selectedFile.size)}
                     </p>
 
@@ -323,7 +355,7 @@ function PDFCompress({ locale }: { locale: string }) {
                       className="text-purple-600 hover:text-purple-700 text-xs flex items-center justify-center mx-auto transition-colors"
                     >
                       <TrashIcon className="h-3 w-3 mr-1" />
-                      Dosyayı kaldır
+                      {getText('pdfCompress.remove.file', 'Dosyayı kaldır')}
                     </button>
                   </div>
                 </div>
@@ -335,20 +367,20 @@ function PDFCompress({ locale }: { locale: string }) {
                   {[
                     { 
                       id: 'screen', 
-                      name: 'AŞIRI SIKIŞTIRMA',
-                      desc: 'Daha az kaliteli, yüksek sıkıştırma',
+                      name: getText('pdfCompress.high', 'AŞIRI SIKIŞTIRMA'),
+                      desc: getText('pdfCompress.highDesc', 'Daha az kaliteli, yüksek sıkıştırma'),
                       recommended: false
                     },
                     { 
                       id: 'ebook', 
-                      name: 'ÖNERİLEN SIKIŞTIRMA',
-                      desc: 'Kaliteli, iyi sıkıştırma',
+                      name: getText('pdfCompress.medium', 'ÖNERİLEN SIKIŞTIRMA'),
+                      desc: getText('pdfCompress.mediumDesc', 'Kaliteli, iyi sıkıştırma'),
                       recommended: true
                     },
                     { 
                       id: 'printer', 
-                      name: 'DÜŞÜK SIKIŞTIRMA',
-                      desc: 'Yüksek kaliteli, daha az sıkıştırma',
+                      name: getText('pdfCompress.light', 'DÜŞÜK SIKIŞTIRMA'),
+                      desc: getText('pdfCompress.lightDesc', 'Yüksek kaliteli, daha az sıkıştırma'),
                       recommended: false
                     }
                   ].map((level) => (
@@ -364,7 +396,7 @@ function PDFCompress({ locale }: { locale: string }) {
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="font-semibold text-gray-900 text-sm">{level.name}</div>
-                          <div className="text-sm text-gray-600">{level.desc}</div>
+                          <div className="text-sm text-gray-700">{level.desc}</div>
                         </div>
                         <div className={`w-4 h-4 rounded-full border-2 ${
                           quality === level.id 
@@ -404,7 +436,7 @@ function PDFCompress({ locale }: { locale: string }) {
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
                     <SparklesIcon className="h-4 w-4 mr-2" />
-                    PDF Küçültme
+                    {getText('pdfCompress.startCompression', 'PDF Küçültme')}
                     <ArrowLeftIcon className="h-4 w-4 ml-2 rotate-180" />
                   </button>
                 </div>
@@ -431,19 +463,22 @@ function PDFCompress({ locale }: { locale: string }) {
 
             {/* Processing Text */}
             <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-              PDF küçültülüyor...
+              {getText('pdfCompress.processing', 'PDF küçültülüyor...')}
             </h2>
-            <p className="text-gray-700 mb-6">
-              Dosyanız işleniyor, lütfen bekleyin
+            <p className="text-gray-800 mb-6">
+              {getText('pdfCompress.processingDesc', 'Dosyanız işleniyor, lütfen bekleyin')}
             </p>
 
             {/* Progress - Purple Gradient */}
             <div className="mb-6">
               <div className="bg-gray-200 rounded-full h-2 w-full mb-2 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 h-full rounded-full animate-pulse" style={{ width: '70%' }}></div>
+                <div 
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 h-full rounded-full transition-all duration-300" 
+                  style={{ width: `${compressionProgress}%` }}
+                ></div>
               </div>
-              <p className="text-sm text-gray-600">
-                {selectedFile?.name}
+              <p className="text-sm text-gray-700">
+                {selectedFile?.name} - {compressionProgress}%
               </p>
             </div>
           </div>
@@ -464,7 +499,7 @@ function PDFCompress({ locale }: { locale: string }) {
                   <CheckCircleIcon className="h-10 w-10 text-white" />
                 </div>
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  PDF küçültüldü!
+                  {getText('pdfCompress.completed', 'PDF küçültüldü!')}
                 </h2>
               </div>
 
@@ -477,18 +512,18 @@ function PDFCompress({ locale }: { locale: string }) {
                         {Math.round(compressionResult.compressionRatio)}%
                       </div>
                       <div className="text-xs uppercase tracking-wide">
-                        Azalma
+                        {getText('pdfCompress.results.savings', 'Azalma')}
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="space-y-1 text-sm text-gray-700">
+                <div className="space-y-1 text-sm text-gray-800">
                   <p>
-                    <span className="font-medium">Orijinal:</span> {formatFileSize(compressionResult.originalSize)}
+                    <span className="font-medium">{getText('pdfCompress.originalSize', 'Orijinal')}:</span> {formatFileSize(compressionResult.originalSize)}
                   </p>
                   <p>
-                    <span className="font-medium">Sıkıştırılmış:</span> {formatFileSize(compressionResult.compressedSize)}
+                    <span className="font-medium">{getText('pdfCompress.results.newSize', 'Sıkıştırılmış')}:</span> {formatFileSize(compressionResult.compressedSize)}
                   </p>
                 </div>
               </div>
@@ -496,7 +531,7 @@ function PDFCompress({ locale }: { locale: string }) {
               {/* Other Tools Suggestions - iLovePDF Style */}
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <h3 className="text-base font-semibold text-gray-900 mb-3 text-center">
-                  Şu araca geçiş yap:
+                  {getText('pdfCompress.otherTools', 'Şu araca geçiş yap:')}
                 </h3>
                 <div className="grid grid-cols-3 md:grid-cols-6 gap-2 max-w-3xl mx-auto">
                   <Link
@@ -506,7 +541,9 @@ function PDFCompress({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                       <DocumentIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">PDF dönüştür</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">
+                      {getText('tools.pdfConvert', 'PDF dönüştür')}
+                    </span>
                   </Link>
 
                   <Link
@@ -516,7 +553,9 @@ function PDFCompress({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                       <SparklesIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim dönüştür</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">
+                      {getText('tools.imageFormat', 'Resim dönüştür')}
+                    </span>
                   </Link>
 
                   <Link
@@ -526,7 +565,9 @@ function PDFCompress({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                       <ArrowDownTrayIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim sıkıştır</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">
+                      {getText('tools.imageCompress', 'Resim sıkıştır')}
+                    </span>
                   </Link>
 
                   <Link
@@ -536,7 +577,9 @@ function PDFCompress({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                       <CheckCircleIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim kırp</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">
+                      {getText('tools.imageCrop', 'Resim kırp')}
+                    </span>
                   </Link>
 
                   <Link
@@ -546,7 +589,9 @@ function PDFCompress({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                       <DocumentIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim boyutlandır</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">
+                      {getText('tools.imageResize', 'Resim boyutlandır')}
+                    </span>
                   </Link>
 
                   <Link
@@ -556,7 +601,9 @@ function PDFCompress({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                       <ArrowLeftIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 text-center leading-tight">Resim döndür</span>
+                    <span className="text-xs font-medium text-gray-800 text-center leading-tight">
+                      {getText('tools.imageRotate', 'Resim döndür')}
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -569,7 +616,7 @@ function PDFCompress({ locale }: { locale: string }) {
                   className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
                 >
                   <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
-                  Sıkıştırılmış PDF indir
+                  {getText('pdfCompress.downloadAllSingle', 'Sıkıştırılmış PDF indir')}
                 </a>
                 
                 <button
@@ -577,7 +624,7 @@ function PDFCompress({ locale }: { locale: string }) {
                   className="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-purple-300 text-purple-700 font-semibold rounded-xl hover:bg-purple-50 hover:border-purple-400 transition-all duration-200"
                 >
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
-                  Yeni PDF Sıkıştır
+                  {getText('pdfCompress.newConversion', 'Yeni PDF Sıkıştır')}
                 </button>
               </div>
             </div>
