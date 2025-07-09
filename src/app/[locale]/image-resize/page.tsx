@@ -30,6 +30,139 @@ interface ResizeResult {
 
 type ResizeMode = 'pixels' | 'percentage';
 
+// Interactive Resize Component
+function InteractiveResizeBox({ 
+  imageUrl, 
+  originalDimensions, 
+  width, 
+  height, 
+  onDimensionsChange 
+}: {
+  imageUrl: string;
+  originalDimensions: { width: number; height: number };
+  width: number | undefined;
+  height: number | undefined;
+  onDimensionsChange: (width: number, height: number) => void;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragHandle, setDragHandle] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  const calculateDimensions = (clientX: number, clientY: number) => {
+    if (!containerRef.current || !imageRef.current) return;
+    
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const imageRect = imageRef.current.getBoundingClientRect();
+    
+    // Calculate relative position within the image
+    const relativeX = (clientX - imageRect.left) / imageRect.width;
+    const relativeY = (clientY - imageRect.top) / imageRect.height;
+    
+    // Convert to actual pixel dimensions
+    const newWidth = Math.round(relativeX * originalDimensions.width);
+    const newHeight = Math.round(relativeY * originalDimensions.height);
+    
+    onDimensionsChange(
+      Math.max(10, Math.min(newWidth, originalDimensions.width)),
+      Math.max(10, Math.min(newHeight, originalDimensions.height))
+    );
+  };
+
+  const handleMouseDown = (e: React.MouseEvent, handle: string) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setDragHandle(handle);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !dragHandle) return;
+    calculateDimensions(e.clientX, e.clientY);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setDragHandle(null);
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+      setDragHandle(null);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+      return () => document.removeEventListener('mouseup', handleGlobalMouseUp);
+    }
+  }, [isDragging]);
+
+  // Calculate preview dimensions for the resize box
+  const previewWidth = width || originalDimensions.width;
+  const previewHeight = height || originalDimensions.height;
+  
+  return (
+    <div 
+      ref={containerRef}
+      className="relative bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-[400px] flex items-center justify-center cursor-crosshair"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    >
+      <div className="relative">
+        <img
+          ref={imageRef}
+          src={imageUrl}
+          alt="Interactive Preview"
+          className="max-w-full max-h-[350px] object-contain rounded-lg"
+          draggable={false}
+        />
+        
+        {/* Interactive Resize Overlay */}
+        <div 
+          className="absolute top-0 left-0 border-2 border-purple-500 bg-purple-500/10 rounded"
+          style={{
+            width: `${(previewWidth / originalDimensions.width) * 100}%`,
+            height: `${(previewHeight / originalDimensions.height) * 100}%`,
+          }}
+        >
+          {/* Corner handles */}
+          <div 
+            className="absolute -bottom-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-se-resize shadow-lg hover:bg-purple-600 transition-colors"
+            onMouseDown={(e) => handleMouseDown(e, 'bottom-right')}
+          />
+          <div 
+            className="absolute -bottom-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-sw-resize shadow-lg hover:bg-purple-600 transition-colors"
+            onMouseDown={(e) => handleMouseDown(e, 'bottom-left')}
+          />
+          <div 
+            className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-ne-resize shadow-lg hover:bg-purple-600 transition-colors"
+            onMouseDown={(e) => handleMouseDown(e, 'top-right')}
+          />
+          <div 
+            className="absolute -top-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-nw-resize shadow-lg hover:bg-purple-600 transition-colors"
+            onMouseDown={(e) => handleMouseDown(e, 'top-left')}
+          />
+          
+          {/* Edge handles */}
+          <div 
+            className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-4 h-6 bg-purple-500 border-2 border-white rounded cursor-e-resize shadow-lg hover:bg-purple-600 transition-colors"
+            onMouseDown={(e) => handleMouseDown(e, 'right')}
+          />
+          <div 
+            className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-purple-500 border-2 border-white rounded cursor-s-resize shadow-lg hover:bg-purple-600 transition-colors"
+            onMouseDown={(e) => handleMouseDown(e, 'bottom')}
+          />
+        </div>
+        
+        {/* Dimension indicator */}
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/75 text-white px-3 py-1 rounded text-sm font-medium">
+          {previewWidth} × {previewHeight}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ImageResize() {
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
@@ -115,6 +248,12 @@ export default function ImageResize() {
       const aspectRatio = originalDimensions.width / originalDimensions.height;
       setWidth(Math.round(newHeight * aspectRatio));
     }
+  };
+
+  // Handle interactive resize
+  const handleInteractiveDimensionsChange = (newWidth: number, newHeight: number) => {
+    setWidth(newWidth);
+    setHeight(newHeight);
   };
 
   // Start resize process
@@ -392,26 +531,30 @@ export default function ImageResize() {
                   <p className="text-gray-600">Set your desired dimensions and options</p>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
-                  {/* Left: Preview (1/3) */}
-                  <div className="lg:col-span-1">
+                <div className="grid lg:grid-cols-5 gap-8">
+                  {/* Left: Interactive Preview (3/5) */}
+                  <div className="lg:col-span-3">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                      <h3 className="font-semibold text-gray-900 mb-4">Preview</h3>
-                      <div className="bg-white rounded-lg p-4 min-h-[200px] flex items-center justify-center">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt="Preview"
-                          className="max-w-full max-h-[200px] object-contain rounded-lg"
-                        />
-                      </div>
-                      <div className="mt-4 text-sm text-gray-600 text-center">
+                      <h3 className="font-semibold text-gray-900 mb-4 text-center">Interactive Preview</h3>
+                      <p className="text-sm text-gray-600 mb-4 text-center">
+                        🎯 Drag the handles to resize visually or use the controls below
+                      </p>
+                      <InteractiveResizeBox
+                        imageUrl={URL.createObjectURL(file)}
+                        originalDimensions={originalDimensions}
+                        width={width}
+                        height={height}
+                        onDimensionsChange={handleInteractiveDimensionsChange}
+                      />
+                      <div className="mt-4 text-sm text-gray-700 text-center bg-white rounded-lg p-3">
                         <p className="font-medium">{file.name}</p>
-                        <p>{formatFileSize(file.size)} • {originalDimensions.width}×{originalDimensions.height}</p>
+                        <p className="text-gray-600">{formatFileSize(file.size)} • Original: {originalDimensions.width}×{originalDimensions.height}</p>
+                        <p className="text-purple-600 font-medium">Current: {width || originalDimensions.width}×{height || originalDimensions.height}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right: Settings (2/3) */}
+                  {/* Right: Settings (2/5) */}
                   <div className="lg:col-span-2">
                     <div className="space-y-6">
                       
@@ -444,7 +587,7 @@ export default function ImageResize() {
 
                       {/* Resize Controls */}
                       {resizeMode === 'pixels' ? (
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Width (px)
@@ -453,8 +596,8 @@ export default function ImageResize() {
                               type="number"
                               value={width || ''}
                               onChange={(e) => handleWidthChange(e.target.value)}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                              placeholder="Width"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-700"
+                              placeholder="Enter width..."
                             />
                           </div>
                           <div>
@@ -465,8 +608,8 @@ export default function ImageResize() {
                               type="number"
                               value={height || ''}
                               onChange={(e) => handleHeightChange(e.target.value)}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                              placeholder="Height"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-700"
+                              placeholder="Enter height..."
                             />
                           </div>
                         </div>
@@ -477,12 +620,16 @@ export default function ImageResize() {
                           </label>
                           <input
                             type="number"
-                            value={percentageValue}
+                            value={percentageValue || ''}
                             onChange={(e) => setPercentageValue(parseFloat(e.target.value) || 100)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-700"
                             min="1"
                             max="500"
+                            placeholder="Enter percentage..."
                           />
+                          <p className="text-sm text-gray-600 mt-2">
+                            Result: {Math.round(originalDimensions.width * (percentageValue / 100))}×{Math.round(originalDimensions.height * (percentageValue / 100))}
+                          </p>
                         </div>
                       )}
 
