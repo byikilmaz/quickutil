@@ -120,9 +120,10 @@ exports.compressPDFAdvanced = functions
  * Revolutionary iLovePDF-level compression using Ghostscript
  */
 async function callPythonCompressionService(buffer, compressionLevel, fileName) {
+    var _a;
     try {
         // Python service URL (configure this based on your deployment)
-        const PYTHON_SERVICE_URL = process.env.PYTHON_COMPRESSION_SERVICE_URL || 'http://localhost:5000';
+        const PYTHON_SERVICE_URL = ((_a = functions.config().python) === null || _a === void 0 ? void 0 : _a.compression_service_url) || 'https://quickutil-pdf-api.onrender.com';
         functions.logger.info('🔄 Calling Python compression service...', {
             serviceUrl: PYTHON_SERVICE_URL,
             compressionLevel,
