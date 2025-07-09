@@ -1,10 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { ArrowsRightLeftIcon, ArrowDownTrayIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { useState, useRef, useEffect } from 'react';
+import { ArrowsRightLeftIcon, SparklesIcon, PhotoIcon, CheckCircleIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useDropzone } from 'react-dropzone';
+import StructuredData from '@/components/StructuredData';
 import Breadcrumb from '@/components/Breadcrumb';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQuota } from '@/contexts/QuotaContext';
+import { useStorage } from '@/contexts/StorageContext';
 import { ActivityTracker } from '@/lib/activityTracker';
 import { 
   convertImage,
@@ -14,21 +18,47 @@ import {
   type ConversionOptions
 } from '@/lib/imageUtils';
 
-type Stage = 'upload' | 'settings' | 'result';
 type OutputFormat = 'jpeg' | 'png' | 'webp';
+
+interface FormatConversionResult {
+  originalFile: File;
+  convertedBlob: Blob;
+  originalSize: number;
+  convertedSize: number;
+  downloadUrl: string;
+  processingTime: number;
+  originalFormat: string;
+  outputFormat: string;
+}
 
 export default function ImageFormatConvert() {
   const { user } = useAuth();
+  const { canUseFeature } = useQuota();
+  const { uploadFile } = useStorage();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [stage, setStage] = useState<Stage>('upload');
+
+  // Component state - Step-based like PDF convert
+  const [currentStep, setCurrentStep] = useState<'upload' | 'configure' | 'processing' | 'result'>('upload');
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('jpeg');
-  const [quality, setQuality] = useState(0.9);
+  const [quality, setQuality] = useState<number>(0.9);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [conversionResult, setConversionResult] = useState<FormatConversionResult | null>(null);
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
-  const [convertResult, setConvertResult] = useState<ConversionResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // Refs for smooth scrolling
+  const uploadRef = useRef<HTMLDivElement>(null);
+  const configureRef = useRef<HTMLDivElement>(null);
+  const processButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Auto-focus on upload section when page loads
+  useEffect(() => {
+    if (currentStep === 'upload' && uploadRef.current) {
+      uploadRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [currentStep]);
 
   // File validation
   const validateFile = (file: File): string | null => {
@@ -36,142 +66,14 @@ export default function ImageFormatConvert() {
     const maxSize = 50 * 1024 * 1024; // 50MB
     
     if (!validTypes.includes(file.type)) {
-      return 'Desteklenen formatlar: JPEG, PNG, WebP, GIF';
+      return 'Supported formats: JPEG, PNG, WebP, GIF';
     }
     
     if (file.size > maxSize) {
-      return 'Dosya boyutu 50MB\'tan küçük olmalıdır';
+      return 'File size must be less than 50MB';
     }
     
     return null;
-  };
-
-  // File selection handler
-  const handleFileSelect = async (files: File[]) => {
-    const selectedFile = files[0];
-    const error = validateFile(selectedFile);
-    
-    if (error) {
-      setError(error);
-      return;
-    }
-
-    setFile(selectedFile);
-    setStage('settings');
-    setError('');
-
-    try {
-      const dimensions = await getImageDimensions(selectedFile);
-      setOriginalDimensions(dimensions);
-    } catch (err) {
-      console.error('Error getting image dimensions:', err);
-      setError('Resim boyutları alınamadı');
-    }
-
-    const url = URL.createObjectURL(selectedFile);
-    setPreviewUrl(url);
-  };
-
-  // Dropzone configuration
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: handleFileSelect,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
-    },
-    multiple: false
-  });
-
-  const handleConvert = async () => {
-    if (!file) {
-      setError('Lütfen bir resim seçin');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    const startTime = Date.now();
-
-    try {
-      const options: ConversionOptions = {
-        format: outputFormat,
-        quality,
-      };
-
-      const result = await convertImage(file, options);
-      setConvertResult(result);
-      setStage('result');
-
-      // Track activity if user is logged in
-      if (user) {
-        try {
-          const processingTime = Date.now() - startTime;
-
-          await ActivityTracker.createActivity(user.uid, {
-            type: 'image_convert',
-            fileName: file.name,
-            originalFileName: file.name,
-            fileSize: file.size,
-            processedSize: result.file.size,
-            status: 'success',
-            category: 'Image',
-            processingTime,
-            compressionRatio: Math.abs(1 - result.compressionRatio) * 100
-          });
-        } catch (activityError) {
-          console.error('Activity tracking error:', activityError);
-        }
-      }
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Dönüştürme sırasında hata oluştu');
-      
-      if (user && file) {
-        try {
-          const processingTime = Date.now() - startTime;
-          await ActivityTracker.createActivity(user.uid, {
-            type: 'image_convert',
-            fileName: file.name,
-            originalFileName: file.name,
-            fileSize: file.size,
-            status: 'error',
-            category: 'Image',
-            processingTime
-          });
-        } catch (activityError) {
-          console.error('Activity tracking error:', activityError);
-        }
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDownload = () => {
-    if (!convertResult) return;
-
-    const url = URL.createObjectURL(convertResult.file);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = convertResult.file.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const resetForm = () => {
-    setStage('upload');
-    setFile(null);
-    setConvertResult(null);
-    setError('');
-    setOutputFormat('jpeg');
-    setQuality(0.9);
-    setOriginalDimensions(null);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
   };
 
   // Get current file format
@@ -191,7 +93,173 @@ export default function ImageFormatConvert() {
     }
   };
 
-  // Cleanup preview URL when component unmounts or file changes
+  // Handle file selection
+  const handleFileSelect = async (file: File | File[]) => {
+    const selectedFile = Array.isArray(file) ? file[0] : file;
+    if (!selectedFile) return;
+    
+    const validationError = validateFile(selectedFile);
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
+    if (!user || !canUseFeature('image_format_convert')) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setFile(selectedFile);
+    
+    try {
+      const dimensions = await getImageDimensions(selectedFile);
+      setOriginalDimensions(dimensions);
+      
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
+      
+      setCurrentStep('configure');
+      
+      // Scroll to configure section
+      setTimeout(() => {
+        configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    } catch (error) {
+      console.error('Error getting image dimensions:', error);
+    }
+  };
+
+  // Handle format conversion
+  const handleConvert = async () => {
+    if (!file || !user) return;
+
+    setCurrentStep('processing');
+    setIsProcessing(true);
+    setProcessingProgress(0);
+
+    const startTime = Date.now();
+
+    try {
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setProcessingProgress(prev => {
+          if (prev < 90) return prev + 10;
+          return prev;
+        });
+      }, 200);
+
+      const options: ConversionOptions = {
+        format: outputFormat,
+        quality,
+      };
+
+      const result = await convertImage(file, options);
+      
+      clearInterval(progressInterval);
+      setProcessingProgress(100);
+
+      const processingTime = Date.now() - startTime;
+      const downloadUrl = URL.createObjectURL(result.file);
+
+      const conversionResult: FormatConversionResult = {
+        originalFile: file,
+        convertedBlob: result.file,
+        originalSize: file.size,
+        convertedSize: result.file.size,
+        downloadUrl,
+        processingTime,
+        originalFormat: getCurrentFormat(),
+        outputFormat: outputFormat.toUpperCase()
+      };
+
+      setConversionResult(conversionResult);
+
+      // Track activity
+      await ActivityTracker.createActivity(user.uid, {
+        type: 'image_convert',
+        fileName: file.name,
+        originalFileName: file.name,
+        fileSize: file.size,
+        processedSize: result.file.size,
+        status: 'success',
+        category: 'Image',
+        processingTime,
+        downloadUrl
+      });
+
+      setCurrentStep('result');
+    } catch (error) {
+      console.error('Format conversion error:', error);
+      alert('An error occurred during conversion. Please try again.');
+      setCurrentStep('configure');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle download
+  const handleDownload = () => {
+    if (!conversionResult) return;
+
+    const a = document.createElement('a');
+    a.href = conversionResult.downloadUrl;
+    a.download = `converted_${file?.name?.replace(/\.[^/.]+$/, '')}.${outputFormat}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  // Handle reset
+  const handleReset = () => {
+    setCurrentStep('upload');
+    setFile(null);
+    setConversionResult(null);
+    setOutputFormat('jpeg');
+    setQuality(0.9);
+    setOriginalDimensions(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    
+    // Scroll to upload section
+    setTimeout(() => {
+      uploadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
+
+  // Dropzone configuration
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileSelect,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
+    },
+    multiple: false
+  });
+
+  // Format configurations
+  const formatConfigs = {
+    jpeg: { 
+      icon: '📷', 
+      name: 'JPEG', 
+      desc: 'Small size, ideal for photos',
+      color: 'from-blue-500 to-blue-600'
+    },
+    png: { 
+      icon: '🖼️', 
+      name: 'PNG', 
+      desc: 'Transparency support, high quality',
+      color: 'from-green-500 to-green-600'
+    },
+    webp: { 
+      icon: '🔧', 
+      name: 'WebP', 
+      desc: 'Modern format, best compression',
+      color: 'from-purple-500 to-purple-600'
+    }
+  };
+
+  // Cleanup preview URL
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -200,343 +268,502 @@ export default function ImageFormatConvert() {
     };
   }, [previewUrl]);
 
-  const formatConfigs = {
-    jpeg: { icon: '📷', name: 'JPEG', desc: 'Küçük boyut, fotoğraflar için ideal' },
-    png: { icon: '🖼️', name: 'PNG', desc: 'Şeffaflık desteği, kaliteli görüntü' },
-    webp: { icon: '🔧', name: 'WebP', desc: 'Modern format, en iyi sıkıştırma' }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 page-transition">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
+      {/* Enhanced Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-4 h-4 bg-purple-300/20 rounded-full animate-pulse"
+            style={{
+              left: `${5 + (i * 4.5) % 95}%`,
+              top: `${10 + (i * 7) % 80}%`,
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: '2s'
+            }}
+          />
+        ))}
+      </div>
       
-      {/* Upload Stage */}
-      {stage === 'upload' && (
-        <div className="max-w-4xl mx-auto px-4 py-6">
+      {/* SEO */}
+      <StructuredData type="tool" />
+      
+      <div className="relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Breadcrumb />
           
-          {/* Header */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white mb-4 shadow-lg">
-              <ArrowsRightLeftIcon className="w-8 h-8" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Format Dönüştürme
-            </h1>
-            <p className="text-gray-700 max-w-md mx-auto">
-              Resimlerinizi farklı formatlara kolayca dönüştürün
-            </p>
-          </div>
-
-          {/* Mobile-Optimized Upload Area */}
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
-              isDragActive
-                ? 'border-purple-500 bg-purple-50 scale-[1.02]'
-                : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50'
-            }`}
-          >
-            <input {...getInputProps()} />
-            <PhotoIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-            
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {isDragActive ? 'Dosyayı Bırakın' : 'Resim Yükleyin'}
-            </h3>
-            <p className="text-sm text-gray-700 mb-4">
-              JPEG, PNG, WebP, GIF formatları • Max 50MB
-            </p>
-            
-            <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-colors font-medium shadow-lg text-sm">
-              📁 Dosya Seç
-            </button>
-
-            {error && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-700 text-sm">{error}</p>
+          {/* STEP 1: UPLOAD */}
+          <div ref={uploadRef} className={`py-16 transition-all duration-500 ${
+            currentStep === 'upload' ? 'opacity-100' : 'opacity-50 pointer-events-none'
+          }`}>
+            <div className="text-center mb-12">
+              {/* AI Badge */}
+              <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg backdrop-blur-sm">
+                <SparklesIcon className="h-4 w-4 text-purple-600 mr-2 animate-pulse" />
+                Universal Format Support • AI Enhanced
               </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Settings Stage */}
-      {stage === 'settings' && file && (
-        <div className="flex flex-col h-screen">
-          {/* Mobile Header */}
-          <div className="bg-white border-b border-gray-200 px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <ArrowsRightLeftIcon className="w-5 h-5 text-purple-600" />
-                <h1 className="text-lg font-semibold text-gray-900">Dönüştürme</h1>
-              </div>
-              <button
-                onClick={resetForm}
-                className="text-sm text-gray-800 bg-gray-100 px-3 py-1.5 rounded-lg"
-              >
-                Yeni Resim
-              </button>
-            </div>
-          </div>
-
-          {/* Image Preview */}
-          <div className="bg-gray-100 p-4">
-            {previewUrl && (
-              <div className="bg-white rounded-2xl p-4 mx-auto max-w-sm">
-                <img
-                  src={previewUrl}
-                  alt="Preview"
-                  className="w-full h-48 object-contain rounded-xl"
-                />
-                <div className="mt-3 text-center text-sm text-gray-700">
-                  <p>{file.name}</p>
-                  <p>{formatFileSize(file.size)} • {originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : ''}</p>
-                  <div className="mt-2 flex items-center justify-center space-x-2">
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-xs font-medium">
-                      {getCurrentFormat()}
-                    </span>
-                    <ArrowsRightLeftIcon className="w-4 h-4 text-gray-400" />
-                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-lg text-xs font-medium">
-                      {formatConfigs[outputFormat].name}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile-Friendly Settings */}
-          <div className="flex-1 bg-white p-4 overflow-y-auto">
-            <div className="space-y-6">
               
-              {/* Output Format Selection */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Çıktı Formatı</h3>
-                <div className="space-y-3">
-                  {Object.entries(formatConfigs).map(([format, config]) => (
-                    <button
-                      key={format}
-                      onClick={() => setOutputFormat(format as OutputFormat)}
-                      className={`w-full p-4 rounded-xl text-left transition-colors ${
-                        outputFormat === format
-                          ? 'bg-purple-100 border-2 border-purple-300 text-purple-800'
-                          : 'bg-gray-100 border-2 border-gray-200 text-gray-800'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{config.icon}</span>
-                        <div>
-                          <div className="font-medium">{config.name}</div>
-                          <div className="text-sm opacity-75">{config.desc}</div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+              {/* Enhanced Title */}
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent">
+                  Image Format
+                </span>
+                <br />
+                <span className="text-gray-900">Converter</span>
+              </h1>
+              
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8 leading-relaxed">
+                Convert between JPEG, PNG, WebP formats with perfect quality preservation
+              </p>
+              
+              {/* Enhanced Trust Indicators */}
+              <div className="flex flex-wrap justify-center gap-6 mb-12">
+                <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-xl px-4 py-3 shadow-lg border border-white/20">
+                  <ArrowsRightLeftIcon className="h-5 w-5 text-purple-600 mr-2" />
+                  <span className="text-gray-800 font-medium">Universal Support</span>
+                </div>
+                <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-xl px-4 py-3 shadow-lg border border-white/20">
+                  <PhotoIcon className="h-5 w-5 text-pink-600 mr-2" />
+                  <span className="text-gray-800 font-medium">Quality Preservation</span>
+                </div>
+                <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-xl px-4 py-3 shadow-lg border border-white/20">
+                  <CheckCircleIcon className="h-5 w-5 text-purple-600 mr-2" />
+                  <span className="text-gray-800 font-medium">Instant Processing</span>
                 </div>
               </div>
-
-              {/* Quality Settings (only for JPEG and WebP) */}
-              {(outputFormat === 'jpeg' || outputFormat === 'webp') && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Kalite</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-800 mb-2">
-                        Kalite: {Math.round(quality * 100)}%
-                      </label>
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="1"
-                        step="0.1"
-                        value={quality}
-                        onChange={(e) => setQuality(parseFloat(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        style={{
-                          background: `linear-gradient(to right, #9333ea 0%, #9333ea ${quality * 100}%, #e5e7eb ${quality * 100}%, #e5e7eb 100%)`
-                        }}
-                      />
-                      <div className="flex justify-between text-xs text-gray-700 mt-1">
-                        <span>Düşük (Küçük dosya)</span>
-                        <span>Yüksek (Büyük dosya)</span>
-                      </div>
-                    </div>
-                    
-                    {/* Quick Quality Presets */}
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        onClick={() => setQuality(0.6)}
-                        className={`p-2 rounded-lg text-sm transition-colors ${
-                          quality === 0.6 
-                            ? 'bg-purple-100 text-purple-800 border border-purple-300' 
-                            : 'bg-gray-100 text-gray-800 border border-gray-200'
-                        }`}
-                      >
-                        Düşük (60%)
-                      </button>
-                      <button
-                        onClick={() => setQuality(0.8)}
-                        className={`p-2 rounded-lg text-sm transition-colors ${
-                          quality === 0.8 
-                            ? 'bg-purple-100 text-purple-800 border border-purple-300' 
-                            : 'bg-gray-100 text-gray-800 border border-gray-200'
-                        }`}
-                      >
-                        Orta (80%)
-                      </button>
-                      <button
-                        onClick={() => setQuality(1.0)}
-                        className={`p-2 rounded-lg text-sm transition-colors ${
-                          quality === 1.0 
-                            ? 'bg-purple-100 text-purple-800 border border-purple-300' 
-                            : 'bg-gray-100 text-gray-800 border border-gray-200'
-                        }`}
-                      >
-                        Yüksek (100%)
-                      </button>
-                    </div>
+            </div>
+            
+            {/* Enhanced Upload Area */}
+            <div className="max-w-2xl mx-auto">
+              <div 
+                {...getRootProps()}
+                className={`relative border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all duration-300 group ${
+                  isDragActive 
+                    ? 'border-purple-500 bg-purple-100/50 scale-105' 
+                    : 'border-purple-300 hover:border-purple-400 bg-white/50 hover:bg-white/70'
+                } backdrop-blur-sm shadow-2xl`}
+              >
+                <input {...getInputProps()} />
+                
+                {/* Orbital Rings */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-purple-300/30 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-pink-300/30 rounded-full animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }}></div>
+                </div>
+                
+                {/* Floating Sparkles */}
+                <div className="absolute top-8 left-8 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+                <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
+                <div className="absolute bottom-8 left-12 w-2 h-2 bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
+                
+                {/* Upload Icon */}
+                <div className="relative z-10">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <PhotoIcon className="h-10 w-10 text-white" />
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    {isDragActive ? 'Drop your image here' : 'Upload Your Image'}
+                  </h3>
+                  <p className="text-gray-600 mb-8 text-lg">
+                    Supports JPEG, PNG, WebP, GIF formats (max 50MB)
+                  </p>
+                  
+                  <div className="inline-flex items-center bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-semibold text-lg shadow-xl group-hover:shadow-2xl">
+                    <CloudArrowUpIcon className="h-6 w-6 mr-3" />
+                    Choose File
                   </div>
                 </div>
-              )}
-
-              {/* Format Info */}
-              <div className="bg-purple-50 p-4 rounded-xl">
-                <h4 className="font-medium text-purple-900 mb-2">
-                  {formatConfigs[outputFormat].name} Hakkında
-                </h4>
-                <p className="text-sm text-purple-800">
-                  {formatConfigs[outputFormat].desc}
+              </div>
+            </div>
+          </div>
+          
+          {/* STEP 2: CONFIGURE */}
+          {currentStep === 'configure' && file && (
+            <div ref={configureRef} className="py-16">
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 border border-orange-200 text-orange-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
+                  <ArrowsRightLeftIcon className="h-4 w-4 text-orange-600 mr-2" />
+                  Step 2: Choose Output Format
+                </div>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">Configure Conversion</h2>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  Select your desired output format and quality settings
                 </p>
-                {outputFormat === 'jpeg' && (
-                  <p className="text-xs text-purple-700 mt-1">
-                    • Şeffaflık desteği yok • Fotoğraflar için en uygun
-                  </p>
-                )}
-                {outputFormat === 'png' && (
-                  <p className="text-xs text-purple-700 mt-1">
-                    • Şeffaflık destekli • Kayıpsız sıkıştırma
-                  </p>
-                )}
-                {outputFormat === 'webp' && (
-                  <p className="text-xs text-purple-700 mt-1">
-                    • Modern tarayıcılarda desteklenir • En iyi sıkıştırma
-                  </p>
-                )}
               </div>
-            </div>
-          </div>
-
-          {/* Mobile Action Button */}
-          <div className="bg-white border-t border-gray-200 p-4 safe-area-bottom">
-            <button
-              onClick={handleConvert}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-            >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Dönüştürülüyor...</span>
-                </>
-              ) : (
-                <>
-                  <ArrowsRightLeftIcon className="w-5 h-5" />
-                  <span>Dönüştür</span>
-                </>
-              )}
-            </button>
-            
-            {error && (
-              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-700 text-sm text-center">{error}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Result Stage */}
-      {stage === 'result' && convertResult && (
-        <div className="flex flex-col h-screen">
-          {/* Header */}
-          <div className="bg-white border-b border-gray-200 px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <ArrowsRightLeftIcon className="w-5 h-5 text-purple-600" />
-                <h1 className="text-lg font-semibold text-gray-900">Tamamlandı</h1>
-              </div>
-              <button
-                onClick={resetForm}
-                className="text-sm text-gray-800 bg-gray-100 px-3 py-1.5 rounded-lg"
-              >
-                Yeni Resim
-              </button>
-            </div>
-          </div>
-
-          {/* Result Image */}
-          <div className="flex-1 bg-gray-100 p-4 overflow-y-auto">
-            <div className="space-y-6">
               
-              {/* Result */}
-              <div className="bg-white rounded-2xl p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Dönüştürülmüş Resim</h3>
-                <img
-                  src={URL.createObjectURL(convertResult.file)}
-                  alt="Dönüştürülmüş resim"
-                  className="w-full h-64 object-contain rounded-xl bg-gray-50"
-                />
-              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Preview Panel (1/3 width) */}
+                <div className="lg:col-span-1">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-bold text-gray-900">Preview</h3>
+                      <button
+                        onClick={handleReset}
+                        className="text-gray-500 hover:text-gray-700 flex items-center text-sm font-medium"
+                      >
+                        <PhotoIcon className="w-4 h-4 mr-2" />
+                        New Image
+                      </button>
+                    </div>
 
-              {/* Stats */}
-              <div className="bg-white rounded-2xl p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">İstatistikler</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-gray-50 rounded-xl">
-                    <div className="text-sm text-gray-700">Orijinal</div>
-                    <div className="font-medium text-gray-900">{formatFileSize(convertResult.originalSize)}</div>
-                    <div className="text-xs text-gray-600">{getCurrentFormat()}</div>
-                  </div>
-                  <div className="text-center p-3 bg-purple-50 rounded-xl">
-                    <div className="text-sm text-purple-700">Dönüştürülmüş</div>
-                    <div className="font-medium text-purple-900">{formatFileSize(convertResult.newSize)}</div>
-                    <div className="text-xs text-purple-600">{formatConfigs[outputFormat].name}</div>
+                    {/* Image Preview */}
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 mb-6">
+                      {previewUrl && (
+                        <img
+                          src={previewUrl}
+                          alt="Preview"
+                          className="w-full h-48 object-contain rounded-xl"
+                        />
+                      )}
+                    </div>
+
+                    {/* File Info */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">File name:</span>
+                        <span className="text-sm font-medium text-gray-900 truncate ml-2">{file.name}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Size:</span>
+                        <span className="text-sm font-medium text-gray-900">{formatFileSize(file.size)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Dimensions:</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}px` : 'Calculating...'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Current format:</span>
+                        <span className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-xs font-medium">
+                          {getCurrentFormat()}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Size Change */}
-                <div className="mt-4 p-3 bg-blue-50 rounded-xl">
-                  <div className="text-center">
-                    <div className="text-sm text-blue-700">Boyut Değişimi</div>
-                    <div className="font-medium text-blue-900">
-                      {convertResult.newSize < convertResult.originalSize ? '📉' : '📈'} 
-                      {' '}
-                      {Math.abs(Math.round((1 - convertResult.compressionRatio) * 100))}%
-                      {' '}
-                      {convertResult.newSize < convertResult.originalSize ? 'küçüldü' : 'büyüdü'}
+                {/* Settings Panel (2/3 width) */}
+                <div className="lg:col-span-2">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+                      <ArrowsRightLeftIcon className="w-6 h-6 mr-3 text-purple-600" />
+                      Format Settings
+                    </h3>
+
+                    {/* Format Selection */}
+                    <div className="mb-8">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-6">Choose Output Format</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {Object.entries(formatConfigs).map(([format, config]) => (
+                          <button
+                            key={format}
+                            onClick={() => setOutputFormat(format as OutputFormat)}
+                            className={`relative p-6 rounded-2xl text-left transition-all duration-300 ${
+                              outputFormat === format
+                                ? 'bg-gradient-to-br from-purple-100 to-pink-100 border-2 border-purple-300 shadow-lg transform scale-105'
+                                : 'bg-white border-2 border-gray-200 hover:border-purple-200 hover:shadow-md'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${config.color} rounded-2xl mb-4 text-2xl shadow-lg`}>
+                                {config.icon}
+                              </div>
+                              <h5 className="text-lg font-bold text-gray-900 mb-2">{config.name}</h5>
+                              <p className="text-sm text-gray-600">{config.desc}</p>
+                            </div>
+                            
+                            {outputFormat === format && (
+                              <div className="absolute top-2 right-2">
+                                <CheckCircleIcon className="h-6 w-6 text-purple-600" />
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quality Settings */}
+                    {(outputFormat === 'jpeg' || outputFormat === 'webp') && (
+                      <div className="mb-8">
+                        <h4 className="text-lg font-semibold text-gray-900 mb-6">Quality Settings</h4>
+                        
+                        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+                          <div className="mb-6">
+                            <div className="flex justify-between items-center mb-3">
+                              <label className="text-sm font-medium text-gray-800">Quality</label>
+                              <span className="text-lg font-bold text-purple-600">{Math.round(quality * 100)}%</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0.1"
+                              max="1"
+                              step="0.1"
+                              value={quality}
+                              onChange={(e) => setQuality(parseFloat(e.target.value))}
+                              className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                              style={{
+                                background: `linear-gradient(to right, #9333ea 0%, #9333ea ${quality * 100}%, #e5e7eb ${quality * 100}%, #e5e7eb 100%)`
+                              }}
+                            />
+                            <div className="flex justify-between text-xs text-gray-600 mt-2">
+                              <span>Smaller file</span>
+                              <span>Higher quality</span>
+                            </div>
+                          </div>
+                          
+                          {/* Quality Presets */}
+                          <div className="grid grid-cols-3 gap-3">
+                            {[
+                              { value: 0.6, label: 'Low', desc: '60%' },
+                              { value: 0.8, label: 'Medium', desc: '80%' },
+                              { value: 1.0, label: 'High', desc: '100%' }
+                            ].map(({ value, label, desc }) => (
+                              <button
+                                key={value}
+                                onClick={() => setQuality(value)}
+                                className={`p-3 rounded-xl text-center transition-all duration-200 ${
+                                  quality === value 
+                                    ? 'bg-purple-600 text-white shadow-lg' 
+                                    : 'bg-white text-gray-700 hover:bg-purple-50 border border-purple-200'
+                                }`}
+                              >
+                                <div className="font-medium">{label}</div>
+                                <div className="text-xs opacity-75">{desc}</div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Conversion Direction Indicator */}
+                    <div className="flex items-center justify-center mb-8">
+                      <div className="flex items-center space-x-4 bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-3 rounded-2xl border border-purple-200">
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium">
+                          {getCurrentFormat()}
+                        </span>
+                        <ArrowsRightLeftIcon className="h-5 w-5 text-purple-600" />
+                        <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg text-sm font-medium">
+                          {formatConfigs[outputFormat].name}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Convert Button */}
+                    <button
+                      ref={processButtonRef}
+                      onClick={handleConvert}
+                      disabled={isProcessing}
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-8 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                          Converting...
+                        </>
+                      ) : (
+                        <>
+                          🚀 Start Conversion
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* STEP 3: PROCESSING */}
+          {currentStep === 'processing' && (
+            <div className="py-16">
+              <div className="max-w-2xl mx-auto text-center">
+                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 border border-blue-200 text-blue-800 px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg">
+                  <ArrowsRightLeftIcon className="h-4 w-4 text-blue-600 mr-2 animate-spin" />
+                  Step 3: Converting Format
+                </div>
+                
+                <h2 className="text-4xl font-bold text-gray-900 mb-8">Converting Your Image</h2>
+                
+                {/* Enhanced Processing Animation */}
+                <div className="relative mb-12">
+                  {/* Multiple Rotating Rings */}
+                  <div className="flex items-center justify-center">
+                    <div className="relative">
+                      <div className="w-32 h-32 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
+                      <div className="absolute top-2 left-2 w-28 h-28 border-4 border-pink-300 border-t-pink-600 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
+                      <div className="absolute top-4 left-4 w-24 h-24 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <ArrowsRightLeftIcon className="h-8 w-8 text-purple-600" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Processing Progress</span>
+                      <span className="text-sm font-medium text-purple-600">{processingProgress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-300 relative overflow-hidden"
+                        style={{ width: `${processingProgress}%` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Processing Steps */}
+                  <div className="space-y-3">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 animate-pulse"></div>
+                      Reading image data...
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-2 h-2 bg-pink-500 rounded-full mr-3 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                      Converting to {formatConfigs[outputFormat].name} format...
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 animate-pulse" style={{ animationDelay: '1s' }}></div>
+                      Optimizing output quality...
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Download Section */}
-          <div className="bg-white border-t border-gray-200 p-4 safe-area-bottom">
-            <button
-              onClick={handleDownload}
-              className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 shadow-lg"
-            >
-              <ArrowDownTrayIcon className="w-5 h-5" />
-              <span>İndir</span>
-            </button>
-          </div>
+          )}
+          
+          {/* STEP 4: RESULT */}
+          {currentStep === 'result' && conversionResult && (
+            <div className="py-16">
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
+                  <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
+                  Step 4: Conversion Complete!
+                </div>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">Your Converted Image is Ready</h2>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  Format conversion completed successfully. Download your new image below.
+                </p>
+              </div>
+              
+              <div className="max-w-4xl mx-auto">
+                <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8">
+                  {/* Result Controls */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+                    <h3 className="text-2xl font-bold text-gray-900">Conversion Result</h3>
+                    
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={handleDownload}
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center"
+                      >
+                        <CheckCircleIcon className="h-5 w-5 mr-2" />
+                        Download {formatConfigs[outputFormat].name}
+                      </button>
+                      
+                      <button
+                        onClick={handleReset}
+                        className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold flex items-center"
+                      >
+                        <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                        Convert Another
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Before/After Display */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-800">Original</h4>
+                        <span className="text-sm text-gray-600 bg-gray-200 px-3 py-1 rounded-full">
+                          {conversionResult.originalFormat}
+                        </span>
+                      </div>
+                      <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6">
+                        {previewUrl && (
+                          <img
+                            src={previewUrl}
+                            alt="Original image"
+                            className="w-full h-64 object-contain rounded-xl"
+                          />
+                        )}
+                      </div>
+                      <div className="text-center mt-3 text-sm text-gray-600">
+                        {formatFileSize(conversionResult.originalSize)}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-800">Converted</h4>
+                        <span className="text-sm text-purple-700 bg-purple-100 px-3 py-1 rounded-full font-medium">
+                          {conversionResult.outputFormat}
+                        </span>
+                      </div>
+                      <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6">
+                        <img
+                          src={conversionResult.downloadUrl}
+                          alt="Converted image"
+                          className="w-full h-64 object-contain rounded-xl"
+                        />
+                      </div>
+                      <div className="text-center mt-3 text-sm text-purple-600 font-medium">
+                        {formatFileSize(conversionResult.convertedSize)}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Conversion Statistics */}
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <SparklesIcon className="h-5 w-5 text-purple-600 mr-2" />
+                      Conversion Statistics
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-600 mb-1">
+                          {conversionResult.originalFormat}
+                        </div>
+                        <div className="text-sm text-gray-600">From Format</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-pink-600 mb-1">
+                          {conversionResult.outputFormat}
+                        </div>
+                        <div className="text-sm text-gray-600">To Format</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-600 mb-1">
+                          {conversionResult.processingTime}ms
+                        </div>
+                        <div className="text-sm text-gray-600">Processing Time</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-pink-600 mb-1">
+                          {outputFormat === 'jpeg' || outputFormat === 'webp' ? `${Math.round(quality * 100)}%` : '100%'}
+                        </div>
+                        <div className="text-sm text-gray-600">Quality</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-
+      </div>
+      
+      {/* Auth Modal */}
       {showAuthModal && (
-        <AuthModal 
-          onClose={() => setShowAuthModal(false)} 
-        />
+        <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
     </div>
   );
