@@ -490,12 +490,12 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="text-center">
                       <div className="text-lg font-bold mb-2">
                         {conversionTools.find(t => t.id === selectedTool)?.multiple 
-                          ? '📂 PDF Dosyalarını Seç'
-                          : '📄 PDF Dosyasını Seç'
+                          ? `📂 ${getText('pdfConvert.selectFiles', 'PDF Dosyalarını Seç')}`
+                          : `📄 ${getText('pdfConvert.selectFile', 'PDF Dosyasını Seç')}`
                         }
                       </div>
                       <div className="text-sm opacity-90">
-                        ✨ Yapay Zeka Destekli Dönüştürme
+                        ✨ {getText('pdfConvert.aiPowered', 'Yapay Zeka Destekli Dönüştürme')}
                       </div>
                     </div>
 
@@ -522,11 +522,11 @@ function PDFConvert({ locale }: { locale: string }) {
                   </div>
                 </div>
                 
-                {/* Enhanced Description with Icons */}
-                <div className="mt-6 space-y-3">
-                  <p className="text-lg text-gray-700 font-medium">
-                    🎯 veya PDF'i buraya sürükle & bırak
-                  </p>
+                                  {/* Enhanced Description with Icons */}
+                  <div className="mt-6 space-y-3">
+                    <p className="text-lg text-gray-700 font-medium">
+                      🎯 {getText('pdfConvert.dragDrop', 'veya PDF\'i buraya sürükle & bırak')}
+                    </p>
                   
                   {/* File Requirements with Visual Elements */}
                   <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-4 border border-blue-200">
@@ -699,9 +699,9 @@ function PDFConvert({ locale }: { locale: string }) {
               {/* Processing Steps with Icons */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { icon: '📄', label: 'Dosya Yükleniyor', step: 1 },
-                  { icon: '🤖', label: 'AI Analiz Yapıyor', step: 2 },
-                  { icon: '⚡', label: 'Dönüştürme Tamamlanıyor', step: 3 }
+                  { icon: '📄', label: getText('pdfConvert.fileUploading', 'Dosya Yükleniyor'), step: 1 },
+                  { icon: '🤖', label: getText('pdfConvert.aiAnalyzing', 'AI Analiz Yapıyor'), step: 2 },
+                  { icon: '⚡', label: getText('pdfConvert.conversionCompleting', 'Dönüştürme Tamamlanıyor'), step: 3 }
                 ].map((item, idx) => (
                   <div key={idx} className={`relative p-4 rounded-2xl border-2 transition-all duration-500 ${
                     processingProgress > (idx + 1) * 33 
@@ -733,7 +733,7 @@ function PDFConvert({ locale }: { locale: string }) {
                   <SparklesIcon className="h-4 w-4 text-white" />
                 </div>
                 <p className="text-lg font-medium">
-                  ✨ Yapay zeka dosyalarınızı en iyi şekilde optimize ediyor...
+                  ✨ {getText('pdfConvert.aiOptimizingBest', 'Yapay zeka dosyalarınızı en iyi şekilde optimize ediyor...')}
                 </p>
               </div>
             </div>
@@ -778,10 +778,10 @@ function PDFConvert({ locale }: { locale: string }) {
                 </div>
                 
                 <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
-                  🎉 Başarıyla Tamamlandı!
+                  🎉 {getText('pdfConvert.successTitle', 'Başarıyla Tamamlandı!')}
                 </h2>
                 <p className="text-xl text-gray-700 mb-8">
-                  ✨ PDF dosyalarınız yapay zeka ile dönüştürüldü
+                  ✨ {getText('pdfConvert.successDesc', 'PDF dosyalarınız yapay zeka ile dönüştürüldü')}
                 </p>
               </div>
 
@@ -790,7 +790,7 @@ function PDFConvert({ locale }: { locale: string }) {
                 <div className="mb-12">
                   <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center justify-center">
                     <span className="mr-3">📁</span>
-                    Dönüştürülen Dosyalar
+                    {getText('pdfConvert.convertedFiles', 'Dönüştürülen Dosyalar')}
                     <span className="ml-3 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 px-3 py-1 rounded-full text-lg">
                       {conversionResult.convertedCount}
                     </span>
@@ -826,7 +826,7 @@ function PDFConvert({ locale }: { locale: string }) {
                           className="w-full bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center transform hover:scale-105"
                         >
                           <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
-                          ⬇️ İndir
+                          ⬇️ {getText('pdfConvert.download', 'İndir')}
                         </a>
                       </div>
                     ))}
@@ -850,7 +850,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                       <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
                     </div>
-                    <span>🔄 Yeni Dönüştürme</span>
+                    <span>🔄 {getText('pdfConvert.newConversion', 'Yeni Dönüştürme')}</span>
                   </div>
                 </button>
                 
@@ -870,7 +870,7 @@ function PDFConvert({ locale }: { locale: string }) {
                         )}
                       </div>
                       <span>
-                        {isDownloadingZip ? '📦 ZIP Hazırlanıyor...' : '📦 Hepsini İndir (ZIP)'}
+                        {isDownloadingZip ? '📦 ZIP Hazırlanıyor...' : `📦 ${getText('pdfConvert.downloadAllZip', 'Hepsini İndir (ZIP)')}`}
                       </span>
                     </div>
                   </button>
@@ -881,7 +881,7 @@ function PDFConvert({ locale }: { locale: string }) {
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 border border-gray-200">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
                   <span className="mr-3">🛠️</span>
-                  Diğer PDF Araçları
+                  {getText('pdfConvert.otherTools', 'Diğer PDF Araçları')}
                   <span className="ml-3">✨</span>
                 </h3>
                 

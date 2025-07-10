@@ -201,14 +201,6 @@ const translations = {
     'auth.benefit1': '30 Gün Depolama',
     'auth.benefit2': 'Güvenli İşlem',
     'auth.benefit3': 'Hızlı Erişim',
-    
-    // PDF CONVERT METINLERI
-    'pdfConvert.fileUpload': 'PDF dosyasını seç',
-    'pdfConvert.filesUpload': 'PDF dosyalarını seç',
-    'pdfConvert.selectFiles': 'PDF dosyalarını seçin',
-    'pdfConvert.process': 'İşlemi Başlat',
-    'pdfConvert.processing': 'PDF küçültülüyor...',
-    
     // PDF COMPRESS LEVEL METINLERI - TURKISH
     'pdfCompress.highDesc': 'Daha az kaliteli, yüksek sıkıştırma',
     'pdfCompress.mediumDesc': 'Kaliteli, iyi sıkıştırma',
@@ -226,7 +218,38 @@ const translations = {
     'imageTools.selectFile': 'Resim dosyasını seç',
     'imageTools.selectFiles': 'Resim dosyalarını seç',
     'imageTools.processing': 'Resim işleniyor...',
-    'imageTools.process': 'İşlemi Başlat'
+    'imageTools.process': 'İşlemi Başlat',
+    
+    // PDF CONVERT METINLERI
+    'pdfConvert.title': 'AI PDF Dönüştürme',
+    'pdfConvert.subtitle': 'PDF dosyalarınızı yapay zeka destekli araçlarla istediğiniz formata dönüştürün',
+    'pdfConvert.uploadFiles': 'Dosya Yükleme',
+    'pdfConvert.selectFile': 'PDF Dosyasını Seç',
+    'pdfConvert.selectFiles': 'PDF Dosyalarını Seç',
+    'pdfConvert.aiPowered': 'Yapay Zeka Destekli Dönüştürme',
+    'pdfConvert.dragDrop': 'veya PDF\'i buraya sürükle & bırak',
+    'pdfConvert.selectedFiles': 'Seçilen Dosyalar',
+    'pdfConvert.startConversion': 'Dönüştürmeyi Başlat',
+    'pdfConvert.backToSelection': 'Araç Seçimine Dön',
+    'pdfConvert.aiOptimizing': 'AI algoritmaları dosyalarınızı optimize ediyor',
+    'pdfConvert.completed': 'tamamlandı',
+    'pdfConvert.fileUploading': 'Dosya Yükleniyor',
+    'pdfConvert.aiAnalyzing': 'AI Analiz Yapıyor',
+    'pdfConvert.conversionCompleting': 'Dönüştürme Tamamlanıyor',
+    'pdfConvert.aiOptimizingBest': 'Yapay zeka dosyalarınızı en iyi şekilde optimize ediyor...',
+    'pdfConvert.successTitle': 'Başarıyla Tamamlandı!',
+    'pdfConvert.successDesc': 'PDF dosyalarınız yapay zeka ile dönüştürüldü',
+    'pdfConvert.convertedFiles': 'Dönüştürülen Dosyalar',
+    'pdfConvert.download': 'İndir',
+    'pdfConvert.newConversion': 'Yeni Dönüştürme',
+    'pdfConvert.downloadAllZip': 'Hepsini İndir (ZIP)',
+    'pdfConvert.otherTools': 'Diğer PDF Araçları',
+    
+    // PDF TOOLS DESCRIPTIONS
+    'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
+    'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
+    'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
+    'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği'
   },
   
   // ENGLISH TRANSLATIONS
@@ -431,14 +454,6 @@ const translations = {
     'auth.benefit1': '30 Days Storage',
     'auth.benefit2': 'Secure Processing',
     'auth.benefit3': 'Fast Access',
-    
-    // PDF CONVERT TRANSLATIONS
-    'pdfConvert.fileUpload': 'Select PDF file',
-    'pdfConvert.filesUpload': 'Select PDF files',
-    'pdfConvert.selectFiles': 'Select PDF files',
-    'pdfConvert.process': 'Start Processing',
-    'pdfConvert.processing': 'Compressing PDF...',
-    
     // PDF COMPRESS LEVEL TRANSLATIONS - ENGLISH
     'pdfCompress.highDesc': 'Lower quality, high compression',
     'pdfCompress.mediumDesc': 'Quality, good compression',
@@ -456,7 +471,38 @@ const translations = {
     'imageTools.selectFile': 'Select image file',
     'imageTools.selectFiles': 'Select image files',
     'imageTools.processing': 'Processing image...',
-    'imageTools.process': 'Start Processing'
+    'imageTools.process': 'Start Processing',
+    
+    // PDF CONVERT TRANSLATIONS
+    'pdfConvert.title': 'AI PDF Conversion',
+    'pdfConvert.subtitle': 'Convert your PDF files to desired formats with AI-powered tools',
+    'pdfConvert.uploadFiles': 'File Upload',
+    'pdfConvert.selectFile': 'Select PDF File',
+    'pdfConvert.selectFiles': 'Select PDF Files',
+    'pdfConvert.aiPowered': 'AI-Powered Conversion',
+    'pdfConvert.dragDrop': 'or drag & drop PDF here',
+    'pdfConvert.selectedFiles': 'Selected Files',
+    'pdfConvert.startConversion': 'Start Conversion',
+    'pdfConvert.backToSelection': 'Back to Tool Selection',
+    'pdfConvert.aiOptimizing': 'AI algorithms are optimizing your files',
+    'pdfConvert.completed': 'completed',
+    'pdfConvert.fileUploading': 'File Uploading',
+    'pdfConvert.aiAnalyzing': 'AI Analyzing',
+    'pdfConvert.conversionCompleting': 'Conversion Completing',
+    'pdfConvert.aiOptimizingBest': 'AI is optimizing your files in the best way possible...',
+    'pdfConvert.successTitle': 'Successfully Completed!',
+    'pdfConvert.successDesc': 'Your PDF files have been converted with AI',
+    'pdfConvert.convertedFiles': 'Converted Files',
+    'pdfConvert.download': 'Download',
+    'pdfConvert.newConversion': 'New Conversion',
+    'pdfConvert.downloadAllZip': 'Download All (ZIP)',
+    'pdfConvert.otherTools': 'Other PDF Tools',
+    
+    // PDF TOOLS DESCRIPTIONS ENGLISH
+    'pdfToImages.description': 'High quality visual output, smart format optimization',
+    'pdfToText.description': 'OCR technology, multilingual support, smart text recognition',
+    'pdfSplit.description': 'Smart page recognition, multiple split options, batch processing',
+    'pdfMerge.description': 'Drag & drop sorting, automatic optimization, multiple file support'
   }
 };
 
