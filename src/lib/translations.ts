@@ -1,5 +1,40 @@
 const translations = {
   tr: {
+    // Ana sayfa namespace düzeltmeleri
+    'homepage.title': 'QuickUtil',
+    'homepage.subtitle': 'AI destekli PDF ve resim araçları. Akıllı. Hızlı. Ücretsiz.',
+    'homepage.aiSubtitle': 'Yapay zeka ile dosyalarınızı otomatik optimize eder, en iyi kaliteyi garanti ederiz',
+    'homepage.startButton': 'AI ile Başla',
+    'homepage.signupButton': 'Kayıt Ol',
+    
+    // Homepage AI Section
+    'homepage.aiSection.title': 'Yapay Zeka Neden Önemli?',
+    'homepage.aiSection.subtitle': 'QuickUtil.app\'teki AI teknolojisi, dosyalarınızı analiz ederek en optimal ayarları otomatik seçer',
+    'homepage.aiSection.feature1': 'Otomatik Kalite Optimizasyonu',
+    'homepage.aiSection.feature1Desc': 'AI dosya içeriğinizi analiz ederek en iyi sıkıştırma ayarlarını seçer',
+    'homepage.aiSection.feature2': 'Akıllı Format Dönüştürme',
+    'homepage.aiSection.feature2Desc': 'Dosya türüne göre en uygun format ve kalite seçeneklerini önerir',
+    'homepage.aiSection.feature3': 'Hızlı İşleme',
+    'homepage.aiSection.feature3Desc': 'AI destekli algoritmalar sayesinde %75 daha hızlı işlem',
+    
+    // Homepage Features
+    'homepage.features.ai': 'AI Destekli',
+    'homepage.features.aiDesc': 'Yapay zeka ile otomatik optimizasyon',
+    'homepage.features.free': 'Ücretsiz',
+    'homepage.features.freeDesc': 'Tüm AI araçları tamamen ücretsiz',
+    'homepage.features.secure': 'Güvenli',
+    'homepage.features.secureDesc': 'SSL korumalı, otomatik silme',
+    'homepage.features.smart': 'Akıllı Analiz',
+    'homepage.features.smartDesc': 'AI dosyalarınızı analiz eder, en iyi ayarları seçer',
+    
+    // Homepage Sections
+    'homepage.pdfSection': 'AI Destekli PDF Araçları',
+    'homepage.imageSection': 'AI Destekli Resim Araçları',
+    
+    // Homepage CTA
+    'homepage.ctaTitle': 'AI ile hemen başlayın',
+    'homepage.ctaDesc': 'Yapay zeka destekli araçlarımız ile dosyalarınızı otomatik optimize edin.',
+    
     'navigation.pdfTools': 'PDF Araçları',
     'navigation.imageTools': 'Resim Araçları',
     'navigation.batchProcessing': 'Toplu İşlem',
@@ -85,34 +120,7 @@ const translations = {
     'notification.info': 'Bilgi: İşlem devam ediyor.',
     'notification.loading': 'Yükleniyor, lütfen bekleyin...',
     'notification.complete': 'Tüm işlemler tamamlandı ✓',
-    
-    // HOMEPAGE METINLERI
-    'homepage.title': 'QuickUtil',
-    'homepage.subtitle': 'AI destekli PDF ve resim araçları. Akıllı. Hızlı. Ücretsiz.',
-    'homepage.aiSubtitle': 'Yapay zeka ile dosyalarınızı otomatik optimize eder, en iyi kaliteyi garanti ederiz',
-    'homepage.startButton': 'AI ile Başla',
-    'homepage.signupButton': 'Kayıt Ol',
-    'homepage.features.ai': 'AI Destekli',
-    'homepage.features.aiDesc': 'Yapay zeka ile otomatik optimizasyon',
-    'homepage.features.free': 'Ücretsiz',
-    'homepage.features.freeDesc': 'Tüm AI araçları tamamen ücretsiz',
-    'homepage.features.secure': 'Güvenli',
-    'homepage.features.secureDesc': 'SSL korumalı, otomatik silme',
-    'homepage.features.smart': 'Akıllı Analiz',
-    'homepage.features.smartDesc': 'AI dosyalarınızı analiz eder, en iyi ayarları seçer',
-    'homepage.pdfSection': 'AI Destekli PDF Araçları',
-    'homepage.imageSection': 'AI Destekli Resim Araçları',
-    'homepage.ctaTitle': 'AI ile hemen başlayın',
-    'homepage.ctaDesc': 'Yapay zeka destekli araçlarımız ile dosyalarınızı otomatik optimize edin.',
-    'homepage.aiFeatures': 'AI Özellikleri',
-    'homepage.aiSection.title': 'Yapay Zeka Neden Önemli?',
-    'homepage.aiSection.subtitle': 'QuickUtil.app\'teki AI teknolojisi, dosyalarınızı analiz ederek en optimal ayarları otomatik seçer',
-    'homepage.aiSection.feature1': 'Otomatik Kalite Optimizasyonu',
-    'homepage.aiSection.feature1Desc': 'AI dosya içeriğinizi analiz ederek en iyi sıkıştırma ayarlarını seçer',
-    'homepage.aiSection.feature2': 'Akıllı Format Dönüştürme',
-    'homepage.aiSection.feature2Desc': 'Dosya türüne göre en uygun format ve kalite seçeneklerini önerir',
-    'homepage.aiSection.feature3': 'Hızlı İşleme',
-    'homepage.aiSection.feature3Desc': 'AI destekli algoritmalar sayesinde %75 daha hızlı işlem',
+
     
     // TOOLS METINLERI
     'tools.pdfCompress': 'AI PDF Sıkıştır',
