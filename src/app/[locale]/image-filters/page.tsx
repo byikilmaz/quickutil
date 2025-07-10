@@ -73,7 +73,9 @@ export default function ImageFilters() {
   // Auto-focus on upload area when page loads
   useEffect(() => {
     if (currentStep === 'upload' && uploadRef.current) {
-      uploadRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        uploadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
     }
   }, [currentStep]);
 
@@ -97,15 +99,15 @@ export default function ImageFilters() {
     setFilteredImageUrl(imageUrl);
     setCurrentStep('configure');
 
-    // Scroll to configure section with auto-focus on process button
+    // Improved scroll and focus for configure section
     setTimeout(() => {
-      configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+      configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 200);
     
     setTimeout(() => {
       processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       processButtonRef.current?.focus();
-    }, 500);
+    }, 800);
   };
 
   // Filter handlers

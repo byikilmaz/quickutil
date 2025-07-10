@@ -56,7 +56,9 @@ export default function ImageFormatConvert() {
   // Auto-focus on upload section when page loads
   useEffect(() => {
     if (currentStep === 'upload' && uploadRef.current) {
-      uploadRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        uploadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
     }
   }, [currentStep]);
 
@@ -115,15 +117,15 @@ export default function ImageFormatConvert() {
       
       setCurrentStep('configure');
       
-      // Scroll to configure section with auto-focus on process button
+      // Improved scroll and focus for configure section
       setTimeout(() => {
-        configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
+        configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
       
       setTimeout(() => {
         processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         processButtonRef.current?.focus();
-      }, 500);
+      }, 800);
     } catch (error) {
       console.error('Error getting image dimensions:', error);
     }
@@ -381,24 +383,24 @@ export default function ImageFormatConvert() {
           
           {/* STEP 2: CONFIGURE */}
           {currentStep === 'configure' && file && (
-            <div ref={configureRef} className="py-16">
-              <div className="text-center mb-12">
-                <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 border border-orange-200 text-orange-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
+            <div ref={configureRef} className="py-8 min-h-[80vh]">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-yellow-100 border border-orange-200 text-orange-800 px-6 py-3 rounded-full text-sm font-medium mb-4 shadow-lg">
                   <ArrowsRightLeftIcon className="h-4 w-4 text-orange-600 mr-2" />
                   Step 2: Choose Output Format
                 </div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Configure Conversion</h2>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold text-gray-900 mb-3">Configure Conversion</h2>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                   Select your desired output format and quality settings
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Preview Panel (1/3 width) */}
-                <div className="lg:col-span-1">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-bold text-gray-900">Preview</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+                {/* Preview Panel (2/5 width) */}
+                <div className="lg:col-span-2">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 h-fit sticky top-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-gray-900">Preview</h3>
                       <button
                         onClick={handleReset}
                         className="text-gray-500 hover:text-gray-700 flex items-center text-sm font-medium"
@@ -409,35 +411,35 @@ export default function ImageFormatConvert() {
                     </div>
 
                     {/* Image Preview */}
-                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 mb-6">
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 mb-4">
                       {previewUrl && (
                         <img
                           src={previewUrl}
                           alt="Preview"
-                          className="w-full h-48 object-contain rounded-xl"
+                          className="w-full h-40 object-contain rounded-lg"
                         />
                       )}
                     </div>
 
                     {/* File Info */}
-                    <div className="space-y-3">
+                    <div className="space-y-2 text-sm">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">File name:</span>
-                        <span className="text-sm font-medium text-gray-900 truncate ml-2">{file.name}</span>
+                        <span className="text-gray-600">File name:</span>
+                        <span className="font-medium text-gray-900 truncate ml-2">{file.name}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Size:</span>
-                        <span className="text-sm font-medium text-gray-900">{formatFileSize(file.size)}</span>
+                        <span className="text-gray-600">Size:</span>
+                        <span className="font-medium text-gray-900">{formatFileSize(file.size)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Dimensions:</span>
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-gray-600">Dimensions:</span>
+                        <span className="font-medium text-gray-900">
                           {originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}px` : 'Calculating...'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Current format:</span>
-                        <span className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-xs font-medium">
+                        <span className="text-gray-600">Current format:</span>
+                        <span className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
                           {getCurrentFormat()}
                         </span>
                       </div>
@@ -445,39 +447,39 @@ export default function ImageFormatConvert() {
                   </div>
                 </div>
                 
-                {/* Settings Panel (2/3 width) */}
-                <div className="lg:col-span-2">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-                      <ArrowsRightLeftIcon className="w-6 h-6 mr-3 text-purple-600" />
+                {/* Settings Panel (3/5 width) */}
+                <div className="lg:col-span-3">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 h-fit">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                      <ArrowsRightLeftIcon className="w-5 h-5 mr-2 text-purple-600" />
                       Format Settings
                     </h3>
 
                     {/* Format Selection */}
-                    <div className="mb-8">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-6">Choose Output Format</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Choose Output Format</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {Object.entries(formatConfigs).map(([format, config]) => (
                           <button
                             key={format}
                             onClick={() => setOutputFormat(format as OutputFormat)}
-                            className={`relative p-6 rounded-2xl text-left transition-all duration-300 ${
+                            className={`relative p-4 rounded-xl text-left transition-all duration-300 ${
                               outputFormat === format
                                 ? 'bg-gradient-to-br from-purple-100 to-pink-100 border-2 border-purple-300 shadow-lg transform scale-105'
                                 : 'bg-white border-2 border-gray-200 hover:border-purple-200 hover:shadow-md'
                             }`}
                           >
                             <div className="text-center">
-                              <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${config.color} rounded-2xl mb-4 text-2xl shadow-lg`}>
+                              <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br ${config.color} rounded-xl mb-3 text-lg shadow-lg`}>
                                 {config.icon}
                               </div>
-                              <h5 className="text-lg font-bold text-gray-900 mb-2">{config.name}</h5>
-                              <p className="text-sm text-gray-600">{config.desc}</p>
+                              <h5 className="text-base font-bold text-gray-900 mb-1">{config.name}</h5>
+                              <p className="text-xs text-gray-600">{config.desc}</p>
                             </div>
                             
                             {outputFormat === format && (
                               <div className="absolute top-2 right-2">
-                                <CheckCircleIcon className="h-6 w-6 text-purple-600" />
+                                <CheckCircleIcon className="h-5 w-5 text-purple-600" />
                               </div>
                             )}
                           </button>
@@ -487,12 +489,12 @@ export default function ImageFormatConvert() {
 
                     {/* Quality Settings */}
                     {(outputFormat === 'jpeg' || outputFormat === 'webp') && (
-                      <div className="mb-8">
-                        <h4 className="text-lg font-semibold text-gray-900 mb-6">Quality Settings</h4>
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Quality Settings</h4>
                         
-                        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
-                          <div className="mb-6">
-                            <div className="flex justify-between items-center mb-3">
+                        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                          <div className="mb-4">
+                            <div className="flex justify-between items-center mb-2">
                               <label className="text-sm font-medium text-gray-800">Quality</label>
                               <span className="text-lg font-bold text-purple-600">{Math.round(quality * 100)}%</span>
                             </div>
@@ -503,19 +505,19 @@ export default function ImageFormatConvert() {
                               step="0.1"
                               value={quality}
                               onChange={(e) => setQuality(parseFloat(e.target.value))}
-                              className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                               style={{
                                 background: `linear-gradient(to right, #9333ea 0%, #9333ea ${quality * 100}%, #e5e7eb ${quality * 100}%, #e5e7eb 100%)`
                               }}
                             />
-                            <div className="flex justify-between text-xs text-gray-600 mt-2">
+                            <div className="flex justify-between text-xs text-gray-600 mt-1">
                               <span>Smaller file</span>
                               <span>Higher quality</span>
                             </div>
                           </div>
                           
                           {/* Quality Presets */}
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-3 gap-2">
                             {[
                               { value: 0.6, label: 'Low', desc: '60%' },
                               { value: 0.8, label: 'Medium', desc: '80%' },
@@ -524,7 +526,7 @@ export default function ImageFormatConvert() {
                               <button
                                 key={value}
                                 onClick={() => setQuality(value)}
-                                className={`p-3 rounded-xl text-center transition-all duration-200 ${
+                                className={`p-2 rounded-lg text-center transition-all duration-200 text-sm ${
                                   quality === value 
                                     ? 'bg-purple-600 text-white shadow-lg' 
                                     : 'bg-white text-gray-700 hover:bg-purple-50 border border-purple-200'
@@ -540,13 +542,13 @@ export default function ImageFormatConvert() {
                     )}
 
                     {/* Conversion Direction Indicator */}
-                    <div className="flex items-center justify-center mb-8">
-                      <div className="flex items-center space-x-4 bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-3 rounded-2xl border border-purple-200">
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium">
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-2 rounded-xl border border-purple-200">
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
                           {getCurrentFormat()}
                         </span>
-                        <ArrowsRightLeftIcon className="h-5 w-5 text-purple-600" />
-                        <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg text-sm font-medium">
+                        <ArrowsRightLeftIcon className="h-4 w-4 text-purple-600" />
+                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-medium">
                           {formatConfigs[outputFormat].name}
                         </span>
                       </div>
@@ -557,7 +559,7 @@ export default function ImageFormatConvert() {
                       ref={processButtonRef}
                       onClick={handleConvert}
                       disabled={isProcessing}
-                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-8 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center focus:ring-4 focus:ring-purple-300"
                     >
                       {isProcessing ? (
                         <>

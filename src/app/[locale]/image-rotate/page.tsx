@@ -51,8 +51,8 @@ export default function ImageRotate() {
   // Auto-focus on upload area when page loads
   useEffect(() => {
     setTimeout(() => {
-      uploadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+      uploadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 200);
   }, []);
 
   // Dropzone configuration
@@ -72,15 +72,15 @@ export default function ImageRotate() {
         
         setCurrentStep('configure');
         
-        // Scroll to configure section with auto-focus on process button
+        // Improved scroll and focus for configure section
         setTimeout(() => {
-          configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
+          configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
         
         setTimeout(() => {
           processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
           processButtonRef.current?.focus();
-        }, 500);
+        }, 800);
       } catch (error) {
         console.error('Error getting image dimensions:', error);
       }
