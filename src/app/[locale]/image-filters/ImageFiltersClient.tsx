@@ -562,15 +562,15 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
               <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Preview Section */}
                 <div className="order-2 lg:order-1">
-                  <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-8">
+                  <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-8 sticky top-8">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                       <EyeIcon className="h-6 w-6 text-purple-600 mr-3" />
                       {getText('imageFilters.configure.preview', 'Preview')}
                     </h3>
                     
-                    {/* Image Preview with Canvas */}
+                    {/* Image Preview with Canvas - FIXED: aspect-square for better visibility */}
                     <div className="relative">
-                      <div className="bg-gray-100 rounded-2xl overflow-hidden aspect-video relative">
+                      <div className="bg-gray-100 rounded-2xl overflow-hidden aspect-square relative">
                         {/* Hidden original image for canvas processing */}
                         <img 
                           ref={previewImageRef}
@@ -622,14 +622,14 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
 
                 {/* Filter Controls */}
                 <div className="order-1 lg:order-2">
-                  <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-8">
+                  <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-6 lg:p-8">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                       <PaintBrushIcon className="h-6 w-6 text-purple-600 mr-3" />
                       {getText('imageFilters.configure.adjustments', 'Adjustments')}
                     </h3>
                     
                     {/* Basic Adjustments */}
-                    <div className="space-y-6 mb-8">
+                    <div className="space-y-4 lg:space-y-6 mb-6 lg:mb-8">
                       {/* Brightness */}
                       <div>
                         <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-2">
@@ -717,7 +717,7 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
                     </div>
 
                     {/* Artistic Effects */}
-                    <div className="mb-8">
+                    <div className="mb-6">
                       <h4 className="text-lg font-semibold text-gray-900 mb-4">
                         {getText('imageFilters.configure.artisticEffects', 'Artistic Effects')}
                       </h4>
@@ -756,7 +756,7 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
                     </div>
 
                     {/* Filter Presets */}
-                    <div className="mb-8">
+                    <div className="mb-6">
                       <h4 className="text-lg font-semibold text-gray-900 mb-4">
                         {getText('imageFilters.configure.presets', 'Presets')}
                       </h4>
@@ -788,20 +788,22 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex space-x-4">
-                      <button
-                        onClick={handleResetFilters}
-                        className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-300 transition-all duration-200 font-semibold"
-                      >
-                        {getText('imageFilters.configure.reset', 'Reset')}
-                      </button>
-                      <button
-                        onClick={handleProcessFilters}
-                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
-                      >
-                        {getText('imageFilters.configure.apply', 'Apply Filters')}
-                      </button>
+                    {/* Action Buttons - FIXED: Better positioning and responsive */}
+                    <div className="sticky bottom-4 bg-white/90 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg">
+                      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <button
+                          onClick={handleResetFilters}
+                          className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-300 transition-all duration-200 font-semibold"
+                        >
+                          {getText('imageFilters.configure.reset', 'Reset')}
+                        </button>
+                        <button
+                          onClick={handleProcessFilters}
+                          className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
+                        >
+                          {getText('imageFilters.configure.apply', 'Apply Filters')}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
