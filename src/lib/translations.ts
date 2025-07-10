@@ -176,7 +176,44 @@ const translations = {
     'about.vision': 'Vizyonumuz',
     'about.values': 'Değerlerimiz',
     'about.team': 'Ekibimiz',
-    'about.contact': 'İletişim'
+    'about.contact': 'İletişim',
+    
+    // AUTH MODAL METINLERI
+    'auth.welcomeTitle': 'Hoş Geldiniz',
+    'auth.createAccountTitle': 'Hesap Oluşturun',
+    'auth.loginSubtitle': 'QuickUtil hesabınıza giriş yapın',
+    'auth.registerSubtitle': 'QuickUtil ailesine katılın',
+    'auth.freeStorageBadge': '30 Gün Ücretsiz Depolama',
+    'auth.firstName': 'Ad',
+    'auth.lastName': 'Soyad',
+    'auth.email': 'E-posta Adresi',
+    'auth.password': 'Şifre',
+    'auth.firstNamePlaceholder': 'Adınız',
+    'auth.lastNamePlaceholder': 'Soyadınız',
+    'auth.emailPlaceholder': 'ornek@email.com',
+    'auth.passwordPlaceholder': 'En az 6 karakter',
+    'auth.processing': 'İşleniyor...',
+    'auth.login': 'Giriş Yap',
+    'auth.createAccount': 'Hesap Oluştur',
+    'auth.register': 'Kayıt Ol',
+    'auth.noAccount': 'Henüz hesabınız yok mu?',
+    'auth.hasAccount': 'Zaten hesabınız var mı?',
+    'auth.benefit1': '30 Gün Depolama',
+    'auth.benefit2': 'Güvenli İşlem',
+    'auth.benefit3': 'Hızlı Erişim',
+    
+    // PDF CONVERT METINLERI
+    'pdfConvert.fileUpload': 'PDF dosyasını seç',
+    'pdfConvert.filesUpload': 'PDF dosyalarını seç',
+    'pdfConvert.selectFiles': 'PDF dosyalarını seçin',
+    'pdfConvert.process': 'İşlemi Başlat',
+    'pdfConvert.processing': 'PDF küçültülüyor...',
+    
+    // IMAGE TOOLS METINLERI
+    'imageTools.selectFile': 'Resim dosyasını seç',
+    'imageTools.selectFiles': 'Resim dosyalarını seç',
+    'imageTools.processing': 'Resim işleniyor...',
+    'imageTools.process': 'İşlemi Başlat'
   },
   
   // ENGLISH TRANSLATIONS
@@ -356,7 +393,44 @@ const translations = {
     'about.vision': 'Our Vision',
     'about.values': 'Our Values',
     'about.team': 'Our Team',
-    'about.contact': 'Contact'
+    'about.contact': 'Contact',
+    
+    // AUTH MODAL TRANSLATIONS
+    'auth.welcomeTitle': 'Welcome',
+    'auth.createAccountTitle': 'Create Account',
+    'auth.loginSubtitle': 'Sign in to your QuickUtil account',
+    'auth.registerSubtitle': 'Join the QuickUtil family',
+    'auth.freeStorageBadge': '30 Days Free Storage',
+    'auth.firstName': 'First Name',
+    'auth.lastName': 'Last Name',
+    'auth.email': 'Email Address',
+    'auth.password': 'Password',
+    'auth.firstNamePlaceholder': 'Your first name',
+    'auth.lastNamePlaceholder': 'Your last name',
+    'auth.emailPlaceholder': 'example@email.com',
+    'auth.passwordPlaceholder': 'At least 6 characters',
+    'auth.processing': 'Processing...',
+    'auth.login': 'Sign In',
+    'auth.createAccount': 'Create Account',
+    'auth.register': 'Sign Up',
+    'auth.noAccount': 'Don\'t have an account?',
+    'auth.hasAccount': 'Already have an account?',
+    'auth.benefit1': '30 Days Storage',
+    'auth.benefit2': 'Secure Processing',
+    'auth.benefit3': 'Fast Access',
+    
+    // PDF CONVERT TRANSLATIONS
+    'pdfConvert.fileUpload': 'Select PDF file',
+    'pdfConvert.filesUpload': 'Select PDF files',
+    'pdfConvert.selectFiles': 'Select PDF files',
+    'pdfConvert.process': 'Start Processing',
+    'pdfConvert.processing': 'Compressing PDF...',
+    
+    // IMAGE TOOLS TRANSLATIONS
+    'imageTools.selectFile': 'Select image file',
+    'imageTools.selectFiles': 'Select image files',
+    'imageTools.processing': 'Processing image...',
+    'imageTools.process': 'Start Processing'
   }
 };
 

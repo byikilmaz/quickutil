@@ -1,7 +1,9 @@
 'use client';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { XMarkIcon, EyeIcon, EyeSlashIcon, SparklesIcon, UserPlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslations } from '@/lib/translations';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -60,6 +62,13 @@ export default function AuthModal({ onClose }: AuthModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Get current locale from URL
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'tr';
+  
+  // Translation hook
+  const t = useTranslations('auth', locale);
 
   const { login, register } = useAuth();
 
@@ -141,18 +150,18 @@ export default function AuthModal({ onClose }: AuthModalProps) {
               {/* Title */}
               <h2 className="text-3xl font-bold mb-3">
                 <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent">
-                  {isLogin ? 'Hoş Geldiniz' : 'Hesap Oluşturun'}
+                  {isLogin ? t('welcomeTitle') : t('createAccountTitle')}
                 </span>
               </h2>
               
               <p className="text-gray-600 text-lg">
-                {isLogin ? 'QuickUtil hesabınıza giriş yapın' : 'QuickUtil ailesine katılın'}
+                {isLogin ? t('loginSubtitle') : t('registerSubtitle')}
               </p>
               
               {/* Trust Badge */}
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mt-4">
                 <SparklesIcon className="h-4 w-4 text-purple-600 mr-2" />
-                30 Gün Ücretsiz Depolama
+                {t('freeStorageBadge')}
               </div>
             </div>
 
@@ -162,7 +171,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="firstName" className="block text-sm font-semibold text-gray-800 mb-2">
-                      Ad *
+                      {t('firstName')} *
                     </label>
                     <input
                       type="text"
@@ -170,13 +179,13 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                      placeholder="Adınız"
+                      placeholder={t('firstNamePlaceholder')}
                       required={!isLogin}
                     />
                   </div>
                   <div>
                     <label htmlFor="lastName" className="block text-sm font-semibold text-gray-800 mb-2">
-                      Soyad *
+                      {t('lastName')} *
                     </label>
                     <input
                       type="text"
@@ -184,7 +193,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                      placeholder="Soyadınız"
+                      placeholder={t('lastNamePlaceholder')}
                       required={!isLogin}
                     />
                   </div>
@@ -193,7 +202,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">
-                  E-posta Adresi *
+                  {t('email')} *
                 </label>
                 <input
                   type="email"
@@ -201,14 +210,14 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                  placeholder="ornek@email.com"
+                  placeholder={t('emailPlaceholder')}
                   required
                 />
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-semibold text-gray-800 mb-2">
-                  Şifre *
+                  {t('password')} *
                 </label>
                 <div className="relative">
                   <input
@@ -217,7 +226,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-4 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                    placeholder="En az 6 karakter"
+                    placeholder={t('passwordPlaceholder')}
                     required
                     minLength={6}
                   />
@@ -254,19 +263,19 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
-                    İşleniyor...
+                    {t('processing')}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
                     {isLogin ? (
                       <>
                         <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                        Giriş Yap
+                        {t('login')}
                       </>
                     ) : (
                       <>
                         <UserPlusIcon className="h-5 w-5 mr-2" />
-                        Hesap Oluştur
+                        {t('createAccount')}
                       </>
                     )}
                   </div>
@@ -278,7 +287,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
             <div className="mt-8 text-center relative z-10">
               <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
                 <p className="text-gray-700 text-base font-medium mb-3">
-                  {isLogin ? 'Henüz hesabınız yok mu?' : 'Zaten hesabınız var mı?'}
+                  {isLogin ? t('noAccount') : t('hasAccount')}
                 </p>
                 <button
                   onClick={() => {
@@ -294,12 +303,12 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                   {isLogin ? (
                     <>
                       <UserPlusIcon className="h-5 w-5 mr-2" />
-                      Kayıt Ol
+                      {t('register')}
                     </>
                   ) : (
                     <>
                       <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                      Giriş Yap
+                      {t('login')}
                     </>
                   )}
                 </button>
@@ -312,15 +321,15 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 <div className="flex items-center justify-center space-x-6 text-sm text-purple-800">
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                    <span className="font-medium">30 Gün Depolama</span>
+                    <span className="font-medium">{t('benefit1')}</span>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-pink-500 rounded-full mr-2"></div>
-                    <span className="font-medium">Güvenli İşlem</span>
+                    <span className="font-medium">{t('benefit2')}</span>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                    <span className="font-medium">Hızlı Erişim</span>
+                    <span className="font-medium">{t('benefit3')}</span>
                   </div>
                 </div>
               </div>

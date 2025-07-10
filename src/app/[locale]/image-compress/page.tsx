@@ -297,10 +297,10 @@ function ImageCompress({ locale }: { locale: string }) {
                   {/* Dynamic Text */}
                   <div className="text-center">
                     <div className="text-lg font-bold mb-2">
-                      📸 Resim Dosyasını Seç
+                      📸 {locale === 'tr' ? 'Resim Dosyasını Seç' : 'Select Image File'}
                     </div>
                     <div className="text-sm opacity-90">
-                      ✨ Yapay Zeka Destekli Sıkıştırma
+                      ✨ {locale === 'tr' ? 'Yapay Zeka Destekli Sıkıştırma' : 'AI-Powered Compression'}
                     </div>
                   </div>
 
