@@ -117,15 +117,14 @@ export default function ImageFormatConvert() {
       
       setCurrentStep('configure');
       
-      // Focus to configure section with process button visible
+      // Focus directly to process button for best user experience
       setTimeout(() => {
-        configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 300);
-      
-      setTimeout(() => {
-        processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        processButtonRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'end' 
+        });
         processButtonRef.current?.focus();
-      }, 600);
+      }, 400);
     } catch (error) {
       console.error('Error getting image dimensions:', error);
     }
