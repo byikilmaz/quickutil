@@ -85,19 +85,19 @@ export default function Header({ onAuthClick }: HeaderProps) {
               href={`/${locale}/pdf-compress`} 
               className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200"
             >
-              PDF Araçları
+              {t('pdfTools')}
             </Link>
             <Link 
               href={`/${locale}/image-convert`} 
               className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200"
             >
-              Resim Araçları
+              {t('imageTools')}
             </Link>
             <Link 
               href={`/${locale}/blog`} 
               className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200"
             >
-              Blog
+              {t('blog')}
             </Link>
             
             {/* Admin Link */}
@@ -107,7 +107,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
                 className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200 flex items-center space-x-1"
               >
                 <ChartBarIcon className="h-4 w-4" />
-                <span>Admin</span>
+                <span>{t('admin')}</span>
               </Link>
             )}
           </nav>
@@ -149,7 +149,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       <UserIcon className="h-4 w-4 mr-2" />
-                      Profil
+                      {tProfile('title')}
                     </Link>
                     
                     <button
@@ -160,7 +160,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     >
                       <span className="mr-2">↗️</span>
-                      Çıkış Yap
+                      {t('logout')}
                     </button>
                   </div>
                 )}
@@ -171,7 +171,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
                 className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-2"
               >
                 <SparklesIcon className="h-4 w-4" />
-                <span>Giriş</span>
+                <span>{t('login')}</span>
               </button>
             )}
 
@@ -198,21 +198,21 @@ export default function Header({ onAuthClick }: HeaderProps) {
                 className="block px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
-                PDF Araçları
+                {t('pdfTools')}
               </Link>
               <Link 
                 href={`/${locale}/image-convert`} 
                 className="block px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Resim Araçları
+                {t('imageTools')}
               </Link>
               <Link 
                 href={`/${locale}/blog`} 
                 className="block px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Blog
+                {t('blog')}
               </Link>
               
               {/* Mobile Admin Link */}
@@ -223,7 +223,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <ChartBarIcon className="h-4 w-4 mr-2" />
-                  <span>Admin</span>
+                  <span>{t('admin')}</span>
                 </Link>
               )}
             </div>
