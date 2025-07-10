@@ -249,7 +249,22 @@ const translations = {
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
     'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
-    'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği'
+    'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği',
+    
+    // PDF TOOLS FEATURES (for kırmızı belirtilen alanlar)
+    'features.highQualityOutput': 'Yüksek Kaliteli Çıktı',
+    'features.twentyMBFileSize': '20MB Dosya Boyutu',
+    'features.fastProcessing': 'Hızlı İşlem',
+    'features.multipleFileSupport': 'Çoklu Dosya Desteği',
+    
+    // PDF TOOLS TITLES
+    'tools.pdfSplit': 'PDF Böl',
+    'tools.pdfMerge': 'PDF Birleştir',
+    
+    // PROCESSING MESSAGES
+    'processing.aiProcessingTitle': 'Yapay Zeka ile İşleniyor...',
+    'processing.aiOptimizingDesc': 'AI algoritmaları dosyalarınızı optimize ediyor',
+    'processing.progressCompleted': '100% tamamlandı'
   },
   
   // ENGLISH TRANSLATIONS
@@ -502,7 +517,22 @@ const translations = {
     'pdfToImages.description': 'High quality visual output, smart format optimization',
     'pdfToText.description': 'OCR technology, multilingual support, smart text recognition',
     'pdfSplit.description': 'Smart page recognition, multiple split options, batch processing',
-    'pdfMerge.description': 'Drag & drop sorting, automatic optimization, multiple file support'
+    'pdfMerge.description': 'Drag & drop sorting, automatic optimization, multiple file support',
+    
+    // PDF TOOLS FEATURES (for red highlighted areas)
+    'features.highQualityOutput': 'High Quality Output',
+    'features.twentyMBFileSize': '20MB File Size',
+    'features.fastProcessing': 'Fast Processing',
+    'features.multipleFileSupport': 'Multiple File Support',
+    
+    // PDF TOOLS TITLES
+    'tools.pdfSplit': 'PDF Split',
+    'tools.pdfMerge': 'PDF Merge',
+    
+    // PROCESSING MESSAGES
+    'processing.aiProcessingTitle': 'Processing with AI...',
+    'processing.aiOptimizingDesc': 'AI algorithms are optimizing your files',
+    'processing.progressCompleted': '100% completed'
   }
 };
 
