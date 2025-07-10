@@ -213,6 +213,9 @@ const translations = {
     'pdfCompress.downloadAllSingle': 'Sıkıştırılmış PDF İndir',
     'pdfCompress.newConversion': 'Yeni PDF Sıkıştır',
     'pdfCompress.selectOrDrop': 'veya buraya bırak',
+    'pdfCompress.processing': 'PDF küçültülüyor...',
+    'pdfCompress.otherTools': 'Şu araca geçiş yap:',
+    'pdfCompress.remove.file': 'Dosyayı kaldır',
     
     // IMAGE TOOLS METINLERI
     'imageTools.selectFile': 'Resim dosyasını seç',
@@ -226,6 +229,7 @@ const translations = {
     'pdfConvert.uploadFiles': 'Dosya Yükleme',
     'pdfConvert.selectFile': 'PDF Dosyasını Seç',
     'pdfConvert.selectFiles': 'PDF Dosyalarını Seç',
+    'pdfConvert.fileUpload': 'PDF dosyasını seç',
     'pdfConvert.aiPowered': 'Yapay Zeka Destekli Dönüştürme',
     'pdfConvert.dragDrop': 'veya PDF\'i buraya sürükle & bırak',
     'pdfConvert.selectedFiles': 'Seçilen Dosyalar',
@@ -481,6 +485,9 @@ const translations = {
     'pdfCompress.downloadAllSingle': 'Download Compressed PDF',
     'pdfCompress.newConversion': 'Compress New PDF',
     'pdfCompress.selectOrDrop': 'or drop here',
+    'pdfCompress.processing': 'Compressing PDF...',
+    'pdfCompress.otherTools': 'Switch to this tool:',
+    'pdfCompress.remove.file': 'Remove file',
     
     // IMAGE TOOLS TRANSLATIONS
     'imageTools.selectFile': 'Select image file',
@@ -494,6 +501,7 @@ const translations = {
     'pdfConvert.uploadFiles': 'File Upload',
     'pdfConvert.selectFile': 'Select PDF File',
     'pdfConvert.selectFiles': 'Select PDF Files',
+    'pdfConvert.fileUpload': 'Select PDF file',
     'pdfConvert.aiPowered': 'AI-Powered Conversion',
     'pdfConvert.dragDrop': 'or drag & drop PDF here',
     'pdfConvert.selectedFiles': 'Selected Files',
