@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { ActivityTracker } from '@/lib/activityTracker';
+import { getTranslations } from '@/lib/translations';
 import { 
   resizeImage,
   getImageDimensions,
@@ -34,12 +35,14 @@ function SimplePreviewBox({
   imageUrl, 
   originalDimensions, 
   width, 
-  height 
+  height,
+  getText
 }: {
   imageUrl: string;
   originalDimensions: { width: number; height: number };
   width: number | undefined;
   height: number | undefined;
+  getText: (key: string, fallback: string) => string;
 }) {
   // Calculate preview dimensions
   const previewWidth = width || originalDimensions.width;
@@ -69,10 +72,10 @@ function SimplePreviewBox({
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-center">
           <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded text-sm font-medium">
             {previewWidth === originalDimensions.width && previewHeight === originalDimensions.height 
-              ? 'Orijinal Boyut' 
+              ? getText('imageResize.preview.originalSize', 'Orijinal Boyut')
               : previewWidth < originalDimensions.width || previewHeight < originalDimensions.height
-              ? 'Küçültülüyor'
-              : 'Büyütülüyor'
+              ? getText('imageResize.preview.shrinking', 'Küçültülüyor')
+              : getText('imageResize.preview.enlarging', 'Büyütülüyor')
             }
           </div>
         </div>
@@ -81,11 +84,21 @@ function SimplePreviewBox({
   );
 }
 
-export default function ImageResize() {
+export default async function ImageResize({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return <ImageResizeContent locale={locale} />;
+}
+
+function ImageResizeContent({ locale }: { locale: string }) {
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const t = getTranslations(locale);
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
 
   // Refs for smooth scrolling
   const uploadRef = useRef<HTMLDivElement>(null);
@@ -458,6 +471,7 @@ export default function ImageResize() {
                         originalDimensions={originalDimensions}
                         width={width}
                         height={height}
+                        getText={getText}
                       />
                       <div className="mt-4 text-sm text-gray-700 text-center bg-white rounded-lg p-3">
                         <p className="font-medium">{file.name}</p>

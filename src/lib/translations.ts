@@ -355,7 +355,16 @@ const translations = {
     'imageCompress.fileInfo.file': 'Dosya',
     'imageCompress.fileInfo.size': 'Boyut',
     'imageCompress.fileInfo.format': 'Format',
-    'imageCompress.fileInfo.progress': 'İlerleme'
+    'imageCompress.fileInfo.progress': 'İlerleme',
+    
+    // IMAGE RESIZE TRANSLATIONS
+    'imageResize.title': 'Resim Boyutlandırma',
+    'imageResize.subtitle': 'Resimlerinizi hassasiyet ve kalite ile istediğiniz boyuta getirin',
+    'imageResize.badge': '5M+ Resim Boyutlandırıldı • AI Destekli',
+    'imageResize.selectFile': 'Boyutlandırılacak Resim Seç',
+    'imageResize.preview.originalSize': 'Orijinal Boyut',
+    'imageResize.preview.shrinking': 'Küçültülüyor',
+    'imageResize.preview.enlarging': 'Büyütülüyor'
   },
   
   // ENGLISH TRANSLATIONS
@@ -732,7 +741,16 @@ const translations = {
     'imageCompress.result.compressed': 'Compressed Image',
     'imageCompress.result.newSize': 'New Size',
     'imageCompress.result.download': 'Download Compressed Image',
-    'imageCompress.result.newCompression': 'Compress New Image'
+    'imageCompress.result.newCompression': 'Compress New Image',
+    
+    // IMAGE RESIZE TRANSLATIONS ENGLISH
+    'imageResize.title': 'Image Resize',
+    'imageResize.subtitle': 'Resize your images to any dimension with precision and quality',
+    'imageResize.badge': '5M+ Images Resized • AI Powered',
+    'imageResize.selectFile': 'Select Image to Resize',
+    'imageResize.preview.originalSize': 'Original Size',
+    'imageResize.preview.shrinking': 'Shrinking',
+    'imageResize.preview.enlarging': 'Enlarging'
   }
 };
 
