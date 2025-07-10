@@ -1940,12 +1940,12 @@ export const translations = {
     
     
     'homepage.title': 'QuickUtil',
-    'homepage.subtitle': 'AI destekli PDF ve resim araçları. Akıllı. Hızlı. Ücretsiz.',
-    'homepage.aiSubtitle': 'Yapay zeka ile dosyalarınızı otomatik optimize eder, en iyi kaliteyi garanti ederiz',
-    'homepage.startButton': 'AI ile Başla',
+    'homepage.subtitle': 'KI-gestützte PDF- und Bildtools. Intelligent. Schnell. Kostenlos.',
+    'homepage.aiSubtitle': 'Künstliche Intelligenz optimiert Ihre Dateien automatisch und garantiert die beste Qualität',
+    'homepage.startButton': 'Mit KI starten',
     'homepage.signupButton': 'Registrieren',
-    'homepage.features.ai': 'AI Destekli',
-    'homepage.features.aiDesc': 'Yapay zeka ile otomatik optimizasyon',
+    'homepage.features.ai': 'KI-gestützt',
+    'homepage.features.aiDesc': 'Automatische Optimierung mit künstlicher Intelligenz',
     'homepage.features.free': 'Kostenlos',
     'homepage.features.freeDesc': 'Alle AI Tools völlig kostenlos',
     'homepage.features.secure': 'Sicher',
