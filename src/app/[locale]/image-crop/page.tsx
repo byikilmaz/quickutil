@@ -27,6 +27,247 @@ interface CropResult {
   downloadUrl: string;
 }
 
+// Interactive Crop Box Component
+function InteractiveCropBox({ 
+  imageUrl, 
+  originalDimensions, 
+  cropOptions,
+  onCropChange 
+}: {
+  imageUrl: string;
+  originalDimensions: { width: number; height: number };
+  cropOptions: CropOptions;
+  onCropChange: (crop: CropOptions) => void;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragHandle, setDragHandle] = useState<string | null>(null);
+  const [dragStart, setDragStart] = useState<{ 
+    x: number; 
+    y: number; 
+    crop: CropOptions;
+    containerRect: DOMRect;
+    imageRect: DOMRect;
+  } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  const calculateCropFromMouse = (clientX: number, clientY: number, handle: string): CropOptions => {
+    if (!dragStart) return cropOptions;
+    
+    const deltaX = clientX - dragStart.x;
+    const deltaY = clientY - dragStart.y;
+    
+    // Calculate scale factor between displayed image and original dimensions
+    const scaleX = originalDimensions.width / dragStart.imageRect.width;
+    const scaleY = originalDimensions.height / dragStart.imageRect.height;
+    
+    const scaledDeltaX = deltaX * scaleX;
+    const scaledDeltaY = deltaY * scaleY;
+    
+    let { x, y, width, height } = dragStart.crop;
+
+    switch (handle) {
+      case 'nw': // top-left
+        x = Math.max(0, Math.min(x + scaledDeltaX, x + width - 10));
+        y = Math.max(0, Math.min(y + scaledDeltaY, y + height - 10));
+        width = dragStart.crop.x + dragStart.crop.width - x;
+        height = dragStart.crop.y + dragStart.crop.height - y;
+        break;
+      case 'ne': // top-right
+        y = Math.max(0, Math.min(y + scaledDeltaY, y + height - 10));
+        width = Math.max(10, Math.min(width + scaledDeltaX, originalDimensions.width - x));
+        height = dragStart.crop.y + dragStart.crop.height - y;
+        break;
+      case 'sw': // bottom-left
+        x = Math.max(0, Math.min(x + scaledDeltaX, x + width - 10));
+        width = dragStart.crop.x + dragStart.crop.width - x;
+        height = Math.max(10, Math.min(height + scaledDeltaY, originalDimensions.height - y));
+        break;
+      case 'se': // bottom-right
+        width = Math.max(10, Math.min(width + scaledDeltaX, originalDimensions.width - x));
+        height = Math.max(10, Math.min(height + scaledDeltaY, originalDimensions.height - y));
+        break;
+      case 'n': // top edge
+        y = Math.max(0, Math.min(y + scaledDeltaY, y + height - 10));
+        height = dragStart.crop.y + dragStart.crop.height - y;
+        break;
+      case 's': // bottom edge
+        height = Math.max(10, Math.min(height + scaledDeltaY, originalDimensions.height - y));
+        break;
+      case 'w': // left edge
+        x = Math.max(0, Math.min(x + scaledDeltaX, x + width - 10));
+        width = dragStart.crop.x + dragStart.crop.width - x;
+        break;
+      case 'e': // right edge
+        width = Math.max(10, Math.min(width + scaledDeltaX, originalDimensions.width - x));
+        break;
+      case 'move': // move entire crop area
+        x = Math.max(0, Math.min(x + scaledDeltaX, originalDimensions.width - width));
+        y = Math.max(0, Math.min(y + scaledDeltaY, originalDimensions.height - height));
+        break;
+    }
+
+    return { 
+      x: Math.round(x), 
+      y: Math.round(y), 
+      width: Math.round(width), 
+      height: Math.round(height) 
+    };
+  };
+
+  const handleMouseDown = (e: React.MouseEvent, handle: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!containerRef.current || !imageRef.current) return;
+    
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const imageRect = imageRef.current.getBoundingClientRect();
+    
+    setIsDragging(true);
+    setDragHandle(handle);
+    setDragStart({
+      x: e.clientX,
+      y: e.clientY,
+      crop: { ...cropOptions },
+      containerRect,
+      imageRect
+    });
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging || !dragHandle || !dragStart) return;
+    
+    const newCrop = calculateCropFromMouse(e.clientX, e.clientY, dragHandle);
+    onCropChange(newCrop);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setDragHandle(null);
+    setDragStart(null);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragHandle, dragStart]);
+
+  // Calculate crop overlay position and size as percentages
+  const cropLeft = (cropOptions.x / originalDimensions.width) * 100;
+  const cropTop = (cropOptions.y / originalDimensions.height) * 100;
+  const cropWidth = (cropOptions.width / originalDimensions.width) * 100;
+  const cropHeight = (cropOptions.height / originalDimensions.height) * 100;
+
+  const handles = [
+    { id: 'nw', className: 'nw-resize', style: { top: '-6px', left: '-6px' } },
+    { id: 'ne', className: 'ne-resize', style: { top: '-6px', right: '-6px' } },
+    { id: 'sw', className: 'sw-resize', style: { bottom: '-6px', left: '-6px' } },
+    { id: 'se', className: 'se-resize', style: { bottom: '-6px', right: '-6px' } },
+    { id: 'n', className: 'n-resize', style: { top: '-6px', left: '50%', transform: 'translateX(-50%)' } },
+    { id: 's', className: 's-resize', style: { bottom: '-6px', left: '50%', transform: 'translateX(-50%)' } },
+    { id: 'w', className: 'w-resize', style: { left: '-6px', top: '50%', transform: 'translateY(-50%)' } },
+    { id: 'e', className: 'e-resize', style: { right: '-6px', top: '50%', transform: 'translateY(-50%)' } },
+  ];
+
+  return (
+    <div 
+      ref={containerRef}
+      className="relative bg-gray-900 rounded-lg overflow-hidden min-h-[450px] flex items-center justify-center"
+      onMouseUp={handleMouseUp}
+    >
+      <img
+        ref={imageRef}
+        src={imageUrl}
+        alt="Interactive Crop Preview"
+        className="max-w-full max-h-[450px] object-contain"
+        draggable={false}
+        style={{ userSelect: 'none' }}
+      />
+      
+      {/* Crop Overlay */}
+      <div 
+        className="absolute pointer-events-none"
+        style={{
+          left: `${cropLeft}%`,
+          top: `${cropTop}%`,
+          width: `${cropWidth}%`,
+          height: `${cropHeight}%`,
+        }}
+      >
+        {/* Crop area border */}
+        <div className="absolute inset-0 border-2 border-purple-500 bg-purple-500/10 pointer-events-auto">
+          
+          {/* Moveable area (center) */}
+          <div 
+            className="absolute inset-2 cursor-move bg-transparent"
+            onMouseDown={(e) => handleMouseDown(e, 'move')}
+          />
+
+          {/* Resize handles */}
+          {handles.map((handle) => (
+            <div
+              key={handle.id}
+              className={`absolute w-3 h-3 bg-purple-500 border-2 border-white rounded-sm cursor-${handle.className} pointer-events-auto hover:bg-purple-600 transition-colors`}
+              style={handle.style}
+              onMouseDown={(e) => handleMouseDown(e, handle.id)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Dark overlay for non-cropped areas */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Top overlay */}
+        <div 
+          className="absolute top-0 left-0 right-0 bg-black/50"
+          style={{ height: `${cropTop}%` }}
+        />
+        {/* Bottom overlay */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 bg-black/50"
+          style={{ height: `${100 - cropTop - cropHeight}%` }}
+        />
+        {/* Left overlay */}
+        <div 
+          className="absolute left-0 bg-black/50"
+          style={{ 
+            top: `${cropTop}%`, 
+            height: `${cropHeight}%`,
+            width: `${cropLeft}%`
+          }}
+        />
+        {/* Right overlay */}
+        <div 
+          className="absolute right-0 bg-black/50"
+          style={{ 
+            top: `${cropTop}%`, 
+            height: `${cropHeight}%`,
+            width: `${100 - cropLeft - cropWidth}%`
+          }}
+        />
+      </div>
+
+      {/* Crop info */}
+      <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-sm">
+        <p className="font-medium">
+          Crop Area: {cropOptions.width} × {cropOptions.height}
+        </p>
+        <p className="text-xs opacity-80">
+          Position: ({cropOptions.x}, {cropOptions.y})
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function ImageCrop() {
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
@@ -390,21 +631,19 @@ export default function ImageCrop() {
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
-                  {/* Left: Preview (2/3) */}
+                  {/* Left: Interactive Preview (2/3) */}
                   <div className="lg:col-span-2">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                      <h3 className="font-semibold text-gray-900 mb-4">Crop Preview</h3>
-                      <div className="bg-gray-900 rounded-lg p-4 relative">
-                        <img
-                          src={previewUrl}
-                          alt="Crop preview"
-                          className="max-w-full max-h-[400px] object-contain mx-auto rounded-lg"
-                        />
-                        {/* Simple crop overlay indicator */}
-                        <div className="absolute inset-4 border-2 border-white/50 rounded-lg pointer-events-none">
-                          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20"></div>
-                        </div>
-                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-4 text-center">Interactive Crop Preview</h3>
+                      <p className="text-sm text-gray-600 mb-4 text-center">
+                        🎯 Drag the handles to adjust crop area or click center to move
+                      </p>
+                      <InteractiveCropBox
+                        imageUrl={previewUrl}
+                        originalDimensions={originalDimensions}
+                        cropOptions={cropOptions}
+                        onCropChange={setCropOptions}
+                      />
                       <div className="mt-4 text-sm text-gray-600 text-center">
                         <p className="font-medium">{file.name}</p>
                         <p>{formatFileSize(file.size)} • {originalDimensions.width}×{originalDimensions.height}</p>
@@ -453,23 +692,49 @@ export default function ImageCrop() {
                         <div className="space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">X Position</label>
+                              <label className="block text-xs text-gray-800 mb-1">X Position</label>
                               <input
                                 type="number"
                                 value={cropOptions.x}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, x: parseInt(e.target.value) || 0 }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                onFocus={(e) => {
+                                  if (e.target.placeholder) {
+                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
+                                    e.target.placeholder = '';
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  const placeholder = e.target.getAttribute('data-placeholder');
+                                  if (placeholder && !e.target.value) {
+                                    e.target.placeholder = placeholder;
+                                  }
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-800"
+                                placeholder="Enter X..."
                                 min="0"
                                 max={originalDimensions.width}
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Y Position</label>
+                              <label className="block text-xs text-gray-800 mb-1">Y Position</label>
                               <input
                                 type="number"
                                 value={cropOptions.y}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, y: parseInt(e.target.value) || 0 }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                onFocus={(e) => {
+                                  if (e.target.placeholder) {
+                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
+                                    e.target.placeholder = '';
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  const placeholder = e.target.getAttribute('data-placeholder');
+                                  if (placeholder && !e.target.value) {
+                                    e.target.placeholder = placeholder;
+                                  }
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-800"
+                                placeholder="Enter Y..."
                                 min="0"
                                 max={originalDimensions.height}
                               />
@@ -477,23 +742,49 @@ export default function ImageCrop() {
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Width</label>
+                              <label className="block text-xs text-gray-800 mb-1">Width</label>
                               <input
                                 type="number"
                                 value={cropOptions.width}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, width: parseInt(e.target.value) || 0 }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                onFocus={(e) => {
+                                  if (e.target.placeholder) {
+                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
+                                    e.target.placeholder = '';
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  const placeholder = e.target.getAttribute('data-placeholder');
+                                  if (placeholder && !e.target.value) {
+                                    e.target.placeholder = placeholder;
+                                  }
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-800"
+                                placeholder="Enter width..."
                                 min="1"
                                 max={originalDimensions.width}
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Height</label>
+                              <label className="block text-xs text-gray-800 mb-1">Height</label>
                               <input
                                 type="number"
                                 value={cropOptions.height}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, height: parseInt(e.target.value) || 0 }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                onFocus={(e) => {
+                                  if (e.target.placeholder) {
+                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
+                                    e.target.placeholder = '';
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  const placeholder = e.target.getAttribute('data-placeholder');
+                                  if (placeholder && !e.target.value) {
+                                    e.target.placeholder = placeholder;
+                                  }
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-800"
+                                placeholder="Enter height..."
                                 min="1"
                                 max={originalDimensions.height}
                               />
