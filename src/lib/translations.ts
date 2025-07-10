@@ -364,7 +364,49 @@ const translations = {
     'imageResize.selectFile': 'Boyutlandırılacak Resim Seç',
     'imageResize.preview.originalSize': 'Orijinal Boyut',
     'imageResize.preview.shrinking': 'Küçültülüyor',
-    'imageResize.preview.enlarging': 'Büyütülüyor'
+    'imageResize.preview.enlarging': 'Büyütülüyor',
+
+    // IMAGE ROTATE TRANSLATIONS TURKISH
+    'imageRotate.badge': '500K+ Resim Döndürüldü • AI Destekli',
+    'imageRotate.title': 'Resim Döndürme',
+    'imageRotate.description': 'Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.',
+    'imageRotate.trust.noQualityLoss': 'Kalite Kaybı Yok',
+    'imageRotate.trust.allFormats': 'Tüm Formatlar',
+    'imageRotate.trust.secureFast': 'Güvenli & Hızlı',
+    'imageRotate.upload.title': 'Resim Yükleyin',
+    'imageRotate.upload.description': 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin',
+    'imageRotate.upload.uploadText': 'Resim Yükleyin',
+    'imageRotate.upload.dropText': 'Dosyayı Bırakın',
+    'imageRotate.upload.dragOrSelect': 'Dosyayı sürükleyip bırakın veya seçin',
+    'imageRotate.upload.selectFile': 'Dosya Seçin',
+    'imageRotate.upload.fileTypes': 'JPEG, PNG, WebP • Max 50MB',
+    'imageRotate.configure.previewTitle': 'Önizleme',
+    'imageRotate.configure.settingsTitle': 'Döndürme Ayarları',
+    'imageRotate.configure.backButton': 'Geri',
+    'imageRotate.configure.quickRotationTitle': 'Hızlı Döndürme',
+    'imageRotate.configure.rotate90Right': '90° Sağa',
+    'imageRotate.configure.rotate180': '180° Ters',
+    'imageRotate.configure.rotate90Left': '90° Sola',
+    'imageRotate.configure.resetAngle': 'Sıfırla',
+    'imageRotate.configure.customAngleTitle': 'Özel Açı',
+    'imageRotate.configure.currentAngle': 'Döndürme Açısı:',
+    'imageRotate.configure.anglePlaceholder': 'Açı (0-360°)',
+    'imageRotate.configure.startRotation': '🚀 Döndürmeyi Başlat',
+    'imageRotate.processing.title': 'Resim Döndürülüyor...',
+    'imageRotate.processing.description': 'AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor',
+    'imageRotate.processing.completed': 'tamamlandı',
+    'imageRotate.processing.steps.analysis': 'Resim Analizi',
+    'imageRotate.processing.steps.rotating': 'Döndürülüyor',
+    'imageRotate.processing.steps.optimizing': 'Optimize Ediliyor',
+    'imageRotate.result.successTitle': 'Döndürme Tamamlandı',
+    'imageRotate.result.successSubtitle': 'Resminiz Başarıyla Döndürüldü!',
+    'imageRotate.result.successDescription': 'döndürme işlemi kalite kaybı olmadan tamamlandı',
+    'imageRotate.result.beforeTitle': 'Öncesi',
+    'imageRotate.result.afterTitle': 'Sonrası',
+    'imageRotate.result.rotatedImageTitle': 'Döndürülmüş Resim',
+    'imageRotate.result.rotatedAngle': 'döndürüldü',
+    'imageRotate.result.downloadButton': 'Döndürülmüş Resmi İndir',
+    'imageRotate.result.newImageButton': 'Yeni Resim Döndür'
   },
   
   // ENGLISH TRANSLATIONS
@@ -750,272 +792,49 @@ const translations = {
     'imageResize.selectFile': 'Select Image to Resize',
     'imageResize.preview.originalSize': 'Original Size',
     'imageResize.preview.shrinking': 'Shrinking',
-    'imageResize.preview.enlarging': 'Enlarging'
-  },
+    'imageResize.preview.enlarging': 'Enlarging',
 
-  imageRotate: {
-    badge: {
-      tr: '500K+ Resim Döndürüldü • AI Destekli',
-      en: '500K+ Images Rotated • AI Powered'
-    },
-    title: {
-      tr: 'Resim Döndürme',
-      en: 'Image Rotation'
-    },
-    description: {
-      tr: 'Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.',
-      en: 'Easily rotate your images to any angle. Rotate without quality loss using our powerful processing technology.'
-    },
-    trust: {
-      noQualityLoss: {
-        tr: 'Kalite Kaybı Yok',
-        en: 'No Quality Loss'
-      },
-      allFormats: {
-        tr: 'Tüm Formatlar',
-        en: 'All Formats'
-      },
-      secureFast: {
-        tr: 'Güvenli & Hızlı',
-        en: 'Secure & Fast'
-      }
-    },
-    upload: {
-      title: {
-        tr: 'Resim Yükleyin',
-        en: 'Upload Image'
-      },
-      description: {
-        tr: 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin',
-        en: 'Upload your images in JPEG, PNG, WebP formats'
-      },
-      uploadText: {
-        tr: 'Resim Yükleyin',
-        en: 'Upload Image'
-      },
-      dropText: {
-        tr: 'Dosyayı Bırakın',
-        en: 'Drop File'
-      },
-      dragOrSelect: {
-        tr: 'Dosyayı sürükleyip bırakın veya seçin',
-        en: 'Drag and drop or select a file'
-      },
-      dragDrop: {
-        tr: 'Dosyayı sürükleyip bırakın veya seçin',
-        en: 'Drag and drop or select a file'
-      },
-      selectFile: {
-        tr: 'Dosya Seçin',
-        en: 'Select File'
-      },
-      dropFile: {
-        tr: 'Dosyayı Bırakın',
-        en: 'Drop File'
-      },
-      fileTypes: {
-        tr: 'JPEG, PNG, WebP • Max 50MB',
-        en: 'JPEG, PNG, WebP • Max 50MB'
-      }
-    },
-    configure: {
-      title: {
-        tr: 'Döndürme Ayarları',
-        en: 'Rotation Settings'
-      },
-      settingsTitle: {
-        tr: 'Döndürme Ayarları',
-        en: 'Rotation Settings'
-      },
-      preview: {
-        tr: 'Önizleme',
-        en: 'Preview'
-      },
-      previewTitle: {
-        tr: 'Önizleme',
-        en: 'Preview'
-      },
-      back: {
-        tr: 'Geri',
-        en: 'Back'
-      },
-      backButton: {
-        tr: 'Geri',
-        en: 'Back'
-      },
-      quickRotation: {
-        title: {
-          tr: 'Hızlı Döndürme',
-          en: 'Quick Rotation'
-        },
-        quickRotationTitle: {
-          tr: 'Hızlı Döndürme',
-          en: 'Quick Rotation'
-        },
-        right90: {
-          tr: '90° Sağa',
-          en: '90° Right'
-        },
-        rotate90Right: {
-          tr: '90° Sağa',
-          en: '90° Right'
-        },
-        flip180: {
-          tr: '180° Ters',
-          en: '180° Flip'
-        },
-        rotate180: {
-          tr: '180° Ters',
-          en: '180° Flip'
-        },
-        left90: {
-          tr: '90° Sola',
-          en: '90° Left'
-        },
-        rotate90Left: {
-          tr: '90° Sola',
-          en: '90° Left'
-        },
-        reset: {
-          tr: 'Sıfırla',
-          en: 'Reset'
-        },
-        resetAngle: {
-          tr: 'Sıfırla',
-          en: 'Reset'
-        }
-      },
-      customAngle: {
-        title: {
-          tr: 'Özel Açı',
-          en: 'Custom Angle'
-        },
-        customAngleTitle: {
-          tr: 'Özel Açı',
-          en: 'Custom Angle'
-        },
-        rotationAngle: {
-          tr: 'Döndürme Açısı',
-          en: 'Rotation Angle'
-        },
-        currentAngle: {
-          tr: 'Döndürme Açısı:',
-          en: 'Rotation Angle:'
-        },
-        placeholder: {
-          tr: 'Açı (0-360°)',
-          en: 'Angle (0-360°)'
-        },
-        anglePlaceholder: {
-          tr: 'Açı (0-360°)',
-          en: 'Angle (0-360°)'
-        }
-      },
-      startRotating: {
-        tr: '🚀 Döndürmeyi Başlat',
-        en: '🚀 Start Rotating'
-      },
-      startRotation: {
-        tr: '🚀 Döndürmeyi Başlat',
-        en: '🚀 Start Rotating'
-      }
-    },
-    processing: {
-      title: {
-        tr: 'Resim Döndürülüyor...',
-        en: 'Rotating Image...'
-      },
-      description: {
-        tr: 'AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor',
-        en: 'Your image is being rotated without quality loss using our AI-powered technology'
-      },
-      completed: {
-        tr: 'tamamlandı',
-        en: 'completed'
-      },
-      steps: {
-        analysis: {
-          tr: 'Resim Analizi',
-          en: 'Image Analysis'
-        },
-        rotating: {
-          tr: 'Döndürülüyor',
-          en: 'Rotating'
-        },
-        optimizing: {
-          tr: 'Optimize Ediliyor',
-          en: 'Optimizing'
-        }
-      }
-    },
-    result: {
-      completed: {
-        tr: 'Döndürme Tamamlandı',
-        en: 'Rotation Completed'
-      },
-      successTitle: {
-        tr: 'Döndürme Tamamlandı',
-        en: 'Rotation Completed'
-      },
-      success: {
-        tr: 'Resminiz Başarıyla Döndürüldü!',
-        en: 'Your Image Has Been Successfully Rotated!'
-      },
-      successSubtitle: {
-        tr: 'Resminiz Başarıyla Döndürüldü!',
-        en: 'Your Image Has Been Successfully Rotated!'
-      },
-      successDescription: {
-        tr: 'döndürme işlemi kalite kaybı olmadan tamamlandı',
-        en: 'rotation completed without quality loss'
-      },
-      rotationInfo: {
-        tr: 'döndürme işlemi kalite kaybı olmadan tamamlandı',
-        en: 'rotation completed without quality loss'
-      },
-      comparison: {
-        before: {
-          tr: 'Öncesi',
-          en: 'Before'
-        },
-        beforeTitle: {
-          tr: 'Öncesi',
-          en: 'Before'
-        },
-        after: {
-          tr: 'Sonrası',
-          en: 'After'
-        },
-        afterTitle: {
-          tr: 'Sonrası',
-          en: 'After'
-        }
-      },
-      rotatedImageTitle: {
-        tr: 'Döndürülmüş Resim',
-        en: 'Rotated Image'
-      },
-      rotatedAngle: {
-        tr: 'döndürüldü',
-        en: 'rotated'
-      },
-      download: {
-        tr: 'Döndürülmüş Resmi İndir',
-        en: 'Download Rotated Image'
-      },
-      downloadButton: {
-        tr: 'Döndürülmüş Resmi İndir',
-        en: 'Download Rotated Image'
-      },
-      newRotation: {
-        tr: 'Yeni Resim Döndür',
-        en: 'Rotate New Image'
-      },
-      newImageButton: {
-        tr: 'Yeni Resim Döndür',
-        en: 'Rotate New Image'
-      }
-    }
+    // IMAGE ROTATE TRANSLATIONS ENGLISH
+    'imageRotate.badge': '500K+ Images Rotated • AI Powered',
+    'imageRotate.title': 'Image Rotation',
+    'imageRotate.description': 'Easily rotate your images to any angle. Rotate without quality loss using our powerful processing technology.',
+    'imageRotate.trust.noQualityLoss': 'No Quality Loss',
+    'imageRotate.trust.allFormats': 'All Formats',
+    'imageRotate.trust.secureFast': 'Secure & Fast',
+    'imageRotate.upload.title': 'Upload Image',
+    'imageRotate.upload.description': 'Upload your images in JPEG, PNG, WebP formats',
+    'imageRotate.upload.uploadText': 'Upload Image',
+    'imageRotate.upload.dropText': 'Drop File',
+    'imageRotate.upload.dragOrSelect': 'Drag and drop or select a file',
+    'imageRotate.upload.selectFile': 'Select File',
+    'imageRotate.upload.fileTypes': 'JPEG, PNG, WebP • Max 50MB',
+    'imageRotate.configure.previewTitle': 'Preview',
+    'imageRotate.configure.settingsTitle': 'Rotation Settings',
+    'imageRotate.configure.backButton': 'Back',
+    'imageRotate.configure.quickRotationTitle': 'Quick Rotation',
+    'imageRotate.configure.rotate90Right': '90° Right',
+    'imageRotate.configure.rotate180': '180° Flip',
+    'imageRotate.configure.rotate90Left': '90° Left',
+    'imageRotate.configure.resetAngle': 'Reset',
+    'imageRotate.configure.customAngleTitle': 'Custom Angle',
+    'imageRotate.configure.currentAngle': 'Rotation Angle:',
+    'imageRotate.configure.anglePlaceholder': 'Angle (0-360°)',
+    'imageRotate.configure.startRotation': '🚀 Start Rotation',
+    'imageRotate.processing.title': 'Rotating Image...',
+    'imageRotate.processing.description': 'Your image is being rotated without quality loss using our AI-powered technology',
+    'imageRotate.processing.completed': 'completed',
+    'imageRotate.processing.steps.analysis': 'Image Analysis',
+    'imageRotate.processing.steps.rotating': 'Rotating',
+    'imageRotate.processing.steps.optimizing': 'Optimizing',
+    'imageRotate.result.successTitle': 'Rotation Completed',
+    'imageRotate.result.successSubtitle': 'Your Image Has Been Successfully Rotated!',
+    'imageRotate.result.successDescription': 'rotation completed without quality loss',
+    'imageRotate.result.beforeTitle': 'Before',
+    'imageRotate.result.afterTitle': 'After',
+    'imageRotate.result.rotatedImageTitle': 'Rotated Image',
+    'imageRotate.result.rotatedAngle': 'rotated',
+    'imageRotate.result.downloadButton': 'Download Rotated Image',
+    'imageRotate.result.newImageButton': 'Rotate New Image'
   }
 };
 
