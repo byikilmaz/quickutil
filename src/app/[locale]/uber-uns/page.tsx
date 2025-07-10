@@ -50,10 +50,10 @@ export default async function AboutPage({ params }: Props) {
             <div className="text-center">
               <HeartIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                💙 {t.about.title}
+                💙 {(t as any)['about.title']}
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {t.about.subtitle}
+                {(t as any)['about.subtitle']}
               </p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default async function AboutPage({ params }: Props) {
           {/* Mission & Vision */}
           <div className="grid md:grid-cols-2 gap-12">
             <div className="bg-white rounded-xl shadow-lg p-8">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{t.about.mission}</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{(t as any)['about.mission']}</h3>
               <p className="text-gray-600 leading-relaxed">
                 {finalLocale === 'tr' ? 
                   'Dijital dünyada dosya işleme süreçlerini herkes için erişilebilir, hızlı ve güvenli hale getirmek. QuickUtil.app olarak, karmaşık teknik süreçleri basit ve kullanıcı dostu araçlara dönüştürüyoruz.' :
@@ -74,7 +74,7 @@ export default async function AboutPage({ params }: Props) {
             </div>
             
             <div className="bg-white rounded-xl shadow-lg p-8">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{t.about.vision}</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{(t as any)['about.vision']}</h3>
               <p className="text-gray-600 leading-relaxed">
                 {finalLocale === 'tr' ? 
                   'Dünya genelinde dosya işleme alanında lider platform olmak ve milyonlarca kullanıcının dijital hayatını kolaylaştırmak. Sürekli yenilik ve kullanıcı deneyimi odaklı gelişim ile sektörde standartları belirlemek.' :
@@ -87,7 +87,7 @@ export default async function AboutPage({ params }: Props) {
           {/* Statistics */}
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 {t.about.statistics}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 {(t as any)['about.statistics']}</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
@@ -107,7 +107,7 @@ export default async function AboutPage({ params }: Props) {
           {/* Values */}
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 {t.about.values}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 {(t as any)['about.values']}</h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[

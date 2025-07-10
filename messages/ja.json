@@ -1,0 +1,282 @@
+{
+  "common": {
+    "upload": "アップロード",
+    "download": "ダウンロード",
+    "processing": "処理中...",
+    "done": "完了",
+    "error": "エラー",
+    "success": "成功",
+    "cancel": "キャンセル",
+    "retry": "再試行",
+    "free": "無料",
+    "secure": "安全",
+    "fast": "高速",
+    "unlimited": "無制限",
+    "selectFile": "ファイルを選択",
+    "selectFiles": "ファイルを選択",
+    "dropFile": "ファイルをここにドロップ",
+    "dragDrop": "またはドラッグ&ドロップ",
+    "or": "または",
+    "fileSize": "ファイルサイズ",
+    "fileName": "ファイル名",
+    "loading": "読み込み中...",
+    "back": "戻る",
+    "next": "次へ",
+    "save": "保存",
+    "close": "閉じる",
+    "open": "開く",
+    "share": "共有",
+    "copy": "コピー",
+    "delete": "削除",
+    "edit": "編集",
+    "view": "表示",
+    "help": "ヘルプ",
+    "about": "について",
+    "contact": "お問い合わせ",
+    "privacy": "プライバシー",
+    "terms": "利用規約",
+    "confirm": "確認",
+    "and": "と",
+    "premium": "プレミアム",
+    "maxSize": "最大サイズ",
+    "supportedFormats": "対応フォーマット",
+    "maxFiles": "最大ファイル数",
+    "securityNotice": "ファイルはブラウザで安全に処理されます",
+    "fileUploaded": "ファイルのアップロードが完了しました！",
+    "readyToProcess": "処理準備完了"
+  },
+
+  "navigation": {
+    "home": "ホーム",
+    "tools": "ツール",
+    "pdfTools": "PDFツール",
+    "imageTools": "画像ツール",
+    "batchProcessing": "バッチ処理",
+    "profile": "プロフィール",
+    "admin": "管理者",
+    "login": "ログイン",
+    "register": "登録",
+    "logout": "ログアウト",
+    "about": "について",
+    "contact": "お問い合わせ",
+    "privacy": "プライバシー",
+    "terms": "利用規約"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "PDFと画像ツール",
+    "menu": "メニュー",
+    "logo": "QuickUtil",
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "register": "登録",
+    "close": "閉じる"
+  },
+
+  "footer": {
+    "copyright": "© QuickUtil、トルコ",
+    "allRightsReserved": "全著作権所有",
+    "quickLinks": "クイックリンク",
+    "legal": "法的事項",
+    "company": "会社",
+    "support": "サポート",
+    "followUs": "フォローする",
+    "newsletter": "ニュースレター",
+    "subscribe": "購読",
+    "enterEmail": "メールアドレスを入力",
+    "tools": "ツール",
+    "aiTools": "AIツール",
+    "pdfCompress": "PDF圧縮",
+    "aiPdfCompress": "AI PDF圧縮",
+    "imageCompress": "画像圧縮",
+    "aiImageCompress": "AI画像圧縮",
+    "batchProcessing": "バッチ処理",
+    "aiBatchProcessing": "AIバッチ処理",
+    "aiBlog": "AIブログ",
+    "about": "会社概要",
+    "aboutUrl": "会社概要",
+    "story": "私たちの歴史",
+    "team": "チーム",
+    "privacy": "プライバシー",
+    "privacyUrl": "プライバシー",
+    "cookies": "クッキー",
+    "cookiesUrl": "クッキー",
+    "sslSecure": "SSL保護",
+    "aiSecure": "AI保護",
+    "aiProcessing": "AI処理",
+    "poweredBy": "powered by"
+  },
+
+  "auth": {
+    "login": "ログイン",
+    "register": "登録",
+    "email": "メール",
+    "password": "パスワード",
+    "firstName": "名",
+    "lastName": "姓",
+    "confirmPassword": "パスワード確認",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "dontHaveAccount": "アカウントをお持ちでない方は？",
+    "alreadyHaveAccount": "すでにアカウントをお持ちの方は？",
+    "signInWithGoogle": "Googleでログイン",
+    "orContinueWith": "または続行",
+    "bySigningUp": "登録することで以下に同意します",
+    "termsOfService": "利用規約",
+    "privacyPolicy": "プライバシーポリシー",
+    "emailRequired": "メールアドレスが必要です",
+    "passwordRequired": "パスワードが必要です",
+    "firstNameRequired": "名前が必要です",
+    "lastNameRequired": "姓が必要です",
+    "passwordsDoNotMatch": "パスワードが一致しません",
+    "invalidEmail": "無効なメールアドレス",
+    "passwordTooShort": "パスワードは6文字以上である必要があります",
+    "loginSuccess": "ログイン成功",
+    "registerSuccess": "登録成功",
+    "loginError": "ログインエラー",
+    "registerError": "登録エラー",
+    "logoutSuccess": "ログアウト成功",
+    "emailVerificationSent": "確認メールを送信しました",
+    "emailNotVerified": "メールが確認されていません",
+    "verifyEmail": "メールを確認"
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "PDFと画像を処理",
+      "subtitle": "無料、安全、高速なファイル処理ツール",
+      "aiSubtitle": "人工知能がファイルを自動的に最適化し、最高品質を保証します",
+      "cta": "今すぐ開始",
+      "startButton": "AIで開始",
+      "features": ["100%無料", "安全な処理", "高速結果"]
+    },
+    "categories": {
+      "pdfTools": "PDFツール",
+      "pdfToolsDesc": "PDFファイルの圧縮、変換、編集",
+      "imageTools": "画像ツール", 
+      "imageToolsDesc": "画像の圧縮、サイズ変更、編集",
+      "batchTools": "バッチ処理",
+      "batchToolsDesc": "複数のファイルを一度に処理"
+    },
+    "features": {
+      "title": "なぜQuickUtil？",
+      "ai": "AI搭載",
+      "aiDesc": "人工知能による自動最適化",
+      "free": "完全無料",
+      "freeDesc": "すべてのAIツールが完全無料",
+      "secure": "100%安全",
+      "secureDesc": "SSL保護、自動削除",
+      "smart": "スマート分析",
+      "smartDesc": "AIがファイルを分析し、最適な設定を自動選択",
+      "quality": "品質保持",
+      "qualityDesc": "高度なアルゴリズムで品質劣化を最小限に"
+    },
+    "aiSection": {
+      "title": "なぜAIが重要？",
+      "subtitle": "AI技術がファイルを分析し、最適な設定を自動選択",
+      "feature1": "自動品質最適化",
+      "feature1Desc": "AIがファイル内容を分析し、最適な圧縮設定を選択",
+      "feature2": "スマートフォーマット変換",
+      "feature2Desc": "AIがファイルタイプに最適なフォーマットと品質を提案",
+      "feature3": "高速処理",
+      "feature3Desc": "AIアルゴリズムは従来の方法より75%高速"
+    }
+  },
+
+  "tools": {
+    "pdfCompress": "AI PDF圧縮",
+    "pdfCompressDesc": "AI最高の品質とサイズのバランス",
+    "pdfConvert": "AI PDF変換", 
+    "pdfConvertDesc": "スマートフォーマット選択と品質最適化",
+    "imageCompress": "AI圧縮",
+    "imageCompressDesc": "AIによるスマート画像最適化",
+    "imageResize": "AIリサイズ",
+    "imageResizeDesc": "自動アスペクト比維持と品質調整",
+    "imageCrop": "AIクロップ",
+    "imageCropDesc": "AIオブジェクト認識による自動クロップ",
+    "imageRotate": "AI回転",
+    "imageRotateDesc": "自動レベリングと遠近補正",
+    "imageFormat": "AIフォーマット変換",
+    "imageFormatDesc": "最適なフォーマットと品質の提案"
+  },
+
+  "profile": {
+    "title": "プロフィール",
+    "personalInfo": "個人情報",
+    "accountSettings": "アカウント設定",
+    "security": "セキュリティ",
+    "preferences": "設定",
+    "subscription": "サブスクリプション",
+    "billing": "請求",
+    "paymentMethods": "支払い方法",
+    "usage": "使用量",
+    "activity": "アクティビティ",
+    "files": "ファイル",
+    "settings": "設定"
+  },
+
+  "admin": {
+    "dashboard": "ダッシュボード",
+    "users": "ユーザー",
+    "analytics": "分析",
+    "reports": "レポート",
+    "settings": "設定",
+    "logs": "ログ",
+    "system": "システム",
+    "overview": "概要",
+    "performance": "パフォーマンス",
+    "security": "セキュリティ",
+    "backup": "バックアップ",
+    "maintenance": "メンテナンス"
+  },
+
+  "errors": {
+    "general": "エラーが発生しました",
+    "network": "ネットワークエラー",
+    "notFound": "ページが見つかりません",
+    "unauthorized": "認証されていません",
+    "forbidden": "禁止されています",
+    "serverError": "サーバーエラー",
+    "timeout": "タイムアウト",
+    "invalidInput": "無効な入力",
+    "fileUploadError": "ファイルアップロードエラー",
+    "fileSizeError": "ファイルサイズが大きすぎます",
+    "fileTypeError": "サポートされていないファイルタイプ"
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil - AIを使った無料PDFと画像ツール",
+      "description": "人工知能を使った無料で安全なPDFと画像処理ツール。ファイルをオンラインで圧縮、変換、編集。",
+      "keywords": "PDF、圧縮、変換、画像ツール、AI、無料、安全"
+    },
+    "pdfCompress": {
+      "title": "無料PDF圧縮 - PDFサイズをオンラインで削減",
+      "description": "品質を損なうことなく無料でPDFファイルを圧縮。高速で安全なPDF圧縮ツール。",
+      "keywords": "PDF圧縮、PDFサイズ削減、PDF最適化"
+    },
+    "imageCompress": {
+      "title": "無料画像圧縮 - オンラインで画像を最適化",
+      "description": "品質を損なうことなくJPG、PNG、GIF画像を圧縮。無料で安全な画像圧縮ツール。",
+      "keywords": "画像圧縮、画像最適化、画像サイズ削減"
+    }
+  },
+
+  "legal": {
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約",
+    "cookiePolicy": "クッキーポリシー",
+    "disclaimer": "免責事項",
+    "contactUs": "お問い合わせ",
+    "support": "サポート",
+    "faq": "よくある質問",
+    "help": "ヘルプ"
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "言語を選択",
+    "currentLanguage": "現在の言語",
+    "changeLanguage": "言語を変更",
+    "preferenceRemembered": "設定は記憶されます"
+  }
+} 

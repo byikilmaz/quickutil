@@ -28,6 +28,37 @@ export interface BatchFile {
   processingTime?: number;
 }
 
+interface BatchTexts {
+  selectFiles: string;
+  or: string;
+  dropFilesHere: string;
+  dragAndDrop: string;
+  maxSize: string;
+  supportedFormats: string;
+  maxFileCount: string;
+  supportedOperations: string;
+  files: string;
+  processingPanel: string;
+  filesUploaded: string;
+  totalSize: string;
+  startProcessing: string;
+  clear: string;
+  stop: string;
+  total: string;
+  processing: string;
+  completed: string;
+  error: string;
+  waiting: string;
+  overallProgress: string;
+  fileList: string;
+  processingTime: string;
+  someFilesFailedUpload: string;
+  fileTooLarge: string;
+  invalidFileType: string;
+  tooManyFiles: string;
+  maxFilesMore: string;
+}
+
 interface BatchFileUploadProps {
   onFilesSelect: (files: File[]) => void;
   onFileRemove: (fileId: string) => void;
@@ -42,6 +73,7 @@ interface BatchFileUploadProps {
   batchFiles: BatchFile[];
   isProcessing: boolean;
   supportedOperations: string[];
+  texts?: BatchTexts;
 }
 
 export default function BatchFileUpload({
@@ -57,7 +89,37 @@ export default function BatchFileUpload({
   description,
   batchFiles,
   isProcessing,
-  supportedOperations
+  supportedOperations,
+  texts = {
+    selectFiles: 'Select Files',
+    or: 'or',
+    dropFilesHere: 'Drop files here',
+    dragAndDrop: 'drag and drop',
+    maxSize: 'Maximum size:',
+    supportedFormats: 'Supported formats:',
+    maxFileCount: 'Maximum file count:',
+    supportedOperations: 'Supported operations:',
+    files: 'files',
+    processingPanel: 'Batch Processing Panel',
+    filesUploaded: 'files uploaded',
+    totalSize: 'total size',
+    startProcessing: 'Start Processing',
+    clear: 'Clear',
+    stop: 'Stop',
+    total: 'Total',
+    processing: 'Processing',
+    completed: 'Completed',
+    error: 'Error',
+    waiting: 'Waiting',
+    overallProgress: 'Overall Progress',
+    fileList: 'File List',
+    processingTime: 'Processing time:',
+    someFilesFailedUpload: 'Some Files Could Not Be Uploaded',
+    fileTooLarge: 'File too large',
+    invalidFileType: 'Unsupported file format',
+    tooManyFiles: 'Too many files selected',
+    maxFilesMore: 'more files can be added'
+  }
 }: BatchFileUploadProps) {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -192,30 +254,30 @@ export default function BatchFileUpload({
                   className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl disabled:opacity-50"
                   disabled={isProcessing}
                 >
-                  Dosyalar Seç
+                  {texts.selectFiles}
                 </button>
-                <span className="text-gray-500 font-medium">veya</span>
+                <span className="text-gray-500 font-medium">{texts.or}</span>
                 <span className="text-blue-600 font-medium">
-                  {isDragActive ? 'Dosyaları buraya bırakın' : 'sürükleyip bırakın'}
+                  {isDragActive ? texts.dropFilesHere : texts.dragAndDrop}
                 </span>
               </div>
               
               {/* File requirements */}
               <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Maksimum boyut:</span>
+                  <span className="font-medium">{texts.maxSize}</span>
                   <span className="text-gray-800">{formatFileSize(maxSize)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Desteklenen formatlar:</span>
+                  <span className="font-medium">{texts.supportedFormats}</span>
                   <span className="text-gray-800">{getFileTypesDisplay()}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Maksimum dosya sayısı:</span>
-                  <span className="text-gray-800">{maxFiles} dosya</span>
+                  <span className="font-medium">{texts.maxFileCount}</span>
+                  <span className="text-gray-800">{maxFiles} {texts.files}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Desteklenen işlemler:</span>
+                  <span className="font-medium">{texts.supportedOperations}</span>
                   <span className="text-gray-800">{supportedOperations.join(', ')}</span>
                 </div>
               </div>
@@ -229,9 +291,9 @@ export default function BatchFileUpload({
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Batch İşlem Paneli</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{texts.processingPanel}</h3>
               <p className="text-sm text-gray-600">
-                {stats.total} dosya yüklendi • {formatFileSize(stats.totalSize)} toplam boyut
+                {stats.total} {texts.filesUploaded} • {formatFileSize(stats.totalSize)} {texts.totalSize}
               </p>
             </div>
             
@@ -244,14 +306,14 @@ export default function BatchFileUpload({
                     className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <PlayIcon className="w-4 h-4" />
-                    <span>İşleme Başla</span>
+                    <span>{texts.startProcessing}</span>
                   </button>
                   <button
                     onClick={onBatchClear}
                     className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     <XMarkIcon className="w-4 h-4" />
-                    <span>Temizle</span>
+                    <span>{texts.clear}</span>
                   </button>
                 </>
               ) : (
@@ -260,7 +322,7 @@ export default function BatchFileUpload({
                   className="flex items-center space-x-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
                 >
                   <PauseIcon className="w-4 h-4" />
-                  <span>Durdur</span>
+                  <span>{texts.stop}</span>
                 </button>
               )}
             </div>
@@ -270,30 +332,30 @@ export default function BatchFileUpload({
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-gray-50 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-              <div className="text-xs text-gray-600">Toplam</div>
+              <div className="text-xs text-gray-600">{texts.total}</div>
             </div>
             <div className="bg-blue-50 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-blue-600">{stats.processing}</div>
-              <div className="text-xs text-blue-600">İşleniyor</div>
+              <div className="text-xs text-blue-600">{texts.processing}</div>
             </div>
             <div className="bg-green-50 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-              <div className="text-xs text-green-600">Tamamlandı</div>
+              <div className="text-xs text-green-600">{texts.completed}</div>
             </div>
             <div className="bg-red-50 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-red-600">{stats.errors}</div>
-              <div className="text-xs text-red-600">Hata</div>
+              <div className="text-xs text-red-600">{texts.error}</div>
             </div>
             <div className="bg-yellow-50 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-              <div className="text-xs text-yellow-600">Bekliyor</div>
+              <div className="text-xs text-yellow-600">{texts.waiting}</div>
             </div>
           </div>
 
           {/* Overall Progress Bar */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Genel İlerleme</span>
+              <span className="text-sm font-medium text-gray-700">{texts.overallProgress}</span>
               <span className="text-sm text-gray-600">{stats.overallProgress}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
@@ -309,7 +371,7 @@ export default function BatchFileUpload({
       {/* File List */}
       {batchFiles.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h4 className="font-medium text-gray-900 mb-4">Dosya Listesi</h4>
+          <h4 className="font-medium text-gray-900 mb-4">{texts.fileList}</h4>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {batchFiles.map((batchFile) => (
               <div
@@ -351,7 +413,7 @@ export default function BatchFileUpload({
                     {/* Processing time */}
                     {batchFile.status === 'completed' && batchFile.processingTime && (
                       <p className="text-xs text-green-600 mt-1">
-                        İşlem süresi: {batchFile.processingTime}ms
+                        {texts.processingTime} {batchFile.processingTime}ms
                       </p>
                     )}
                   </div>
@@ -377,7 +439,7 @@ export default function BatchFileUpload({
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 animate-fade-in">
           <div className="flex items-center space-x-2 mb-3">
             <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />
-            <h4 className="font-medium text-red-900">Bazı Dosyalar Yüklenemedi</h4>
+            <h4 className="font-medium text-red-900">{texts.someFilesFailedUpload}</h4>
           </div>
           <div className="space-y-2">
             {fileRejections.map(({ file, errors }) => (
@@ -389,11 +451,11 @@ export default function BatchFileUpload({
                       <span className="text-red-500 mr-2">•</span>
                       <span>
                         {error.code === 'file-too-large'
-                          ? `Dosya çok büyük (${formatFileSize(file.size)}). Maksimum: ${formatFileSize(maxSize)}`
+                          ? `${texts.fileTooLarge} (${formatFileSize(file.size)}). ${texts.maxSize} ${formatFileSize(maxSize)}`
                           : error.code === 'file-invalid-type'
-                          ? `Desteklenmeyen dosya formatı. Desteklenen formatlar: ${getFileTypesDisplay()}`
+                          ? `${texts.invalidFileType}. ${texts.supportedFormats} ${getFileTypesDisplay()}`
                           : error.code === 'too-many-files'
-                          ? `Çok fazla dosya seçildi. Maksimum: ${maxFiles - batchFiles.length} dosya daha ekleyebilirsiniz`
+                          ? `${texts.tooManyFiles}. ${texts.maxFileCount} ${maxFiles - batchFiles.length} ${texts.maxFilesMore}`
                           : error.message}
                       </span>
                     </li>

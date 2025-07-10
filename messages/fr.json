@@ -1,0 +1,282 @@
+{
+  "common": {
+    "upload": "Télécharger",
+    "download": "Télécharger",
+    "processing": "En cours...",
+    "done": "Terminé",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "retry": "Réessayer",
+    "free": "Gratuit",
+    "secure": "Sécurisé",
+    "fast": "Rapide",
+    "unlimited": "Illimité",
+    "selectFile": "Sélectionner un Fichier",
+    "selectFiles": "Sélectionner des Fichiers",
+    "dropFile": "Déposez le fichier ici",
+    "dragDrop": "ou glissez-déposez",
+    "or": "ou",
+    "fileSize": "Taille du Fichier",
+    "fileName": "Nom du Fichier",
+    "loading": "Chargement...",
+    "back": "Retour",
+    "next": "Suivant",
+    "save": "Enregistrer",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "share": "Partager",
+    "copy": "Copier",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "help": "Aide",
+    "about": "À propos",
+    "contact": "Contact",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "confirm": "Confirmer",
+    "and": "et",
+    "premium": "Premium",
+    "maxSize": "Taille Maximale",
+    "supportedFormats": "Formats Supportés",
+    "maxFiles": "Fichiers Maximum",
+    "securityNotice": "Vos fichiers sont traités en sécurité dans votre navigateur",
+    "fileUploaded": "Fichier Téléchargé avec Succès!",
+    "readyToProcess": "prêt à traiter"
+  },
+
+  "navigation": {
+    "home": "Accueil",
+    "tools": "Outils",
+    "pdfTools": "Outils PDF",
+    "imageTools": "Outils Image",
+    "batchProcessing": "Traitement par Lots",
+    "profile": "Profil",
+    "admin": "Admin",
+    "login": "Se Connecter",
+    "register": "S'inscrire",
+    "logout": "Se Déconnecter",
+    "about": "À propos",
+    "contact": "Contact",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'Utilisation"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "Outils PDF et Image",
+    "menu": "Menu",
+    "logo": "QuickUtil",
+    "login": "Se Connecter",
+    "logout": "Se Déconnecter",
+    "register": "S'inscrire",
+    "close": "Fermer"
+  },
+
+  "footer": {
+    "copyright": "© QuickUtil, Turquie",
+    "allRightsReserved": "Tous droits réservés",
+    "quickLinks": "Liens Rapides",
+    "legal": "Légal",
+    "company": "Entreprise",
+    "support": "Support",
+    "followUs": "Suivez-nous",
+    "newsletter": "Newsletter",
+    "subscribe": "S'abonner",
+    "enterEmail": "Entrez votre adresse e-mail",
+    "tools": "Outils",
+    "aiTools": "Outils IA",
+    "pdfCompress": "Compression PDF",
+    "aiPdfCompress": "IA Compression PDF",
+    "imageCompress": "Compression Image",
+    "aiImageCompress": "IA Compression Image",
+    "batchProcessing": "Traitement par Lots",
+    "aiBatchProcessing": "IA Traitement par Lots",
+    "aiBlog": "IA Blog",
+    "about": "À propos",
+    "aboutUrl": "a-propos",
+    "story": "Notre Histoire",
+    "team": "Équipe",
+    "privacy": "Confidentialité",
+    "privacyUrl": "confidentialite",
+    "cookies": "Cookies",
+    "cookiesUrl": "cookies",
+    "sslSecure": "SSL Sécurisé",
+    "aiSecure": "IA Sécurisé",
+    "aiProcessing": "IA Traitement",
+    "poweredBy": "Propulsé par"
+  },
+
+  "auth": {
+    "login": "Se Connecter",
+    "register": "S'inscrire",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "confirmPassword": "Confirmer le Mot de passe",
+    "forgotPassword": "Mot de passe oublié?",
+    "dontHaveAccount": "Vous n'avez pas de compte?",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "signInWithGoogle": "Se connecter avec Google",
+    "orContinueWith": "Ou continuer avec",
+    "bySigningUp": "En vous inscrivant, vous acceptez nos",
+    "termsOfService": "Conditions d'Utilisation",
+    "privacyPolicy": "Politique de Confidentialité",
+    "emailRequired": "E-mail requis",
+    "passwordRequired": "Mot de passe requis",
+    "firstNameRequired": "Prénom requis",
+    "lastNameRequired": "Nom requis",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "invalidEmail": "E-mail invalide",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+    "loginSuccess": "Connexion réussie",
+    "registerSuccess": "Inscription réussie",
+    "loginError": "Erreur de connexion",
+    "registerError": "Erreur d'inscription",
+    "logoutSuccess": "Déconnexion réussie",
+    "emailVerificationSent": "E-mail de vérification envoyé",
+    "emailNotVerified": "E-mail non vérifié",
+    "verifyEmail": "Vérifier l'e-mail"
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "Traitez vos PDF et images",
+      "subtitle": "Outils de traitement de fichiers gratuits, sécurisés et rapides",
+      "aiSubtitle": "L'intelligence artificielle optimise automatiquement vos fichiers, nous garantissons la meilleure qualité",
+      "cta": "Commencer maintenant",
+      "startButton": "Commencer avec l'IA",
+      "features": ["100% Gratuit", "Traitement Sécurisé", "Résultats Rapides"]
+    },
+    "categories": {
+      "pdfTools": "Outils PDF",
+      "pdfToolsDesc": "Compressez, convertissez et éditez vos fichiers PDF",
+      "imageTools": "Outils Image", 
+      "imageToolsDesc": "Compressez, redimensionnez et éditez vos images",
+      "batchTools": "Traitement par Lots",
+      "batchToolsDesc": "Traitez plusieurs fichiers à la fois"
+    },
+    "features": {
+      "title": "Pourquoi QuickUtil?",
+      "ai": "IA Intégrée",
+      "aiDesc": "Optimisation automatique avec intelligence artificielle",
+      "free": "Entièrement Gratuit",
+      "freeDesc": "Tous les outils IA complètement gratuits",
+      "secure": "100% Sécurisé",
+      "secureDesc": "Protection SSL, suppression automatique",
+      "smart": "Analyse Intelligente",
+      "smartDesc": "L'IA analyse vos fichiers et sélectionne automatiquement les meilleures paramètres",
+      "quality": "Qualité Préservée",
+      "qualityDesc": "Les algorithmes avancés minimisent la perte de qualité"
+    },
+    "aiSection": {
+      "title": "Pourquoi l'IA est-elle importante?",
+      "subtitle": "Notre technologie IA analyse vos fichiers et sélectionne automatiquement les paramètres optimaux",
+      "feature1": "Optimisation Automatique de la Qualité",
+      "feature1Desc": "L'IA analyse le contenu du fichier et sélectionne les paramètres de compression optimaux",
+      "feature2": "Conversion de Format Intelligente",
+      "feature2Desc": "L'IA propose le format et la qualité les plus appropriés pour votre type de fichier",
+      "feature3": "Traitement Rapide",
+      "feature3Desc": "Les algorithmes IA sont 75% plus rapides que les méthodes traditionnelles"
+    }
+  },
+
+  "tools": {
+    "pdfCompress": "Compression PDF IA",
+    "pdfCompressDesc": "IA meilleur équilibre qualité et taille",
+    "pdfConvert": "Conversion PDF IA", 
+    "pdfConvertDesc": "Sélection de format intelligente et optimisation de qualité",
+    "imageCompress": "Compression IA",
+    "imageCompressDesc": "Optimisation d'image intelligente avec IA",
+    "imageResize": "Redimensionnement IA",
+    "imageResizeDesc": "Conservation automatique des proportions et ajustement de qualité",
+    "imageCrop": "Recadrage IA",
+    "imageCropDesc": "Recadrage automatique basé sur la reconnaissance d'objets IA",
+    "imageRotate": "Rotation IA",
+    "imageRotateDesc": "Nivellement automatique et correction de perspective",
+    "imageFormat": "Conversion de Format IA",
+    "imageFormatDesc": "Proposition de format et qualité optimaux"
+  },
+
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Informations Personnelles",
+    "accountSettings": "Paramètres du Compte",
+    "security": "Sécurité",
+    "preferences": "Préférences",
+    "subscription": "Abonnement",
+    "billing": "Facturation",
+    "paymentMethods": "Méthodes de Paiement",
+    "usage": "Utilisation",
+    "activity": "Activité",
+    "files": "Fichiers",
+    "settings": "Paramètres"
+  },
+
+  "admin": {
+    "dashboard": "Tableau de Bord",
+    "users": "Utilisateurs",
+    "analytics": "Analyses",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "logs": "Journaux",
+    "system": "Système",
+    "overview": "Aperçu",
+    "performance": "Performance",
+    "security": "Sécurité",
+    "backup": "Sauvegarde",
+    "maintenance": "Maintenance"
+  },
+
+  "errors": {
+    "general": "Une erreur est survenue",
+    "network": "Erreur de réseau",
+    "notFound": "Page non trouvée",
+    "unauthorized": "Non autorisé",
+    "forbidden": "Interdit",
+    "serverError": "Erreur serveur",
+    "timeout": "Délai d'attente dépassé",
+    "invalidInput": "Entrée invalide",
+    "fileUploadError": "Erreur de téléchargement de fichier",
+    "fileSizeError": "Taille de fichier trop grande",
+    "fileTypeError": "Type de fichier non supporté"
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil - Outils PDF et Image Gratuits avec IA",
+      "description": "Outils de traitement PDF et image gratuits et sécurisés avec intelligence artificielle. Compressez, convertissez et éditez vos fichiers en ligne.",
+      "keywords": "PDF, compression, conversion, outils image, IA, gratuit, sécurisé"
+    },
+    "pdfCompress": {
+      "title": "Compression PDF Gratuite - Réduisez la Taille PDF en Ligne",
+      "description": "Compressez vos fichiers PDF gratuitement sans perte de qualité. Outil de compression PDF rapide et sécurisé.",
+      "keywords": "compression PDF, réduire taille PDF, optimiser PDF"
+    },
+    "imageCompress": {
+      "title": "Compression Image Gratuite - Optimisez vos Images en Ligne",
+      "description": "Compressez vos images JPG, PNG, GIF sans perte de qualité. Outil de compression d'image gratuit et sécurisé.",
+      "keywords": "compression image, optimiser images, réduire taille image"
+    }
+  },
+
+  "legal": {
+    "privacyPolicy": "Politique de Confidentialité",
+    "termsOfService": "Conditions d'Utilisation",
+    "cookiePolicy": "Politique des Cookies",
+    "disclaimer": "Avertissement",
+    "contactUs": "Contactez-nous",
+    "support": "Support",
+    "faq": "FAQ",
+    "help": "Aide"
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "Sélectionner la Langue",
+    "currentLanguage": "Langue Actuelle",
+    "changeLanguage": "Changer de Langue",
+    "preferenceRemembered": "Votre préférence sera mémorisée"
+  }
+} 

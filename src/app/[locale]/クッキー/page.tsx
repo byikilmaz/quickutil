@@ -50,10 +50,10 @@ export default async function CookiePolicyPage({ params }: Props) {
             <div className="text-center">
               <CogIcon className="w-16 h-16 text-orange-600 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                🍪 {t.cookiePolicy.title}
+                🍪 {(t as any)['cookiePolicy.title']}
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {t.cookiePolicy.subtitle}
+                {(t as any)['cookiePolicy.subtitle']}
               </p>
             </div>
           </div>
@@ -65,7 +65,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <WrenchScrewdriverIcon className="w-8 h-8 text-orange-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.cookiePolicy.whatAreCookies}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['cookiePolicy.whatAreCookies']}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
               {finalLocale === 'tr' ? 
@@ -79,7 +79,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <ShieldCheckIcon className="w-8 h-8 text-green-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.cookiePolicy.typesOfCookies}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['cookiePolicy.typesOfCookies']}</h2>
             </div>
             <div className="space-y-6">
               <div className="border-l-4 border-blue-500 pl-6">
@@ -136,7 +136,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <ClockIcon className="w-8 h-8 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.cookiePolicy.cookieManagement}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['cookiePolicy.cookieManagement']}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
               {finalLocale === 'tr' ? 
@@ -164,7 +164,7 @@ export default async function CookiePolicyPage({ params }: Props) {
 
           {/* Third Party Cookies */}
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t.cookiePolicy.thirdParty}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{(t as any)['cookiePolicy.thirdParty']}</h2>
             <p className="text-gray-700 leading-relaxed mb-6">
               {finalLocale === 'tr' ? 
                 'QuickUtil.app, hizmet kalitesini artırmak için güvenilir üçüncü taraf servisleri kullanır:' :
@@ -223,7 +223,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           {/* Contact */}
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              {t.cookiePolicy.contact}
+              {(t as any)['cookiePolicy.contact']}
             </h3>
             <p className="text-gray-700 mb-4">
               {finalLocale === 'tr' ? 

@@ -1,0 +1,282 @@
+{
+  "common": {
+    "upload": "رفع",
+    "download": "تحميل",
+    "processing": "جاري المعالجة...",
+    "done": "تم",
+    "error": "خطأ",
+    "success": "نجح",
+    "cancel": "إلغاء",
+    "retry": "إعادة المحاولة",
+    "free": "مجاني",
+    "secure": "آمن",
+    "fast": "سريع",
+    "unlimited": "غير محدود",
+    "selectFile": "اختيار ملف",
+    "selectFiles": "اختيار ملفات",
+    "dropFile": "أسقط الملف هنا",
+    "dragDrop": "أو اسحب وأسقط",
+    "or": "أو",
+    "fileSize": "حجم الملف",
+    "fileName": "اسم الملف",
+    "loading": "جاري التحميل...",
+    "back": "رجوع",
+    "next": "التالي",
+    "save": "حفظ",
+    "close": "إغلاق",
+    "open": "فتح",
+    "share": "مشاركة",
+    "copy": "نسخ",
+    "delete": "حذف",
+    "edit": "تحرير",
+    "view": "عرض",
+    "help": "مساعدة",
+    "about": "حول",
+    "contact": "اتصال",
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "confirm": "تأكيد",
+    "and": "و",
+    "premium": "بريميوم",
+    "maxSize": "الحد الأقصى للحجم",
+    "supportedFormats": "التنسيقات المدعومة",
+    "maxFiles": "الحد الأقصى للملفات",
+    "securityNotice": "تتم معالجة ملفاتك بأمان في متصفحك",
+    "fileUploaded": "تم رفع الملف بنجاح!",
+    "readyToProcess": "جاهز للمعالجة"
+  },
+
+  "navigation": {
+    "home": "الرئيسية",
+    "tools": "الأدوات",
+    "pdfTools": "أدوات PDF",
+    "imageTools": "أدوات الصور",
+    "batchProcessing": "المعالجة المجمعة",
+    "profile": "الملف الشخصي",
+    "admin": "المدير",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "about": "حول",
+    "contact": "اتصال",
+    "privacy": "الخصوصية",
+    "terms": "شروط الاستخدام"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "أدوات PDF والصور",
+    "menu": "القائمة",
+    "logo": "QuickUtil",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "register": "إنشاء حساب",
+    "close": "إغلاق"
+  },
+
+  "footer": {
+    "copyright": "© QuickUtil، تركيا",
+    "allRightsReserved": "جميع الحقوق محفوظة",
+    "quickLinks": "روابط سريعة",
+    "legal": "قانوني",
+    "company": "الشركة",
+    "support": "الدعم",
+    "followUs": "تابعنا",
+    "newsletter": "النشرة الإخبارية",
+    "subscribe": "اشتراك",
+    "enterEmail": "أدخل عنوان بريدك الإلكتروني",
+    "tools": "الأدوات",
+    "aiTools": "أدوات الذكاء الاصطناعي",
+    "pdfCompress": "ضغط PDF",
+    "aiPdfCompress": "الذكاء الاصطناعي ضغط PDF",
+    "imageCompress": "ضغط الصور",
+    "aiImageCompress": "الذكاء الاصطناعي ضغط الصور",
+    "batchProcessing": "المعالجة المجمعة",
+    "aiBatchProcessing": "الذكاء الاصطناعي المعالجة المجمعة",
+    "aiBlog": "مدونة الذكاء الاصطناعي",
+    "about": "حولنا",
+    "aboutUrl": "حولنا",
+    "story": "قصتنا",
+    "team": "الفريق",
+    "privacy": "الخصوصية",
+    "privacyUrl": "الخصوصية",
+    "cookies": "الكوكيز",
+    "cookiesUrl": "الكوكيز",
+    "sslSecure": "SSL آمن",
+    "aiSecure": "الذكاء الاصطناعي آمن",
+    "aiProcessing": "معالجة الذكاء الاصطناعي",
+    "poweredBy": "مدعوم من"
+  },
+
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "signInWithGoogle": "تسجيل الدخول بـ Google",
+    "orContinueWith": "أو المتابعة مع",
+    "bySigningUp": "بالتسجيل، توافق على",
+    "termsOfService": "شروط الخدمة",
+    "privacyPolicy": "سياسة الخصوصية",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "firstNameRequired": "الاسم الأول مطلوب",
+    "lastNameRequired": "اسم العائلة مطلوب",
+    "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+    "invalidEmail": "بريد إلكتروني غير صالح",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    "loginSuccess": "تم تسجيل الدخول بنجاح",
+    "registerSuccess": "تم إنشاء الحساب بنجاح",
+    "loginError": "خطأ في تسجيل الدخول",
+    "registerError": "خطأ في إنشاء الحساب",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح",
+    "emailVerificationSent": "تم إرسال رسالة التحقق",
+    "emailNotVerified": "البريد الإلكتروني غير محقق",
+    "verifyEmail": "تحقق من البريد الإلكتروني"
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "معالجة ملفات PDF والصور",
+      "subtitle": "أدوات معالجة الملفات المجانية والآمنة والسريعة",
+      "aiSubtitle": "الذكاء الاصطناعي يحسن ملفاتك تلقائياً، نضمن أفضل جودة",
+      "cta": "ابدأ الآن",
+      "startButton": "ابدأ مع الذكاء الاصطناعي",
+      "features": ["100% مجاني", "معالجة آمنة", "نتائج سريعة"]
+    },
+    "categories": {
+      "pdfTools": "أدوات PDF",
+      "pdfToolsDesc": "ضغط وتحويل وتحرير ملفات PDF",
+      "imageTools": "أدوات الصور", 
+      "imageToolsDesc": "ضغط وتغيير حجم وتحرير صورك",
+      "batchTools": "المعالجة المجمعة",
+      "batchToolsDesc": "معالجة ملفات متعددة دفعة واحدة"
+    },
+    "features": {
+      "title": "لماذا QuickUtil؟",
+      "ai": "مدعوم بالذكاء الاصطناعي",
+      "aiDesc": "تحسين تلقائي بالذكاء الاصطناعي",
+      "free": "مجاني تماماً",
+      "freeDesc": "جميع أدوات الذكاء الاصطناعي مجانية تماماً",
+      "secure": "آمن 100%",
+      "secureDesc": "حماية SSL، حذف تلقائي",
+      "smart": "تحليل ذكي",
+      "smartDesc": "الذكاء الاصطناعي يحلل ملفاتك ويختار أفضل الإعدادات تلقائياً",
+      "quality": "الجودة محفوظة",
+      "qualityDesc": "الخوارزميات المتقدمة تقلل فقدان الجودة"
+    },
+    "aiSection": {
+      "title": "لماذا الذكاء الاصطناعي مهم؟",
+      "subtitle": "تقنية الذكاء الاصطناعي تحلل ملفاتك وتختار الإعدادات المثلى تلقائياً",
+      "feature1": "تحسين الجودة التلقائي",
+      "feature1Desc": "الذكاء الاصطناعي يحلل محتوى الملف ويختار إعدادات الضغط المثلى",
+      "feature2": "تحويل التنسيق الذكي",
+      "feature2Desc": "الذكاء الاصطناعي يقترح التنسيق والجودة الأنسب لنوع ملفك",
+      "feature3": "معالجة سريعة",
+      "feature3Desc": "خوارزميات الذكاء الاصطناعي أسرع بـ75% من الطرق التقليدية"
+    }
+  },
+
+  "tools": {
+    "pdfCompress": "ضغط PDF بالذكاء الاصطناعي",
+    "pdfCompressDesc": "أفضل توازن بين الجودة والحجم بالذكاء الاصطناعي",
+    "pdfConvert": "تحويل PDF بالذكاء الاصطناعي", 
+    "pdfConvertDesc": "اختيار التنسيق الذكي وتحسين الجودة",
+    "imageCompress": "ضغط بالذكاء الاصطناعي",
+    "imageCompressDesc": "تحسين الصور الذكي بالذكاء الاصطناعي",
+    "imageResize": "تغيير الحجم بالذكاء الاصطناعي",
+    "imageResizeDesc": "الحفاظ على النسبة التلقائي وضبط الجودة",
+    "imageCrop": "القص بالذكاء الاصطناعي",
+    "imageCropDesc": "القص التلقائي بناءً على التعرف على الكائنات بالذكاء الاصطناعي",
+    "imageRotate": "الدوران بالذكاء الاصطناعي",
+    "imageRotateDesc": "التسوية التلقائية وتصحيح المنظور",
+    "imageFormat": "تحويل التنسيق بالذكاء الاصطناعي",
+    "imageFormatDesc": "اقتراح التنسيق والجودة المثلى"
+  },
+
+  "profile": {
+    "title": "الملف الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "accountSettings": "إعدادات الحساب",
+    "security": "الأمان",
+    "preferences": "التفضيلات",
+    "subscription": "الاشتراك",
+    "billing": "الفوترة",
+    "paymentMethods": "طرق الدفع",
+    "usage": "الاستخدام",
+    "activity": "النشاط",
+    "files": "الملفات",
+    "settings": "الإعدادات"
+  },
+
+  "admin": {
+    "dashboard": "لوحة التحكم",
+    "users": "المستخدمون",
+    "analytics": "التحليلات",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "logs": "السجلات",
+    "system": "النظام",
+    "overview": "نظرة عامة",
+    "performance": "الأداء",
+    "security": "الأمان",
+    "backup": "النسخ الاحتياطي",
+    "maintenance": "الصيانة"
+  },
+
+  "errors": {
+    "general": "حدث خطأ",
+    "network": "خطأ في الشبكة",
+    "notFound": "الصفحة غير موجودة",
+    "unauthorized": "غير مخول",
+    "forbidden": "محظور",
+    "serverError": "خطأ في الخادم",
+    "timeout": "انتهت مهلة الانتظار",
+    "invalidInput": "إدخال غير صحيح",
+    "fileUploadError": "خطأ في رفع الملف",
+    "fileSizeError": "حجم الملف كبير جداً",
+    "fileTypeError": "نوع الملف غير مدعوم"
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil - أدوات PDF والصور المجانية مع الذكاء الاصطناعي",
+      "description": "أدوات معالجة PDF والصور المجانية والآمنة مع الذكاء الاصطناعي. ضغط وتحويل وتحرير ملفاتك أونلاين.",
+      "keywords": "PDF، ضغط، تحويل، أدوات الصور، ذكاء اصطناعي، مجاني، آمن"
+    },
+    "pdfCompress": {
+      "title": "ضغط PDF مجاني - تقليل حجم PDF أونلاين",
+      "description": "ضغط ملفات PDF مجاناً بدون فقدان الجودة. أداة ضغط PDF سريعة وآمنة.",
+      "keywords": "ضغط PDF، تقليل حجم PDF، تحسين PDF"
+    },
+    "imageCompress": {
+      "title": "ضغط الصور مجاني - حسن صورك أونلاين",
+      "description": "ضغط صور JPG، PNG، GIF بدون فقدان الجودة. أداة ضغط صور مجانية وآمنة.",
+      "keywords": "ضغط الصور، تحسين الصور، تقليل حجم الصور"
+    }
+  },
+
+  "legal": {
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsOfService": "شروط الخدمة",
+    "cookiePolicy": "سياسة الكوكيز",
+    "disclaimer": "إخلاء مسؤولية",
+    "contactUs": "اتصل بنا",
+    "support": "الدعم",
+    "faq": "الأسئلة الشائعة",
+    "help": "المساعدة"
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "اختيار اللغة",
+    "currentLanguage": "اللغة الحالية",
+    "changeLanguage": "تغيير اللغة",
+    "preferenceRemembered": "سيتم تذكر تفضيلك"
+  }
+} 

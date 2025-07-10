@@ -58,7 +58,7 @@ export default function ProfilePage() {
 
       // Activities
       if (activitiesResult.success && activitiesResult.data) {
-        setActivities(activitiesResult.data.items);
+        setActivities(activitiesResul(t as any)['data.items']);
       } else {
         console.error('Error loading activities:', activitiesResult.error);
       }

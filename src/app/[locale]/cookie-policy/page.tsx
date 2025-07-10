@@ -29,10 +29,10 @@ export default async function CookiePolicyPage({ params }: Props) {
             <div className="text-center">
               <CogIcon className="w-16 h-16 text-orange-600 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                🍪 {t.cookiePolicy.title}
+                🍪 {(t as any)['cookiePolicy.title']}
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {t.cookiePolicy.subtitle}
+                {(t as any)['cookiePolicy.subtitle']}
               </p>
             </div>
           </div>
@@ -45,7 +45,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 mb-8">
             <div className="flex items-center mb-6">
               <WrenchScrewdriverIcon className="w-8 h-8 text-orange-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.cookiePolicy.whatAreCookies}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['cookiePolicy.whatAreCookies']}</h2>
             </div>
             
             <p className="text-gray-700 leading-relaxed mb-6">
@@ -64,7 +64,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 mb-8">
             <div className="flex items-center mb-6">
               <ShieldCheckIcon className="w-8 h-8 text-green-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.cookiePolicy.typesOfCookies}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['cookiePolicy.typesOfCookies']}</h2>
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
@@ -170,7 +170,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 mb-8">
             <div className="flex items-center mb-6">
               <ClockIcon className="w-8 h-8 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.cookiePolicy.cookieManagement}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['cookiePolicy.cookieManagement']}</h2>
             </div>
             
             <div className="bg-blue-50 rounded-lg p-6 mb-6">
@@ -211,7 +211,7 @@ export default async function CookiePolicyPage({ params }: Props) {
           {/* Contact */}
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">📧 {t.cookiePolicy.contact}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">📧 {(t as any)['cookiePolicy.contact']}</h2>
               <p className="text-lg text-gray-600 mb-6">
                 {locale === 'tr' ? 'Çerez politikası ile ilgili sorularınız için' :
                  locale === 'en' ? 'For questions about our cookie policy' :

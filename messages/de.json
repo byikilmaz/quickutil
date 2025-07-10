@@ -1,0 +1,282 @@
+{
+  "common": {
+    "upload": "Hochladen",
+    "download": "Herunterladen",
+    "processing": "Verarbeitung...",
+    "done": "Fertig",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "retry": "Wiederholen",
+    "free": "Kostenlos",
+    "secure": "Sicher",
+    "fast": "Schnell",
+    "unlimited": "Unbegrenzt",
+    "selectFile": "Datei Auswählen",
+    "selectFiles": "Dateien Auswählen",
+    "dropFile": "Datei hier ablegen",
+    "dragDrop": "oder ziehen und ablegen",
+    "or": "oder",
+    "fileSize": "Dateigröße",
+    "fileName": "Dateiname",
+    "loading": "Laden...",
+    "back": "Zurück",
+    "next": "Weiter",
+    "save": "Speichern",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "share": "Teilen",
+    "copy": "Kopieren",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "view": "Anzeigen",
+    "help": "Hilfe",
+    "about": "Über",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "Bedingungen",
+    "confirm": "Bestätigen",
+    "and": "und",
+    "premium": "Premium",
+    "maxSize": "Maximale Größe",
+    "supportedFormats": "Unterstützte Formate",
+    "maxFiles": "Maximale Dateien",
+    "securityNotice": "Ihre Dateien werden sicher in Ihrem Browser verarbeitet",
+    "fileUploaded": "Datei erfolgreich hochgeladen!",
+    "readyToProcess": "bereit zur Verarbeitung"
+  },
+
+  "navigation": {
+    "home": "Startseite",
+    "tools": "Werkzeuge",
+    "pdfTools": "PDF-Werkzeuge",
+    "imageTools": "Bild-Werkzeuge",
+    "batchProcessing": "Stapelverarbeitung",
+    "profile": "Profil",
+    "admin": "Admin",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "about": "Über",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "PDF- und Bild-Werkzeuge",
+    "menu": "Menü",
+    "logo": "QuickUtil",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "register": "Registrieren",
+    "close": "Schließen"
+  },
+
+  "footer": {
+    "copyright": "© QuickUtil, Türkei",
+    "allRightsReserved": "Alle Rechte vorbehalten",
+    "quickLinks": "Schnelle Links",
+    "legal": "Rechtliches",
+    "company": "Unternehmen",
+    "support": "Support",
+    "followUs": "Folgen Sie uns",
+    "newsletter": "Newsletter",
+    "subscribe": "Abonnieren",
+    "enterEmail": "E-Mail-Adresse eingeben",
+    "tools": "Werkzeuge",
+    "aiTools": "KI-Werkzeuge",
+    "pdfCompress": "PDF-Komprimierung",
+    "aiPdfCompress": "KI PDF-Komprimierung",
+    "imageCompress": "Bildkomprimierung",
+    "aiImageCompress": "KI Bildkomprimierung",
+    "batchProcessing": "Stapelverarbeitung",
+    "aiBatchProcessing": "KI Stapelverarbeitung",
+    "aiBlog": "KI Blog",
+    "about": "Über uns",
+    "aboutUrl": "uber-uns",
+    "story": "Unsere Geschichte",
+    "team": "Team",
+    "privacy": "Datenschutz",
+    "privacyUrl": "datenschutz",
+    "cookies": "Cookies",
+    "cookiesUrl": "cookies",
+    "sslSecure": "SSL Sicher",
+    "aiSecure": "KI Sicher",
+    "aiProcessing": "KI Verarbeitung",
+    "poweredBy": "Bereitgestellt von"
+  },
+
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "confirmPassword": "Passwort bestätigen",
+    "forgotPassword": "Passwort vergessen?",
+    "dontHaveAccount": "Haben Sie kein Konto?",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+    "signInWithGoogle": "Mit Google anmelden",
+    "orContinueWith": "Oder fortfahren mit",
+    "bySigningUp": "Durch die Registrierung stimmen Sie unseren",
+    "termsOfService": "Nutzungsbedingungen",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "emailRequired": "E-Mail erforderlich",
+    "passwordRequired": "Passwort erforderlich",
+    "firstNameRequired": "Vorname erforderlich",
+    "lastNameRequired": "Nachname erforderlich",
+    "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+    "invalidEmail": "Ungültige E-Mail",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+    "loginSuccess": "Anmeldung erfolgreich",
+    "registerSuccess": "Registrierung erfolgreich",
+    "loginError": "Anmeldefehler",
+    "registerError": "Registrierungsfehler",
+    "logoutSuccess": "Abmeldung erfolgreich",
+    "emailVerificationSent": "E-Mail-Bestätigung gesendet",
+    "emailNotVerified": "E-Mail nicht bestätigt",
+    "verifyEmail": "E-Mail bestätigen"
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "Verarbeiten Sie Ihre PDFs und Bilder",
+      "subtitle": "Kostenlose, sichere und schnelle Dateiverarbeitungstools",
+      "aiSubtitle": "Künstliche Intelligenz optimiert Ihre Dateien automatisch und garantiert beste Qualität",
+      "cta": "Jetzt starten",
+      "startButton": "Mit KI starten",
+      "features": ["100% Kostenlos", "Sichere Verarbeitung", "Schnelle Ergebnisse"]
+    },
+    "categories": {
+      "pdfTools": "PDF-Werkzeuge",
+      "pdfToolsDesc": "Komprimieren, konvertieren und bearbeiten Sie Ihre PDF-Dateien",
+      "imageTools": "Bild-Werkzeuge", 
+      "imageToolsDesc": "Komprimieren, verkleinern und bearbeiten Sie Ihre Bilder",
+      "batchTools": "Stapelverarbeitung",
+      "batchToolsDesc": "Verarbeiten Sie mehrere Dateien gleichzeitig"
+    },
+    "features": {
+      "title": "Warum QuickUtil?",
+      "ai": "KI-Unterstützt",
+      "aiDesc": "Automatische Optimierung mit künstlicher Intelligenz",
+      "free": "Völlig Kostenlos",
+      "freeDesc": "Alle KI-Tools völlig kostenlos",
+      "secure": "100% Sicher",
+      "secureDesc": "SSL-Schutz, automatische Löschung",
+      "smart": "Intelligente Analyse",
+      "smartDesc": "KI analysiert Ihre Dateien und wählt automatisch die besten Einstellungen",
+      "quality": "Qualität Erhalten",
+      "qualityDesc": "Erweiterte Algorithmen minimieren Qualitätsverlust"
+    },
+    "aiSection": {
+      "title": "Warum ist KI wichtig?",
+      "subtitle": "Unsere KI-Technologie analysiert Ihre Dateien und wählt automatisch die optimalen Einstellungen",
+      "feature1": "Automatische Qualitätsoptimierung",
+      "feature1Desc": "KI analysiert Dateiinhalte und wählt optimale Komprimierungseinstellungen",
+      "feature2": "Intelligente Formatkonvertierung",
+      "feature2Desc": "KI schlägt das am besten geeignete Format und die beste Qualität für Ihren Dateityp vor",
+      "feature3": "Schnelle Verarbeitung",
+      "feature3Desc": "KI-Algorithmen sind 75% schneller als herkömmliche Methoden"
+    }
+  },
+
+  "tools": {
+    "pdfCompress": "KI PDF-Komprimierung",
+    "pdfCompressDesc": "KI beste Balance zwischen Qualität und Größe",
+    "pdfConvert": "KI PDF-Konvertierung", 
+    "pdfConvertDesc": "Intelligente Formatauswahl und Qualitätsoptimierung",
+    "imageCompress": "KI-Komprimierung",
+    "imageCompressDesc": "Intelligente Bildoptimierung mit KI",
+    "imageResize": "KI-Größenänderung",
+    "imageResizeDesc": "Automatische Seitenverhältnis-Beibehaltung und Qualitätsanpassung",
+    "imageCrop": "KI-Zuschneiden",
+    "imageCropDesc": "Automatisches Zuschneiden basierend auf KI-Objekterkennung",
+    "imageRotate": "KI-Drehung",
+    "imageRotateDesc": "Automatische Begradigung und Perspektivkorrektur",
+    "imageFormat": "KI-Formatkonvertierung",
+    "imageFormatDesc": "Vorschlag für optimales Format und Qualität"
+  },
+
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Persönliche Informationen",
+    "accountSettings": "Kontoeinstellungen",
+    "security": "Sicherheit",
+    "preferences": "Einstellungen",
+    "subscription": "Abonnement",
+    "billing": "Abrechnung",
+    "paymentMethods": "Zahlungsmethoden",
+    "usage": "Nutzung",
+    "activity": "Aktivität",
+    "files": "Dateien",
+    "settings": "Einstellungen"
+  },
+
+  "admin": {
+    "dashboard": "Dashboard",
+    "users": "Benutzer",
+    "analytics": "Analysen",
+    "reports": "Berichte",
+    "settings": "Einstellungen",
+    "logs": "Protokolle",
+    "system": "System",
+    "overview": "Übersicht",
+    "performance": "Leistung",
+    "security": "Sicherheit",
+    "backup": "Backup",
+    "maintenance": "Wartung"
+  },
+
+  "errors": {
+    "general": "Ein Fehler ist aufgetreten",
+    "network": "Netzwerkfehler",
+    "notFound": "Seite nicht gefunden",
+    "unauthorized": "Nicht autorisiert",
+    "forbidden": "Verboten",
+    "serverError": "Serverfehler",
+    "timeout": "Zeitüberschreitung",
+    "invalidInput": "Ungültige Eingabe",
+    "fileUploadError": "Datei-Upload-Fehler",
+    "fileSizeError": "Dateigröße zu groß",
+    "fileTypeError": "Dateityp nicht unterstützt"
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil - Kostenlose PDF- und Bild-Tools mit KI",
+      "description": "Kostenlose und sichere PDF- und Bildverarbeitungstools mit künstlicher Intelligenz. Komprimieren, konvertieren und bearbeiten Sie Ihre Dateien online.",
+      "keywords": "PDF, Komprimierung, Konvertierung, Bildtools, KI, kostenlos, sicher"
+    },
+    "pdfCompress": {
+      "title": "Kostenlose PDF-Komprimierung - PDF-Größe Online Reduzieren",
+      "description": "Komprimieren Sie Ihre PDF-Dateien kostenlos ohne Qualitätsverlust. Schnelles und sicheres PDF-Komprimierungstool.",
+      "keywords": "PDF-Komprimierung, PDF-Größe reduzieren, PDF optimieren"
+    },
+    "imageCompress": {
+      "title": "Kostenlose Bildkomprimierung - Optimieren Sie Ihre Bilder Online",
+      "description": "Komprimieren Sie Ihre JPG-, PNG-, GIF-Bilder ohne Qualitätsverlust. Kostenloses und sicheres Bildkomprimierungstool.",
+      "keywords": "Bildkomprimierung, Bilder optimieren, Bildgröße reduzieren"
+    }
+  },
+
+  "legal": {
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen",
+    "cookiePolicy": "Cookie-Richtlinie",
+    "disclaimer": "Haftungsausschluss",
+    "contactUs": "Kontaktieren Sie uns",
+    "support": "Support",
+    "faq": "FAQ",
+    "help": "Hilfe"
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "Sprache Auswählen",
+    "currentLanguage": "Aktuelle Sprache",
+    "changeLanguage": "Sprache Ändern",
+    "preferenceRemembered": "Ihre Präferenz wird gespeichert"
+  }
+} 

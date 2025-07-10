@@ -92,7 +92,7 @@ export default function RootLayout({
                 
                 // Listen for messages from service worker
                 navigator.serviceWorker.addEventListener('message', (event) => {
-                  if (event.data && event.data.type === 'CACHE_CLEARED') {
+                  if (event.data && even(t as any)['data.type'] === 'CACHE_CLEARED') {
                     window.location.reload();
                   }
                 });
@@ -121,7 +121,7 @@ export default function RootLayout({
                   script.onerror = function() {
                     console.log('AdSense script failed to load');
                   };
-                  document.head.appendChild(script);
+                  documen(t as any)['head.appendChild'](script);
                 }
               })();
             `,

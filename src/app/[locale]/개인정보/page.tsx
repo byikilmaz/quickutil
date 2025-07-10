@@ -52,10 +52,10 @@ export default async function PrivacyPage({ params }: Props) {
             <div className="text-center">
               <ShieldCheckIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                🔒 {t.privacy.title}
+                🔒 {(t as any)['privacy.title']}
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {t.privacy.subtitle}
+                {(t as any)['privacy.subtitle']}
               </p>
             </div>
           </div>
@@ -67,7 +67,7 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <DocumentTextIcon className="w-8 h-8 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.privacy.dataController}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.dataController']}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
               {finalLocale === 'tr' ? 
@@ -81,7 +81,7 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <UserCircleIcon className="w-8 h-8 text-green-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.privacy.collectedData}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.collectedData']}</h2>
             </div>
             <div className="space-y-4">
               <div>
@@ -113,7 +113,7 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <ClockIcon className="w-8 h-8 text-orange-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.privacy.processingPurpose}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.processingPurpose']}</h2>
             </div>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start">
@@ -151,7 +151,7 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <LockClosedIcon className="w-8 h-8 text-red-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.privacy.dataSecurity}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.dataSecurity']}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
               {finalLocale === 'tr' ? 
@@ -186,7 +186,7 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <ExclamationTriangleIcon className="w-8 h-8 text-purple-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{t.privacy.userRights}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.userRights']}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
               {finalLocale === 'tr' ? 

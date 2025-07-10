@@ -1,0 +1,282 @@
+{
+  "common": {
+    "upload": "업로드",
+    "download": "다운로드",
+    "processing": "처리 중...",
+    "done": "완료",
+    "error": "오류",
+    "success": "성공",
+    "cancel": "취소",
+    "retry": "다시 시도",
+    "free": "무료",
+    "secure": "보안",
+    "fast": "빠름",
+    "unlimited": "무제한",
+    "selectFile": "파일 선택",
+    "selectFiles": "파일 선택",
+    "dropFile": "파일을 여기에 드롭하세요",
+    "dragDrop": "또는 드래그 앤 드롭",
+    "or": "또는",
+    "fileSize": "파일 크기",
+    "fileName": "파일 이름",
+    "loading": "로딩 중...",
+    "back": "뒤로",
+    "next": "다음",
+    "save": "저장",
+    "close": "닫기",
+    "open": "열기",
+    "share": "공유",
+    "copy": "복사",
+    "delete": "삭제",
+    "edit": "편집",
+    "view": "보기",
+    "help": "도움말",
+    "about": "정보",
+    "contact": "연락처",
+    "privacy": "개인정보보호",
+    "terms": "이용약관",
+    "confirm": "확인",
+    "and": "그리고",
+    "premium": "프리미엄",
+    "maxSize": "최대 크기",
+    "supportedFormats": "지원되는 형식",
+    "maxFiles": "최대 파일 수",
+    "securityNotice": "파일은 브라우저에서 안전하게 처리됩니다",
+    "fileUploaded": "파일 업로드가 완료되었습니다!",
+    "readyToProcess": "처리 준비 완료"
+  },
+
+  "navigation": {
+    "home": "홈",
+    "tools": "도구",
+    "pdfTools": "PDF 도구",
+    "imageTools": "이미지 도구",
+    "batchProcessing": "배치 처리",
+    "profile": "프로필",
+    "admin": "관리자",
+    "login": "로그인",
+    "register": "회원가입",
+    "logout": "로그아웃",
+    "about": "정보",
+    "contact": "연락처",
+    "privacy": "개인정보보호",
+    "terms": "이용약관"
+  },
+
+  "header": {
+    "brand": "QuickUtil",
+    "tagline": "PDF 및 이미지 도구",
+    "menu": "메뉴",
+    "logo": "QuickUtil",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "register": "회원가입",
+    "close": "닫기"
+  },
+
+  "footer": {
+    "copyright": "© QuickUtil, 터키",
+    "allRightsReserved": "모든 권리 보유",
+    "quickLinks": "빠른 링크",
+    "legal": "법적 사항",
+    "company": "회사",
+    "support": "지원",
+    "followUs": "팔로우",
+    "newsletter": "뉴스레터",
+    "subscribe": "구독",
+    "enterEmail": "이메일 주소 입력",
+    "tools": "도구",
+    "aiTools": "AI 도구",
+    "pdfCompress": "PDF 압축",
+    "aiPdfCompress": "AI PDF 압축",
+    "imageCompress": "이미지 압축",
+    "aiImageCompress": "AI 이미지 압축",
+    "batchProcessing": "배치 처리",
+    "aiBatchProcessing": "AI 배치 처리",
+    "aiBlog": "AI 블로그",
+    "about": "회사 소개",
+    "aboutUrl": "회사소개",
+    "story": "우리의 이야기",
+    "team": "팀",
+    "privacy": "개인정보보호",
+    "privacyUrl": "개인정보보호",
+    "cookies": "쿠키",
+    "cookiesUrl": "쿠키",
+    "sslSecure": "SSL 보호",
+    "aiSecure": "AI 보호",
+    "aiProcessing": "AI 처리",
+    "poweredBy": "powered by"
+  },
+
+  "auth": {
+    "login": "로그인",
+    "register": "회원가입",
+    "email": "이메일",
+    "password": "비밀번호",
+    "firstName": "이름",
+    "lastName": "성",
+    "confirmPassword": "비밀번호 확인",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "dontHaveAccount": "계정이 없으신가요?",
+    "alreadyHaveAccount": "이미 계정이 있으신가요?",
+    "signInWithGoogle": "Google로 로그인",
+    "orContinueWith": "또는 계속",
+    "bySigningUp": "회원가입하면 다음에 동의하는 것입니다",
+    "termsOfService": "이용약관",
+    "privacyPolicy": "개인정보보호정책",
+    "emailRequired": "이메일이 필요합니다",
+    "passwordRequired": "비밀번호가 필요합니다",
+    "firstNameRequired": "이름이 필요합니다",
+    "lastNameRequired": "성이 필요합니다",
+    "passwordsDoNotMatch": "비밀번호가 일치하지 않습니다",
+    "invalidEmail": "유효하지 않은 이메일",
+    "passwordTooShort": "비밀번호는 6자 이상이어야 합니다",
+    "loginSuccess": "로그인 성공",
+    "registerSuccess": "회원가입 성공",
+    "loginError": "로그인 오류",
+    "registerError": "회원가입 오류",
+    "logoutSuccess": "로그아웃 성공",
+    "emailVerificationSent": "확인 이메일이 전송되었습니다",
+    "emailNotVerified": "이메일이 확인되지 않았습니다",
+    "verifyEmail": "이메일 확인"
+  },
+
+  "homepage": {
+    "hero": {
+      "title": "PDF 및 이미지 처리",
+      "subtitle": "무료, 안전, 빠른 파일 처리 도구",
+      "aiSubtitle": "인공지능이 파일을 자동으로 최적화하여 최고 품질을 보장합니다",
+      "cta": "지금 시작",
+      "startButton": "AI로 시작",
+      "features": ["100% 무료", "안전한 처리", "빠른 결과"]
+    },
+    "categories": {
+      "pdfTools": "PDF 도구",
+      "pdfToolsDesc": "PDF 파일 압축, 변환, 편집",
+      "imageTools": "이미지 도구",
+      "imageToolsDesc": "이미지 압축, 크기 조정, 편집",
+      "batchTools": "배치 처리",
+      "batchToolsDesc": "여러 파일을 한 번에 처리"
+    },
+    "features": {
+      "title": "왜 QuickUtil인가?",
+      "ai": "AI 탑재",
+      "aiDesc": "인공지능을 통한 자동 최적화",
+      "free": "완전 무료",
+      "freeDesc": "모든 AI 도구가 완전 무료",
+      "secure": "100% 안전",
+      "secureDesc": "SSL 보호, 자동 삭제",
+      "smart": "스마트 분석",
+      "smartDesc": "AI가 파일을 분석하고 최적의 설정을 자동 선택",
+      "quality": "품질 유지",
+      "qualityDesc": "고급 알고리즘으로 품질 저하 최소화"
+    },
+    "aiSection": {
+      "title": "왜 AI가 중요한가?",
+      "subtitle": "AI 기술이 파일을 분석하고 최적의 설정을 자동 선택",
+      "feature1": "자동 품질 최적화",
+      "feature1Desc": "AI가 파일 내용을 분석하고 최적의 압축 설정을 선택",
+      "feature2": "스마트 형식 변환",
+      "feature2Desc": "AI가 파일 타입에 최적의 형식과 품질을 제안",
+      "feature3": "빠른 처리",
+      "feature3Desc": "AI 알고리즘은 기존 방법보다 75% 더 빠름"
+    }
+  },
+
+  "tools": {
+    "pdfCompress": "AI PDF 압축",
+    "pdfCompressDesc": "AI 최고의 품질과 크기 균형",
+    "pdfConvert": "AI PDF 변환",
+    "pdfConvertDesc": "스마트 형식 선택 및 품질 최적화",
+    "imageCompress": "AI 압축",
+    "imageCompressDesc": "AI를 통한 스마트 이미지 최적화",
+    "imageResize": "AI 크기 조정",
+    "imageResizeDesc": "자동 종횡비 유지 및 품질 조정",
+    "imageCrop": "AI 자르기",
+    "imageCropDesc": "AI 객체 인식을 통한 자동 자르기",
+    "imageRotate": "AI 회전",
+    "imageRotateDesc": "자동 수평 조정 및 원근 보정",
+    "imageFormat": "AI 형식 변환",
+    "imageFormatDesc": "최적의 형식과 품질 제안"
+  },
+
+  "profile": {
+    "title": "프로필",
+    "personalInfo": "개인 정보",
+    "accountSettings": "계정 설정",
+    "security": "보안",
+    "preferences": "환경설정",
+    "subscription": "구독",
+    "billing": "청구",
+    "paymentMethods": "결제 수단",
+    "usage": "사용량",
+    "activity": "활동",
+    "files": "파일",
+    "settings": "설정"
+  },
+
+  "admin": {
+    "dashboard": "대시보드",
+    "users": "사용자",
+    "analytics": "분석",
+    "reports": "보고서",
+    "settings": "설정",
+    "logs": "로그",
+    "system": "시스템",
+    "overview": "개요",
+    "performance": "성능",
+    "security": "보안",
+    "backup": "백업",
+    "maintenance": "유지보수"
+  },
+
+  "errors": {
+    "general": "오류가 발생했습니다",
+    "network": "네트워크 오류",
+    "notFound": "페이지를 찾을 수 없습니다",
+    "unauthorized": "인증되지 않음",
+    "forbidden": "금지됨",
+    "serverError": "서버 오류",
+    "timeout": "시간 초과",
+    "invalidInput": "유효하지 않은 입력",
+    "fileUploadError": "파일 업로드 오류",
+    "fileSizeError": "파일 크기가 너무 큽니다",
+    "fileTypeError": "지원되지 않는 파일 형식"
+  },
+
+  "seo": {
+    "home": {
+      "title": "QuickUtil - AI를 사용한 무료 PDF 및 이미지 도구",
+      "description": "인공지능을 사용한 무료이고 안전한 PDF 및 이미지 처리 도구. 온라인으로 파일을 압축, 변환, 편집하세요.",
+      "keywords": "PDF, 압축, 변환, 이미지 도구, AI, 무료, 안전"
+    },
+    "pdfCompress": {
+      "title": "무료 PDF 압축 - 온라인으로 PDF 크기 줄이기",
+      "description": "품질 손실 없이 무료로 PDF 파일을 압축하세요. 빠르고 안전한 PDF 압축 도구.",
+      "keywords": "PDF 압축, PDF 크기 줄이기, PDF 최적화"
+    },
+    "imageCompress": {
+      "title": "무료 이미지 압축 - 온라인으로 이미지 최적화",
+      "description": "품질 손실 없이 JPG, PNG, GIF 이미지를 압축하세요. 무료이고 안전한 이미지 압축 도구.",
+      "keywords": "이미지 압축, 이미지 최적화, 이미지 크기 줄이기"
+    }
+  },
+
+  "legal": {
+    "privacyPolicy": "개인정보보호정책",
+    "termsOfService": "이용약관",
+    "cookiePolicy": "쿠키 정책",
+    "disclaimer": "면책조항",
+    "contactUs": "연락처",
+    "support": "지원",
+    "faq": "자주 묻는 질문",
+    "help": "도움말"
+  },
+
+  "languageSwitcher": {
+    "selectLanguage": "언어 선택",
+    "currentLanguage": "현재 언어",
+    "changeLanguage": "언어 변경",
+    "preferenceRemembered": "설정이 기억됩니다"
+  }
+} 

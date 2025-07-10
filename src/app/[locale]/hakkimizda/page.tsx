@@ -97,10 +97,10 @@ export default async function AboutPage({ params }: Props) {
             <div className="text-center">
               <HeartIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                💙 {t.about.title}
+                💙 {(t as any)['about.title']}
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {t.about.subtitle}
+                {(t as any)['about.subtitle']}
               </p>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default async function AboutPage({ params }: Props) {
             
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">{t.about.mission}</h3>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4">{(t as any)['about.mission']}</h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
                   {locale === 'tr' ? 'QuickUtil.app olarak misyonumuz, dünya çapında kullanıcılara en hızlı, güvenli ve kullanıcı dostu dosya işleme araçlarını tamamen ücretsiz olarak sunmaktır.' : 
                    locale === 'en' ? 'As QuickUtil.app, our mission is to provide the fastest, most secure and user-friendly file processing tools to users worldwide, completely free of charge.' :
@@ -139,7 +139,7 @@ export default async function AboutPage({ params }: Props) {
                    'QuickUtil.app으로서, 전 세계 사용자에게 가장 빠르고 안전하며 사용자 친화적인 파일 처리 도구를 완전 무료로 제공하는 것이 우리의 사명입니다.'}
                 </p>
                 
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">{t.about.vision}</h3>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4">{(t as any)['about.vision']}</h3>
                 <p className="text-gray-700 leading-relaxed">
                   {locale === 'tr' ? 'Dijital dünyada dosya yönetiminin standartlarını belirleyen, güvenilir ve inovatif çözümler sunan global platform olmak vizyonumuzdur.' :
                    locale === 'en' ? 'Our vision is to become a global platform that sets the standards for file management in the digital world and offers reliable and innovative solutions.' :
@@ -153,7 +153,7 @@ export default async function AboutPage({ params }: Props) {
               </div>
               
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">🏢 {t.about.companyInfo}</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">🏢 {(t as any)['about.companyInfo']}</h3>
                 <div className="space-y-3 text-gray-700">
                   <p><strong>Platform:</strong> QuickUtil.app</p>
                   <p><strong>{locale === 'tr' ? 'Kuruluş' : locale === 'en' ? 'Founded' : locale === 'es' ? 'Fundado' : locale === 'fr' ? 'Fondé' : locale === 'de' ? 'Gegründet' : locale === 'ar' ? 'تأسست' : locale === 'ja' ? '設立' : '설립'}:</strong> 2024</p>
@@ -168,7 +168,7 @@ export default async function AboutPage({ params }: Props) {
           {/* Statistics */}
           <div className="max-w-6xl mx-auto mb-12">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 {t.about.statistics}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 {(t as any)['about.statistics']}</h2>
               <p className="text-lg text-gray-600">
                 {locale === 'tr' ? 'Platformumuzun büyüyen ekosistemi' : 
                  locale === 'en' ? 'Our growing platform ecosystem' :
@@ -197,7 +197,7 @@ export default async function AboutPage({ params }: Props) {
           {/* Team Values */}
           <div className="max-w-6xl mx-auto mb-12">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 {t.about.values}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 {(t as any)['about.values']}</h2>
               <p className="text-lg text-gray-600">
                 {locale === 'tr' ? 'Bizi özel kılan temel prensiplerimiz' :
                  locale === 'en' ? 'The core principles that make us special' :
@@ -321,7 +321,7 @@ export default async function AboutPage({ params }: Props) {
           {/* Contact */}
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-12">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">📞 {t.about.contact}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">📞 {(t as any)['about.contact']}</h2>
               <p className="text-lg text-gray-600">
                 {locale === 'tr' ? 'Size nasıl yardımcı olabiliriz?' :
                  locale === 'en' ? 'How can we help you?' :
