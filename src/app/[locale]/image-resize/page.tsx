@@ -162,6 +162,14 @@ function InteractiveResizeBox({
   const previewWidth = width || originalDimensions.width;
   const previewHeight = height || originalDimensions.height;
   
+  // Calculate overlay position and dimensions
+  const overlayWidthPercent = (previewWidth / originalDimensions.width) * 100;
+  const overlayHeightPercent = (previewHeight / originalDimensions.height) * 100;
+  
+  // Center the overlay if dimensions are smaller than original
+  const overlayLeftPercent = (100 - overlayWidthPercent) / 2;
+  const overlayTopPercent = (100 - overlayHeightPercent) / 2;
+  
   return (
     <div 
       ref={containerRef}
@@ -179,10 +187,12 @@ function InteractiveResizeBox({
         
         {/* Interactive Resize Overlay */}
         <div 
-          className="absolute top-0 left-0 border-2 border-purple-500 bg-purple-500/10 rounded pointer-events-none"
+          className="absolute border-2 border-purple-500 bg-purple-500/10 rounded pointer-events-none"
           style={{
-            width: `${(previewWidth / originalDimensions.width) * 100}%`,
-            height: `${(previewHeight / originalDimensions.height) * 100}%`,
+            left: `${overlayLeftPercent}%`,
+            top: `${overlayTopPercent}%`,
+            width: `${overlayWidthPercent}%`,
+            height: `${overlayHeightPercent}%`,
           }}
         >
           {/* Corner handles */}
