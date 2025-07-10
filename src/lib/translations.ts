@@ -254,6 +254,16 @@ const translations = {
     'pdfConvert.processingDesc': 'AI algoritmaları dosyalarınızı optimize ediyor',
     'pdfTools.progress.completed': 'tamamlandı',
     
+    // PDF TOOLS FEATURES (kullanılan key'ler)
+    'pdfTools.features.highQuality': 'Yüksek Kaliteli Çıktı',
+    'pdfTools.features.maxSize': '20MB Dosya Boyutu',
+    'pdfTools.features.fastProcessing': 'Hızlı İşlem',
+    'pdfTools.features.multipleFileSupport': 'Çoklu Dosya Desteği',
+    
+    // PDF TOOL TITLES  
+    'pdfSplit.title': 'PDF Böl',
+    'pdfMerge.title': 'PDF Birleştir',
+    
     // PDF TOOLS DESCRIPTIONS
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
@@ -530,6 +540,16 @@ const translations = {
     'pdfConvert.processing': 'Processing with AI...',
     'pdfConvert.processingDesc': 'AI algorithms are optimizing your files',
     'pdfTools.progress.completed': 'completed',
+    
+    // PDF TOOLS FEATURES ENGLISH (kullanılan key'ler)
+    'pdfTools.features.highQuality': 'High Quality Output',
+    'pdfTools.features.maxSize': '20MB File Size',
+    'pdfTools.features.fastProcessing': 'Fast Processing',
+    'pdfTools.features.multipleFileSupport': 'Multiple File Support',
+    
+    // PDF TOOL TITLES ENGLISH
+    'pdfSplit.title': 'PDF Split',
+    'pdfMerge.title': 'PDF Merge',
     
     // PDF TOOLS DESCRIPTIONS ENGLISH
     'pdfToImages.description': 'High quality visual output, smart format optimization',
