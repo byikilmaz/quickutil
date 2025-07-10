@@ -729,23 +729,21 @@ body {
 .animate-slide-in { animation: slideIn 0.6s ease-out; }
 .animate-bounce-in { animation: bounceIn 0.6s ease-out; }
 
-/* Black placeholder text for crop inputs */
+/* Ultra-black placeholder text for crop inputs */
 .crop-input::placeholder {
   color: #000000 !important;
-  opacity: 1 !important;
 }
 
-.crop-input::-webkit-input-placeholder {
+/* Ultra-black input text for crop inputs */
+.crop-input {
   color: #000000 !important;
-  opacity: 1 !important;
 }
 
-.crop-input::-moz-placeholder {
+/* Additional selectors for crop dimensions inputs */
+input[type="number"].crop-input {
   color: #000000 !important;
-  opacity: 1 !important;
 }
 
-.crop-input:-ms-input-placeholder {
+input[type="number"].crop-input:focus {
   color: #000000 !important;
-  opacity: 1 !important;
 }

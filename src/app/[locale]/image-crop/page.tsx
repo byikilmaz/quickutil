@@ -713,9 +713,9 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
                                 style={{ 
-                                  color: '#000000'
+                                  color: '#000000 !important'
                                 } as any}
                                 placeholder="Enter X..."
                                 min="0"
@@ -740,9 +740,9 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
                                 style={{ 
-                                  color: '#000000'
+                                  color: '#000000 !important'
                                 } as any}
                                 placeholder="Enter Y..."
                                 min="0"
@@ -769,9 +769,9 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
                                 style={{ 
-                                  color: '#000000'
+                                  color: '#000000 !important'
                                 } as any}
                                 placeholder="Enter width..."
                                 min="1"
@@ -796,9 +796,9 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
                                 style={{ 
-                                  color: '#000000'
+                                  color: '#000000 !important'
                                 } as any}
                                 placeholder="Enter height..."
                                 min="1"
