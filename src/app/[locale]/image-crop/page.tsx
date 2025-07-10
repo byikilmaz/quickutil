@@ -706,7 +706,7 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-900"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-950"
                                 placeholder="Enter X..."
                                 min="0"
                                 max={originalDimensions.width}
@@ -730,7 +730,7 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-900"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-950"
                                 placeholder="Enter Y..."
                                 min="0"
                                 max={originalDimensions.height}
@@ -756,7 +756,7 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-900"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-950"
                                 placeholder="Enter width..."
                                 min="1"
                                 max={originalDimensions.width}
@@ -780,7 +780,7 @@ export default function ImageCrop() {
                                     e.target.placeholder = placeholder;
                                   }
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-900"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder-gray-950"
                                 placeholder="Enter height..."
                                 min="1"
                                 max={originalDimensions.height}
