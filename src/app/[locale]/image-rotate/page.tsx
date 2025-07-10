@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { ActivityTracker } from '@/lib/activityTracker';
+import { getTranslations } from '@/lib/translations';
 import { 
   rotateImage,
   getImageDimensions,
@@ -25,7 +26,26 @@ interface RotateResult {
   downloadUrl: string;
 }
 
-export default function ImageRotate() {
+interface ImageRotateProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function ImageRotate({ params }: ImageRotateProps) {
+  const { locale } = await params;
+  
+  return <ImageRotateContent locale={locale} />;
+}
+
+function ImageRotateContent({ locale }: { locale: string }) {
+  const translations = getTranslations(locale);
+  const getText = (key: string, fallback: string) => {
+    const keys = key.split('.');
+    let value: any = translations;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || fallback;
+  };
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
@@ -46,6 +66,8 @@ export default function ImageRotate() {
   const configureRef = useRef<HTMLDivElement>(null);
   const processRef = useRef<HTMLDivElement>(null);
   const processButtonRef = useRef<HTMLButtonElement>(null);
+  const processingRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   // Auto-focus on upload area when page loads
   useEffect(() => {
@@ -98,24 +120,28 @@ export default function ImageRotate() {
     setIsProcessing(true);
     setProcessingProgress(0);
 
-    // Scroll to processing section
+    // Scroll to processing section with better focus
     setTimeout(() => {
-      processRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      processingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      processingRef.current?.focus();
     }, 100);
 
     const startTime = Date.now();
 
     try {
-      // Simulate progress
+      // Extended progress simulation for better visibility
       const progressInterval = setInterval(() => {
         setProcessingProgress(prev => {
           if (prev >= 90) {
             clearInterval(progressInterval);
             return prev;
           }
-          return prev + Math.random() * 15;
+          return prev + Math.random() * 12;
         });
-      }, 200);
+      }, 150);
+
+      // Increased processing time for better UX
+      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
 
       const result = await rotateImage(file, { angle: rotation });
       
@@ -132,7 +158,14 @@ export default function ImageRotate() {
       };
 
       setRotateResult(rotateResult);
-      setCurrentStep('result');
+      
+      // Brief delay before showing result
+      setTimeout(() => {
+        setCurrentStep('result');
+        setTimeout(() => {
+          resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+      }, 500);
 
       // Track activity
       if (user) {
@@ -211,18 +244,18 @@ export default function ImageRotate() {
             {/* AI Badge */}
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
               <SparklesIcon className="h-4 w-4 text-purple-600 mr-2 animate-pulse" />
-              500K+ Resim Döndürüldü • AI Destekli
+              {getText('imageRotate.badge', '500K+ Resim Döndürüldü • AI Destekli')}
             </div>
             
             {/* Main Title */}
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent">
-                Resim Döndürme
+                {getText('imageRotate.title', 'Resim Döndürme')}
               </span>
             </h1>
             
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.
+              {getText('imageRotate.description', 'Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.')}
             </p>
 
             {/* Trust Indicators */}
@@ -230,19 +263,19 @@ export default function ImageRotate() {
               <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
                 <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2" />
                 <span className="bg-gradient-to-r from-gray-700 to-gray-800 bg-clip-text text-transparent font-medium">
-                  Kalite Kaybı Yok
+                  {getText('imageRotate.trust.noQualityLoss', 'Kalite Kaybı Yok')}
                 </span>
               </div>
               <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
                 <CheckCircleIcon className="h-4 w-4 text-blue-500 mr-2" />
                 <span className="bg-gradient-to-r from-gray-700 to-gray-800 bg-clip-text text-transparent font-medium">
-                  Tüm Formatlar
+                  {getText('imageRotate.trust.allFormats', 'Tüm Formatlar')}
                 </span>
               </div>
               <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
                 <CheckCircleIcon className="h-4 w-4 text-purple-500 mr-2" />
                 <span className="bg-gradient-to-r from-gray-700 to-gray-800 bg-clip-text text-transparent font-medium">
-                  Güvenli & Hızlı
+                  {getText('imageRotate.trust.secureFast', 'Güvenli & Hızlı')}
                 </span>
               </div>
             </div>
@@ -259,10 +292,10 @@ export default function ImageRotate() {
 
               <div className="text-center mb-8 relative z-10">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Resim Yükleyin
+                  {getText('imageRotate.upload.title', 'Resim Yükleyin')}
                 </h2>
                 <p className="text-gray-600 text-lg">
-                  JPEG, PNG, WebP formatlarında resimlerinizi yükleyin
+                  {getText('imageRotate.upload.description', 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin')}
                 </p>
               </div>
 
@@ -298,19 +331,19 @@ export default function ImageRotate() {
                 </div>
 
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  {isDragActive ? 'Dosyayı Bırakın' : 'Resim Yükleyin'}
+                  {isDragActive ? getText('imageRotate.upload.dropText', 'Dosyayı Bırakın') : getText('imageRotate.upload.uploadText', 'Resim Yükleyin')}
                 </h3>
                 <p className="text-gray-600 mb-6 text-lg">
-                  Dosyayı sürükleyip bırakın veya seçin
+                  {getText('imageRotate.upload.dragOrSelect', 'Dosyayı sürükleyip bırakın veya seçin')}
                 </p>
                 
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl inline-flex items-center space-x-3 font-semibold">
                   <CloudArrowUpIcon className="h-6 w-6" />
-                  <span>Dosya Seçin</span>
+                  <span>{getText('imageRotate.upload.selectFile', 'Dosya Seçin')}</span>
                 </div>
                 
                 <p className="text-sm text-gray-500 mt-4">
-                  JPEG, PNG, WebP • Max 50MB
+                  {getText('imageRotate.upload.fileTypes', 'JPEG, PNG, WebP • Max 50MB')}
                 </p>
               </div>
             </div>
@@ -325,7 +358,7 @@ export default function ImageRotate() {
                   <div className="lg:w-1/3 p-8 bg-gray-50/50">
                     <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                       <PhotoIcon className="h-6 w-6 text-purple-600 mr-2" />
-                      Önizleme
+                      {getText('imageRotate.configure.previewTitle', 'Önizleme')}
                     </h3>
                     
                     {previewUrl && (
@@ -349,26 +382,30 @@ export default function ImageRotate() {
                   {/* Right Panel - Settings (2/3) */}
                   <div className="lg:w-2/3 p-8">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-2xl font-semibold text-gray-900">Döndürme Ayarları</h3>
+                      <h3 className="text-2xl font-semibold text-gray-900">
+                        {getText('imageRotate.configure.settingsTitle', 'Döndürme Ayarları')}
+                      </h3>
                       <button
                         onClick={resetProcess}
                         className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
                       >
                         <ArrowLeftIcon className="h-5 w-5 mr-1" />
-                        Geri
+                        {getText('imageRotate.configure.backButton', 'Geri')}
                       </button>
                     </div>
 
                     <div className="space-y-8">
                       {/* Quick Rotation Buttons */}
                       <div>
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Hızlı Döndürme</h4>
+                        <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                          {getText('imageRotate.configure.quickRotationTitle', 'Hızlı Döndürme')}
+                        </h4>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                           {[
-                            { angle: 90, label: '90° Sağa', icon: '↻' },
-                            { angle: 180, label: '180° Ters', icon: '↺' },
-                            { angle: 270, label: '90° Sola', icon: '↺' },
-                            { angle: 0, label: 'Sıfırla', icon: '⟲' }
+                            { angle: 90, label: getText('imageRotate.configure.rotate90Right', '90° Sağa'), icon: '↻' },
+                            { angle: 180, label: getText('imageRotate.configure.rotate180', '180° Ters'), icon: '↺' },
+                            { angle: 270, label: getText('imageRotate.configure.rotate90Left', '90° Sola'), icon: '↺' },
+                            { angle: 0, label: getText('imageRotate.configure.resetAngle', 'Sıfırla'), icon: '⟲' }
                           ].map((option) => (
                             <button
                               key={option.angle}
@@ -388,11 +425,13 @@ export default function ImageRotate() {
 
                       {/* Custom Angle */}
                       <div>
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">Özel Açı</h4>
+                        <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                          {getText('imageRotate.configure.customAngleTitle', 'Özel Açı')}
+                        </h4>
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Döndürme Açısı: {rotation}°
+                              {getText('imageRotate.configure.currentAngle', 'Döndürme Açısı:')} {rotation}°
                             </label>
                             <input
                               type="range"
@@ -417,7 +456,7 @@ export default function ImageRotate() {
                             onChange={(e) => setRotation(parseInt(e.target.value) || 0)}
                             min="0"
                             max="360"
-                            placeholder="Açı (0-360°)"
+                            placeholder={getText('imageRotate.configure.anglePlaceholder', 'Açı (0-360°)')}
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                           />
                         </div>
@@ -432,7 +471,7 @@ export default function ImageRotate() {
                           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl text-lg flex items-center justify-center space-x-3"
                         >
                           <ArrowPathIcon className="h-6 w-6" />
-                          <span>🚀 Döndürmeyi Başlat</span>
+                          <span>{getText('imageRotate.configure.startRotation', '🚀 Döndürmeyi Başlat')}</span>
                         </button>
                       </div>
                     </div>
@@ -444,67 +483,87 @@ export default function ImageRotate() {
 
           {/* STEP 3: PROCESSING */}
           {currentStep === 'processing' && (
-            <div ref={processRef} className="py-16">
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-12 text-center">
-                <div className="relative inline-block mb-8">
-                  {/* Multiple Rotating Rings */}
-                  <div className="relative">
-                    <div className="w-32 h-32 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}>
-                      <div className="w-full h-full border-t-4 border-purple-600 rounded-full"></div>
-                    </div>
-                    <div className="absolute inset-2 w-24 h-24 border-4 border-pink-200 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}>
-                      <div className="w-full h-full border-t-4 border-pink-600 rounded-full"></div>
-                    </div>
-                    <div className="absolute inset-6 w-16 h-16 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}>
-                      <div className="w-full h-full border-t-4 border-purple-500 rounded-full"></div>
-                    </div>
-                  </div>
+            <div 
+              ref={processingRef} 
+              className="py-24 min-h-screen flex items-center justify-center"
+              tabIndex={-1}
+              style={{ outline: 'none' }}
+            >
+              <div className="max-w-3xl mx-auto text-center w-full">
+                <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-16 relative overflow-hidden">
                   
-                  {/* Center Icon */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ArrowPathIcon className="h-12 w-12 text-purple-600 animate-pulse" />
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Resim Döndürülüyor...
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor
-                </p>
-
-                {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
-                  <div 
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 h-full rounded-full transition-all duration-300 relative"
-                    style={{ width: `${processingProgress}%` }}
-                  >
-                    <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-500">
-                  {Math.round(processingProgress)}% tamamlandı
-                </p>
-
-                {/* Processing Steps */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                  <div className="flex items-center space-x-3 justify-center">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                      <CheckCircleIcon className="h-5 w-5 text-white" />
+                  {/* Background gradient animation */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-purple-50/80 opacity-50"></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <div className="relative inline-block mb-8">
+                      {/* Multiple Rotating Rings - Larger for better visibility */}
+                      <div className="relative">
+                        <div className="w-40 h-40 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}>
+                          <div className="w-full h-full border-t-4 border-purple-600 rounded-full"></div>
+                        </div>
+                        <div className="absolute inset-3 w-32 h-32 border-4 border-pink-200 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}>
+                          <div className="w-full h-full border-t-4 border-pink-600 rounded-full"></div>
+                        </div>
+                        <div className="absolute inset-8 w-20 h-20 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}>
+                          <div className="w-full h-full border-t-4 border-purple-500 rounded-full"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Center Icon - Larger */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <ArrowPathIcon className="h-16 w-16 text-purple-600 animate-pulse" />
+                      </div>
                     </div>
-                    <span className="text-sm text-gray-700">Resim Analizi</span>
-                  </div>
-                  <div className="flex items-center space-x-3 justify-center">
-                    <div className={`w-8 h-8 ${processingProgress > 50 ? 'bg-green-500' : 'bg-purple-500 animate-pulse'} rounded-full flex items-center justify-center`}>
-                      <ArrowPathIcon className="h-5 w-5 text-white" />
+
+                    <h3 className="text-4xl font-bold text-gray-900 mb-6">
+                      {getText('imageRotate.processing.title', 'Resim Döndürülüyor...')}
+                    </h3>
+                    <p className="text-gray-600 mb-8 text-lg">
+                      {getText('imageRotate.processing.description', 'AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor')}
+                    </p>
+
+                    {/* Progress Bar - Enhanced */}
+                    <div className="w-full bg-gray-200 rounded-full h-4 mb-6 overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 h-full rounded-full transition-all duration-300 relative"
+                        style={{ width: `${processingProgress}%` }}
+                      >
+                        <div className="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+                      </div>
                     </div>
-                    <span className="text-sm text-gray-700">Döndürme İşlemi</span>
-                  </div>
-                  <div className="flex items-center space-x-3 justify-center">
-                    <div className={`w-8 h-8 ${processingProgress > 90 ? 'bg-green-500' : 'bg-gray-300'} rounded-full flex items-center justify-center`}>
-                      <CheckCircleIcon className="h-5 w-5 text-white" />
+                    <p className="text-lg text-gray-600 mb-8">
+                      {Math.round(processingProgress)}% {getText('imageRotate.processing.completed', 'tamamlandı')}
+                    </p>
+
+                    {/* Processing Steps - Enhanced */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                          <CheckCircleIcon className="h-7 w-7 text-white" />
+                        </div>
+                        <span className="text-base text-gray-700 font-medium">
+                          {getText('imageRotate.processing.steps.analysis', 'Resim Analizi')}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className={`w-12 h-12 ${processingProgress > 50 ? 'bg-green-500' : 'bg-purple-500 animate-pulse'} rounded-full flex items-center justify-center shadow-lg`}>
+                          <ArrowPathIcon className="h-7 w-7 text-white" />
+                        </div>
+                        <span className="text-base text-gray-700 font-medium">
+                          {getText('imageRotate.processing.steps.rotating', 'Döndürülüyor')}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className={`w-12 h-12 ${processingProgress > 90 ? 'bg-green-500' : 'bg-gray-300'} rounded-full flex items-center justify-center shadow-lg`}>
+                          <CheckCircleIcon className="h-7 w-7 text-white" />
+                        </div>
+                        <span className="text-base text-gray-700 font-medium">
+                          {getText('imageRotate.processing.steps.optimizing', 'Optimize Ediliyor')}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-sm text-gray-700">Optimizasyon</span>
                   </div>
                 </div>
               </div>
@@ -513,18 +572,18 @@ export default function ImageRotate() {
 
           {/* STEP 4: RESULT */}
           {currentStep === 'result' && rotateResult && (
-            <div className="py-16">
+            <div ref={resultRef} className="py-16">
               <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
                 <div className="p-8 text-center border-b border-gray-200">
                   <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
                     <CheckCircleIcon className="h-4 w-4 mr-2" />
-                    Döndürme Tamamlandı
+                    {getText('imageRotate.result.successTitle', 'Döndürme Tamamlandı')}
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    Resminiz Başarıyla Döndürüldü!
+                    {getText('imageRotate.result.successSubtitle', 'Resminiz Başarıyla Döndürüldü!')}
                   </h3>
                   <p className="text-gray-600">
-                    {rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı
+                    {getText('imageRotate.result.successDescription', `${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`)}
                   </p>
                 </div>
 
@@ -532,7 +591,9 @@ export default function ImageRotate() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Before */}
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Öncesi</h4>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                        {getText('imageRotate.result.beforeTitle', 'Öncesi')}
+                      </h4>
                       <div className="bg-gray-50 rounded-2xl p-4">
                         {previewUrl && (
                           <img
@@ -550,7 +611,9 @@ export default function ImageRotate() {
 
                     {/* After */}
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Sonrası</h4>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                        {getText('imageRotate.result.afterTitle', 'Sonrası')}
+                      </h4>
                       <div className="bg-green-50 rounded-2xl p-4 border border-green-200">
                         <img
                           src={rotateResult.downloadUrl}
@@ -558,9 +621,11 @@ export default function ImageRotate() {
                           className="w-full h-64 object-contain rounded-xl"
                         />
                         <div className="mt-4 text-center">
-                          <p className="text-sm font-medium text-green-900">Döndürülmüş Resim</p>
+                          <p className="text-sm font-medium text-green-900">
+                            {getText('imageRotate.result.rotatedImageTitle', 'Döndürülmüş Resim')}
+                          </p>
                           <p className="text-sm text-green-600">
-                            {formatFileSize(rotateResult.rotatedSize)} • {rotateResult.rotationAngle}° döndürüldü
+                            {formatFileSize(rotateResult.rotatedSize)} • {rotateResult.rotationAngle}° {getText('imageRotate.result.rotatedAngle', 'döndürüldü')}
                           </p>
                         </div>
                       </div>
@@ -575,7 +640,7 @@ export default function ImageRotate() {
                       className="inline-flex items-center bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-lg space-x-3"
                     >
                       <CheckCircleIcon className="h-6 w-6" />
-                      <span>Döndürülmüş Resmi İndir</span>
+                      <span>{getText('imageRotate.result.downloadButton', 'Döndürülmüş Resmi İndir')}</span>
                     </a>
                     
                     <button
@@ -583,7 +648,7 @@ export default function ImageRotate() {
                       className="ml-4 inline-flex items-center bg-gray-100 text-gray-700 px-6 py-4 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium"
                     >
                       <ArrowPathIcon className="h-5 w-5 mr-2" />
-                      Yeni Resim Döndür
+                      {getText('imageRotate.result.newImageButton', 'Yeni Resim Döndür')}
                     </button>
                   </div>
                 </div>
