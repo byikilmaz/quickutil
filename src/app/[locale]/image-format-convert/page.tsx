@@ -104,11 +104,6 @@ export default function ImageFormatConvert() {
       return;
     }
 
-    if (!user || !canUseFeature('image_format_convert')) {
-      setShowAuthModal(true);
-      return;
-    }
-
     setFile(selectedFile);
     
     try {
@@ -120,10 +115,15 @@ export default function ImageFormatConvert() {
       
       setCurrentStep('configure');
       
-      // Scroll to configure section
+      // Scroll to configure section with auto-focus on process button
       setTimeout(() => {
         configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
+      
+      setTimeout(() => {
+        processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        processButtonRef.current?.focus();
+      }, 500);
     } catch (error) {
       console.error('Error getting image dimensions:', error);
     }

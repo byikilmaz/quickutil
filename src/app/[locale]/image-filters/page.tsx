@@ -91,22 +91,21 @@ export default function ImageFilters() {
   });
 
   const handleFileSelect = async (selectedFile: File) => {
-    // Check auth and quota
-    if (!user || !canUseFeature('image_filters')) {
-      setShowAuthModal(true);
-      return;
-    }
-
     setFile(selectedFile);
     const imageUrl = URL.createObjectURL(selectedFile);
     setOriginalImageUrl(imageUrl);
     setFilteredImageUrl(imageUrl);
     setCurrentStep('configure');
 
-    // Scroll to configure section
+    // Scroll to configure section with auto-focus on process button
     setTimeout(() => {
       configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
+    
+    setTimeout(() => {
+      processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      processButtonRef.current?.focus();
+    }, 500);
   };
 
   // Filter handlers
@@ -665,7 +664,7 @@ export default function ImageFilters() {
           {currentStep === 'result' && filterResult && (
             <div className="py-16">
               <div className="text-center mb-12">
-                <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
+                <div className="inline-flex items-center bg-green-100 to-emerald-100 border border-green-200 text-green-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
                   <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
                   Step 4: Filters Applied Successfully!
                 </div>

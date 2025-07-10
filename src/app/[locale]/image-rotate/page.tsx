@@ -46,6 +46,7 @@ export default function ImageRotate() {
   const uploadRef = useRef<HTMLDivElement>(null);
   const configureRef = useRef<HTMLDivElement>(null);
   const processRef = useRef<HTMLDivElement>(null);
+  const processButtonRef = useRef<HTMLButtonElement>(null);
 
   // Auto-focus on upload area when page loads
   useEffect(() => {
@@ -60,12 +61,6 @@ export default function ImageRotate() {
       const file = acceptedFiles[0];
       if (!file) return;
 
-      // Check feature usage
-      if (!user || !canUseFeature('image_rotate')) {
-        setShowAuthModal(true);
-        return;
-      }
-
       setFile(file);
       
       try {
@@ -77,10 +72,15 @@ export default function ImageRotate() {
         
         setCurrentStep('configure');
         
-        // Scroll to configure section
+        // Scroll to configure section with auto-focus on process button
         setTimeout(() => {
           configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
+        
+        setTimeout(() => {
+          processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          processButtonRef.current?.focus();
+        }, 500);
       } catch (error) {
         console.error('Error getting image dimensions:', error);
       }
@@ -428,6 +428,7 @@ export default function ImageRotate() {
                       {/* Action Button */}
                       <div className="pt-6">
                         <button
+                          ref={processButtonRef}
                           onClick={handleRotate}
                           disabled={rotation === 0}
                           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl text-lg flex items-center justify-center space-x-3"
