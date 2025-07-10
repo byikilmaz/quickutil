@@ -1,322 +1,298 @@
 {
+  "home": {
+    "title": "QuickUtil - PDF and Image Processing Tools",
+    "hero": {
+      "title": "PDF and Image Processing",
+      "subtitle": "With Powerful Tools",
+      "description": "PDF compression, image conversion and more. Process your files quickly.",
+      "uploadButton": "Drag Your Files or Click",
+      "supportedFormats": "PDF, JPEG, PNG, WebP and more formats supported"
+    },
+    "tools": {
+      "title": "Powerful Tools",
+      "subtitle": "Everything you need"
+    },
+    "features": {
+      "title": "Why QuickUtil?",
+      "fast": {
+        "title": "Fast Processing",
+        "description": "Process your files in seconds"
+      },
+      "secure": {
+        "title": "Secure",
+        "description": "Your files are processed and stored securely"
+      },
+      "quality": {
+        "title": "High Quality",
+        "description": "Get the best results"
+      },
+      "free": {
+        "title": "Free",
+        "description": "Use basic tools for free"
+      }
+    }
+  },
   "common": {
     "upload": "Upload",
     "download": "Download",
     "processing": "Processing...",
-    "done": "Done",
+    "completed": "Completed",
     "error": "Error",
-    "success": "Success",
-    "cancel": "Cancel",
-    "retry": "Retry",
-    "free": "Free",
-    "secure": "Secure",
-    "fast": "Fast",
-    "unlimited": "Unlimited",
-    "selectFile": "Select File",
-    "dropFile": "Drop file here",
-    "or": "or",
-    "fileSize": "File Size",
-    "fileName": "File Name",
-    "loading": "Loading...",
+    "close": "Close",
     "back": "Back",
     "next": "Next",
+    "previous": "Previous",
+    "continue": "Continue",
+    "cancel": "Cancel",
     "save": "Save",
-    "close": "Close",
-    "open": "Open",
-    "share": "Share",
-    "copy": "Copy",
     "delete": "Delete",
     "edit": "Edit",
+    "copy": "Copy",
+    "paste": "Paste",
+    "cut": "Cut",
+    "undo": "Undo",
+    "redo": "Redo",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
     "view": "View",
+    "hide": "Hide",
+    "show": "Show",
+    "open": "Open",
+    "loading": "Loading...",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "apply": "Apply",
+    "reset": "Reset",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "skip": "Skip",
+    "finish": "Finish",
+    "submit": "Submit",
+    "create": "Create",
+    "update": "Update",
+    "remove": "Remove",
+    "add": "Add",
+    "settings": "Settings",
+    "preferences": "Preferences",
+    "options": "Options",
+    "tools": "Tools",
     "help": "Help",
     "about": "About",
     "contact": "Contact",
-    "privacy": "Privacy",
-    "terms": "Terms"
-  },
-
-  "navigation": {
-    "home": "Home",
-    "tools": "Tools",
-    "pdfTools": "PDF Tools",
-    "imageTools": "Image Tools",
-    "batchProcessing": "Batch Processing",
-    "profile": "Profile",
-    "admin": "Admin",
-    "login": "Login",
-    "register": "Register",
-    "logout": "Logout"
-  },
-
-  "header": {
-    "brand": "QuickUtil",
-    "tagline": "PDF and Image Tools",
-    "menu": "Menu"
-  },
-
-  "footer": {
-    "copyright": "© QuickUtil, Turkey",
-    "allRightsReserved": "All rights reserved",
-    "quickLinks": "Quick Links",
-    "legal": "Legal",
-    "company": "Company",
     "support": "Support",
-    "followUs": "Follow Us",
-    "newsletter": "Newsletter",
-    "subscribe": "Subscribe",
-    "enterEmail": "Enter your email address"
-  },
-
-  "auth": {
-    "loginTitle": "Login",
-    "registerTitle": "Register",
+    "feedback": "Feedback",
+    "report": "Report",
+    "share": "Share",
+    "export": "Export",
+    "import": "Import",
+    "print": "Print",
     "email": "Email",
-    "password": "Password",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "confirmPassword": "Confirm Password",
-    "rememberMe": "Remember Me",
-    "forgotPassword": "Forgot Password",
-    "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?",
-    "signUp": "Sign Up",
-    "signIn": "Sign In",
-    "loggingIn": "Logging in...",
-    "registering": "Registering...",
-    "emailRequired": "Email is required",
-    "passwordRequired": "Password is required",
-    "nameRequired": "Name is required",
-    "invalidEmail": "Invalid email address",
-    "weakPassword": "Password too weak. Use at least 6 characters.",
-    "emailAlreadyInUse": "This email is already in use. Try signing in.",
-    "userNotFound": "No user found with this email address.",
-    "wrongPassword": "Incorrect password. Please try again.",
-    "tooManyRequests": "Too many failed attempts. Please try again later.",
-    "networkError": "Check your internet connection.",
-    "genericError": "An error occurred. Please try again."
+    "phone": "Phone",
+    "address": "Address",
+    "website": "Website",
+    "social": "Social Media",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "legal": "Legal",
+    "cookies": "Cookies",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "auto": "Auto"
   },
-
-  "homepage": {
-    "hero": {
-      "title": "Process your PDFs and images",
-      "subtitle": "Free, secure, and fast file processing tools",
-      "cta": "Get started now",
-      "features": ["100% Free", "Secure Processing", "Fast Results"]
+  "imageBatch": {
+    "title": "Batch Image Processing",
+    "subtitle": "Multiple Files",
+    "description": "Process multiple images at once with powerful batch operations. Efficiently compress, resize, crop, and convert your images.",
+    "badge": "Batch Processing • Multiple Files",
+    "upload": {
+      "title": "Select Multiple Images",
+      "description": "Drag and drop your images or click to browse",
+      "formats": "Supported formats: JPEG, PNG, WebP, GIF • Maximum 50 files • 50MB each",
+      "chooseFiles": "Choose Files"
     },
-    "categories": {
-      "pdfTools": "PDF Tools",
-      "pdfToolsDesc": "Compress, convert, and edit your PDF files",
-      "imageTools": "Image Tools", 
-      "imageToolsDesc": "Compress, resize, and edit your images",
-      "batchTools": "Batch Processing",
-      "batchToolsDesc": "Process multiple files at once"
+    "configure": {
+      "step": "Step 2: Configure Operation",
+      "title": "Configure Batch Operation",
+      "description": "Select operation type and configure parameters for all files",
+      "files": "Selected Files",
+      "remove": "Remove",
+      "clearAll": "Clear All",
+      "operation": "Operation Settings",
+      "selectOperation": "Select Operation",
+      "processing": "Processing...",
+      "startProcessing": "Start Batch Processing"
     },
-    "tools": {
-      "pdfCompress": {
-        "title": "PDF Compression",
-        "description": "Reduce PDF file size without losing quality"
+    "processing": {
+      "step": "Step 3: Batch Processing",
+      "title": "Processing Your Images",
+      "description": "Please wait while we process your image batch...",
+      "complete": "Complete"
+    },
+    "result": {
+      "step": "Step 4: Batch Processing Complete!",
+      "title": "Batch Processing Complete!",
+      "description": "All files have been successfully processed",
+      "completed": "Completed",
+      "errors": "Errors",
+      "total": "Total Files",
+      "downloadAll": "Download All Processed Files",
+      "noFiles": "No processed files to download",
+      "downloadError": "Download failed"
+    },
+    "operations": {
+      "compress": {
+        "name": "Compress",
+        "description": "Reduce file size"
       },
-      "pdfConvert": {
-        "title": "PDF Conversion", 
-        "description": "Convert PDF to images, text, or other formats"
+      "resize": {
+        "name": "Resize",
+        "description": "Change dimensions"
       },
-      "imageCompress": {
-        "title": "Image Compression",
-        "description": "Reduce image file size without losing quality"
+      "crop": {
+        "name": "Crop",
+        "description": "Crop specific area"
       },
-      "imageResize": {
-        "title": "Image Resize",
-        "description": "Resize images to your desired dimensions"
+      "rotate": {
+        "name": "Rotate",
+        "description": "Rotate image"
       },
-      "imageCrop": {
-        "title": "Image Crop",
-        "description": "Crop images to focus on specific areas"
+      "filter": {
+        "name": "Filters",
+        "description": "Apply filters"
       },
-      "imageRotate": {
-        "title": "Image Rotate",
-        "description": "Rotate images to any angle"
+      "convert": {
+        "name": "Convert",
+        "description": "Change format"
       }
     },
-    "features": {
-      "title": "Why QuickUtil?",
-      "free": {
-        "title": "Completely Free",
-        "description": "All tools are free with unlimited usage"
-      },
-      "secure": {
-        "title": "100% Secure",
-        "description": "Files are not uploaded to servers, processed in your browser"
-      },
-      "fast": {
-        "title": "Instant Processing",
-        "description": "Get results in seconds with fast processing algorithms"
-      },
-      "quality": {
-        "title": "Quality Preserved",
-        "description": "Advanced algorithms minimize quality loss"
-      }
-    },
-    "stats": {
-      "title": "Trusted Platform",
-      "processedFiles": "Processed Files",
-      "happyUsers": "Happy Users",
-      "supportedFormats": "Supported Formats",
-      "uptime": "Uptime"
+    "otherTools": {
+      "title": "Other Image Tools",
+      "compress": "Image Compression",
+      "convert": "Image Conversion",
+      "resize": "Image Resize",
+      "crop": "Image Crop",
+      "rotate": "Image Rotate",
+      "filters": "Image Filters"
     }
   },
-
-  "tools": {
-    "pdfCompress": {
-      "title": "PDF Compression",
-      "description": "Compress PDF files up to 90%",
-      "uploadText": "Select or drag your PDF file",
-      "maxSize": "Maximum 50MB",
-      "supportedFormats": "PDF format supported",
-      "processing": "Compressing PDF...",
-      "success": "PDF compressed successfully!",
-      "compressionRatio": "Compression Ratio",
-      "originalSize": "Original Size",
-      "compressedSize": "Compressed Size",
-      "savedSpace": "Space Saved"
+  "imageFilters": {
+    "title": "Image Filters",
+    "subtitle": "Creative Effects",
+    "description": "Apply professional filters and effects to your images. Adjust brightness, contrast, saturation and more with real-time preview.",
+    "badge": "Image Processing • Filters and Effects",
+    "upload": {
+      "title": "Upload Your Image",
+      "description": "Drag and drop the image you want to filter",
+      "formats": "Supported formats: JPEG, PNG, WebP • Maximum 10MB",
+      "chooseImage": "Choose Image"
     },
-    "pdfConvert": {
-      "title": "PDF Conversion",
-      "description": "Convert PDF to different formats",
-      "convertTo": "Convert To",
-      "toImages": "Convert to Images",
-      "toText": "Convert to Text",
-      "split": "Split Pages",
-      "merge": "Merge",
-      "imageFormat": "Image Format",
-      "imageQuality": "Image Quality",
-      "processing": "Converting PDF...",
-      "downloadAll": "Download All",
-      "downloadZip": "Download as ZIP"
+    "filters": {
+      "step": "Step 2: Apply Filters",
+      "title": "Filters and Effects",
+      "description": "Adjust filters to enhance your image",
+      "preview": "Preview",
+      "original": "Original",
+      "filtered": "Filtered",
+      "reset": "Reset",
+      "apply": "Apply",
+      "basic": {
+        "title": "Basic Adjustments",
+        "brightness": "Brightness",
+        "contrast": "Contrast",
+        "saturation": "Saturation",
+        "hue": "Hue",
+        "blur": "Blur"
+      },
+      "artistic": {
+        "title": "Artistic Effects",
+        "vintage": "Vintage",
+        "sepia": "Sepia",
+        "blackWhite": "Black & White"
+      },
+      "presets": {
+        "title": "Filter Presets",
+        "vibrant": "Vibrant",
+        "soft": "Soft",
+        "vintage": "Vintage",
+        "sharp": "Sharp"
+      }
     },
-    "imageCompress": {
-      "title": "Image Compression",
-      "description": "Reduce image file size without losing quality",
-      "uploadText": "Select or drag your image file",
-      "supportedFormats": "JPEG/JPG, PNG, WebP, GIF",
+    "result": {
+      "step": "Step 3: Result",
+      "title": "Your Filtered Image is Ready!",
+      "description": "Your image has been successfully processed",
+      "download": "Download",
+      "downloadAs": "Download As",
+      "format": "Format",
+      "quality": "Quality"
+    },
+    "otherTools": {
+      "title": "Other Image Tools",
+      "compress": "Image Compression",
+      "convert": "Image Conversion",
+      "resize": "Image Resize",
+      "crop": "Image Crop",
+      "rotate": "Image Rotate",
+      "batch": "Batch Processing"
+    }
+  },
+  "imageFormatConvert": {
+    "title": "Image Format Converter",
+    "subtitle": "Change Format",
+    "description": "Convert your image files to different formats. Easily switch between JPEG, PNG, WebP, GIF formats.",
+    "badge": "Image Processing • Format Conversion",
+    "upload": {
+      "title": "Upload Your Image",
+      "description": "Select the image you want to convert",
+      "formats": "Supported formats: JPEG, PNG, WebP, GIF, BMP, TIFF",
+      "chooseImage": "Choose Image"
+    },
+    "convert": {
+      "step": "Step 2: Choose Output Format",
+      "title": "Choose Output Format",
+      "description": "Select the format you want to convert your image to",
+      "format": "Target Format",
       "quality": "Quality",
-      "processing": "Compressing image..."
+      "options": "Options",
+      "convert": "Convert",
+      "converting": "Converting..."
     },
-    "imageResize": {
-      "title": "Image Resize",
-      "description": "Resize images to your desired dimensions",
-      "resizeMode": "Resize Mode",
-      "byPixels": "By Pixels",
-      "byPercentage": "By Percentage",
-      "width": "Width",
-      "height": "Height",
-      "percentage": "Percentage",
-      "maintainAspectRatio": "Maintain aspect ratio",
-      "doNotEnlarge": "Don't enlarge if smaller"
+    "result": {
+      "step": "Step 3: Conversion Complete!",
+      "title": "Your Image Has Been Converted!",
+      "description": "Your image has been successfully converted and is ready for download",
+      "download": "Download Converted Image",
+      "newFormat": "New Format",
+      "originalSize": "Original Size",
+      "newSize": "New Size",
+      "compression": "Compression"
     },
-    "imageCrop": {
-      "title": "Image Crop",
-      "description": "Crop images to focus on specific areas",
-      "cropArea": "Crop Area",
-      "coordinates": "Coordinates",
-      "presets": "Presets"
+    "formats": {
+      "jpeg": "JPEG - Optimized for web",
+      "png": "PNG - Transparency supported",
+      "webp": "WebP - Modern and compact",
+      "gif": "GIF - Animation supported",
+      "bmp": "BMP - Uncompressed",
+      "tiff": "TIFF - High quality"
     },
-    "imageRotate": {
-      "title": "Image Rotate", 
-      "description": "Rotate images to any angle",
-      "rotationAngle": "Rotation Angle",
-      "quickRotate": "Quick Rotate",
-      "customAngle": "Custom Angle"
-    }
-  },
-
-  "profile": {
-    "title": "Profile",
-    "overview": "Overview",
-    "files": "My Files",
-    "settings": "Settings",
-    "memberSince": "Member Since",
-    "totalFiles": "Total Files",
-    "storageUsed": "Storage Used",
-    "activities": "Activities",
-    "recentFiles": "Recent Files",
-    "accountSettings": "Account Settings",
-    "languageSettings": "Language Settings",
-    "privacySettings": "Privacy Settings"
-  },
-
-  "admin": {
-    "dashboard": "Admin Dashboard",
-    "users": "Users",
-    "activities": "Activities",
-    "reports": "Reports",
-    "totalUsers": "Total Users",
-    "totalActivities": "Total Activities",
-    "todayActivities": "Today's Activities",
-    "successRate": "Success Rate",
-    "popularFeatures": "Popular Features",
-    "recentErrors": "Recent Errors"
-  },
-
-  "errors": {
-    "fileTooBig": "File too large. Maximum file size is {maxSize}.",
-    "unsupportedFormat": "Unsupported file format. Please use one of {formats}.",
-    "processingFailed": "Error processing file. Please try again.",
-    "networkError": "Network connection error. Check your internet connection.",
-    "serverError": "Server error. Please try again later.",
-    "invalidFile": "Invalid file. Please try another file.",
-    "uploadFailed": "File upload failed. Please try again.",
-    "downloadFailed": "File download failed. Please try again."
-  },
-
-  "seo": {
-    "home": {
-      "title": "QuickUtil.app - Free PDF and Image Tools",
-      "description": "PDF compression, image editing, and format conversion tools. Completely free, secure, and fast.",
-      "keywords": "PDF compression, image editing, format conversion, free tools"
-    },
-    "pdfCompress": {
-      "title": "PDF Compression - Free PDF Size Reducer Tool",
-      "description": "Compress PDF files up to 90%. Completely free, secure, and fast PDF compression tool.",
-      "keywords": "PDF compression, reduce PDF size, compress PDF online"
-    },
-    "pdfConvert": {
-      "title": "PDF Conversion - Convert PDF to Image and Text",
-      "description": "Convert PDF to JPG, PNG, or extract text. Free PDF conversion tool.",
-      "keywords": "PDF conversion, PDF to JPG, PDF to PNG, PDF to text"
-    },
-    "imageCompress": {
-      "title": "Image Compression - Free Image Size Reducer",
-      "description": "Compress JPEG, PNG, WebP images without losing quality. Free image compression tool.",
-      "keywords": "image compression, JPEG compression, PNG compression"
-    },
-    "imageResize": {
-      "title": "Image Resize - Change Image Dimensions",
-      "description": "Resize images to desired dimensions. Pixel or percentage-based image resizing.",
-      "keywords": "image resize, change image size, resize images online"
-    }
-  },
-
-  "legal": {
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service",
-    "cookiePolicy": "Cookie Policy",
-    "about": "About",
-    "contact": "Contact",
-    "lastUpdated": "Last Updated: {date}"
-  },
-
-  "languageSwitcher": {
-    "selectLanguage": "Select Language",
-    "currentLanguage": "English",
-    "languages": {
-      "tr": "Türkçe",
-      "en": "English",
-      "es": "Español", 
-      "fr": "Français",
-      "de": "Deutsch",
-      "ar": "العربية",
-      "ja": "日本語",
-      "ko": "한국어"
+    "otherTools": {
+      "title": "Other Image Tools",
+      "compress": "Image Compression",
+      "filters": "Image Filters",
+      "resize": "Image Resize",
+      "crop": "Image Crop",
+      "rotate": "Image Rotate",
+      "batch": "Batch Processing"
     }
   }
 } 
