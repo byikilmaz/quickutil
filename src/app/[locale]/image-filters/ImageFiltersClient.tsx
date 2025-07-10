@@ -811,52 +811,52 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
             </div>
           )}
           
-          {/* STEP 3: PROCESSING */}
+          {/* STEP 3: PROCESSING - RESPONSIVE OPTIMIZED */}
           {currentStep === 'processing' && (
-            <div ref={processingRef} className="py-16 min-h-screen flex items-center justify-center animate-fade-in">
-              <div className="max-w-2xl mx-auto text-center">
-                <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg backdrop-blur-sm">
-                  <ArrowPathIcon className="h-4 w-4 text-purple-600 mr-2 animate-spin" />
+            <div ref={processingRef} className="py-8 sm:py-12 lg:py-16 min-h-screen flex items-center justify-center animate-fade-in px-4">
+              <div className="max-w-sm sm:max-w-lg lg:max-w-2xl mx-auto text-center">
+                <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8 shadow-lg backdrop-blur-sm">
+                  <ArrowPathIcon className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 mr-2 animate-spin" />
                   {getText('imageFilters.processing.step', 'Step 3: Applying Filters')}
                 </div>
                 
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
                   {getText('imageFilters.processing.title', 'AI Processing Your Image')}
                 </h2>
-                <p className="text-xl text-gray-700 mb-12">
+                <p className="text-base sm:text-lg lg:text-xl text-gray-700 mb-8 sm:mb-10 lg:mb-12 px-2">
                   {getText('imageFilters.processing.description', 'Applying studio-quality filters...')}
                 </p>
                 
-                {/* Enhanced Loading Animation */}
-                <div className="relative mb-12">
-                  {/* Orbital Rings */}
-                  <div className="relative w-40 h-40 mx-auto">
-                    <div className="absolute inset-0 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
-                    <div className="absolute inset-2 border-4 border-pink-300 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
-                    <div className="absolute inset-4 border-4 border-purple-400 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
+                {/* Enhanced Loading Animation - RESPONSIVE */}
+                <div className="relative mb-8 sm:mb-10 lg:mb-12">
+                  {/* Orbital Rings - Responsive sizes */}
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 mx-auto">
+                    <div className="absolute inset-0 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
+                    <div className="absolute inset-1 sm:inset-2 border-2 sm:border-3 lg:border-4 border-pink-300 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
+                    <div className="absolute inset-2 sm:inset-3 lg:inset-4 border-2 sm:border-3 lg:border-4 border-purple-400 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
                     
-                    {/* Center Icon */}
+                    {/* Center Icon - Responsive */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <PaintBrushIcon className="h-16 w-16 text-purple-600 animate-pulse" />
+                      <PaintBrushIcon className="h-8 w-8 sm:h-12 sm:w-12 lg:h-16 lg:w-16 text-purple-600 animate-pulse" />
                     </div>
                   </div>
                   
-                  {/* Floating Sparkles */}
-                  <div className="absolute -top-4 -left-4 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
-                  <div className="absolute -top-2 -right-6 w-2 h-2 bg-green-400 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
-                  <div className="absolute -bottom-4 -left-6 w-3 h-3 bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
-                  <div className="absolute -bottom-2 -right-4 w-2 h-2 bg-pink-400 rounded-full animate-ping" style={{ animationDelay: '1.5s' }}></div>
+                  {/* Floating Sparkles - SAFE mobile positioning */}
+                  <div className="absolute top-0 left-4 sm:left-8 lg:-left-4 w-2 h-2 sm:w-3 sm:h-3 bg-yellow-400 rounded-full animate-ping"></div>
+                  <div className="absolute top-2 right-4 sm:right-8 lg:-right-6 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
+                  <div className="absolute bottom-0 left-2 sm:left-4 lg:-left-6 w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
+                  <div className="absolute bottom-2 right-2 sm:right-4 lg:-right-4 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-pink-400 rounded-full animate-ping" style={{ animationDelay: '1.5s' }}></div>
                 </div>
                 
-                {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-3 mb-6 overflow-hidden">
+                {/* Progress Bar - Responsive */}
+                <div className="w-full max-w-xs sm:max-w-sm lg:max-w-md mx-auto bg-gray-200 rounded-full h-2 sm:h-3 mb-4 sm:mb-6 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 h-3 rounded-full transition-all duration-300 ease-out"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 h-2 sm:h-3 rounded-full transition-all duration-300 ease-out"
                     style={{ width: `${processingProgress}%` }}
                   />
                 </div>
                 
-                <p className="text-lg text-gray-600">
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 px-2">
                   {getText('imageFilters.processing.progress', 'Processing Progress')}: {processingProgress}%
                 </p>
               </div>
