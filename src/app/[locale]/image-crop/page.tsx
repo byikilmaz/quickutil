@@ -284,6 +284,7 @@ export default function ImageCrop() {
   const uploadRef = useRef<HTMLDivElement>(null);
   const configureRef = useRef<HTMLDivElement>(null);
   const processButtonRef = useRef<HTMLButtonElement>(null);
+  const processingRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
   // Component state - Step-based like PDF convert
@@ -401,21 +402,23 @@ export default function ImageCrop() {
 
     // Scroll to processing section
     setTimeout(() => {
-      processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+      processingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      processingRef.current?.focus();
+    }, 300);
 
     try {
-      // Simulate progress steps
+      // Simulate progress steps with longer delays for better visibility
       const progressSteps = [
-        { progress: 20, message: 'Preparing image...' },
-        { progress: 50, message: 'Analyzing crop area...' },
-        { progress: 80, message: 'Cropping image...' },
-        { progress: 100, message: 'Finalizing...' }
+        { progress: 15, message: 'Analyzing crop area...', delay: 800 },
+        { progress: 35, message: 'Preparing crop...', delay: 1000 },
+        { progress: 60, message: 'Calculating dimensions...', delay: 1200 },
+        { progress: 85, message: 'Cropping image...', delay: 1000 },
+        { progress: 100, message: 'Finalizing...', delay: 800 }
       ];
 
       for (const step of progressSteps) {
         setProcessingProgress(step.progress);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, step.delay));
       }
 
       // Perform actual crop
@@ -437,7 +440,7 @@ export default function ImageCrop() {
       // Scroll to result section
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
+      }, 300);
 
       // Track activity only if user is logged in
       if (user) {
@@ -827,44 +830,68 @@ export default function ImageCrop() {
 
         {/* STEP 3: PROCESSING */}
         {currentStep === 'processing' && (
-          <div className="py-16">
-            <div className="max-w-2xl mx-auto text-center">
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-12">
+          <div 
+            ref={processingRef} 
+            className="py-24 min-h-screen flex items-center justify-center"
+            tabIndex={-1}
+            style={{ outline: 'none' }}
+          >
+            <div className="max-w-3xl mx-auto text-center w-full">
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-16 relative overflow-hidden">
                 
-                {/* Multiple rotating rings */}
-                <div className="relative mb-8">
-                  <div className="w-32 h-32 mx-auto relative">
-                    <div className="absolute inset-0 border-4 border-purple-200 rounded-full"></div>
-                    <div className="absolute inset-2 border-4 border-pink-300 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
-                    <div className="absolute inset-4 border-4 border-purple-400 rounded-full animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
-                    <div className="absolute inset-6 border-4 border-pink-500 rounded-full animate-spin" style={{ animationDuration: '1s' }}></div>
-                    
-                    {/* Center icon */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <PhotoIcon className="h-12 w-12 text-purple-600 animate-pulse" />
+                {/* Background gradient animation */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-purple-50/80 opacity-50"></div>
+                
+                {/* Content */}
+                <div className="relative z-10">
+                  {/* Multiple rotating rings - larger and more prominent */}
+                  <div className="relative mb-12">
+                    <div className="w-40 h-40 mx-auto relative">
+                      <div className="absolute inset-0 border-4 border-purple-200 rounded-full"></div>
+                      <div className="absolute inset-2 border-4 border-pink-300 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
+                      <div className="absolute inset-4 border-4 border-purple-400 rounded-full animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
+                      <div className="absolute inset-6 border-4 border-pink-500 rounded-full animate-spin" style={{ animationDuration: '1s' }}></div>
+                      
+                      {/* Center icon - larger */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <PhotoIcon className="h-16 w-16 text-purple-600 animate-pulse" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+                    ✂️ AI Cropping Your Image
+                  </h3>
+                  
+                  <p className="text-xl text-gray-700 mb-8 font-medium">
+                    Please wait while we precisely crop your image...
+                  </p>
+                  
+                  {/* Progress bar with shimmer - larger */}
+                  <div className="w-full bg-gray-200 rounded-full h-4 mb-6 overflow-hidden shadow-inner">
+                    <div 
+                      className="h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 relative shadow-lg"
+                      style={{ width: `${processingProgress}%` }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse"></div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-lg text-purple-600 font-semibold">{processingProgress}% Complete</p>
+                  
+                  {/* Processing status */}
+                  <div className="mt-8 bg-purple-50 rounded-2xl p-4 border border-purple-100">
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                      <span className="text-purple-700 font-medium">
+                        {processingProgress < 15 ? 'Analyzing crop area...' :
+                         processingProgress < 35 ? 'Preparing crop...' :
+                         processingProgress < 60 ? 'Calculating dimensions...' :
+                         processingProgress < 85 ? 'Cropping image...' : 'Finalizing...'}
+                      </span>
                     </div>
                   </div>
                 </div>
-                
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                  ✂️ AI Cropping Your Image
-                </h3>
-                
-                <p className="text-gray-600 mb-6">
-                  Please wait while we precisely crop your image...
-                </p>
-                
-                {/* Progress bar with shimmer */}
-                <div className="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
-                  <div 
-                    className="h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 relative"
-                    style={{ width: `${processingProgress}%` }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-gray-500">{processingProgress}% Complete</p>
               </div>
             </div>
           </div>
