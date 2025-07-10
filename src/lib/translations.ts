@@ -248,6 +248,11 @@ const translations = {
     'pdfConvert.newConversion': 'Yeni Dönüştürme',
     'pdfConvert.downloadAllZip': 'Hepsini İndir (ZIP)',
     'pdfConvert.otherTools': 'Diğer PDF Araçları',
+    'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
+    'pdfConvert.backToTools': 'Araç Seçimine Dön',
+    'pdfConvert.processing': 'Yapay Zeka ile İşleniyor...',
+    'pdfConvert.processingDesc': 'AI algoritmaları dosyalarınızı optimize ediyor',
+    'pdfTools.progress.completed': 'tamamlandı',
     
     // PDF TOOLS DESCRIPTIONS
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
@@ -520,6 +525,11 @@ const translations = {
     'pdfConvert.newConversion': 'New Conversion',
     'pdfConvert.downloadAllZip': 'Download All (ZIP)',
     'pdfConvert.otherTools': 'Other PDF Tools',
+    'pdfConvert.toolSelected': 'selected! File uploading...',
+    'pdfConvert.backToTools': 'Back to Tool Selection',
+    'pdfConvert.processing': 'Processing with AI...',
+    'pdfConvert.processingDesc': 'AI algorithms are optimizing your files',
+    'pdfTools.progress.completed': 'completed',
     
     // PDF TOOLS DESCRIPTIONS ENGLISH
     'pdfToImages.description': 'High quality visual output, smart format optimization',
