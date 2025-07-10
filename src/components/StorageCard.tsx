@@ -3,22 +3,70 @@ import { useState } from 'react';
 import { useStorage } from '@/contexts/StorageContext';
 import { StorageUtils, StorageFile } from '@/lib/storageUtils';
 import { CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { getTranslations } from '@/lib/translations';
 
-export default function StorageCard() {
+interface StorageTexts {
+  title: string;
+  subtitle: string;
+  usedSpace: string;
+  percentUsed: string;
+  filesCount: string;
+  refreshButton: string;
+  cleanupButton: string;
+  refreshing: string;
+  cleaning: string;
+  recentFiles: string;
+  showLess: string;
+  showMore: string;
+  noFiles: string;
+  noFilesDesc: string;
+  downloadTooltip: string;
+  deleteTooltip: string;
+  deleteConfirm: string;
+  cleanupConfirm: string;
+  cleanupSuccess: string;
+  cleanupError: string;
+  autoDelete: string;
+  freeSpace: string;
+  secureStorage: string;
+}
+
+interface StorageCardProps {
+  texts?: StorageTexts;
+}
+
+export default function StorageCard({ 
+  texts = {
+    title: 'Firebase Storage',
+    subtitle: 'Dosya depolama alanınız',
+    usedSpace: 'Kullanılan Alan',
+    percentUsed: 'kullanıldı',
+    filesCount: 'dosya',
+    refreshButton: 'Yenile',
+    cleanupButton: 'Temizle',
+    refreshing: 'Yükleniyor...',
+    cleaning: 'Temizleniyor...',
+    recentFiles: 'Son Dosyalar',
+    showLess: 'Daha Az',
+    showMore: 'Daha',
+    noFiles: 'Henüz dosya yok',
+    noFilesDesc: 'PDF işlemleriniz burada görünecek',
+    downloadTooltip: 'İndir',
+    deleteTooltip: 'Sil',
+    deleteConfirm: 'Bu dosyayı silmek istediğinizden emin misiniz?',
+    cleanupConfirm: '30 günden eski dosyalar silinecek. Devam etmek istiyor musunuz?',
+    cleanupSuccess: '{count} adet eski dosya silindi.',
+    cleanupError: 'Temizlik işlemi başarısız oldu.',
+    autoDelete: 'Dosyalar 30 gün sonra otomatik silinir',
+    freeSpace: '5GB ücretsiz depolama alanı',
+    secureStorage: 'Güvenli Firebase Storage',
+  }
+}: StorageCardProps) {
   const { files, quota, loading, error, refreshFiles, deleteFile, cleanupExpiredFiles } = useStorage();
-  const { language } = useLanguage();
-  const getText = (key: string, fallback: string) => {
-    const translations = getTranslations(language);
-    return translations[key] || fallback;
-  };
-  
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCleaningUp, setIsCleaningUp] = useState(false);
 
   const handleDeleteFile = async (filePath: string) => {
-    if (confirm(getText('storage.deleteConfirm', 'Bu dosyayı silmek istediğinizden emin misiniz?'))) {
+    if (confirm(texts.deleteConfirm)) {
       try {
         await deleteFile(filePath);
         await refreshFiles();
@@ -29,14 +77,14 @@ export default function StorageCard() {
   };
 
   const handleCleanup = async () => {
-    if (confirm(getText('storage.cleanupConfirm', '30 günden eski dosyalar silinecek. Devam etmek istiyor musunuz?'))) {
+    if (confirm(texts.cleanupConfirm)) {
       setIsCleaningUp(true);
       try {
         const deletedCount = await cleanupExpiredFiles();
-        alert(getText('storage.cleanupSuccess', '{count} adet eski dosya silindi.').replace('{count}', deletedCount.toString()));
+        alert(texts.cleanupSuccess.replace('{count}', deletedCount.toString()));
       } catch (error) {
         console.error('Cleanup error:', error);
-        alert(getText('storage.cleanupError', 'Temizlik işlemi başarısız oldu.'));
+        alert(texts.cleanupError);
       } finally {
         setIsCleaningUp(false);
       }
@@ -96,8 +144,8 @@ export default function StorageCard() {
             </svg>
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{getText('storage.title', 'Firebase Storage')}</h3>
-            <p className="text-sm text-gray-500">{getText('storage.subtitle', 'Dosya depolama alanınız')}</p>
+            <h3 className="text-lg font-semibold text-gray-900">{texts.title}</h3>
+            <p className="text-sm text-gray-500">{texts.subtitle}</p>
           </div>
         </div>
         <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -106,7 +154,7 @@ export default function StorageCard() {
       {/* Storage Info */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600">{getText('storage.usedSpace', 'Kullanılan Alan')}</span>
+          <span className="text-sm text-gray-600">{texts.usedSpace}</span>
           <span className="text-sm font-medium text-gray-900">
             {formatFileSize(quota.used)} / {formatFileSize(quota.limit)}
           </span>
@@ -121,7 +169,7 @@ export default function StorageCard() {
           />
         </div>
         <p className="text-xs text-gray-500 mt-1">
-          {quota.percentage.toFixed(1)}% {getText('storage.percentUsed', 'kullanıldı')} • {files.length} {getText('storage.filesCount', 'dosya')}
+          {quota.percentage.toFixed(1)}% {texts.percentUsed} • {files.length} {texts.filesCount}
         </p>
       </div>
 
@@ -132,14 +180,14 @@ export default function StorageCard() {
           disabled={loading}
           className="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors disabled:opacity-50"
         >
-          {loading ? getText('storage.refreshing', 'Yükleniyor...') : getText('storage.refreshButton', 'Yenile')}
+          {loading ? texts.refreshing : texts.refreshButton}
         </button>
         <button
           onClick={handleCleanup}
           disabled={isCleaningUp || loading}
           className="bg-gray-50 text-gray-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
         >
-          {isCleaningUp ? getText('storage.cleaning', 'Temizleniyor...') : getText('storage.cleanupButton', 'Temizle')}
+          {isCleaningUp ? texts.cleaning : texts.cleanupButton}
         </button>
       </div>
 
@@ -153,13 +201,13 @@ export default function StorageCard() {
       {/* File List */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-gray-700">{getText('storage.recentFiles', 'Son Dosyalar')}</h4>
+          <h4 className="text-sm font-medium text-gray-700">{texts.recentFiles}</h4>
           {files.length > 3 && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="text-xs text-blue-600 hover:text-blue-800"
             >
-              {isExpanded ? getText('storage.showLess', 'Daha Az') : `+${files.length - 3} ${getText('storage.showMore', 'Daha')}`}
+              {isExpanded ? texts.showLess : `+${files.length - 3} ${texts.showMore}`}
             </button>
           )}
         </div>
@@ -168,8 +216,8 @@ export default function StorageCard() {
           {files.length === 0 ? (
             <div className="text-center py-8">
               <CloudArrowUpIcon className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-              <p className="text-sm text-gray-500">{getText('storage.noFiles', 'Henüz dosya yok')}</p>
-              <p className="text-xs text-gray-400">{getText('storage.noFilesDesc', 'PDF işlemleriniz burada görünecek')}</p>
+              <p className="text-sm text-gray-500">{texts.noFiles}</p>
+              <p className="text-xs text-gray-400">{texts.noFilesDesc}</p>
             </div>
           ) : (
             <>
@@ -190,14 +238,14 @@ export default function StorageCard() {
                     <button
                       onClick={() => handleDownload(file)}
                       className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
-                      title={getText('storage.downloadTooltip', 'İndir')}
+                      title={texts.downloadTooltip}
                     >
                       <CloudArrowDownIcon className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteFile(file.fullPath)}
                       className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
-                      title={getText('storage.deleteTooltip', 'Sil')}
+                      title={texts.deleteTooltip}
                     >
                       <TrashIcon className="h-4 w-4" />
                     </button>
@@ -212,9 +260,9 @@ export default function StorageCard() {
       {/* Storage Info */}
       <div className="mt-4 pt-4 border-t border-gray-200">
         <div className="text-xs text-gray-500 space-y-1">
-          <p>• {getText('storage.autoDelete', 'Dosyalar 30 gün sonra otomatik silinir')}</p>
-          <p>• {getText('storage.freeSpace', '5GB ücretsiz depolama alanı')}</p>
-          <p>• {getText('storage.secureStorage', 'Güvenli Firebase Storage')}</p>
+          <p>• {texts.autoDelete}</p>
+          <p>• {texts.freeSpace}</p>
+          <p>• {texts.secureStorage}</p>
         </div>
       </div>
     </div>
