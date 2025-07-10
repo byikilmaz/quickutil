@@ -117,13 +117,12 @@ export default function ImageFormatConvert() {
       
       setCurrentStep('configure');
       
-      // Focus directly to process button for best user experience
+      // Focus to configure section for best user experience
       setTimeout(() => {
-        processButtonRef.current?.scrollIntoView({ 
+        configureRef.current?.scrollIntoView({ 
           behavior: 'smooth', 
-          block: 'end' 
+          block: 'center' 
         });
-        processButtonRef.current?.focus();
       }, 400);
     } catch (error) {
       console.error('Error getting image dimensions:', error);
