@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { SparklesIcon, PhotoIcon, CheckCircleIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useDropzone } from 'react-dropzone';
@@ -14,9 +14,16 @@ import {
   cropImage,
   getImageDimensions,
   formatFileSize,
-  type ConversionResult,
-  type CropOptions 
+  type ConversionResult 
 } from '@/lib/imageUtils';
+
+// Types
+interface CropOptions {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 interface CropResult {
   originalFile: File;
@@ -27,7 +34,7 @@ interface CropResult {
   downloadUrl: string;
 }
 
-// Interactive Crop Box Component
+// Interactive Crop Box Component with Enhanced Sync
 function InteractiveCropBox({ 
   imageUrl, 
   originalDimensions, 
@@ -51,7 +58,7 @@ function InteractiveCropBox({
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const calculateCropFromMouse = (clientX: number, clientY: number, handle: string): CropOptions => {
+  const calculateCropFromMouse = useCallback((clientX: number, clientY: number, handle: string): CropOptions => {
     if (!dragStart) return cropOptions;
     
     const deltaX = clientX - dragStart.x;
@@ -113,9 +120,22 @@ function InteractiveCropBox({
       width: Math.round(width), 
       height: Math.round(height) 
     };
-  };
+  }, [dragStart, cropOptions, originalDimensions]);
 
-  const handleMouseDown = (e: React.MouseEvent, handle: string) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging || !dragHandle || !dragStart) return;
+    
+    const newCrop = calculateCropFromMouse(e.clientX, e.clientY, dragHandle);
+    onCropChange(newCrop);
+  }, [isDragging, dragHandle, dragStart, calculateCropFromMouse, onCropChange]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+    setDragHandle(null);
+    setDragStart(null);
+  }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -133,20 +153,7 @@ function InteractiveCropBox({
       containerRect,
       imageRect
     });
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging || !dragHandle || !dragStart) return;
-    
-    const newCrop = calculateCropFromMouse(e.clientX, e.clientY, dragHandle);
-    onCropChange(newCrop);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setDragHandle(null);
-    setDragStart(null);
-  };
+  }, [cropOptions]);
 
   useEffect(() => {
     if (isDragging) {
@@ -158,7 +165,7 @@ function InteractiveCropBox({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, dragHandle, dragStart]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   // Calculate crop overlay position and size as percentages
   const cropLeft = (cropOptions.x / originalDimensions.width) * 100;
@@ -654,29 +661,29 @@ export default function ImageCrop() {
                       
                       {/* Preset Crops */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Quick Presets</label>
+                        <label className="block text-sm font-medium text-black mb-3">Quick Presets</label>
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => applyPresetCrop('square')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
                             🔲 Square
                           </button>
                           <button
                             onClick={() => applyPresetCrop('center')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
                             🎯 Center
                           </button>
                           <button
                             onClick={() => applyPresetCrop('wide')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
                             📐 Wide
                           </button>
                           <button
                             onClick={() => applyPresetCrop('tall')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
                             📏 Tall
                           </button>
@@ -685,11 +692,11 @@ export default function ImageCrop() {
 
                       {/* Crop Dimensions */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Crop Dimensions</label>
+                        <label className="block text-sm font-medium text-black mb-3">Crop Dimensions</label>
                         <div className="space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-800 mb-1">X Position</label>
+                              <label className="block text-xs text-black font-medium mb-1">X Position</label>
                               <input
                                 type="number"
                                 value={cropOptions.x}
@@ -716,7 +723,7 @@ export default function ImageCrop() {
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-800 mb-1">Y Position</label>
+                              <label className="block text-xs text-black font-medium mb-1">Y Position</label>
                               <input
                                 type="number"
                                 value={cropOptions.y}
@@ -742,7 +749,7 @@ export default function ImageCrop() {
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-800 mb-1">Width</label>
+                              <label className="block text-xs text-black font-medium mb-1">Width</label>
                               <input
                                 type="number"
                                 value={cropOptions.width}
@@ -766,7 +773,7 @@ export default function ImageCrop() {
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-800 mb-1">Height</label>
+                              <label className="block text-xs text-black font-medium mb-1">Height</label>
                               <input
                                 type="number"
                                 value={cropOptions.height}
