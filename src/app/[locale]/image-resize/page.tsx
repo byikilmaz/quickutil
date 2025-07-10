@@ -30,211 +30,52 @@ interface ResizeResult {
 
 type ResizeMode = 'pixels' | 'percentage';
 
-// Interactive Resize Box Component - FIXED VERSION
-function InteractiveResizeBox({ 
+// Simple Preview Component - No Interactive Resize
+function SimplePreviewBox({ 
   imageUrl, 
   originalDimensions, 
   width, 
-  height, 
-  onDimensionsChange 
+  height 
 }: {
   imageUrl: string;
   originalDimensions: { width: number; height: number };
   width: number | undefined;
   height: number | undefined;
-  onDimensionsChange: (width: number, height: number) => void;
 }) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragHandle, setDragHandle] = useState<string | null>(null);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
-
-  const calculateDimensions = (clientX: number, clientY: number) => {
-    if (!containerRef.current || !imageRef.current || !dragStart || !dragHandle) return;
-    
-    const imageRect = imageRef.current.getBoundingClientRect();
-    
-    // Calculate mouse delta from drag start
-    const deltaX = clientX - dragStart.x;
-    const deltaY = clientY - dragStart.y;
-    
-    // Calculate scale factor between displayed image and original dimensions
-    const scaleX = originalDimensions.width / imageRect.width;
-    const scaleY = originalDimensions.height / imageRect.height;
-    
-    // Convert pixel deltas to original image coordinates
-    const deltaOriginalX = deltaX * scaleX;
-    const deltaOriginalY = deltaY * scaleY;
-    
-    let newWidth = dragStart.width;
-    let newHeight = dragStart.height;
-    
-    // Apply dimension changes based on which handle is being dragged
-    switch (dragHandle) {
-      case 'bottom-right':
-        newWidth = dragStart.width + deltaOriginalX;
-        newHeight = dragStart.height + deltaOriginalY;
-        break;
-      case 'bottom-left':
-        newWidth = dragStart.width - deltaOriginalX;
-        newHeight = dragStart.height + deltaOriginalY;
-        break;
-      case 'top-right':
-        newWidth = dragStart.width + deltaOriginalX;
-        newHeight = dragStart.height - deltaOriginalY;
-        break;
-      case 'top-left':
-        newWidth = dragStart.width - deltaOriginalX;
-        newHeight = dragStart.height - deltaOriginalY;
-        break;
-      case 'right':
-        newWidth = dragStart.width + deltaOriginalX;
-        break;
-      case 'bottom':
-        newHeight = dragStart.height + deltaOriginalY;
-        break;
-      case 'left':
-        newWidth = dragStart.width - deltaOriginalX;
-        break;
-      case 'top':
-        newHeight = dragStart.height - deltaOriginalY;
-        break;
-    }
-    
-    // Ensure minimum dimensions and don't exceed original
-    const finalWidth = Math.max(50, Math.min(newWidth, originalDimensions.width * 2));
-    const finalHeight = Math.max(50, Math.min(newHeight, originalDimensions.height * 2));
-    
-    onDimensionsChange(Math.round(finalWidth), Math.round(finalHeight));
-  };
-
-  const handleMouseDown = (e: React.MouseEvent, handle: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    setIsDragging(true);
-    setDragHandle(handle);
-    setDragStart({
-      x: e.clientX,
-      y: e.clientY,
-      width: width || originalDimensions.width,
-      height: height || originalDimensions.height
-    });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !dragHandle) return;
-    e.preventDefault();
-    calculateDimensions(e.clientX, e.clientY);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setDragHandle(null);
-    setDragStart(null);
-  };
-
-  // Global mouse events for better drag experience
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !dragHandle) return;
-      calculateDimensions(e.clientX, e.clientY);
-    };
-
-    const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-      setDragHandle(null);
-      setDragStart(null);
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleGlobalMouseMove);
-        document.removeEventListener('mouseup', handleGlobalMouseUp);
-      };
-    }
-  }, [isDragging, dragHandle, dragStart]);
-
-  // Calculate preview dimensions for the resize box
+  // Calculate preview dimensions
   const previewWidth = width || originalDimensions.width;
   const previewHeight = height || originalDimensions.height;
   
-  // Calculate overlay position and dimensions
-  const overlayWidthPercent = (previewWidth / originalDimensions.width) * 100;
-  const overlayHeightPercent = (previewHeight / originalDimensions.height) * 100;
-  
-  // Center the overlay if dimensions are smaller than original
-  const overlayLeftPercent = (100 - overlayWidthPercent) / 2;
-  const overlayTopPercent = (100 - overlayHeightPercent) / 2;
-  
   return (
-    <div 
-      ref={containerRef}
-      className="relative bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-[400px] flex items-center justify-center"
-      onMouseUp={handleMouseUp}
-    >
+    <div className="relative bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-[400px] flex items-center justify-center">
       <div className="relative">
         <img
-          ref={imageRef}
           src={imageUrl}
-          alt="Interactive Preview"
-          className="max-w-full max-h-[350px] object-contain rounded-lg"
-          draggable={false}
-        />
-        
-        {/* Interactive Resize Overlay */}
-        <div 
-          className="absolute border-2 border-purple-500 bg-purple-500/10 rounded pointer-events-none"
+          alt="Live Preview"
+          className="max-w-full max-h-[350px] object-contain rounded-lg shadow-lg"
           style={{
-            left: `${overlayLeftPercent}%`,
-            top: `${overlayTopPercent}%`,
-            width: `${overlayWidthPercent}%`,
-            height: `${overlayHeightPercent}%`,
+            width: 'auto',
+            height: 'auto',
+            maxWidth: '350px',
+            maxHeight: '350px'
           }}
-        >
-          {/* Corner handles */}
-          <div 
-            className="absolute -bottom-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-se-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'bottom-right')}
-          />
-          <div 
-            className="absolute -bottom-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-sw-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'bottom-left')}
-          />
-          <div 
-            className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-ne-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'top-right')}
-          />
-          <div 
-            className="absolute -top-1 -left-1 w-4 h-4 bg-purple-500 border-2 border-white rounded-full cursor-nw-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'top-left')}
-          />
-          
-          {/* Edge handles */}
-          <div 
-            className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-4 h-6 bg-purple-500 border-2 border-white rounded cursor-w-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'left')}
-          />
-          <div 
-            className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-purple-500 border-2 border-white rounded cursor-n-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'top')}
-          />
-          <div 
-            className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-4 h-6 bg-purple-500 border-2 border-white rounded cursor-e-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'right')}
-          />
-          <div 
-            className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-purple-500 border-2 border-white rounded cursor-s-resize shadow-lg hover:bg-purple-600 transition-colors pointer-events-auto"
-            onMouseDown={(e) => handleMouseDown(e, 'bottom')}
-          />
-        </div>
+        />
         
         {/* Dimension indicator */}
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/75 text-white px-3 py-1 rounded text-sm font-medium">
           {previewWidth} × {previewHeight}
+        </div>
+        
+        {/* Size comparison indicator */}
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-center">
+          <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded text-sm font-medium">
+            {previewWidth === originalDimensions.width && previewHeight === originalDimensions.height 
+              ? 'Orijinal Boyut' 
+              : previewWidth < originalDimensions.width || previewHeight < originalDimensions.height
+              ? 'Küçültülüyor'
+              : 'Büyütülüyor'
+            }
+          </div>
         </div>
       </div>
     </div>
@@ -610,16 +451,15 @@ export default function ImageResize() {
                   {/* Left: Interactive Preview (3/5) */}
                   <div className="lg:col-span-3">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                      <h3 className="font-semibold text-gray-900 mb-4 text-center">Interactive Preview</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4 text-center">Live Preview</h3>
                       <p className="text-sm text-gray-600 mb-4 text-center">
-                        🎯 Drag the handles to resize visually or use the controls below
+                        🎯 Adjust dimensions using controls on the right and see live preview
                       </p>
-                      <InteractiveResizeBox
+                      <SimplePreviewBox
                         imageUrl={URL.createObjectURL(file)}
                         originalDimensions={originalDimensions}
                         width={width}
                         height={height}
-                        onDimensionsChange={handleInteractiveDimensionsChange}
                       />
                       <div className="mt-4 text-sm text-gray-700 text-center bg-white rounded-lg p-3">
                         <p className="font-medium">{file.name}</p>
