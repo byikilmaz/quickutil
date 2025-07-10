@@ -1344,9 +1344,9 @@ export const translations = {
     'pdfCompress.cta.notice': 'No requiere registro • Hasta 50 archivos • Compresión AI',
 
     // PDF Convert Tool
-    'pdfConvert.title': 'AI PDF Dönüştürme',
-    'pdfConvert.subtitle': 'Yapay zeka destekli PDF dönüştürme araçları. AI otomatik format seçimi yapar, sayfalara ayırır, birleştirir.',
-    'pdfConvert.selectTool': 'Dönüştürme Aracını Seçin',
+    'pdfConvert.title': 'AI Conversión PDF',
+    'pdfConvert.subtitle': 'Herramientas de conversión PDF con IA. AI hace selección automática de formato, divide páginas, fusiona documentos.',
+    'pdfConvert.selectTool': 'Seleccionar Herramienta de Conversión',
     'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
     'pdfConvert.fileUpload': 'Dosya Yükleme',
     'pdfConvert.selectOrDrag': 'PDF dosyasını seç veya sürükle',
@@ -1375,7 +1375,7 @@ export const translations = {
     
     // PDF to Images Tool
     'pdfToImages.title': 'AI PDF to JPG/PNG',
-    'pdfToImages.subtitle': 'AI destekli PDF to images dönüştürme. Yapay zeka en uygun çözünürlük ve format seçimi yapar.',
+    'pdfToImages.subtitle': 'Conversión PDF a imágenes con IA. AI selecciona la resolución y formato óptimos.',
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToImages.selectFormat': 'Çıktı Formatı',
     'pdfToImages.formatPng': 'PNG (Şeffaflık destekli)',
@@ -1391,7 +1391,7 @@ export const translations = {
     
     // PDF to Text Tool  
     'pdfToText.title': 'AI PDF to Text',
-    'pdfToText.subtitle': 'AI destekli PDF to text dönüştürme. OCR teknolojisi ile mükemmel metin tanıma.',
+    'pdfToText.subtitle': 'Conversión PDF a texto con IA. Reconocimiento de texto perfecto con tecnología OCR.',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
     'pdfToText.extracting': 'PDF\'den metin çıkarılıyor...',
     'pdfToText.aiProcessing': 'AI gelişmiş OCR algoritmaları kullanıyor',
@@ -1401,8 +1401,8 @@ export const translations = {
     'pdfToText.downloadText': 'Metin Dosyasını İndir',
     
     // PDF Split Tool
-    'pdfSplit.title': 'AI PDF Böl',
-    'pdfSplit.subtitle': 'AI destekli PDF split. Akıllı sayfa tanıma ve otomatik bölümleme seçenekleri.',
+    'pdfSplit.title': 'AI Dividir PDF',
+    'pdfSplit.subtitle': 'División PDF con IA. Reconocimiento inteligente de páginas y opciones de división automática.',
     'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
     'pdfSplit.splitMode': 'Bölme Modu',
     'pdfSplit.allPages': 'Tüm Sayfalar',
@@ -1420,8 +1420,8 @@ export const translations = {
     'pdfSplit.totalParts': 'Toplam Parça',
     
     // PDF Merge Tool
-    'pdfMerge.title': 'AI PDF Birleştir', 
-    'pdfMerge.subtitle': 'AI destekli PDF merge. Akıllı sayfa sıralama ve optimizasyon.',
+    'pdfMerge.title': 'AI Fusionar PDF', 
+    'pdfMerge.subtitle': 'Fusión PDF con IA. Ordenamiento inteligente de páginas y optimización.',
     'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği',
     'pdfMerge.dragToReorder': 'Sıralamak için sürükleyin',
     'pdfMerge.moveUp': 'Yukarı Taşı',
@@ -1800,9 +1800,9 @@ export const translations = {
     'pdfCompress.cta.notice': 'Aucune inscription requise • Jusqu\'à 50 fichiers • Compression IA',
 
     // PDF Convert Tool
-    'pdfConvert.title': 'AI PDF Dönüştürme',
-    'pdfConvert.subtitle': 'Yapay zeka destekli PDF dönüştürme araçları. AI otomatik format seçimi yapar, sayfalara ayırır, birleştirir.',
-    'pdfConvert.selectTool': 'Dönüştürme Aracını Seçin',
+    'pdfConvert.title': 'AI Conversion PDF',
+    'pdfConvert.subtitle': 'Outils de conversion PDF alimentés par l'IA. L'IA sélectionne automatiquement le format, divise les pages, fusionne les documents.',
+    'pdfConvert.selectTool': 'Sélectionner l'Outil de Conversion',
     'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
     'pdfConvert.fileUpload': 'Dosya Yükleme',
     'pdfConvert.selectOrDrag': 'PDF dosyasını seç veya sürükle',
@@ -1831,7 +1831,7 @@ export const translations = {
     
     // PDF to Images Tool
     'pdfToImages.title': 'AI PDF to JPG/PNG',
-    'pdfToImages.subtitle': 'AI destekli PDF to images dönüştürme. Yapay zeka en uygun çözünürlük ve format seçimi yapar.',
+    'pdfToImages.subtitle': 'Conversion PDF en images avec IA. L'IA sélectionne la résolution et le format optimaux.',
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToImages.selectFormat': 'Çıktı Formatı',
     'pdfToImages.formatPng': 'PNG (Şeffaflık destekli)',
@@ -1847,7 +1847,7 @@ export const translations = {
     
     // PDF to Text Tool  
     'pdfToText.title': 'AI PDF to Text',
-    'pdfToText.subtitle': 'AI destekli PDF to text dönüştürme. OCR teknolojisi ile mükemmel metin tanıma.',
+    'pdfToText.subtitle': 'Conversion PDF en texte avec IA. Reconnaissance de texte parfaite avec la technologie OCR.',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
     'pdfToText.extracting': 'PDF\'den metin çıkarılıyor...',
     'pdfToText.aiProcessing': 'AI gelişmiş OCR algoritmaları kullanıyor',
@@ -1857,8 +1857,8 @@ export const translations = {
     'pdfToText.downloadText': 'Metin Dosyasını İndir',
     
     // PDF Split Tool
-    'pdfSplit.title': 'AI PDF Böl',
-    'pdfSplit.subtitle': 'AI destekli PDF split. Akıllı sayfa tanıma ve otomatik bölümleme seçenekleri.',
+    'pdfSplit.title': 'AI Diviser PDF',
+    'pdfSplit.subtitle': 'Division PDF avec IA. Reconnaissance intelligente des pages et options de division automatique.',
     'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
     'pdfSplit.splitMode': 'Bölme Modu',
     'pdfSplit.allPages': 'Tüm Sayfalar',
@@ -1876,8 +1876,8 @@ export const translations = {
     'pdfSplit.totalParts': 'Toplam Parça',
     
     // PDF Merge Tool
-    'pdfMerge.title': 'AI PDF Birleştir', 
-    'pdfMerge.subtitle': 'AI destekli PDF merge. Akıllı sayfa sıralama ve optimizasyon.',
+    'pdfMerge.title': 'AI Fusionner PDF', 
+    'pdfMerge.subtitle': 'Fusion PDF avec IA. Classement intelligent des pages et optimisation.',
     'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği',
     'pdfMerge.dragToReorder': 'Sıralamak için sürükleyin',
     'pdfMerge.moveUp': 'Yukarı Taşı',
@@ -2185,9 +2185,9 @@ export const translations = {
     'pdfCompress.cta.notice': 'Keine Registrierung erforderlich • Bis zu 50 Dateien • AI-Komprimierung',
 
     // PDF Convert Tool
-    'pdfConvert.title': 'AI PDF Dönüştürme',
-    'pdfConvert.subtitle': 'Yapay zeka destekli PDF dönüştürme araçları. AI otomatik format seçimi yapar, sayfalara ayırır, birleştirir.',
-    'pdfConvert.selectTool': 'Dönüştürme Aracını Seçin',
+    'pdfConvert.title': 'AI PDF Konvertierung',
+    'pdfConvert.subtitle': 'KI-gestützte PDF-Konvertierungstools. KI wählt automatisch Format aus, teilt Seiten, fügt Dokumente zusammen.',
+    'pdfConvert.selectTool': 'Konvertierungs-Tool auswählen',
     'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
     'pdfConvert.fileUpload': 'Dosya Yükleme',
     'pdfConvert.selectOrDrag': 'PDF dosyasını seç veya sürükle',
@@ -2216,7 +2216,7 @@ export const translations = {
     
     // PDF to Images Tool
     'pdfToImages.title': 'AI PDF to JPG/PNG',
-    'pdfToImages.subtitle': 'AI destekli PDF to images dönüştürme. Yapay zeka en uygun çözünürlük ve format seçimi yapar.',
+    'pdfToImages.subtitle': 'KI-gestützte PDF-zu-Bilder Konvertierung. KI wählt optimale Auflösung und Format aus.',
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToImages.selectFormat': 'Çıktı Formatı',
     'pdfToImages.formatPng': 'PNG (Şeffaflık destekli)',
@@ -2232,7 +2232,7 @@ export const translations = {
     
     // PDF to Text Tool  
     'pdfToText.title': 'AI PDF to Text',
-    'pdfToText.subtitle': 'AI destekli PDF to text dönüştürme. OCR teknolojisi ile mükemmel metin tanıma.',
+    'pdfToText.subtitle': 'KI-gestützte PDF-zu-Text Konvertierung. Perfekte Texterkennung mit OCR-Technologie.',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
     'pdfToText.extracting': 'PDF\'den metin çıkarılıyor...',
     'pdfToText.aiProcessing': 'AI gelişmiş OCR algoritmaları kullanıyor',
@@ -2242,8 +2242,8 @@ export const translations = {
     'pdfToText.downloadText': 'Metin Dosyasını İndir',
     
     // PDF Split Tool
-    'pdfSplit.title': 'AI PDF Böl',
-    'pdfSplit.subtitle': 'AI destekli PDF split. Akıllı sayfa tanıma ve otomatik bölümleme seçenekleri.',
+    'pdfSplit.title': 'AI PDF Teilen',
+    'pdfSplit.subtitle': 'KI-gestützte PDF-Teilung. Intelligente Seitenerkennung und automatische Teilungsoptionen.',
     'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
     'pdfSplit.splitMode': 'Bölme Modu',
     'pdfSplit.allPages': 'Tüm Sayfalar',
@@ -2261,8 +2261,8 @@ export const translations = {
     'pdfSplit.totalParts': 'Toplam Parça',
     
     // PDF Merge Tool
-    'pdfMerge.title': 'AI PDF Birleştir', 
-    'pdfMerge.subtitle': 'AI destekli PDF merge. Akıllı sayfa sıralama ve optimizasyon.',
+    'pdfMerge.title': 'AI PDF Zusammenführen', 
+    'pdfMerge.subtitle': 'KI-gestützte PDF-Zusammenführung. Intelligente Seitenreihenfolge und Optimierung.',
     'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği',
     'pdfMerge.dragToReorder': 'Sıralamak için sürükleyin',
     'pdfMerge.moveUp': 'Yukarı Taşı',
@@ -2570,9 +2570,9 @@ export const translations = {
     'pdfCompress.cta.notice': 'لا يتطلب تسجيل • حتى 50 ملف • ضغط AI',
 
     // PDF Convert Tool
-    'pdfConvert.title': 'AI PDF Dönüştürme',
-    'pdfConvert.subtitle': 'Yapay zeka destekli PDF dönüştürme araçları. AI otomatik format seçimi yapar, sayfalara ayırır, birleştirir.',
-    'pdfConvert.selectTool': 'Dönüştürme Aracını Seçin',
+    'pdfConvert.title': 'AI تحويل PDF',
+    'pdfConvert.subtitle': 'أدوات تحويل PDF مدعومة بالذكاء الاصطناعي. يختار الذكاء الاصطناعي التنسيق تلقائياً، يقسم الصفحات، يدمج المستندات.',
+    'pdfConvert.selectTool': 'اختر أداة التحويل',
     'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
     'pdfConvert.fileUpload': 'Dosya Yükleme',
     'pdfConvert.selectOrDrag': 'PDF dosyasını seç veya sürükle',
@@ -2601,7 +2601,7 @@ export const translations = {
     
     // PDF to Images Tool
     'pdfToImages.title': 'AI PDF to JPG/PNG',
-    'pdfToImages.subtitle': 'AI destekli PDF to images dönüştürme. Yapay zeka en uygun çözünürlük ve format seçimi yapar.',
+    'pdfToImages.subtitle': 'تحويل PDF إلى صور بالذكاء الاصطناعي. يختار الذكاء الاصطناعي الدقة والتنسيق الأمثل.',
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToImages.selectFormat': 'Çıktı Formatı',
     'pdfToImages.formatPng': 'PNG (Şeffaflık destekli)',
@@ -2617,7 +2617,7 @@ export const translations = {
     
     // PDF to Text Tool  
     'pdfToText.title': 'AI PDF to Text',
-    'pdfToText.subtitle': 'AI destekli PDF to text dönüştürme. OCR teknolojisi ile mükemmel metin tanıma.',
+    'pdfToText.subtitle': 'تحويل PDF إلى نص بالذكاء الاصطناعي. تحليل مثالي للنص بتقنية OCR.',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
     'pdfToText.extracting': 'PDF\'den metin çıkarılıyor...',
     'pdfToText.aiProcessing': 'AI gelişmiş OCR algoritmaları kullanıyor',
@@ -2627,8 +2627,8 @@ export const translations = {
     'pdfToText.downloadText': 'Metin Dosyasını İndir',
     
     // PDF Split Tool
-    'pdfSplit.title': 'AI PDF Böl',
-    'pdfSplit.subtitle': 'AI destekli PDF split. Akıllı sayfa tanıma ve otomatik bölümleme seçenekleri.',
+    'pdfSplit.title': 'AI تقسيم PDF',
+    'pdfSplit.subtitle': 'تقسيم PDF بالذكاء الاصطناعي. تحليل ذكي للصفحات وخيارات تقسيم تلقائية.',
     'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
     'pdfSplit.splitMode': 'Bölme Modu',
     'pdfSplit.allPages': 'Tüm Sayfalar',
@@ -2646,8 +2646,8 @@ export const translations = {
     'pdfSplit.totalParts': 'Toplam Parça',
     
     // PDF Merge Tool
-    'pdfMerge.title': 'AI PDF Birleştir', 
-    'pdfMerge.subtitle': 'AI destekli PDF merge. Akıllı sayfa sıralama ve optimizasyon.',
+    'pdfMerge.title': 'AI دمج PDF', 
+    'pdfMerge.subtitle': 'دمج PDF بالذكاء الاصطناعي. ترتيب ذكي للصفحات وتحسين.',
     'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği',
     'pdfMerge.dragToReorder': 'Sıralamak için sürükleyin',
     'pdfMerge.moveUp': 'Yukarı Taşı',
@@ -2955,9 +2955,9 @@ export const translations = {
     'pdfCompress.cta.notice': '登録不要 • 最大50ファイル • AI圧縮',
 
     // PDF Convert Tool
-    'pdfConvert.title': 'AI PDF Dönüştürme',
-    'pdfConvert.subtitle': 'Yapay zeka destekli PDF dönüştürme araçları. AI otomatik format seçimi yapar, sayfalara ayırır, birleştirir.',
-    'pdfConvert.selectTool': 'Dönüştürme Aracını Seçin',
+    'pdfConvert.title': 'AI PDF変換',
+    'pdfConvert.subtitle': 'AI支援PDF変換ツール。AIが自動的にフォーマットを選択し、ページを分割、文書を結合します。',
+    'pdfConvert.selectTool': '変換ツールを選択',
     'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
     'pdfConvert.fileUpload': 'Dosya Yükleme',
     'pdfConvert.selectOrDrag': 'PDF dosyasını seç veya sürükle',
@@ -2986,7 +2986,7 @@ export const translations = {
     
     // PDF to Images Tool
     'pdfToImages.title': 'AI PDF to JPG/PNG',
-    'pdfToImages.subtitle': 'AI destekli PDF to images dönüştürme. Yapay zeka en uygun çözünürlük ve format seçimi yapar.',
+    'pdfToImages.subtitle': 'AI支援PDF画像変換。AIが最適な解像度とフォーマットを選択します。',
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToImages.selectFormat': 'Çıktı Formatı',
     'pdfToImages.formatPng': 'PNG (Şeffaflık destekli)',
@@ -3002,7 +3002,7 @@ export const translations = {
     
     // PDF to Text Tool  
     'pdfToText.title': 'AI PDF to Text',
-    'pdfToText.subtitle': 'AI destekli PDF to text dönüştürme. OCR teknolojisi ile mükemmel metin tanıma.',
+    'pdfToText.subtitle': 'AI支援PDFテキスト変換。OCR技術による完璧なテキスト認識。',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
     'pdfToText.extracting': 'PDF\'den metin çıkarılıyor...',
     'pdfToText.aiProcessing': 'AI gelişmiş OCR algoritmaları kullanıyor',
@@ -3012,8 +3012,8 @@ export const translations = {
     'pdfToText.downloadText': 'Metin Dosyasını İndir',
     
     // PDF Split Tool
-    'pdfSplit.title': 'AI PDF Böl',
-    'pdfSplit.subtitle': 'AI destekli PDF split. Akıllı sayfa tanıma ve otomatik bölümleme seçenekleri.',
+    'pdfSplit.title': 'AI PDF分割',
+    'pdfSplit.subtitle': 'AI支援PDF分割。スマートページ認識と自動分割オプション。',
     'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
     'pdfSplit.splitMode': 'Bölme Modu',
     'pdfSplit.allPages': 'Tüm Sayfalar',
@@ -3031,8 +3031,8 @@ export const translations = {
     'pdfSplit.totalParts': 'Toplam Parça',
     
     // PDF Merge Tool
-    'pdfMerge.title': 'AI PDF Birleştir', 
-    'pdfMerge.subtitle': 'AI destekli PDF merge. Akıllı sayfa sıralama ve optimizasyon.',
+    'pdfMerge.title': 'AI PDF結合', 
+    'pdfMerge.subtitle': 'AI支援PDF結合。スマートページ順序付けと最適化。',
     'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği',
     'pdfMerge.dragToReorder': 'Sıralamak için sürükleyin',
     'pdfMerge.moveUp': 'Yukarı Taşı',
@@ -3340,9 +3340,9 @@ export const translations = {
     'pdfCompress.cta.notice': '등록 불필요 • 최대 50개 파일 • AI 압축',
 
     // PDF Convert Tool
-    'pdfConvert.title': 'AI PDF Dönüştürme',
-    'pdfConvert.subtitle': 'Yapay zeka destekli PDF dönüştürme araçları. AI otomatik format seçimi yapar, sayfalara ayırır, birleştirir.',
-    'pdfConvert.selectTool': 'Dönüştürme Aracını Seçin',
+    'pdfConvert.title': 'AI PDF 변환',
+    'pdfConvert.subtitle': 'AI 지원 PDF 변환 도구. AI가 자동으로 형식을 선택하고, 페이지를 분할하며, 문서를 병합합니다.',
+    'pdfConvert.selectTool': '변환 도구 선택',
     'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
     'pdfConvert.fileUpload': 'Dosya Yükleme',
     'pdfConvert.selectOrDrag': 'PDF dosyasını seç veya sürükle',
@@ -3371,7 +3371,7 @@ export const translations = {
     
     // PDF to Images Tool
     'pdfToImages.title': 'AI PDF to JPG/PNG',
-    'pdfToImages.subtitle': 'AI destekli PDF to images dönüştürme. Yapay zeka en uygun çözünürlük ve format seçimi yapar.',
+    'pdfToImages.subtitle': 'AI 지원 PDF 이미지 변환. AI가 최적의 해상도와 형식을 선택합니다.',
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToImages.selectFormat': 'Çıktı Formatı',
     'pdfToImages.formatPng': 'PNG (Şeffaflık destekli)',
@@ -3387,7 +3387,7 @@ export const translations = {
     
     // PDF to Text Tool  
     'pdfToText.title': 'AI PDF to Text',
-    'pdfToText.subtitle': 'AI destekli PDF to text dönüştürme. OCR teknolojisi ile mükemmel metin tanıma.',
+    'pdfToText.subtitle': 'AI 지원 PDF 텍스트 변환. OCR 기술로 완벽한 텍스트 인식.',
     'pdfToText.description': 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma',
     'pdfToText.extracting': 'PDF\'den metin çıkarılıyor...',
     'pdfToText.aiProcessing': 'AI gelişmiş OCR algoritmaları kullanıyor',
@@ -3397,8 +3397,8 @@ export const translations = {
     'pdfToText.downloadText': 'Metin Dosyasını İndir',
     
     // PDF Split Tool
-    'pdfSplit.title': 'AI PDF Böl',
-    'pdfSplit.subtitle': 'AI destekli PDF split. Akıllı sayfa tanıma ve otomatik bölümleme seçenekleri.',
+    'pdfSplit.title': 'AI PDF 분할',
+    'pdfSplit.subtitle': 'AI 지원 PDF 분할. 스마트 페이지 인식 및 자동 분할 옵션.',
     'pdfSplit.description': 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem',
     'pdfSplit.splitMode': 'Bölme Modu',
     'pdfSplit.allPages': 'Tüm Sayfalar',
@@ -3416,8 +3416,8 @@ export const translations = {
     'pdfSplit.totalParts': 'Toplam Parça',
     
     // PDF Merge Tool
-    'pdfMerge.title': 'AI PDF Birleştir', 
-    'pdfMerge.subtitle': 'AI destekli PDF merge. Akıllı sayfa sıralama ve optimizasyon.',
+    'pdfMerge.title': 'AI PDF 병합', 
+    'pdfMerge.subtitle': 'AI 지원 PDF 병합. 스마트 페이지 정렬 및 최적화.',
     'pdfMerge.description': 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği',
     'pdfMerge.dragToReorder': 'Sıralamak için sürükleyin',
     'pdfMerge.moveUp': 'Yukarı Taşı',
