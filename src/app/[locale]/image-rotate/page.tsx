@@ -44,6 +44,12 @@ function ImageRotateContent({ locale }: { locale: string }) {
     for (const k of keys) {
       value = value?.[k];
     }
+    
+    // Debug log to check translation system
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 DEBUG - Locale:', locale, 'Key:', key, 'Value:', value, 'Fallback:', fallback);
+    }
+    
     return value || fallback;
   };
   const { user } = useAuth();
