@@ -209,6 +209,19 @@ const translations = {
     'pdfConvert.process': 'İşlemi Başlat',
     'pdfConvert.processing': 'PDF küçültülüyor...',
     
+    // PDF COMPRESS LEVEL METINLERI - TURKISH
+    'pdfCompress.highDesc': 'Daha az kaliteli, yüksek sıkıştırma',
+    'pdfCompress.mediumDesc': 'Kaliteli, iyi sıkıştırma',
+    'pdfCompress.lightDesc': 'Yüksek kaliteli, daha az sıkıştırma',
+    'pdfCompress.recommended': 'ÖNERİLEN',
+    'pdfCompress.processingDesc': 'Dosyanız işleniyor, lütfen bekleyin',
+    'pdfCompress.aiOptimizing': 'AI teknolojisi ile optimize ediliyor',
+    'pdfCompress.results.savings': 'AZALMA',
+    'pdfCompress.results.newSize': 'Sıkıştırılmış:',
+    'pdfCompress.downloadAllSingle': 'Sıkıştırılmış PDF İndir',
+    'pdfCompress.newConversion': 'Yeni PDF Sıkıştır',
+    'pdfCompress.selectOrDrop': 'veya buraya bırak',
+    
     // IMAGE TOOLS METINLERI
     'imageTools.selectFile': 'Resim dosyasını seç',
     'imageTools.selectFiles': 'Resim dosyalarını seç',
@@ -425,6 +438,19 @@ const translations = {
     'pdfConvert.selectFiles': 'Select PDF files',
     'pdfConvert.process': 'Start Processing',
     'pdfConvert.processing': 'Compressing PDF...',
+    
+    // PDF COMPRESS LEVEL TRANSLATIONS - ENGLISH
+    'pdfCompress.highDesc': 'Lower quality, high compression',
+    'pdfCompress.mediumDesc': 'Quality, good compression',
+    'pdfCompress.lightDesc': 'High quality, less compression',
+    'pdfCompress.recommended': 'RECOMMENDED',
+    'pdfCompress.processingDesc': 'Your file is being processed, please wait',
+    'pdfCompress.aiOptimizing': 'Optimizing with AI technology',
+    'pdfCompress.results.savings': 'SAVINGS',
+    'pdfCompress.results.newSize': 'Compressed:',
+    'pdfCompress.downloadAllSingle': 'Download Compressed PDF',
+    'pdfCompress.newConversion': 'Compress New PDF',
+    'pdfCompress.selectOrDrop': 'or drop here',
     
     // IMAGE TOOLS TRANSLATIONS
     'imageTools.selectFile': 'Select image file',

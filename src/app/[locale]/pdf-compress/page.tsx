@@ -367,8 +367,8 @@ function PDFCompress({ locale }: { locale: string }) {
                   </div>
                 </div>
 
-                <span className="text-lg">PDF dosyasını seç</span>
-                <span className="text-sm text-white/80 mt-1">veya buraya bırak</span>
+                <span className="text-lg">{getText('pdfConvert.fileUpload', 'PDF dosyasını seç')}</span>
+                <span className="text-sm text-white/80 mt-1">{getText('pdfCompress.selectOrDrop', 'veya buraya bırak')}</span>
               </div>
 
               {/* FileUpload Component */}
@@ -463,19 +463,19 @@ function PDFCompress({ locale }: { locale: string }) {
                   {[
                     { 
                       id: 'screen', 
-                      name: getText('pdfCompress.high', 'AŞIRI SIKIŞTIRMA'),
+                      name: locale === 'en' ? 'High' : 'AŞIRI SIKIŞTIRMA',
                       desc: getText('pdfCompress.highDesc', 'Daha az kaliteli, yüksek sıkıştırma'),
                       recommended: false
                     },
                     { 
                       id: 'ebook', 
-                      name: getText('pdfCompress.medium', 'ÖNERİLEN SIKIŞTIRMA'),
+                      name: locale === 'en' ? 'Medium' : 'ÖNERİLEN SIKIŞTIRMA',
                       desc: getText('pdfCompress.mediumDesc', 'Kaliteli, iyi sıkıştırma'),
                       recommended: true
                     },
                     { 
                       id: 'printer', 
-                      name: getText('pdfCompress.light', 'DÜŞÜK SIKIŞTIRMA'),
+                      name: locale === 'en' ? 'Light' : 'DÜŞÜK SIKIŞTIRMA',
                       desc: getText('pdfCompress.lightDesc', 'Yüksek kaliteli, daha az sıkıştırma'),
                       recommended: false
                     }
@@ -509,7 +509,7 @@ function PDFCompress({ locale }: { locale: string }) {
                       {level.recommended && (
                         <div className="mt-2">
                           <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
-                            ✓ ÖNERİLEN
+                            ✓ {getText('pdfCompress.recommended', 'ÖNERİLEN')}
                           </span>
                         </div>
                       )}
@@ -593,7 +593,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 {getText('pdfCompress.processingDesc', 'Dosyanız işleniyor, lütfen bekleyin')}
               </p>
               <p className="text-sm text-purple-600 font-medium">
-                AI teknolojisi ile optimize ediliyor ✨
+                {getText('pdfCompress.aiOptimizing', 'AI teknolojisi ile optimize ediliyor')} ✨
               </p>
             </div>
 
@@ -649,7 +649,7 @@ function PDFCompress({ locale }: { locale: string }) {
                         {Math.round(compressionResult.compressionRatio)}%
                       </div>
                       <div className="text-xs uppercase tracking-wide">
-                        {getText('pdfCompress.results.savings', 'Azalma')}
+                        {getText('pdfCompress.results.savings', 'AZALMA')}
                       </div>
                     </div>
                   </div>
@@ -660,7 +660,7 @@ function PDFCompress({ locale }: { locale: string }) {
                     <span className="font-medium">{getText('pdfCompress.originalSize', 'Orijinal')}:</span> {formatFileSize(compressionResult.originalSize)}
                   </p>
                   <p>
-                    <span className="font-medium">{getText('pdfCompress.results.newSize', 'Sıkıştırılmış')}:</span> {formatFileSize(compressionResult.compressedSize)}
+                    <span className="font-medium">{getText('pdfCompress.results.newSize', 'Sıkıştırılmış:')} </span>{formatFileSize(compressionResult.compressedSize)}
                   </p>
                 </div>
               </div>
@@ -753,7 +753,7 @@ function PDFCompress({ locale }: { locale: string }) {
                   className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
                 >
                   <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
-                  {getText('pdfCompress.downloadAllSingle', 'Sıkıştırılmış PDF indir')}
+                  {getText('pdfCompress.downloadAllSingle', 'Sıkıştırılmış PDF İndir')}
                 </a>
                 
                 <button
