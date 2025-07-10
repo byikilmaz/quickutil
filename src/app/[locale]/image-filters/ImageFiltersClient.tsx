@@ -26,15 +26,18 @@ import { useQuota } from '@/contexts/QuotaContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { ActivityTracker } from '@/lib/activityTracker';
 import { getTranslations } from '@/lib/translations';
-import { 
-  applyFilters, 
-  FilterConfig, 
-  FilterResult,
-  defaultFilterConfig,
-  filterPresets,
-  applyPreset,
-  resetFilters
-} from '@/lib/imageFilters';
+
+// Enhanced interfaces
+interface FilterConfig {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  hue: number;
+  blur: number;
+  vintage: boolean;
+  sepia: boolean;
+  blackWhite: boolean;
+}
 
 interface ConversionResult {
   originalFile: File;
@@ -49,6 +52,139 @@ interface ConversionResult {
 interface ImageFiltersClientProps {
   locale: string;
 }
+
+// Default filter configuration
+const defaultFilterConfig: FilterConfig = {
+  brightness: 1,
+  contrast: 1,
+  saturation: 1,
+  hue: 0,
+  blur: 0,
+  vintage: false,
+  sepia: false,
+  blackWhite: false
+};
+
+// Filter presets
+const filterPresets = {
+  vibrant: {
+    brightness: 1.2,
+    contrast: 1.3,
+    saturation: 1.4,
+    hue: 0,
+    blur: 0,
+    vintage: false,
+    sepia: false,
+    blackWhite: false
+  },
+  soft: {
+    brightness: 1.1,
+    contrast: 0.9,
+    saturation: 0.8,
+    hue: 0,
+    blur: 1,
+    vintage: false,
+    sepia: false,
+    blackWhite: false
+  },
+  vintage: {
+    brightness: 0.9,
+    contrast: 1.1,
+    saturation: 0.7,
+    hue: 15,
+    blur: 0,
+    vintage: true,
+    sepia: false,
+    blackWhite: false
+  },
+  sharp: {
+    brightness: 1,
+    contrast: 1.4,
+    saturation: 1.1,
+    hue: 0,
+    blur: 0,
+    vintage: false,
+    sepia: false,
+    blackWhite: false
+  }
+};
+
+// Canvas-based filter application
+const applyCanvasFilters = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, img: HTMLImageElement, config: FilterConfig) => {
+  // Set canvas size
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Build CSS filter string
+  let filterString = '';
+  
+  if (config.brightness !== 1) filterString += `brightness(${config.brightness}) `;
+  if (config.contrast !== 1) filterString += `contrast(${config.contrast}) `;
+  if (config.saturation !== 1) filterString += `saturate(${config.saturation}) `;
+  if (config.hue !== 0) filterString += `hue-rotate(${config.hue}deg) `;
+  if (config.blur > 0) filterString += `blur(${config.blur}px) `;
+  
+  if (config.sepia) filterString += 'sepia(1) ';
+  if (config.blackWhite) filterString += 'grayscale(1) ';
+  if (config.vintage) filterString += 'sepia(0.4) contrast(1.2) brightness(0.9) ';
+  
+  // Apply filter to canvas context
+  ctx.filter = filterString;
+  
+  // Draw image with filters
+  ctx.drawImage(img, 0, 0);
+  
+  // Reset filter for future operations
+  ctx.filter = 'none';
+};
+
+// Apply filters and return result
+const applyFilters = async (file: File, config: FilterConfig): Promise<{ filteredImage: ArrayBuffer; appliedFilters: string[] }> => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+    const img = new Image();
+    
+    img.onload = () => {
+      // Apply filters using canvas
+      applyCanvasFilters(canvas, ctx, img, config);
+      
+      // Get applied filters list
+      const appliedFilters: string[] = [];
+      if (config.brightness !== 1) appliedFilters.push('brightness');
+      if (config.contrast !== 1) appliedFilters.push('contrast');
+      if (config.saturation !== 1) appliedFilters.push('saturation');
+      if (config.hue !== 0) appliedFilters.push('hue');
+      if (config.blur > 0) appliedFilters.push('blur');
+      if (config.vintage) appliedFilters.push('vintage');
+      if (config.sepia) appliedFilters.push('sepia');
+      if (config.blackWhite) appliedFilters.push('blackWhite');
+      
+      // Convert canvas to blob
+      canvas.toBlob((blob) => {
+        if (blob) {
+          blob.arrayBuffer().then(buffer => {
+            resolve({ filteredImage: buffer, appliedFilters });
+          });
+        }
+      }, 'image/png');
+    };
+    
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+// Utility functions
+const applyPreset = (presetName: keyof typeof filterPresets): FilterConfig => {
+  return { ...filterPresets[presetName] };
+};
+
+const resetFilters = (): FilterConfig => {
+  return { ...defaultFilterConfig };
+};
 
 export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) {
   console.log('Image Filters Client Component loaded with locale:', locale);
@@ -84,11 +220,13 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
   const [filterResult, setFilterResult] = useState<ConversionResult | null>(null);
   const [showComparison, setShowComparison] = useState(false);
 
-  // Refs for auto-focus
+  // Refs for auto-focus and canvas
   const uploadRef = useRef<HTMLDivElement>(null);
   const configureRef = useRef<HTMLDivElement>(null);
   const processingRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+  const previewImageRef = useRef<HTMLImageElement>(null);
 
   // Utility function for file size formatting
   const formatFileSize = (bytes: number): string => {
@@ -141,7 +279,29 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
     setCurrentStep('configure');
   };
 
-  // Filter handlers
+  // Real-time preview update
+  const updatePreview = (config: FilterConfig) => {
+    if (!previewImageRef.current || !previewCanvasRef.current || !file) return;
+    
+    const canvas = previewCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const img = previewImageRef.current;
+    
+    if (ctx && img.complete) {
+      // Apply filters and update preview
+      applyCanvasFilters(canvas, ctx, img, config);
+      
+      // Update filtered image URL from canvas
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const newFilteredUrl = URL.createObjectURL(blob);
+          setFilteredImageUrl(newFilteredUrl);
+        }
+      }, 'image/png');
+    }
+  };
+
+  // Enhanced filter handlers
   const handleFilterChange = (key: keyof FilterConfig, value: number | boolean) => {
     const newConfig = { ...filterConfig, [key]: value };
     
@@ -158,16 +318,45 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
     }
     
     setFilterConfig(newConfig);
+    
+    // Update preview in real-time
+    setTimeout(() => updatePreview(newConfig), 50);
   };
 
   const handlePresetApply = (presetName: keyof typeof filterPresets) => {
     const presetConfig = applyPreset(presetName);
     setFilterConfig(presetConfig);
+    
+    // Update preview in real-time
+    setTimeout(() => updatePreview(presetConfig), 50);
   };
 
   const handleResetFilters = () => {
-    setFilterConfig(resetFilters());
+    const resetConfig = resetFilters();
+    setFilterConfig(resetConfig);
+    
+    // Update preview in real-time
+    setTimeout(() => updatePreview(resetConfig), 50);
   };
+
+  // Load image for preview
+  useEffect(() => {
+    if (originalImageUrl && previewImageRef.current) {
+      const img = previewImageRef.current;
+      img.onload = () => {
+        // Initial preview with default filters
+        updatePreview(filterConfig);
+      };
+      img.src = originalImageUrl;
+    }
+  }, [originalImageUrl]);
+
+  // Update preview when filter config changes
+  useEffect(() => {
+    if (currentStep === 'configure' && originalImageUrl) {
+      updatePreview(filterConfig);
+    }
+  }, [filterConfig, currentStep, originalImageUrl]);
 
   // Process filters
   const handleProcessFilters = async () => {
@@ -379,27 +568,54 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
                       {getText('imageFilters.configure.preview', 'Preview')}
                     </h3>
                     
-                    {/* Image Preview */}
+                    {/* Image Preview with Canvas */}
                     <div className="relative">
-                      <div className="bg-gray-100 rounded-2xl overflow-hidden aspect-video">
+                      <div className="bg-gray-100 rounded-2xl overflow-hidden aspect-video relative">
+                        {/* Hidden original image for canvas processing */}
                         <img 
+                          ref={previewImageRef}
                           src={originalImageUrl} 
                           alt="Original"
-                          className="w-full h-full object-cover"
+                          className="hidden"
+                          crossOrigin="anonymous"
                         />
+                        
+                        {/* Canvas for filtered preview */}
+                        <canvas 
+                          ref={previewCanvasRef}
+                          className="w-full h-full object-cover"
+                          style={{ display: filteredImageUrl ? 'block' : 'none' }}
+                        />
+                        
+                        {/* Fallback image */}
+                        {!filteredImageUrl && (
+                          <img 
+                            src={originalImageUrl} 
+                            alt="Original"
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                        
+                        {/* Processing overlay */}
+                        {isProcessing && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <div className="text-white text-center">
+                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                              <p className="text-sm">Applying filters...</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       
                       {/* Comparison Toggle */}
-                      {showComparison && (
-                        <div className="absolute top-4 right-4">
-                          <button
-                            onClick={() => setShowComparison(!showComparison)}
-                            className="bg-black/50 text-white px-3 py-1 rounded-lg text-sm backdrop-blur-sm"
-                          >
-                            Split View
-                          </button>
-                        </div>
-                      )}
+                      <div className="absolute top-4 right-4">
+                        <button
+                          onClick={() => setShowComparison(!showComparison)}
+                          className="bg-black/50 text-white px-3 py-1 rounded-lg text-sm backdrop-blur-sm hover:bg-black/70 transition-colors"
+                        >
+                          {showComparison ? 'Single View' : 'Compare'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -462,6 +678,23 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
                           value={filterConfig.saturation}
                           onChange={(e) => handleFilterChange('saturation', parseFloat(e.target.value))}
                           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                        />
+                      </div>
+
+                      {/* Hue */}
+                      <div>
+                        <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-2">
+                          <span>{getText('imageFilters.configure.hue', 'Hue')}</span>
+                          <span className="text-purple-600">{filterConfig.hue}°</span>
+                        </label>
+                        <input
+                          type="range"
+                          min="-180"
+                          max="180"
+                          step="5"
+                          value={filterConfig.hue}
+                          onChange={(e) => handleFilterChange('hue', parseInt(e.target.value))}
+                          className="w-full h-2 bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-cyan-500 via-blue-500 via-purple-500 to-red-500 rounded-lg appearance-none cursor-pointer"
                         />
                       </div>
 
@@ -559,16 +792,15 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
                     <div className="flex space-x-4">
                       <button
                         onClick={handleResetFilters}
-                        className="flex-1 py-3 px-6 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                        className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-300 transition-all duration-200 font-semibold"
                       >
-                        {getText('imageFilters.configure.resetFilters', 'Reset Filters')}
+                        {getText('imageFilters.configure.reset', 'Reset')}
                       </button>
                       <button
                         onClick={handleProcessFilters}
-                        disabled={isProcessing}
-                        className="flex-1 py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
                       >
-                        {isProcessing ? 'Processing...' : getText('imageFilters.configure.applyFilters', 'Apply Filters')}
+                        {getText('imageFilters.configure.apply', 'Apply Filters')}
                       </button>
                     </div>
                   </div>
