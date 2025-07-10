@@ -4,7 +4,6 @@ import { ArrowPathIcon, SparklesIcon, PhotoIcon, CheckCircleIcon, CloudArrowUpIc
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useDropzone } from 'react-dropzone';
 import StructuredData from '@/components/StructuredData';
-import Breadcrumb from '@/components/Breadcrumb';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
@@ -206,7 +205,6 @@ export default function ImageRotate() {
       
       <div className="relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Breadcrumb />
           
           {/* Enhanced Hero Section */}
           <div className="text-center py-16 relative">

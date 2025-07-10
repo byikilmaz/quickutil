@@ -4,7 +4,6 @@ import { ArrowsRightLeftIcon, SparklesIcon, PhotoIcon, CheckCircleIcon, CloudArr
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useDropzone } from 'react-dropzone';
 import StructuredData from '@/components/StructuredData';
-import Breadcrumb from '@/components/Breadcrumb';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
@@ -291,7 +290,6 @@ export default function ImageFormatConvert() {
       
       <div className="relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Breadcrumb />
           
           {/* STEP 1: UPLOAD */}
           <div ref={uploadRef} className={`py-16 transition-all duration-500 ${

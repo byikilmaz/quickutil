@@ -7,7 +7,6 @@ import { useStorage } from '@/contexts/StorageContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import FileUpload from '@/components/FileUpload';
 import StructuredData from '@/components/StructuredData';
-import Breadcrumb from '@/components/Breadcrumb';
 import { 
   ArrowDownTrayIcon, 
   Square2StackIcon, 
@@ -265,7 +264,6 @@ function PDFMerge({ locale }: { locale: string }) {
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-orange-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Breadcrumb />
         </div>
       </div>
 

@@ -4,7 +4,6 @@ import { PhotoIcon, SparklesIcon, CheckCircleIcon, CloudArrowUpIcon } from '@her
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useDropzone } from 'react-dropzone';
 import StructuredData from '@/components/StructuredData';
-import Breadcrumb from '@/components/Breadcrumb';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
@@ -319,7 +318,6 @@ export default function ImageResize() {
       
       {/* SEO */}
       <StructuredData type="website" />
-      <Breadcrumb />
 
       {/* Header */}
       <div className="relative z-10 bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0">

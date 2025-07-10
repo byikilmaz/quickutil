@@ -7,7 +7,6 @@ import { useStorage } from '@/contexts/StorageContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import FileUpload from '@/components/FileUpload';
 import StructuredData from '@/components/StructuredData';
-import Breadcrumb from '@/components/Breadcrumb';
 import { 
   ArrowDownTrayIcon, 
   SparklesIcon, 
@@ -339,7 +338,6 @@ function PDFConvert({ locale }: { locale: string }) {
       />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Breadcrumb />
 
         {/* STEP 1: UPLOAD - Clean Design Like PDF Compress */}
         <div ref={uploadRef} className={`py-16 transition-all duration-500 ${

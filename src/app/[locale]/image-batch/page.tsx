@@ -9,7 +9,6 @@ import {
   ArrowDownTrayIcon,
   ScissorsIcon
 } from '@heroicons/react/24/outline';
-import Breadcrumb from '@/components/Breadcrumb';
 import BatchFileUpload, { BatchFile } from '@/components/BatchFileUpload';
 import { useAuth } from '@/contexts/AuthContext';
 import { trackImageBatch } from '@/lib/activityTracker';
@@ -270,7 +269,6 @@ export default function ImageBatchPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Breadcrumb />
         
         {/* Header */}
         <div className="text-center mb-8">

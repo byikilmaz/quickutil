@@ -1801,8 +1801,8 @@ export const translations = {
 
     // PDF Convert Tool
     'pdfConvert.title': 'AI Conversion PDF',
-    'pdfConvert.subtitle': 'Outils de conversion PDF alimentés par l'IA. L'IA sélectionne automatiquement le format, divise les pages, fusionne les documents.',
-    'pdfConvert.selectTool': 'Sélectionner l'Outil de Conversion',
+    'pdfConvert.subtitle': 'Outils de conversion PDF alimentés par LIA. LIA sélectionne automatiquement le format, divise les pages, fusionne les documents.',
+    'pdfConvert.selectTool': 'Sélectionner Outil de Conversion',
     'pdfConvert.toolSelected': 'seçildi! Dosya yükleniyor...',
     'pdfConvert.fileUpload': 'Dosya Yükleme',
     'pdfConvert.selectOrDrag': 'PDF dosyasını seç veya sürükle',
@@ -1831,7 +1831,7 @@ export const translations = {
     
     // PDF to Images Tool
     'pdfToImages.title': 'AI PDF to JPG/PNG',
-    'pdfToImages.subtitle': 'Conversion PDF en images avec IA. L'IA sélectionne la résolution et le format optimaux.',
+    'pdfToImages.subtitle': 'Conversion PDF en images avec IA. LIA sélectionne la résolution et le format optimaux.',
     'pdfToImages.description': 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu',
     'pdfToImages.selectFormat': 'Çıktı Formatı',
     'pdfToImages.formatPng': 'PNG (Şeffaflık destekli)',
@@ -2359,15 +2359,15 @@ export const translations = {
     'tools.imageCompress': 'AI ضغط',
     'tools.imageCompressDesc': 'تحسين جودة الصورة باستخدام AI',
     'tools.imageResize': 'AI تغيير الحجم',
-    'tools.imageResizeDesc': 'تغيير الأبعاد',
+    'tools.imageResizeDesc': 'حفظ تلقائي لنسبة الارتفاع إلى العرض وضبط الجودة',
     'tools.imageCrop': 'AI تقص',
-    'tools.imageCropDesc': 'تقص إلى المنطقة المرغوبة',
+    'tools.imageCropDesc': 'تقطيع تلقائي ذكي باستخدام التعرف على الكائنات بواسطة الذكاء الاصطناعي',
     'tools.imageRotate': 'AI دوران',
-    'tools.imageRotateDesc': 'دوران إلى أي زاوية',
+    'tools.imageRotateDesc': 'تسوية تلقائية وتصحيح المنظور باستخدام الذكاء الاصطناعي',
     'tools.imageFormat': 'AI تحويل التنسيق',
-    'tools.imageFormatDesc': 'أفضل تنسيق وجودة مقترح',
+    'tools.imageFormatDesc': 'اقتراح أفضل تنسيق وجودة باستخدام الذكاء الاصطناعي',
     'tools.imageFilters': 'AI مرشحات',
-    'tools.imageFiltersDesc': 'تطبيق تأثيرات مختلفة باستخدام AI',
+    'tools.imageFiltersDesc': 'تأثيرات تلقائية متقدمة باستخدام الذكاء الاصطناعي',
     
     // About page
     about: {

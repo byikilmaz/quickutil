@@ -13,7 +13,6 @@ import {
   SparklesIcon,
   UserIcon
 } from '@heroicons/react/24/outline';
-import CacheManager from './CacheManager';
 import LanguageSwitcher from './LanguageSwitcher';
 
 interface HeaderProps {
@@ -187,11 +186,6 @@ export default function Header({ onAuthClick }: HeaderProps) {
                 <Bars3Icon className="h-6 w-6" />
               )}
             </button>
-
-            {/* Dev Cache Manager */}
-            {process.env.NODE_ENV === 'development' && (
-              <CacheManager className="hidden lg:block" />
-            )}
           </div>
         </div>
 
