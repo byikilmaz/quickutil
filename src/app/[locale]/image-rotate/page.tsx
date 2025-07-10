@@ -39,16 +39,21 @@ export default async function ImageRotate({ params }: ImageRotateProps) {
 function ImageRotateContent({ locale }: { locale: string }) {
   const translations = getTranslations(locale);
   const getText = (key: string, fallback: string) => {
+    // Handle flat string keys directly (for imageRotate, etc.)
+    const flatValue = (translations as any)[key];
+    if (flatValue) {
+      console.log('🔍 DEBUG - Locale:', locale, 'Key:', key, 'Value:', flatValue, 'Fallback:', fallback);
+      return flatValue;
+    }
+    
+    // Handle nested object keys (original behavior)
     const keys = key.split('.');
     let value: any = translations;
     for (const k of keys) {
       value = value?.[k];
     }
     
-    // Debug log to check translation system
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 DEBUG - Locale:', locale, 'Key:', key, 'Value:', value, 'Fallback:', fallback);
-    }
+    console.log('🔍 DEBUG - Locale:', locale, 'Key:', key, 'Value:', value, 'Fallback:', fallback);
     
     return value || fallback;
   };
@@ -99,15 +104,11 @@ function ImageRotateContent({ locale }: { locale: string }) {
         
         setCurrentStep('configure');
         
-        // Improved scroll and focus for configure section
+        // Fixed: Single scroll to configure section with center positioning
         setTimeout(() => {
-          configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 200);
-        
-        setTimeout(() => {
-          processButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          processButtonRef.current?.focus();
-        }, 800);
+          configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          configureRef.current?.focus();
+        }, 300);
       } catch (error) {
         console.error('Error getting image dimensions:', error);
       }

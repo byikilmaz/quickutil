@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { ActivityTracker } from '@/lib/activityTracker';
+import { getTranslations } from '@/lib/translations';
 import { 
   convertImage,
   getImageDimensions,
@@ -30,7 +31,33 @@ interface FormatConversionResult {
   outputFormat: string;
 }
 
-export default function ImageFormatConvert() {
+interface ImageFormatConvertProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function ImageFormatConvert({ params }: ImageFormatConvertProps) {
+  const { locale } = await params;
+  
+  return <ImageFormatConvertContent locale={locale} />;
+}
+
+function ImageFormatConvertContent({ locale }: { locale: string }) {
+  const translations = getTranslations(locale);
+  const getText = (key: string, fallback: string) => {
+    // Handle flat string keys directly
+    const flatValue = (translations as any)[key];
+    if (flatValue) return flatValue;
+    
+    // Handle nested object keys
+    const keys = key.split('.');
+    let value: any = translations;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    
+    return value || fallback;
+  };
+
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
@@ -51,6 +78,8 @@ export default function ImageFormatConvert() {
   const uploadRef = useRef<HTMLDivElement>(null);
   const configureRef = useRef<HTMLDivElement>(null);
   const processButtonRef = useRef<HTMLButtonElement>(null);
+  const processingRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   // Auto-focus on upload section when page loads
   useEffect(() => {
@@ -136,16 +165,22 @@ export default function ImageFormatConvert() {
     setIsProcessing(true);
     setProcessingProgress(0);
 
+    // Scroll to processing section
+    setTimeout(() => {
+      processingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      processingRef.current?.focus();
+    }, 300);
+
     const startTime = Date.now();
 
     try {
-      // Simulate progress
+      // Simulate progress with longer delays for better visibility
       const progressInterval = setInterval(() => {
         setProcessingProgress(prev => {
           if (prev < 90) return prev + 10;
           return prev;
         });
-      }, 200);
+      }, 300);
 
       const options: ConversionOptions = {
         format: outputFormat,
@@ -156,6 +191,9 @@ export default function ImageFormatConvert() {
       
       clearInterval(progressInterval);
       setProcessingProgress(100);
+
+      // Wait a bit to show 100% completion
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const processingTime = Date.now() - startTime;
       const downloadUrl = URL.createObjectURL(result.file);
@@ -187,6 +225,11 @@ export default function ImageFormatConvert() {
       });
 
       setCurrentStep('result');
+      
+      // Scroll to result section
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
     } catch (error) {
       console.error('Format conversion error:', error);
       alert('An error occurred during conversion. Please try again.');
@@ -576,60 +619,74 @@ export default function ImageFormatConvert() {
           
           {/* STEP 3: PROCESSING */}
           {currentStep === 'processing' && (
-            <div className="py-16">
-              <div className="max-w-2xl mx-auto text-center">
-                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 border border-blue-200 text-blue-800 px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg">
-                  <ArrowsRightLeftIcon className="h-4 w-4 text-blue-600 mr-2 animate-spin" />
-                  Step 3: Converting Format
-                </div>
-                
-                <h2 className="text-4xl font-bold text-gray-900 mb-8">Converting Your Image</h2>
-                
-                {/* Enhanced Processing Animation */}
-                <div className="relative mb-12">
-                  {/* Multiple Rotating Rings */}
-                  <div className="flex items-center justify-center">
-                    <div className="relative">
-                      <div className="w-32 h-32 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
-                      <div className="absolute top-2 left-2 w-28 h-28 border-4 border-pink-300 border-t-pink-600 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
-                      <div className="absolute top-4 left-4 w-24 h-24 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <ArrowsRightLeftIcon className="h-8 w-8 text-purple-600" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
-                  <div className="mb-6">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Processing Progress</span>
-                      <span className="text-sm font-medium text-purple-600">{processingProgress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-300 relative overflow-hidden"
-                        style={{ width: `${processingProgress}%` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
-                      </div>
-                    </div>
-                  </div>
+            <div 
+              ref={processingRef} 
+              className="py-24 min-h-screen flex items-center justify-center"
+              tabIndex={-1}
+              style={{ outline: 'none' }}
+            >
+              <div className="max-w-3xl mx-auto text-center w-full">
+                <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-16 relative overflow-hidden">
                   
-                  {/* Processing Steps */}
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 animate-pulse"></div>
-                      Reading image data...
+                  {/* Background gradient animation */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-purple-50/80 opacity-50"></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-cyan-100 border border-blue-200 text-blue-800 px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg">
+                      <ArrowsRightLeftIcon className="h-4 w-4 text-blue-600 mr-2 animate-spin" />
+                      Step 3: Converting Format
                     </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <div className="w-2 h-2 bg-pink-500 rounded-full mr-3 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                      Converting to {formatConfigs[outputFormat].name} format...
+                    
+                    <h2 className="text-4xl font-bold text-gray-900 mb-8">AI Converting Your Image</h2>
+                    
+                    {/* Enhanced Processing Animation */}
+                    <div className="relative mb-12">
+                      {/* Multiple Rotating Rings - Larger for better visibility */}
+                      <div className="flex items-center justify-center">
+                        <div className="relative">
+                          <div className="w-40 h-40 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
+                          <div className="absolute top-2 left-2 w-36 h-36 border-4 border-pink-300 border-t-pink-600 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
+                          <div className="absolute top-4 left-4 w-32 h-32 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
+                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <ArrowsRightLeftIcon className="h-10 w-10 text-purple-600" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 animate-pulse" style={{ animationDelay: '1s' }}></div>
-                      Optimizing output quality...
+                    
+                    {/* Progress Bar */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
+                      <div className="mb-6">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium text-gray-700">Processing Progress</span>
+                          <span className="text-sm font-medium text-purple-600">{processingProgress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-300 relative overflow-hidden"
+                            style={{ width: `${processingProgress}%` }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Processing Steps */}
+                      <div className="space-y-3">
+                        <div className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 animate-pulse"></div>
+                          Reading image data...
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-pink-500 rounded-full mr-3 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                          Converting to {formatConfigs[outputFormat].name} format...
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 animate-pulse" style={{ animationDelay: '1s' }}></div>
+                          Optimizing output quality...
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -639,7 +696,7 @@ export default function ImageFormatConvert() {
           
           {/* STEP 4: RESULT */}
           {currentStep === 'result' && conversionResult && (
-            <div className="py-16">
+            <div ref={resultRef} className="py-16">
               <div className="text-center mb-12">
                 <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
                   <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
