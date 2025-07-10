@@ -300,7 +300,62 @@ const translations = {
     'pdfEsign.features.signature.title': 'Dijital İmza',
     'pdfEsign.features.signature.description': 'Canvas üzerinde el yazısı imza oluşturun',
     'pdfEsign.features.email.title': 'Email Workflow',
-    'pdfEsign.features.email.description': 'İmza için belgeleri güvenle email ile gönderin'
+    'pdfEsign.features.email.description': 'İmza için belgeleri güvenle email ile gönderin',
+    
+    // IMAGE COMPRESS TRANSLATIONS
+    'imageCompress.title': 'Resim Sıkıştırma',
+    'imageCompress.subtitle': 'Yapay zeka destekli teknoloji ile resimlerinizi kalitesini koruyarak sıkıştırın',
+    'imageCompress.selectFile': 'Resim Dosyasını Seç',
+    'imageCompress.aiPowered': 'Yapay Zeka Destekli Sıkıştırma',
+    'imageCompress.badge': '2M+ Resim Sıkıştırıldı • AI Destekli',
+    
+    // Features
+    'imageCompress.features.smaller': '%90 Daha Küçük',
+    'imageCompress.features.smallerDesc': 'Yapay zeka teknolojisi ile kaliteyi koruyarak maksimum sıkıştırma',
+    'imageCompress.features.aiPowered': 'AI Destekli',
+    'imageCompress.features.aiPoweredDesc': 'Akıllı algoritmalar ile her resim için en optimal ayarları bulur',
+    'imageCompress.features.qualityKept': 'Kalite Korunur',
+    'imageCompress.features.qualityKeptDesc': 'Görsel kaliteyi en üst seviyede tutarak dosya boyutunu azaltır',
+    
+    // Settings
+    'imageCompress.settings.title': 'Sıkıştırma Ayarları',
+    'imageCompress.settings.preview': 'Önizleme',
+    'imageCompress.settings.qualityLevel': 'Kalite Seviyesi',
+    'imageCompress.settings.outputFormat': 'Çıktı Formatı',
+    'imageCompress.settings.small': 'Küçük dosya',
+    'imageCompress.settings.balanced': 'Dengeli',
+    'imageCompress.settings.high': 'Yüksek kalite',
+    'imageCompress.settings.smallest': 'En küçük',
+    'imageCompress.settings.transparency': 'Şeffaflık',
+    'imageCompress.settings.modern': 'Modern',
+    'imageCompress.startCompression': 'Sıkıştırmayı Başlat',
+    'imageCompress.compressing': 'Sıkıştırılıyor...',
+    
+    // Processing
+    'imageCompress.processing.title': 'AI Sıkıştırma İşlemi',
+    'imageCompress.processing.description': 'Yapay zeka en optimal ayarları hesaplıyor...',
+    'imageCompress.processing.analyzing': 'Resim analiz ediliyor',
+    'imageCompress.processing.calculating': 'Optimal ayarlar hesaplanıyor',
+    'imageCompress.processing.applying': 'Sıkıştırma uygulanıyor',
+    'imageCompress.processing.preparing': 'Sonuç hazırlanıyor',
+    
+    // Results
+    'imageCompress.results.completed': 'Sıkıştırma Tamamlandı!',
+    'imageCompress.results.reduced': 'Dosya boyutu azaldı',
+    'imageCompress.results.savings': 'tasarruf',
+    'imageCompress.results.original': 'Orijinal Resim',
+    'imageCompress.results.compressed': 'Sıkıştırılmış Resim',
+    'imageCompress.results.fileSize': 'Dosya Boyutu',
+    'imageCompress.results.newSize': 'Yeni Boyut',
+    'imageCompress.download': 'Sıkıştırılmış Resmi İndir',
+    'imageCompress.newCompression': 'Yeni Resim Sıkıştır',
+    'imageCompress.close': 'Kapat',
+    
+    // File info
+    'imageCompress.fileInfo.file': 'Dosya',
+    'imageCompress.fileInfo.size': 'Boyut',
+    'imageCompress.fileInfo.format': 'Format',
+    'imageCompress.fileInfo.progress': 'İlerleme'
   },
   
   // ENGLISH TRANSLATIONS
@@ -604,7 +659,80 @@ const translations = {
     'pdfEsign.features.signature.title': 'Digital Signature',
     'pdfEsign.features.signature.description': 'Create handwritten signatures on canvas',
     'pdfEsign.features.email.title': 'Email Workflow',
-    'pdfEsign.features.email.description': 'Securely send documents for signature via email'
+    'pdfEsign.features.email.description': 'Securely send documents for signature via email',
+    
+    // IMAGE COMPRESS TRANSLATIONS ENGLISH
+    'imageCompress.title': 'Image Compression',
+    'imageCompress.subtitle': 'Compress your images while preserving quality with AI-powered technology',
+    'imageCompress.selectFile': 'Select Image File',
+    'imageCompress.aiPowered': 'AI-Powered Compression',
+    'imageCompress.badge': '2M+ Images Compressed • AI-Powered',
+    
+    // Features
+    'imageCompress.features.smaller': '90% Smaller',
+    'imageCompress.features.smallerDesc': 'Maximum compression while preserving quality with AI technology',
+    'imageCompress.features.aiPowered': 'AI-Powered',
+    'imageCompress.features.aiPoweredDesc': 'Smart algorithms find optimal settings for each image',
+    'imageCompress.features.qualityKept': 'Quality Preserved',
+    'imageCompress.features.qualityKeptDesc': 'Reduces file size while maintaining highest visual quality',
+    
+    // Settings
+    'imageCompress.settings.title': 'Compression Settings',
+    'imageCompress.settings.preview': 'Preview',
+    'imageCompress.settings.qualityLevel': 'Quality Level',
+    'imageCompress.settings.outputFormat': 'Output Format',
+    'imageCompress.settings.small': 'Small file',
+    'imageCompress.settings.balanced': 'Balanced',
+    'imageCompress.settings.high': 'High quality',
+    'imageCompress.settings.smallest': 'Smallest',
+    'imageCompress.settings.transparency': 'Transparency',
+    'imageCompress.settings.modern': 'Modern',
+    'imageCompress.startCompression': 'Start Compression',
+    'imageCompress.compressing': 'Compressing...',
+    
+    // Processing
+    'imageCompress.processing.title': 'AI Compression Process',
+    'imageCompress.processing.description': 'AI is calculating optimal settings...',
+    'imageCompress.processing.analyzing': 'Analyzing image',
+    'imageCompress.processing.calculating': 'Calculating optimal settings',
+    'imageCompress.processing.applying': 'Applying compression',
+    'imageCompress.processing.preparing': 'Preparing result',
+    
+    // Results
+    'imageCompress.results.completed': 'Compression Completed!',
+    'imageCompress.results.reduced': 'File size reduced',
+    'imageCompress.results.savings': 'savings',
+    'imageCompress.results.original': 'Original Image',
+    'imageCompress.results.compressed': 'Compressed Image',
+    'imageCompress.results.fileSize': 'File Size',
+    'imageCompress.results.newSize': 'New Size',
+    'imageCompress.download': 'Download Compressed Image',
+    'imageCompress.newCompression': 'Compress New Image',
+    'imageCompress.close': 'Close',
+    
+    // File info
+    'imageCompress.fileInfo.file': 'File',
+    'imageCompress.fileInfo.size': 'Size',
+    'imageCompress.fileInfo.format': 'Format',
+    'imageCompress.fileInfo.progress': 'Progress',
+    
+    // Missing processing step keys
+    'imageCompress.processing.step1': 'Analyzing image',
+    'imageCompress.processing.step2': 'Calculating optimal settings',
+    'imageCompress.processing.step3': 'Applying compression',
+    'imageCompress.processing.step4': 'Preparing result',
+    'imageCompress.processing.progress': 'Progress',
+    
+    // Missing result keys
+    'imageCompress.result.title': 'Compression Completed!',
+    'imageCompress.result.savedSize': 'File size reduced',
+    'imageCompress.result.saved': 'saved',
+    'imageCompress.result.original': 'Original Image',
+    'imageCompress.result.fileSize': 'File Size',
+    'imageCompress.result.compressed': 'Compressed Image',
+    'imageCompress.result.newSize': 'New Size',
+    'imageCompress.result.download': 'Download Compressed Image',
+    'imageCompress.result.newCompression': 'Compress New Image'
   }
 };
 
