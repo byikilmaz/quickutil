@@ -283,7 +283,24 @@ const translations = {
     // PROCESSING MESSAGES
     'processing.aiProcessingTitle': 'Yapay Zeka ile İşleniyor...',
     'processing.aiOptimizingDesc': 'AI algoritmaları dosyalarınızı optimize ediyor',
-    'processing.progressCompleted': '100% tamamlandı'
+    'processing.progressCompleted': '100% tamamlandı',
+    
+    // PDF E-SIGN TRANSLATIONS
+    'pdfEsign.title': 'PDF E-İmza',
+    'pdfEsign.subtitle': 'PDF belgelerinizi dijital olarak imzalayın ve kolayca gönderin',
+    'pdfEsign.newFeature': 'YENİ ÖZELLİK',
+    'pdfEsign.steps.upload': 'PDF Yükle',
+    'pdfEsign.steps.position': 'İmza Konumu',
+    'pdfEsign.steps.email': 'Email Gönder',
+    'pdfEsign.steps.complete': 'İmza Tamamla',
+    'pdfEsign.developing.title': 'E-İmza Sistemi Geliştiriliyor',
+    'pdfEsign.developing.description': 'PDF e-imza özelliği yakında kullanıma hazır olacak. Bu güçlü sistem ile PDF belgelerinizi dijital olarak imzalayabilecek ve kolayca gönderebileceksiniz.',
+    'pdfEsign.features.viewer.title': 'PDF Viewer',
+    'pdfEsign.features.viewer.description': 'PDF dosyalarınızı görüntüleyin ve imza konumlarını seçin',
+    'pdfEsign.features.signature.title': 'Dijital İmza',
+    'pdfEsign.features.signature.description': 'Canvas üzerinde el yazısı imza oluşturun',
+    'pdfEsign.features.email.title': 'Email Workflow',
+    'pdfEsign.features.email.description': 'İmza için belgeleri güvenle email ile gönderin'
   },
   
   // ENGLISH TRANSLATIONS
@@ -570,7 +587,24 @@ const translations = {
     // PROCESSING MESSAGES
     'processing.aiProcessingTitle': 'Processing with AI...',
     'processing.aiOptimizingDesc': 'AI algorithms are optimizing your files',
-    'processing.progressCompleted': '100% completed'
+    'processing.progressCompleted': '100% completed',
+    
+    // PDF E-SIGN TRANSLATIONS ENGLISH
+    'pdfEsign.title': 'PDF E-Sign',
+    'pdfEsign.subtitle': 'Digitally sign your PDF documents and send them easily',
+    'pdfEsign.newFeature': 'NEW FEATURE',
+    'pdfEsign.steps.upload': 'Upload PDF',
+    'pdfEsign.steps.position': 'Signature Position',
+    'pdfEsign.steps.email': 'Send Email',
+    'pdfEsign.steps.complete': 'Complete Signature',
+    'pdfEsign.developing.title': 'E-Sign System in Development',
+    'pdfEsign.developing.description': 'PDF e-signature feature will be available soon. With this powerful system, you will be able to digitally sign and easily send your PDF documents.',
+    'pdfEsign.features.viewer.title': 'PDF Viewer',
+    'pdfEsign.features.viewer.description': 'View your PDF files and select signature positions',
+    'pdfEsign.features.signature.title': 'Digital Signature',
+    'pdfEsign.features.signature.description': 'Create handwritten signatures on canvas',
+    'pdfEsign.features.email.title': 'Email Workflow',
+    'pdfEsign.features.email.description': 'Securely send documents for signature via email'
   }
 };
 
