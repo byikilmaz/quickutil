@@ -56,31 +56,31 @@ export function getMobileOptimizedSettings(fileSize: number, originalFormat: str
   console.log('🔍 Device info:', { isMobile, devicePixelRatio, fileSize, originalFormat });
   
   if (isMobile) {
-    // Mobile-specific optimization
+    // IMPROVED: Mobile-specific optimization with better quality balance
     if (fileSize > 5 * 1024 * 1024) { // > 5MB
       return {
-        quality: 0.5, // Lower quality for mobile
+        quality: 0.75, // IMPROVED: Increased from 0.5 to 0.75 for better quality
         format: 'jpeg', // Force JPEG for better compression
-        maxWidth: Math.min(1920, Math.floor(1920 / devicePixelRatio)), // Normalize for DPI
-        maxHeight: Math.min(1080, Math.floor(1080 / devicePixelRatio))
+        maxWidth: Math.min(1920, Math.floor(1920 / Math.max(devicePixelRatio, 1.5))), // More conservative DPI adjustment
+        maxHeight: Math.min(1080, Math.floor(1080 / Math.max(devicePixelRatio, 1.5)))
       };
     } else if (fileSize > 2 * 1024 * 1024) { // > 2MB
       return {
-        quality: 0.6,
+        quality: 0.8, // IMPROVED: Increased from 0.6 to 0.8
         format: 'jpeg',
-        maxWidth: Math.min(1600, Math.floor(1600 / devicePixelRatio)),
-        maxHeight: Math.min(900, Math.floor(900 / devicePixelRatio))
+        maxWidth: Math.min(1600, Math.floor(1600 / Math.max(devicePixelRatio, 1.5))),
+        maxHeight: Math.min(900, Math.floor(900 / Math.max(devicePixelRatio, 1.5)))
       };
     } else if (fileSize > 1 * 1024 * 1024) { // > 1MB
       return {
-        quality: 0.7,
+        quality: 0.85, // IMPROVED: Increased from 0.7 to 0.85
         format: originalFormat === 'image/png' ? 'jpeg' : undefined, // Convert PNG to JPEG on mobile
-        maxWidth: Math.floor(1200 / devicePixelRatio),
-        maxHeight: Math.floor(800 / devicePixelRatio)
+        maxWidth: Math.floor(1200 / Math.max(devicePixelRatio, 1.2)), // Less aggressive DPI adjustment
+        maxHeight: Math.floor(800 / Math.max(devicePixelRatio, 1.2))
       };
     } else {
       return {
-        quality: 0.8,
+        quality: 0.9, // IMPROVED: Increased from 0.8 to 0.9
         format: originalFormat === 'image/png' && fileSize > 500 * 1024 ? 'jpeg' : undefined // Convert large PNGs
       };
     }
@@ -336,8 +336,8 @@ export async function compressImageAdvanced(
 
         // Mobile-optimized quality settings
         let finalQuality = options.quality;
-        if (isMobile && finalQuality > 0.8) {
-          finalQuality = Math.min(finalQuality, 0.8); // Cap mobile quality at 0.8
+        if (isMobile && finalQuality > 0.9) {
+          finalQuality = Math.min(finalQuality, 0.9); // IMPROVED: Cap mobile quality at 0.9 instead of 0.8
           console.log('📱 Mobile quality capped at:', finalQuality);
         }
 
