@@ -387,7 +387,31 @@ const translations = {
     'imageRotate.result.rotatedImageTitle': 'Imagen Rotada',
     'imageRotate.result.rotatedAngle': 'rotada',
     'imageRotate.result.downloadButton': 'Descargar Imagen Rotada',
-    'imageRotate.result.newImageButton': 'Rotar Nueva Imagen'
+    'imageRotate.result.newImageButton': 'Rotar Nueva Imagen',
+    
+    // AUTH TRANSLATIONS - ESPAÑOL
+    'auth.welcomeTitle': 'Bienvenido de Vuelta',
+    'auth.createAccountTitle': 'Crear Cuenta',
+    'auth.loginSubtitle': 'Accede a tus herramientas favoritas',
+    'auth.registerSubtitle': 'Únete a millones de usuarios',
+    'auth.freeStorageBadge': '✨ 5GB Almacenamiento Gratuito',
+    'auth.firstName': 'Nombre',
+    'auth.lastName': 'Apellido',
+    'auth.firstNamePlaceholder': 'Tu nombre',
+    'auth.lastNamePlaceholder': 'Tu apellido',
+    'auth.email': 'Email',
+    'auth.emailPlaceholder': 'tu@email.com',
+    'auth.password': 'Contraseña',
+    'auth.passwordPlaceholder': 'Mínimo 6 caracteres',
+    'auth.processing': 'Procesando...',
+    'auth.login': 'Iniciar Sesión',
+    'auth.createAccount': 'Crear Cuenta',
+    'auth.register': 'Registrarse',
+    'auth.noAccount': '¿No tienes una cuenta?',
+    'auth.hasAccount': '¿Ya tienes una cuenta?',
+    'auth.benefit1': '5GB Gratis',
+    'auth.benefit2': 'Sin Anuncios',
+    'auth.benefit3': 'Seguro'
   },
   tr: {
     // Ana sayfa namespace düzeltmeleri

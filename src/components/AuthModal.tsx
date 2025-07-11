@@ -9,48 +9,104 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-// Firebase error code'larını Türkçe mesajlara çeviren fonksiyon
-const getFirebaseErrorMessage = (error: unknown): string => {
+// Firebase error code'larını locale'e göre çeviren fonksiyon
+const getFirebaseErrorMessage = (error: unknown, locale: string = 'tr'): string => {
   const errorCode = (error as { code?: string; message?: string })?.code || 
                    (error as { code?: string; message?: string })?.message || '';
   
-  const errorMessages: Record<string, string> = {
-    'auth/email-already-in-use': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
-    'auth/weak-password': 'Şifre çok zayıf. En az 6 karakter kullanın.',
-    'auth/invalid-email': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
-    'auth/user-disabled': 'Bu hesap devre dışı bırakılmış.',
-    'auth/user-not-found': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
-    'auth/wrong-password': 'Hatalı şifre. Lütfen tekrar deneyin.',
-    'auth/too-many-requests': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.',
-    'auth/network-request-failed': 'İnternet bağlantınızı kontrol edin.',
-    'auth/invalid-credential': 'Geçersiz giriş bilgileri. E-posta ve şifrenizi kontrol edin.',
-    'auth/missing-password': 'Şifre alanı boş bırakılamaz.',
-    'auth/missing-email': 'E-posta adresi boş bırakılamaz.',
-    'auth/requires-recent-login': 'Bu işlem için tekrar giriş yapmanız gerekiyor.',
-    'auth/operation-not-allowed': 'Bu işlem şu anda kullanılamıyor.',
-    'auth/popup-closed-by-user': 'İşlem iptal edildi.',
-    'auth/unauthorized-domain': 'Bu domain yetkili değil.',
-    'Firebase: Error (auth/email-already-in-use).': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
-    'Firebase: Error (auth/weak-password).': 'Şifre çok zayıf. En az 6 karakter kullanın.',
-    'Firebase: Error (auth/invalid-email).': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
-    'Firebase: Error (auth/user-not-found).': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
-    'Firebase: Error (auth/wrong-password).': 'Hatalı şifre. Lütfen tekrar deneyin.',
-    'Firebase: Error (auth/too-many-requests).': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.'
+  const errorMessages: Record<string, Record<string, string>> = {
+    es: {
+      'auth/email-already-in-use': 'Esta dirección de email ya está en uso. Prueba a iniciar sesión.',
+      'auth/weak-password': 'La contraseña es muy débil. Usa al menos 6 caracteres.',
+      'auth/invalid-email': 'Dirección de email inválida. Por favor verifica.',
+      'auth/user-disabled': 'Esta cuenta ha sido desactivada.',
+      'auth/user-not-found': 'No se encontró usuario registrado con esta dirección de email.',
+      'auth/wrong-password': 'Contraseña incorrecta. Por favor inténtalo de nuevo.',
+      'auth/too-many-requests': 'Demasiados intentos fallidos. Por favor inténtalo más tarde.',
+      'auth/network-request-failed': 'Verifica tu conexión a internet.',
+      'auth/invalid-credential': 'Credenciales inválidas. Verifica tu email y contraseña.',
+      'auth/missing-password': 'El campo de contraseña no puede estar vacío.',
+      'auth/missing-email': 'La dirección de email no puede estar vacía.',
+      'auth/requires-recent-login': 'Necesitas iniciar sesión nuevamente para esta operación.',
+      'auth/operation-not-allowed': 'Esta operación no está disponible actualmente.',
+      'auth/popup-closed-by-user': 'Operación cancelada.',
+      'auth/unauthorized-domain': 'Este dominio no está autorizado.',
+      'Firebase: Error (auth/email-already-in-use).': 'Esta dirección de email ya está en uso. Prueba a iniciar sesión.',
+      'Firebase: Error (auth/weak-password).': 'La contraseña es muy débil. Usa al menos 6 caracteres.',
+      'Firebase: Error (auth/invalid-email).': 'Dirección de email inválida. Por favor verifica.',
+      'Firebase: Error (auth/user-not-found).': 'No se encontró usuario registrado con esta dirección de email.',
+      'Firebase: Error (auth/wrong-password).': 'Contraseña incorrecta. Por favor inténtalo de nuevo.',
+      'Firebase: Error (auth/too-many-requests).': 'Demasiados intentos fallidos. Por favor inténtalo más tarde.'
+    },
+    tr: {
+      'auth/email-already-in-use': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
+      'auth/weak-password': 'Şifre çok zayıf. En az 6 karakter kullanın.',
+      'auth/invalid-email': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
+      'auth/user-disabled': 'Bu hesap devre dışı bırakılmış.',
+      'auth/user-not-found': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
+      'auth/wrong-password': 'Hatalı şifre. Lütfen tekrar deneyin.',
+      'auth/too-many-requests': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.',
+      'auth/network-request-failed': 'İnternet bağlantınızı kontrol edin.',
+      'auth/invalid-credential': 'Geçersiz giriş bilgileri. E-posta ve şifrenizi kontrol edin.',
+      'auth/missing-password': 'Şifre alanı boş bırakılamaz.',
+      'auth/missing-email': 'E-posta adresi boş bırakılamaz.',
+      'auth/requires-recent-login': 'Bu işlem için tekrar giriş yapmanız gerekiyor.',
+      'auth/operation-not-allowed': 'Bu işlem şu anda kullanılamıyor.',
+      'auth/popup-closed-by-user': 'İşlem iptal edildi.',
+      'auth/unauthorized-domain': 'Bu domain yetkili değil.',
+      'Firebase: Error (auth/email-already-in-use).': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
+      'Firebase: Error (auth/weak-password).': 'Şifre çok zayıf. En az 6 karakter kullanın.',
+      'Firebase: Error (auth/invalid-email).': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
+      'Firebase: Error (auth/user-not-found).': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
+      'Firebase: Error (auth/wrong-password).': 'Hatalı şifre. Lütfen tekrar deneyin.',
+      'Firebase: Error (auth/too-many-requests).': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.'
+    },
+    en: {
+      'auth/email-already-in-use': 'This email address is already in use. Try signing in.',
+      'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
+      'auth/invalid-email': 'Invalid email address. Please check.',
+      'auth/user-disabled': 'This account has been disabled.',
+      'auth/user-not-found': 'No user found registered with this email address.',
+      'auth/wrong-password': 'Incorrect password. Please try again.',
+      'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
+      'auth/network-request-failed': 'Check your internet connection.',
+      'auth/invalid-credential': 'Invalid credentials. Check your email and password.',
+      'auth/missing-password': 'Password field cannot be empty.',
+      'auth/missing-email': 'Email address cannot be empty.',
+      'auth/requires-recent-login': 'You need to sign in again for this operation.',
+      'auth/operation-not-allowed': 'This operation is not currently available.',
+      'auth/popup-closed-by-user': 'Operation cancelled.',
+      'auth/unauthorized-domain': 'This domain is not authorized.',
+      'Firebase: Error (auth/email-already-in-use).': 'This email address is already in use. Try signing in.',
+      'Firebase: Error (auth/weak-password).': 'Password is too weak. Use at least 6 characters.',
+      'Firebase: Error (auth/invalid-email).': 'Invalid email address. Please check.',
+      'Firebase: Error (auth/user-not-found).': 'No user found registered with this email address.',
+      'Firebase: Error (auth/wrong-password).': 'Incorrect password. Please try again.',
+      'Firebase: Error (auth/too-many-requests).': 'Too many failed attempts. Please try again later.'
+    }
   };
 
+  const localeMessages = errorMessages[locale] || errorMessages.tr;
+
   // Önce exact match ara
-  if (errorMessages[errorCode]) {
-    return errorMessages[errorCode];
+  if (localeMessages[errorCode]) {
+    return localeMessages[errorCode];
   }
 
   // Error message'da code varsa extract et
   const codeMatch = errorCode.match(/auth\/[\w-]+/);
-  if (codeMatch && errorMessages[codeMatch[0]]) {
-    return errorMessages[codeMatch[0]];
+  if (codeMatch && localeMessages[codeMatch[0]]) {
+    return localeMessages[codeMatch[0]];
   }
 
-  // Default message
-  return 'Bir hata oluştu. Lütfen tekrar deneyin.';
+  // Default message by locale
+  const defaultMessages: Record<string, string> = {
+    es: 'Ha ocurrido un error. Por favor inténtalo de nuevo.',
+    tr: 'Bir hata oluştu. Lütfen tekrar deneyin.',
+    en: 'An error occurred. Please try again.'
+  };
+
+  return defaultMessages[locale] || defaultMessages.tr;
 };
 
 export default function AuthModal({ onClose }: AuthModalProps) {
@@ -85,7 +141,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
       }
       onClose();
     } catch (err) {
-      setError(getFirebaseErrorMessage(err));
+      setError(getFirebaseErrorMessage(err, locale));
     } finally {
       setLoading(false);
     }
