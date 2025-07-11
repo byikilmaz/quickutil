@@ -9,6 +9,7 @@ import os
 import uuid
 import tempfile
 import logging
+import gc
 from datetime import datetime
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
@@ -82,39 +83,61 @@ def get_file_format(filename):
     return filename.rsplit('.', 1)[1].lower() if '.' in filename else None
 
 def process_image_with_quality(image, format='JPEG', quality=85):
-    """Process image with specified quality and format"""
+    """Process image with specified quality and format - MEMORY OPTIMIZED"""
     output = io.BytesIO()
+    original_image = image
+    background = None
     
-    if format.upper() == 'JPEG':
-        # Convert RGBA to RGB for JPEG
-        if image.mode in ('RGBA', 'LA', 'P'):
-            background = Image.new('RGB', image.size, (255, 255, 255))
-            background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
-            image = background
-        image.save(output, format='JPEG', quality=quality, optimize=True)
-    elif format.upper() == 'WEBP':
-        image.save(output, format='WEBP', quality=quality, optimize=True)
-    elif format.upper() in ['HEIC', 'HEIF']:
-        # HEIC/HEIF output support with pillow-heif
-        if HEIC_SUPPORT:
-            # Convert RGBA to RGB for HEIC if necessary
-            if image.mode in ('RGBA', 'LA', 'P'):
-                background = Image.new('RGB', image.size, (255, 255, 255))
-                background.paste(image, mask=image.split()[-1] if image.mode in ('RGBA', 'LA') else None)
-                image = background
-            image.save(output, format='HEIF', quality=quality, optimize=True)
-        else:
-            # Fallback to JPEG if HEIC not supported
+    try:
+        if format.upper() == 'JPEG':
+            # Convert RGBA to RGB for JPEG
             if image.mode in ('RGBA', 'LA', 'P'):
                 background = Image.new('RGB', image.size, (255, 255, 255))
                 background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
                 image = background
             image.save(output, format='JPEG', quality=quality, optimize=True)
-    else:
-        image.save(output, format=format.upper(), optimize=True)
-    
-    output.seek(0)
-    return output
+            
+        elif format.upper() == 'WEBP':
+            image.save(output, format='WEBP', quality=quality, optimize=True)
+            
+        elif format.upper() in ['HEIC', 'HEIF']:
+            # HEIC/HEIF output support with pillow-heif - MEMORY OPTIMIZED
+            if HEIC_SUPPORT:
+                # Convert RGBA to RGB for HEIC if necessary
+                if image.mode in ('RGBA', 'LA', 'P'):
+                    background = Image.new('RGB', image.size, (255, 255, 255))
+                    background.paste(image, mask=image.split()[-1] if image.mode in ('RGBA', 'LA') else None)
+                    image = background
+                image.save(output, format='HEIF', quality=quality, optimize=True)
+            else:
+                # Fallback to JPEG if HEIC not supported
+                if image.mode in ('RGBA', 'LA', 'P'):
+                    background = Image.new('RGB', image.size, (255, 255, 255))
+                    background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+                    image = background
+                image.save(output, format='JPEG', quality=quality, optimize=True)
+        else:
+            image.save(output, format=format.upper(), optimize=True)
+        
+        output.seek(0)
+        return output
+        
+    except Exception as e:
+        logger.error(f"💥 Memory error in process_image_with_quality: {e}")
+        raise
+        
+    finally:
+        # 🔧 CRITICAL MEMORY CLEANUP
+        try:
+            if background and background != image:
+                background.close()
+                del background
+            # Don't close original_image as it might be used elsewhere
+            # Force garbage collection for HEIC memory cleanup
+            gc.collect()
+            logger.info(f"🧹 Memory cleanup completed for format: {format}")
+        except Exception as cleanup_error:
+            logger.warning(f"⚠️ Memory cleanup warning: {cleanup_error}")
 
 def save_file_temporarily(file):
     """Save uploaded file to temporary location and return path"""
@@ -137,7 +160,7 @@ def index():
     """API information"""
     return jsonify({
         'service': 'QuickUtil Image Processing API',
-        'version': '1.0.4',
+        'version': '1.0.8',
         'status': 'running',
         'platform': 'Render.com',
         'heic_support': HEIC_SUPPORT,
@@ -162,7 +185,7 @@ def health():
         'status': 'healthy',
         'heic_support': HEIC_SUPPORT,
         'service': 'QuickUtil Image Processing API',
-        'version': '1.0.4'
+        'version': '1.0.8'
     })
 
 @app.route('/compress', methods=['POST', 'OPTIONS'])
@@ -217,19 +240,59 @@ def compress_image():
         # DEBUG: Log format mapping
         logger.info(f"🔧 Format mapping: {target_format} -> {processing_format}")
         
+        # 🔧 EARLY FILE SIZE VALIDATION (MEMORY PROTECTION)
+        file.seek(0, 2)  # Seek to end
+        file_size = file.tell()
+        file.seek(0)  # Reset to beginning
+        
+        if file_size > 20 * 1024 * 1024:  # 20MB limit for HEIC files
+            return jsonify({'error': f'File too large: {file_size/(1024*1024):.1f}MB. Max: 20MB'}), 413
+        
+        logger.info(f"📊 Processing file: {file.filename}, Size: {file_size/(1024*1024):.1f}MB, Format: {target_format}")
+        
         # Save file temporarily
         temp_path = save_file_temporarily(file)
         
-        # Load and process image
-        image = Image.open(temp_path)
-        original_size = os.path.getsize(temp_path)
+        # 🔧 MEMORY-SAFE IMAGE LOADING
+        image = None
+        compressed_data = None
+        try:
+            image = Image.open(temp_path)
+            original_size = os.path.getsize(temp_path)
+            
+            # Log image dimensions for memory estimation
+            logger.info(f"🖼️ Image dimensions: {image.width}x{image.height}, Mode: {image.mode}")
+            
+            # Resize if dimensions specified
+            if max_width or max_height:
+                image.thumbnail((max_width or image.width, max_height or image.height), Image.Resampling.LANCZOS)
+                logger.info(f"🔄 Resized to: {image.width}x{image.height}")
+            
+            # Compress image with mapped format
+            compressed_data = process_image_with_quality(image, processing_format, quality)
+            
+        except MemoryError as me:
+            logger.error(f"💥 MEMORY ERROR: {me}")
+            return jsonify({'error': 'File too large for processing. Try a smaller image or lower quality.'}), 413
+            
+        except Exception as pe:
+            logger.error(f"💥 PROCESSING ERROR: {pe}")
+            return jsonify({'error': f'Image processing failed: {str(pe)}'}), 500
+            
+        finally:
+            # 🧹 CRITICAL MEMORY CLEANUP
+            if image:
+                try:
+                    image.close()
+                    del image
+                    gc.collect()
+                    logger.info("🧹 Image memory cleaned up")
+                except Exception as cleanup_err:
+                    logger.warning(f"⚠️ Image cleanup warning: {cleanup_err}")
         
-        # Resize if dimensions specified
-        if max_width or max_height:
-            image.thumbnail((max_width or image.width, max_height or image.height), Image.Resampling.LANCZOS)
-        
-        # Compress image with mapped format
-        compressed_data = process_image_with_quality(image, processing_format, quality)
+        # Exit early if processing failed
+        if not compressed_data:
+            return jsonify({'error': 'Image processing failed'}), 500
         
         # Generate unique filename for output
         unique_filename = f"{uuid.uuid4()}.{target_format}"
@@ -259,8 +322,16 @@ def compress_image():
         response.headers['X-Compression-Ratio'] = f"{compression_ratio:.1f}"
         response.headers['X-Original-Format'] = get_file_format(file.filename) or 'unknown'
         response.headers['X-Output-Format'] = target_format
-        response.headers['X-Original-Dimensions'] = f"{image.width}x{image.height}"
-        response.headers['X-Final-Dimensions'] = f"{image.width}x{image.height}"
+        # Get dimensions safely (image might be closed)
+        dimensions = "unknown"
+        try:
+            with Image.open(temp_path) as img_check:
+                dimensions = f"{img_check.width}x{img_check.height}"
+        except:
+            pass
+            
+        response.headers['X-Original-Dimensions'] = dimensions
+        response.headers['X-Final-Dimensions'] = dimensions
         response.headers['X-Compression-Mode'] = 'standard'
         response.headers['X-Quality'] = str(quality)
         
