@@ -165,9 +165,27 @@ const translations = {
        cta: {
          title: 'Sé Parte de Nuestra Historia',
          description: 'Transforma tu experiencia de procesamiento de archivos con QuickUtil.app, la elección de millones de usuarios en todo el mundo.',
-         button: 'Comenzar Ahora'
-       }
-     }
+                 button: 'Comenzar Ahora'
+      }
+    },
+    
+    // Privacy Policy - ESPAÑOL
+    'privacy.title': 'Política de Privacidad',
+    'privacy.subtitle': 'Información sobre la protección y procesamiento de datos personales en QuickUtil.app',
+    'privacy.dataController': 'Responsable del Tratamiento de Datos',
+    'privacy.collectedData': 'Datos Recopilados',
+    'privacy.processingPurpose': 'Propósito del Procesamiento',
+    'privacy.dataSecurity': 'Seguridad de Datos',
+    'privacy.userRights': 'Derechos del Usuario',
+    
+    // Cookie Policy - ESPAÑOL
+    'cookiePolicy.title': 'Política de Cookies',
+    'cookiePolicy.subtitle': 'Información sobre el uso de cookies en QuickUtil.app',
+    'cookiePolicy.whatAreCookies': '¿Qué son las Cookies?',
+    'cookiePolicy.typesOfCookies': 'Tipos de Cookies',
+    'cookiePolicy.cookieManagement': 'Gestión de Cookies',
+    'cookiePolicy.thirdParty': 'Cookies de Terceros',
+    'cookiePolicy.contact': 'Contacto'
   },
   tr: {
     // Ana sayfa namespace düzeltmeleri
@@ -324,6 +342,24 @@ const translations = {
         button: 'Hemen Başlayın'
       }
     },
+    
+    // Privacy Policy - TÜRKÇE
+    'privacy.title': 'Gizlilik Sözleşmesi',
+    'privacy.subtitle': 'QuickUtil.app\'te kişisel verilerin korunması ve işlenmesi hakkında bilgiler',
+    'privacy.dataController': 'Veri Sorumlusu',
+    'privacy.collectedData': 'Toplanan Veriler',
+    'privacy.processingPurpose': 'İşleme Amacı',
+    'privacy.dataSecurity': 'Veri Güvenliği',
+    'privacy.userRights': 'Kullanıcı Hakları',
+    
+    // Cookie Policy - TÜRKÇE
+    'cookiePolicy.title': 'Çerez Politikası',
+    'cookiePolicy.subtitle': 'QuickUtil.app\'te çerez kullanımı hakkında bilgiler',
+    'cookiePolicy.whatAreCookies': 'Çerezler Nedir?',
+    'cookiePolicy.typesOfCookies': 'Çerez Türleri',
+    'cookiePolicy.cookieManagement': 'Çerez Yönetimi',
+    'cookiePolicy.thirdParty': 'Üçüncü Taraf Çerezler',
+    'cookiePolicy.contact': 'İletişim',
     
     // Common UI metinleri
     'common.selectFile': 'Dosya seç',
@@ -1338,7 +1374,25 @@ const translations = {
         description: 'Transform your file processing experience with QuickUtil.app, the choice of millions of users worldwide.',
         button: 'Get Started Now'
       }
-    }
+    },
+    
+    // Privacy Policy - ENGLISH
+    'privacy.title': 'Privacy Policy',
+    'privacy.subtitle': 'Information about the protection and processing of personal data at QuickUtil.app',
+    'privacy.dataController': 'Data Controller',
+    'privacy.collectedData': 'Collected Data',
+    'privacy.processingPurpose': 'Processing Purpose',
+    'privacy.dataSecurity': 'Data Security',
+    'privacy.userRights': 'User Rights',
+    
+    // Cookie Policy - ENGLISH
+    'cookiePolicy.title': 'Cookie Policy',
+    'cookiePolicy.subtitle': 'Information about cookie usage at QuickUtil.app',
+    'cookiePolicy.whatAreCookies': 'What are Cookies?',
+    'cookiePolicy.typesOfCookies': 'Types of Cookies',
+    'cookiePolicy.cookieManagement': 'Cookie Management',
+    'cookiePolicy.thirdParty': 'Third-Party Cookies',
+    'cookiePolicy.contact': 'Contact'
   }
 };
 
