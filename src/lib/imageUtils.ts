@@ -709,7 +709,7 @@ export function isHEICFormat(file: File): boolean {
          file.name.toLowerCase().endsWith('.heif');
 }
 
-// NEW: Convert HEIC to JPEG using heic2any library with server-side fallback
+// NEW: Convert HEIC to JPEG using heic2any library (client-side only)
 export async function convertHEICToJPEG(file: File): Promise<File> {
   try {
     console.log('🔄 Converting HEIC to JPEG with heic2any library');
@@ -778,7 +778,7 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
       return convertedFile;
       
     } catch (clientError) {
-      console.warn('❌ Client-side HEIC conversion failed, trying server-side fallback');
+      console.warn('❌ Client-side HEIC conversion failed');
       console.log('🔍 Client error details:', clientError);
       
       // Check if it's a common heic2any error
@@ -786,11 +786,11 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
       if (errorMessage.includes('Could not parse HEIF file') || 
           errorMessage.includes('format not supported') ||
           errorMessage.includes('ERR_LIBHEIF')) {
-        console.log('🔧 heic2any library compatibility issue detected, using server fallback');
+        console.log('🔧 heic2any library compatibility issue detected');
       }
       
-      // Try server-side conversion as fallback
-      return await convertHEICToJPEGServerSide(file);
+      // Re-throw client-side error 
+      throw clientError;
     }
     
   } catch (error) {
@@ -817,54 +817,7 @@ Ya da Settings > Camera > Format'tan "Most Compatible" seçeneğini aktif edin.`
   }
 }
 
-// NEW: Server-side HEIC conversion fallback
-async function convertHEICToJPEGServerSide(file: File): Promise<File> {
-  try {
-    console.log('🌐 Starting server-side HEIC conversion...');
-    
-    // Create form data for server upload
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    // Get server URL from environment or use default
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://quickutil-pdf-api.onrender.com';
-    const convertEndpoint = `${serverUrl}/convert-heic`;
-    
-    console.log('📡 Sending HEIC file to server:', convertEndpoint);
-    
-    const response = await fetch(convertEndpoint, {
-      method: 'POST',
-      body: formData
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `Server error: ${response.status}`);
-    }
-    
-    // Get converted JPEG blob
-    const convertedBlob = await response.blob();
-    
-    // Create new file with converted blob
-    const convertedFile = new File(
-      [convertedBlob],
-      file.name.replace(/\.(heic|heif)$/i, '.jpg'),
-      {
-        type: 'image/jpeg',
-        lastModified: Date.now()
-      }
-    );
-    
-    console.log('✅ Server-side HEIC conversion successful');
-    console.log('📄 Converted file:', convertedFile.name, 'Size:', formatFileSize(convertedFile.size));
-    
-    return convertedFile;
-    
-  } catch (error) {
-    console.error('❌ Server-side HEIC conversion failed:', error);
-    throw new Error(`Server-side HEIC dönüştürme başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
-  }
-}
+
 
 // Helper function to get optimal compression settings
 export function getOptimalCompressionSettings(fileSize: number): CompressOptions {
