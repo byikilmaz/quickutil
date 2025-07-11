@@ -68,19 +68,19 @@ def compress_pdf_ghostscript(input_path, output_path, quality='ebook'):
     quality_settings = {
         'screen': {
             'dPDFSETTINGS': '/screen',
-            # AGGRESSIVE iLovePDF-level compression settings
+            # OPTIMIZED compression settings - Better quality balance
             'dDownsampleColorImages': 'true',
-            'dColorImageResolution': '72',
+            'dColorImageResolution': '150',  # Increased from 72 to 150 DPI
             'dColorImageDownsampleThreshold': '1.5',
             'dColorImageDownsampleType': '/Bicubic',
-            'dColorACSImageDict': '<<  /QFactor 0.15 /Blend 1 /HSamples [2 1 1 2] /VSamples [2 1 1 2] >>',
+            'dColorACSImageDict': '<<  /QFactor 0.4 /Blend 1 /HSamples [2 1 1 2] /VSamples [2 1 1 2] >>',  # Improved from 0.15 to 0.4
             'dDownsampleGrayImages': 'true', 
-            'dGrayImageResolution': '72',
+            'dGrayImageResolution': '150',  # Increased from 72 to 150 DPI
             'dGrayImageDownsampleThreshold': '1.5',
             'dGrayImageDownsampleType': '/Bicubic',
-            'dGrayACSImageDict': '<<  /QFactor 0.15 /Blend 1 /HSamples [2 1 1 2] /VSamples [2 1 1 2] >>',
+            'dGrayACSImageDict': '<<  /QFactor 0.4 /Blend 1 /HSamples [2 1 1 2] /VSamples [2 1 1 2] >>',  # Improved from 0.15 to 0.4
             'dDownsampleMonoImages': 'true',
-            'dMonoImageResolution': '72',
+            'dMonoImageResolution': '150',  # Increased from 72 to 150 DPI
             'dMonoImageDownsampleThreshold': '1.0',
             'dMonoImageDownsampleType': '/Subsample',
             'dCompressPages': 'true',
@@ -89,7 +89,7 @@ def compress_pdf_ghostscript(input_path, output_path, quality='ebook'):
             'dMaxSubsetPct': '100',
             'dSubsetFonts': 'true',
             'dEmbedAllFonts': 'true',
-            # MAXIMUM COMPRESSION SETTINGS
+            # BALANCED COMPRESSION SETTINGS
             'dDetectDuplicateImages': 'true',
             'dCompressFonts': 'true',
             'dPreserveEPSInfo': 'false',

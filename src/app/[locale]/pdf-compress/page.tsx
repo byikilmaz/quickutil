@@ -463,20 +463,20 @@ function PDFCompress({ locale }: { locale: string }) {
                   {[
                     { 
                       id: 'screen', 
-                      name: locale === 'en' ? 'High' : 'AŞIRI SIKIŞTIRMA',
-                      desc: getText('pdfCompress.highDesc', 'Daha az kaliteli, yüksek sıkıştırma'),
+                      name: locale === 'en' ? 'High Compression' : 'YÜKSEK SIKIŞTIRMA',
+                      desc: getText('pdfCompress.highDesc', 'Küçük dosya boyutu, iyi kalite korunur'),
                       recommended: false
                     },
                     { 
                       id: 'ebook', 
-                      name: locale === 'en' ? 'Medium' : 'ÖNERİLEN SIKIŞTIRMA',
-                      desc: getText('pdfCompress.mediumDesc', 'Kaliteli, iyi sıkıştırma'),
+                      name: locale === 'en' ? 'Medium Compression' : 'ÖNERİLEN SIKIŞTIRMA',
+                      desc: getText('pdfCompress.mediumDesc', 'Mükemmel kalite-boyut dengesi'),
                       recommended: true
                     },
                     { 
                       id: 'printer', 
-                      name: locale === 'en' ? 'Light' : 'DÜŞÜK SIKIŞTIRMA',
-                      desc: getText('pdfCompress.lightDesc', 'Yüksek kaliteli, daha az sıkıştırma'),
+                      name: locale === 'en' ? 'Light Compression' : 'DÜŞÜK SIKIŞTIRMA',
+                      desc: getText('pdfCompress.lightDesc', 'Maksimum kalite, orta sıkıştırma'),
                       recommended: false
                     }
                   ].map((level) => (
