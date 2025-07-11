@@ -2,13 +2,14 @@
 
 export interface ServerCompressionOptions {
   quality: number; // 10-100
-  format?: 'JPEG' | 'PNG' | 'WEBP';
+  format?: 'JPEG' | 'PNG' | 'WEBP' | 'HEIC';
   maxWidth?: number;
   maxHeight?: number;
   mode?: 'aggressive' | 'lossless' | 'webp';
 }
 
 export interface ServerCompressionResult {
+  file: File; // Add compressed file for interface compatibility
   originalFile: File;
   compressedBlob: Blob;
   originalSize: number;
@@ -22,6 +23,8 @@ export interface ServerCompressionResult {
     finalDimensions: string;
     compressionMode: string;
     quality: number;
+    usingFallback: boolean;
+    mode: string;
   };
 }
 
@@ -37,7 +40,7 @@ export async function compressImageWithServer(
   
   // Create FormData for multipart upload
   const formData = new FormData();
-  formData.append('image', file);
+  formData.append('file', file);  // Backend expects 'file' field name
   formData.append('quality', options.quality.toString());
   
   if (options.format) {
@@ -68,32 +71,83 @@ export async function compressImageWithServer(
       throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
     }
 
-    // Get compression metadata from headers
-    const metadata = {
-      originalFormat: response.headers.get('X-Original-Format') || 'Unknown',
-      outputFormat: response.headers.get('X-Output-Format') || 'Unknown',
-      originalDimensions: response.headers.get('X-Original-Dimensions') || 'Unknown',
-      finalDimensions: response.headers.get('X-Final-Dimensions') || 'Unknown',
-      compressionMode: response.headers.get('X-Compression-Mode') || 'Unknown',
-      quality: parseInt(response.headers.get('X-Quality') || '0')
-    };
+    // Debug: Log all response headers
+    console.log('🔍 Server response headers:', {
+      'X-Original-Size': response.headers.get('X-Original-Size'),
+      'X-Compressed-Size': response.headers.get('X-Compressed-Size'),
+      'X-Compression-Ratio': response.headers.get('X-Compression-Ratio'),
+      'X-Original-Format': response.headers.get('X-Original-Format'),
+      'X-Output-Format': response.headers.get('X-Output-Format'),
+      'Content-Type': response.headers.get('Content-Type'),
+      'Content-Length': response.headers.get('Content-Length'),
+      'Response Status': response.status,
+      'Response OK': response.ok
+    });
 
+    // Extract metadata from response headers
     const originalSize = parseInt(response.headers.get('X-Original-Size') || '0');
     const compressedSize = parseInt(response.headers.get('X-Compressed-Size') || '0');
     const compressionRatio = parseFloat(response.headers.get('X-Compression-Ratio') || '0');
+    const originalFormat = response.headers.get('X-Original-Format') || 'unknown';
+    const outputFormatFromHeader = response.headers.get('X-Output-Format') || (options.format || 'JPEG').toLowerCase();
 
     // Get compressed image blob
     const compressedBlob = await response.blob();
-    const downloadUrl = URL.createObjectURL(compressedBlob);
+    
+    // FALLBACK: If headers are missing, calculate from blob and file
+    const fallbackCompressedSize = compressedBlob.size;
+    const fallbackOriginalSize = file.size;
+    
+    // Use fallback if headers are missing or invalid
+    const finalOriginalSize = originalSize > 0 ? originalSize : fallbackOriginalSize;
+    const finalCompressedSize = compressedSize > 0 ? compressedSize : fallbackCompressedSize;
+    const finalCompressionRatio = compressionRatio > 0 ? compressionRatio : 
+      ((finalOriginalSize - finalCompressedSize) / finalOriginalSize * 100);
 
-    return {
-      originalFile: file,
-      compressedBlob,
+    // Debug: Log all calculated values
+    console.log('📊 Calculated values:', {
+      'Header Original Size': originalSize,
+      'Header Compressed Size': compressedSize,
+      'Header Compression Ratio': compressionRatio,
+      'Fallback Original Size': fallbackOriginalSize,
+      'Fallback Compressed Size': fallbackCompressedSize,
+      'Final Original Size': finalOriginalSize,
+      'Final Compressed Size': finalCompressedSize,
+      'Final Compression Ratio': finalCompressionRatio.toFixed(1) + '%'
+    });
+
+    // Debug: Log parsed header values
+    console.log('📊 Parsed header values:', {
       originalSize,
       compressedSize,
       compressionRatio,
+      originalFormat,
+      outputFormatFromHeader,
+      'originalSize type': typeof originalSize,
+      'compressedSize type': typeof compressedSize
+    });
+
+    // Create download URL
+    const downloadUrl = URL.createObjectURL(compressedBlob);
+
+    return {
+      file: new File([compressedBlob], `compressed_${file.name}`, { type: compressedBlob.type }),
+      originalFile: file,
+      compressedBlob,
+      originalSize: finalOriginalSize,
+      compressedSize: finalCompressedSize,
+      compressionRatio: finalCompressionRatio,
       downloadUrl,
-      metadata
+      metadata: {
+        originalFormat,
+        outputFormat: outputFormatFromHeader,
+        originalDimensions: 'Unknown',
+        finalDimensions: 'Unknown',
+        compressionMode: 'standard',
+        quality: options.quality || 85,
+        mode: options.mode || 'standard',
+        usingFallback: originalSize === 0 || compressedSize === 0
+      }
     };
 
   } catch (error) {

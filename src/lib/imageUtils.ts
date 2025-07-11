@@ -1,4 +1,8 @@
 // Image conversion utilities using Canvas API
+import heic2any from 'heic2any';
+
+// NEW: Image Processing API URL
+const IMAGE_API_URL = 'https://quickutil-image-api.onrender.com';
 
 export interface ConversionOptions {
   format: 'png' | 'jpeg' | 'webp';
@@ -9,9 +13,13 @@ export interface ConversionOptions {
 
 export interface ConversionResult {
   file: File;
+  originalFile?: File; // For server-side operations
+  compressedBlob?: Blob; // For server-side operations  
   originalSize: number;
-  newSize: number;
+  newSize?: number; // For client-side operations
+  compressedSize?: number; // For server-side operations
   compressionRatio: number;
+  downloadUrl?: string; // For server-side operations
 }
 
 export interface ResizeOptions {
@@ -34,9 +42,161 @@ export interface RotateOptions {
 
 export interface CompressOptions {
   quality: number; // 0.1 to 1.0
-  format?: 'png' | 'jpeg' | 'webp';
+  format?: 'png' | 'jpeg' | 'webp' | 'heic';
   maxWidth?: number;
   maxHeight?: number;
+}
+
+// NEW: Server-side compression options
+export interface ServerCompressionOptions {
+  quality: number; // 1-100
+  format?: 'JPEG' | 'PNG' | 'WEBP' | 'HEIC';
+  mode?: 'aggressive' | 'balanced' | 'quality';
+  max_width?: number;
+  max_height?: number;
+}
+
+// NEW: Check if Image Processing API is available
+export async function checkAPIHealth(): Promise<boolean> {
+  try {
+    const response = await fetch(`${IMAGE_API_URL}/health`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Image API is available:', data);
+      return true;
+    }
+    
+    console.log('❌ Image API health check failed:', response.status);
+    return false;
+  } catch (error) {
+    console.log('❌ Image API is not available:', error);
+    return false;
+  }
+}
+
+// NEW: Server-side HEIC conversion
+export async function convertHEICServerSide(file: File, quality: number = 85): Promise<File> {
+  try {
+    console.log('🔧 Converting HEIC using server-side API...');
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('quality', quality.toString());
+    
+    const response = await fetch(`${IMAGE_API_URL}/heic-convert`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/octet-stream',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
+    }
+    
+    const blob = await response.blob();
+    const convertedFile = new File(
+      [blob],
+      `${getFileNameWithoutExtension(file.name)}.jpg`,
+      {
+        type: 'image/jpeg',
+        lastModified: Date.now(),
+      }
+    );
+    
+    console.log('✅ Server-side HEIC conversion successful:', {
+      originalSize: file.size,
+      convertedSize: convertedFile.size,
+      compressionRatio: ((file.size - convertedFile.size) / file.size * 100).toFixed(1) + '%'
+    });
+    
+    return convertedFile;
+  } catch (error) {
+    console.error('❌ Server-side HEIC conversion failed:', error);
+    throw error;
+  }
+}
+
+// NEW: Server-side image compression
+export async function compressImageWithServer(
+  file: File,
+  options: ServerCompressionOptions
+): Promise<ConversionResult> {
+  try {
+    console.log('🔧 Compressing image using server-side API...', options);
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('quality', options.quality.toString());
+    if (options.format) {
+      formData.append('format', options.format);
+    }
+    
+    if (options.max_width) {
+      formData.append('max_width', options.max_width.toString());
+    }
+    
+    if (options.max_height) {
+      formData.append('max_height', options.max_height.toString());
+    }
+    
+    if (options.mode) {
+      formData.append('mode', options.mode);
+    }
+
+    const response = await fetch(`${IMAGE_API_URL}/compress`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/octet-stream',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
+    }
+    
+    const compressedBlob = await response.blob();
+    const compressedFile = new File(
+      [compressedBlob],
+      `${getFileNameWithoutExtension(file.name)}_compressed.${options.format?.toLowerCase() || 'jpeg'}`,
+      {
+        type: `image/${options.format?.toLowerCase() || 'jpeg'}`,
+        lastModified: Date.now(),
+      }
+    );
+    
+    const compressionRatio = ((file.size - compressedBlob.size) / file.size) * 100;
+    
+    console.log('✅ Server-side compression successful:', {
+      originalSize: file.size,
+      compressedSize: compressedBlob.size,
+      compressionRatio: compressionRatio.toFixed(1) + '%',
+      format: options.format || 'jpeg'
+    });
+    
+    return {
+      file: compressedFile, // Add the compressed file as the main file
+      originalFile: file,
+      compressedBlob,
+      originalSize: file.size,
+      compressedSize: compressedBlob.size,
+      compressionRatio,
+      downloadUrl: URL.createObjectURL(compressedBlob)
+    };
+  } catch (error) {
+    console.error('❌ Server-side compression failed:', error);
+    throw error;
+  }
 }
 
 // NEW: Mobile-optimized compression detection
@@ -216,9 +376,25 @@ export function getFileNameWithoutExtension(fileName: string): string {
   return fileName.replace(/\.[^/.]+$/, '');
 }
 
-export function validateImageFile(file: File): boolean {
-  const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
-  return validTypes.includes(file.type);
+export function validateImageFile(file: File): { isValid: boolean; error?: string } {
+  const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/heic', 'image/heif'];
+  
+  if (!validTypes.includes(file.type)) {
+    return { 
+      isValid: false, 
+      error: `Desteklenmeyen dosya formatı: ${file.type}. Desteklenen formatlar: PNG, JPEG, WebP, HEIC` 
+    };
+  }
+  
+  const maxSize = 50 * 1024 * 1024; // 50MB
+  if (file.size > maxSize) {
+    return { 
+      isValid: false, 
+      error: `Dosya boyutu çok büyük: ${formatFileSize(file.size)}. Maksimum boyut: 50MB` 
+    };
+  }
+  
+  return { isValid: true };
 }
 
 export function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
@@ -709,20 +885,37 @@ export function isHEICFormat(file: File): boolean {
          file.name.toLowerCase().endsWith('.heif');
 }
 
-// NEW: Convert HEIC to JPEG using heic2any library (client-side only)
+// NEW: Convert HEIC to JPEG using server-side API first, then client-side fallback
 export async function convertHEICToJPEG(file: File): Promise<File> {
   try {
-    console.log('🔄 Converting HEIC to JPEG with heic2any library');
+    console.log('🔄 Converting HEIC to JPEG with server-side API first...');
     console.log('📁 Input file:', file.name, 'Size:', formatFileSize(file.size), 'Type:', file.type);
     
-    // Try client-side conversion first
+    // Try server-side conversion first
+    const serverAvailable = await checkAPIHealth();
+    
+    if (serverAvailable) {
+      try {
+        console.log('🔧 Using server-side HEIC conversion...');
+        const convertedFile = await convertHEICServerSide(file, 90);
+        console.log('✅ Server-side HEIC conversion successful');
+        return convertedFile;
+      } catch (serverError) {
+        console.log('❌ Server-side HEIC conversion failed, falling back to client-side:', serverError);
+        // Fall through to client-side conversion
+      }
+    }
+    
+    // Fallback to client-side conversion
+    console.log('📦 Falling back to client-side heic2any conversion...');
+    
     try {
       // Dynamic import to avoid SSR issues
       const heic2any = (await import('heic2any')).default;
       console.log('📦 heic2any library loaded successfully');
       
       // Convert HEIC to JPEG blob with multiple quality attempts
-      console.log('🚀 Starting HEIC conversion with progressive quality...');
+      console.log('🚀 Starting client-side HEIC conversion with progressive quality...');
       
       // Try different quality levels for better compatibility
       const qualityLevels = [0.8, 0.9, 0.7, 0.6, 0.5];
@@ -753,7 +946,7 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
         throw conversionError || new Error('All quality levels failed');
       }
       
-      console.log('✅ HEIC conversion completed');
+      console.log('✅ Client-side HEIC conversion completed');
       console.log('📊 Conversion result type:', typeof result);
       
       // Handle different result types
@@ -811,7 +1004,9 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
 4. "JPEG olarak kopyala" seçeneğini seçin
 5. Kopyalanan JPEG dosyasını buraya yükleyin
 
-Ya da Settings > Camera > Format'tan "Most Compatible" seçeneğini aktif edin.`;
+Ya da Settings > Camera > Format'tan "Most Compatible" seçeneğini aktif edin.
+
+🔧 Alternatif: Resimi önce başka bir araçla JPEG'e dönüştürüp tekrar deneyin.`;
     
     throw new Error(userMessage);
   }

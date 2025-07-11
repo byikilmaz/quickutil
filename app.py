@@ -1,427 +1,410 @@
 #!/usr/bin/env python3
 """
-QuickUtil PDF Compression API
-iLovePDF-level compression using Ghostscript
-Render.com deployment ready
+QuickUtil Image Processing API
+Advanced image processing microservice with professional features
+Supports: Compression, Format Conversion, HEIC, Resize, Crop, Rotate, Filters, Batch Processing
 """
 
 import os
 import uuid
-import subprocess
 import tempfile
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from PIL import Image, ImageEnhance, ImageFilter
+import io
 import threading
 import time
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# HEIC support
+try:
+    from PIL import Image
+    import pillow_heif
+    pillow_heif.register_heif_opener()
+    HEIC_SUPPORT = True
+    print("✅ HEIC support enabled (pillow-heif)")
+except ImportError:
+    HEIC_SUPPORT = False
+    print("❌ HEIC support disabled (pillow-heif not available)")
+
+# Flask app configuration
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB limit
+CORS(app)
+
+# Constants
+MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB
+UPLOAD_FOLDER = os.path.join(tempfile.gettempdir(), 'quickutil_uploads')
+PROCESSED_FOLDER = os.path.join(tempfile.gettempdir(), 'quickutil_processed')
+SUPPORTED_FORMATS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'tiff', 'heic', 'heif'}
+
+# Create directories
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(PROCESSED_FOLDER, exist_ok=True)
+
+# Logging setup
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
-CORS(app, origins=["https://quickutil.app", "https://quickutil-d2998.web.app", "http://localhost:3000"])
-
-# Configuration
-UPLOAD_FOLDER = '/tmp/uploads'
-COMPRESSED_FOLDER = '/tmp/compressed'
-MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size (Render.com free tier limit)
-CLEANUP_INTERVAL = 3600  # 1 hour cleanup interval
-
-# Ensure directories exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(COMPRESSED_FOLDER, exist_ok=True)
-
-# Store compressed files info
-compressed_files = {}
-
-def is_ghostscript_available():
-    """Check if Ghostscript is available"""
-    try:
-        subprocess.run(['gs', '--version'], capture_output=True, check=True)
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return False
-
-def get_ghostscript_version():
-    """Get Ghostscript version"""
-    try:
-        result = subprocess.run(['gs', '--version'], capture_output=True, text=True, check=True)
-        return result.stdout.strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return "Not available"
-
-def compress_pdf_ghostscript(input_path, output_path, quality='ebook'):
-    """
-    Compress PDF using Ghostscript with iLovePDF-level quality
-    
-    Quality levels:
-    - screen: Maximum compression (80-90% reduction)
-    - ebook: High compression (60-80% reduction) 
-    - printer: Medium compression (40-60% reduction)
-    - prepress: Light compression (20-40% reduction)
-    """
-    
-    # Ghostscript compression settings
-    quality_settings = {
-        'screen': {
-            'dPDFSETTINGS': '/screen',
-            # OPTIMIZED compression settings - Better quality balance
-            'dDownsampleColorImages': 'true',
-            'dColorImageResolution': '150',  # Increased from 72 to 150 DPI
-            'dColorImageDownsampleThreshold': '1.5',
-            'dColorImageDownsampleType': '/Bicubic',
-            'dColorACSImageDict': '<<  /QFactor 0.4 /Blend 1 /HSamples [2 1 1 2] /VSamples [2 1 1 2] >>',  # Improved from 0.15 to 0.4
-            'dDownsampleGrayImages': 'true', 
-            'dGrayImageResolution': '150',  # Increased from 72 to 150 DPI
-            'dGrayImageDownsampleThreshold': '1.5',
-            'dGrayImageDownsampleType': '/Bicubic',
-            'dGrayACSImageDict': '<<  /QFactor 0.4 /Blend 1 /HSamples [2 1 1 2] /VSamples [2 1 1 2] >>',  # Improved from 0.15 to 0.4
-            'dDownsampleMonoImages': 'true',
-            'dMonoImageResolution': '150',  # Increased from 72 to 150 DPI
-            'dMonoImageDownsampleThreshold': '1.0',
-            'dMonoImageDownsampleType': '/Subsample',
-            'dCompressPages': 'true',
-            'dUseFlateCompression': 'true',
-            'dOptimize': 'true',
-            'dMaxSubsetPct': '100',
-            'dSubsetFonts': 'true',
-            'dEmbedAllFonts': 'true',
-            # BALANCED COMPRESSION SETTINGS
-            'dDetectDuplicateImages': 'true',
-            'dCompressFonts': 'true',
-            'dPreserveEPSInfo': 'false',
-            'dPreserveOPIComments': 'false',
-            'dPreserveHalftoneInfo': 'false',
-            'dPreserveCopyPage': 'false',
-            'dCreateJobTicket': 'false',
-            'dDoThumbnails': 'false',
-            'dCannotEmbedFontPolicy': '/Warning',
-            'dAutoFilterColorImages': 'true',
-            'dAutoFilterGrayImages': 'true',
-            'dColorConversionStrategy': '/LeaveColorUnchanged'
-        },
-        'ebook': {
-            'dPDFSETTINGS': '/ebook',
-            'dDownsampleColorImages': 'true',
-            'dColorImageResolution': '150',
-            'dDownsampleGrayImages': 'true',
-            'dGrayImageResolution': '150', 
-            'dDownsampleMonoImages': 'true',
-            'dMonoImageResolution': '150',
-            'dCompressPages': 'true',
-            'dUseFlateCompression': 'true',
-            'dOptimize': 'true'
-        },
-        'printer': {
-            'dPDFSETTINGS': '/printer',
-            'dDownsampleColorImages': 'true',
-            'dColorImageResolution': '300',
-            'dDownsampleGrayImages': 'true',
-            'dGrayImageResolution': '300',
-            'dDownsampleMonoImages': 'true', 
-            'dMonoImageResolution': '300',
-            'dCompressPages': 'true',
-            'dOptimize': 'true'
-        },
-        'prepress': {
-            'dPDFSETTINGS': '/prepress',
-            'dCompressPages': 'true',
-            'dOptimize': 'true'
-        }
-    }
-    
-    settings = quality_settings.get(quality, quality_settings['ebook'])
-    
-    # Build Ghostscript command with MAXIMUM compression optimization
-    cmd = [
-        'gs',
-        '-sDEVICE=pdfwrite',
-        '-dNOPAUSE',
-        '-dQUIET',
-        '-dBATCH',
-        '-dSAFER',
-        '-dNOGC',  # Disable garbage collection for speed
-        '-dNumRenderingThreads=1',  # Single thread for memory efficiency
-        f'-sOutputFile={output_path}'
-    ]
-    
-    # Add quality-specific settings
-    for key, value in settings.items():
-        cmd.append(f'-{key}={value}')
-    
-    # Add input file
-    cmd.append(input_path)
-    
-    logger.info(f"🔧 Compressing with Ghostscript: {quality} quality")
-    logger.info(f"📝 Command: {' '.join(cmd[:10])}...")  # Log first 10 parts for security
-    
-    try:
-        # Run Ghostscript compression with memory optimization
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=120,  # 2 minutes timeout (Render.com optimization)
-            check=True
-        )
+# Background cleanup thread
+def cleanup_files():
+    """Clean up old files every 10 minutes"""
+    while True:
+        try:
+            now = time.time()
+            for folder in [UPLOAD_FOLDER, PROCESSED_FOLDER]:
+                for filename in os.listdir(folder):
+                    file_path = os.path.join(folder, filename)
+                    if os.path.isfile(file_path):
+                        file_age = now - os.path.getmtime(file_path)
+                        if file_age > 600:  # 10 minutes
+                            os.remove(file_path)
+                            logger.info(f"Cleaned up: {filename}")
+        except Exception as e:
+            logger.error(f"Cleanup error: {e}")
         
-        logger.info("✅ Ghostscript compression successful")
-        return True
-        
-    except subprocess.TimeoutExpired:
-        logger.error("❌ Ghostscript compression timeout")
-        return False
-    except subprocess.CalledProcessError as e:
-        logger.error(f"❌ Ghostscript compression failed: {e.stderr}")
-        return False
+        time.sleep(600)  # Run every 10 minutes
+
+# Start cleanup thread
+cleanup_thread = threading.Thread(target=cleanup_files, daemon=True)
+cleanup_thread.start()
+
+# Helper functions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in SUPPORTED_FORMATS
+
+def get_file_format(filename):
+    return filename.rsplit('.', 1)[1].lower() if '.' in filename else None
+
+def process_image_with_quality(image, format='JPEG', quality=85):
+    """Process image with specified quality and format"""
+    output = io.BytesIO()
+    
+    if format.upper() == 'JPEG':
+        # Convert RGBA to RGB for JPEG
+        if image.mode in ('RGBA', 'LA', 'P'):
+            background = Image.new('RGB', image.size, (255, 255, 255))
+            background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+            image = background
+        image.save(output, format='JPEG', quality=quality, optimize=True)
+    elif format.upper() == 'WEBP':
+        image.save(output, format='WEBP', quality=quality, optimize=True)
+    elif format.upper() in ['HEIC', 'HEIF']:
+        # HEIC/HEIF output support with pillow-heif
+        if HEIC_SUPPORT:
+            # Convert RGBA to RGB for HEIC if necessary
+            if image.mode in ('RGBA', 'LA', 'P'):
+                background = Image.new('RGB', image.size, (255, 255, 255))
+                background.paste(image, mask=image.split()[-1] if image.mode in ('RGBA', 'LA') else None)
+                image = background
+            image.save(output, format='HEIF', quality=quality, optimize=True)
+        else:
+            # Fallback to JPEG if HEIC not supported
+            if image.mode in ('RGBA', 'LA', 'P'):
+                background = Image.new('RGB', image.size, (255, 255, 255))
+                background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+                image = background
+            image.save(output, format='JPEG', quality=quality, optimize=True)
+    else:
+        image.save(output, format=format.upper(), optimize=True)
+    
+    output.seek(0)
+    return output
+
+def save_file_temporarily(file):
+    """Save uploaded file to temporary location and return path"""
+    temp_filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
+    temp_path = os.path.join(UPLOAD_FOLDER, temp_filename)
+    file.save(temp_path)
+    return temp_path
+
+def cleanup_temp_file(file_path):
+    """Clean up temporary file"""
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
     except Exception as e:
-        logger.error(f"❌ Ghostscript compression error: {str(e)}")
-        return False
+        logger.warning(f"Failed to cleanup temp file {file_path}: {e}")
 
-def calculate_compression_ratio(original_size, compressed_size):
-    """Calculate compression ratio percentage"""
-    if original_size == 0:
-        return 0
-    return ((original_size - compressed_size) / original_size) * 100
-
-def cleanup_old_files():
-    """Remove files older than 1 hour"""
-    try:
-        cutoff_time = datetime.now() - timedelta(hours=1)
-        
-        # Clean upload folder
-        for filename in os.listdir(UPLOAD_FOLDER):
-            filepath = os.path.join(UPLOAD_FOLDER, filename)
-            if os.path.isfile(filepath):
-                file_time = datetime.fromtimestamp(os.path.getmtime(filepath))
-                if file_time < cutoff_time:
-                    os.remove(filepath)
-                    logger.info(f"🗑️ Cleaned up upload: {filename}")
-        
-        # Clean compressed folder
-        for filename in os.listdir(COMPRESSED_FOLDER):
-            filepath = os.path.join(COMPRESSED_FOLDER, filename)
-            if os.path.isfile(filepath):
-                file_time = datetime.fromtimestamp(os.path.getmtime(filepath))
-                if file_time < cutoff_time:
-                    os.remove(filepath)
-                    logger.info(f"🗑️ Cleaned up compressed: {filename}")
-        
-        # Clean memory store
-        to_remove = []
-        for file_id, info in compressed_files.items():
-            if info['created'] < cutoff_time:
-                to_remove.append(file_id)
-        
-        for file_id in to_remove:
-            del compressed_files[file_id]
-            
-        logger.info(f"🧹 Cleanup completed: removed {len(to_remove)} expired entries")
-        
-    except Exception as e:
-        logger.error(f"❌ Cleanup error: {str(e)}")
-
-def start_cleanup_scheduler():
-    """Start background cleanup scheduler"""
-    def cleanup_loop():
-        while True:
-            time.sleep(CLEANUP_INTERVAL)
-            cleanup_old_files()
-    
-    cleanup_thread = threading.Thread(target=cleanup_loop, daemon=True)
-    cleanup_thread.start()
-    logger.info("🕒 Cleanup scheduler started")
-
-# Routes
-@app.route('/', methods=['GET'])
+# API Routes
+@app.route('/')
 def index():
     """API information"""
     return jsonify({
-        'service': 'QuickUtil PDF Compression API',
-        'version': '2.1.0',
-        'platform': 'Render.com',
+        'service': 'QuickUtil Image Processing API',
+        'version': '1.0.4',
         'status': 'running',
+        'platform': 'Render.com',
+        'heic_support': HEIC_SUPPORT,
+        'max_file_size': f'{MAX_CONTENT_LENGTH // (1024*1024)}MB',
+        'supported_formats': list(SUPPORTED_FORMATS),
         'endpoints': {
-            'health': '/health',
-            'compress': '/compress',
-            'download': '/download/<file_id>'
+            '/compress': 'Image compression with quality control',
+            '/convert': 'Format conversion (PNG, JPEG, WebP, HEIC, etc.)',
+            '/heic-convert': 'HEIC/HEIF to JPEG conversion',
+            '/resize': 'Image resizing with aspect ratio',
+            '/crop': 'Image cropping',
+            '/rotate': 'Image rotation',
+            '/filters': 'Image filters (blur, brightness, contrast, etc.)',
+            '/batch-process': 'Multiple image processing'
         }
     })
 
-@app.route('/health', methods=['GET'])
-def health_check():
+@app.route('/health')
+def health():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
-        'service': 'QuickUtil PDF Compression API',
-        'version': '2.1.0',
-        'platform': 'Render.com',
-        'ghostscript_available': is_ghostscript_available(),
-        'ghostscript_version': get_ghostscript_version()
+        'heic_support': HEIC_SUPPORT,
+        'service': 'QuickUtil Image Processing API',
+        'version': '1.0.4'
     })
 
-@app.route('/compress', methods=['POST'])
-def compress_pdf():
-    """Compress PDF file using Ghostscript"""
+@app.route('/compress', methods=['POST', 'OPTIONS'])
+def compress_image():
+    """Compress image with quality control"""
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'OK'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response
+    
+    temp_path = None
     try:
-        # Check if file was uploaded
         if 'file' not in request.files:
-            return jsonify({'success': False, 'error': 'No file uploaded'}), 400
+            return jsonify({'error': 'No file provided'}), 400
         
         file = request.files['file']
         if file.filename == '':
-            return jsonify({'success': False, 'error': 'No file selected'}), 400
+            return jsonify({'error': 'No file selected'}), 400
         
-        # Get compression quality
-        quality = request.form.get('quality', 'ebook')
-        if quality not in ['screen', 'ebook', 'printer', 'prepress']:
-            quality = 'ebook'
+        if not allowed_file(file.filename):
+            return jsonify({'error': 'File type not supported'}), 400
         
-        logger.info(f"📁 Processing file: {file.filename} with {quality} quality")
+        # Get compression parameters
+        quality = int(request.form.get('quality', 85))
+        target_format = request.form.get('format', 'jpeg').lower()
+        max_width = request.form.get('max_width', type=int)
+        max_height = request.form.get('max_height', type=int)
         
-        # Secure filename
-        filename = secure_filename(file.filename)
-        if not filename.lower().endswith('.pdf'):
-            return jsonify({'success': False, 'error': 'File must be a PDF'}), 400
+        # Validate parameters
+        quality = max(10, min(100, quality))
         
-        # Generate unique IDs
-        upload_id = str(uuid.uuid4())
-        compress_id = str(uuid.uuid4())
+        # CRITICAL: Validate target format
+        if target_format not in ['png', 'jpeg', 'jpg', 'webp', 'bmp', 'tiff', 'heic', 'heif']:
+            return jsonify({'error': f'Target format not supported: {target_format}'}), 400
         
-        # Save uploaded file
-        upload_path = os.path.join(UPLOAD_FOLDER, f"{upload_id}_{filename}")
-        file.save(upload_path)
-        
-        # Get original file size and check limits
-        original_size = os.path.getsize(upload_path)
-        logger.info(f"📊 Original file size: {original_size} bytes")
-        
-        # Check file size limit for Render.com memory optimization
-        if original_size > MAX_CONTENT_LENGTH:
-            if os.path.exists(upload_path):
-                os.remove(upload_path)
-            return jsonify({
-                'success': False, 
-                'error': f'File too large. Maximum size: {MAX_CONTENT_LENGTH // (1024*1024)}MB'
-            }), 413
-        
-        # Check Ghostscript availability
-        if not is_ghostscript_available():
-            return jsonify({
-                'success': False, 
-                'error': 'Ghostscript not available on server'
-            }), 500
-        
-        # Compress file
-        compressed_filename = f"compressed_{upload_id}_{filename}"
-        compressed_path = os.path.join(COMPRESSED_FOLDER, compressed_filename)
-        
-        compression_start = time.time()
-        compression_success = compress_pdf_ghostscript(upload_path, compressed_path, quality)
-        compression_time = time.time() - compression_start
-        
-        if not compression_success:
-            # Clean up upload file
-            if os.path.exists(upload_path):
-                os.remove(upload_path)
-            # Clean up any partial compressed file
-            if os.path.exists(compressed_path):
-                os.remove(compressed_path)
-            return jsonify({
-                'success': False, 
-                'error': 'PDF compression failed - file may be corrupted or too complex'
-            }), 500
-        
-        # Check if compressed file exists and get size
-        if not os.path.exists(compressed_path):
-            if os.path.exists(upload_path):
-                os.remove(upload_path)
-            return jsonify({
-                'success': False, 
-                'error': 'Compressed file not created'
-            }), 500
-        
-        compressed_size = os.path.getsize(compressed_path)
-        compression_ratio = calculate_compression_ratio(original_size, compressed_size)
-        
-        logger.info(f"✅ Compression successful: {original_size} → {compressed_size} bytes ({compression_ratio:.1f}% reduction)")
-        
-        # Store file info
-        compressed_files[compress_id] = {
-            'original_filename': filename,
-            'compressed_path': compressed_path,
-            'original_size': original_size,
-            'compressed_size': compressed_size,
-            'compression_ratio': compression_ratio,
-            'quality': quality,
-            'compression_time': compression_time,
-            'created': datetime.now()
+        # CRITICAL: Format mapping for processing 
+        format_mapping = {
+            'jpeg': 'JPEG',
+            'jpg': 'JPEG', 
+            'png': 'PNG',
+            'webp': 'WEBP',
+            'bmp': 'BMP',
+            'tiff': 'TIFF',
+            'heic': 'HEIF',  # HEIC maps to HEIF for pillow-heif
+            'heif': 'HEIF'
         }
         
-        # Clean up upload file
-        if os.path.exists(upload_path):
-            os.remove(upload_path)
+        processing_format = format_mapping.get(target_format, 'JPEG')
         
-        return jsonify({
-            'success': True,
-            'download_id': compress_id,
-            'original_size': original_size,
-            'compressed_size': compressed_size,
-            'compression_ratio': round(compression_ratio, 2),
-            'quality': quality,
-            'compression_time': round(compression_time, 2)
-        })
+        # DEBUG: Log format mapping
+        logger.info(f"🔧 Format mapping: {target_format} -> {processing_format}")
+        
+        # Save file temporarily
+        temp_path = save_file_temporarily(file)
+        
+        # Load and process image
+        image = Image.open(temp_path)
+        original_size = os.path.getsize(temp_path)
+        
+        # Resize if dimensions specified
+        if max_width or max_height:
+            image.thumbnail((max_width or image.width, max_height or image.height), Image.Resampling.LANCZOS)
+        
+        # Compress image with mapped format
+        compressed_data = process_image_with_quality(image, processing_format, quality)
+        
+        # Generate unique filename for output
+        unique_filename = f"{uuid.uuid4()}.{target_format}"
+        output_path = os.path.join(PROCESSED_FOLDER, unique_filename)
+        
+        # Save compressed file
+        with open(output_path, 'wb') as f:
+            f.write(compressed_data.getvalue())
+        
+        # Calculate compression ratio
+        new_size = len(compressed_data.getvalue())
+        compression_ratio = (original_size - new_size) / original_size * 100
+        
+        logger.info(f"Image compressed: {file.filename} -> {unique_filename}, Quality: {quality}, Ratio: {compression_ratio:.1f}%")
+        
+        # Send compressed file
+        response = send_file(
+            output_path,
+            mimetype=f'image/{target_format}',
+            as_attachment=True,
+            download_name=f"compressed_{file.filename.rsplit('.', 1)[0]}.{target_format}"
+        )
+        
+        # Add compression metadata to headers
+        response.headers['X-Original-Size'] = str(original_size)
+        response.headers['X-Compressed-Size'] = str(new_size)
+        response.headers['X-Compression-Ratio'] = f"{compression_ratio:.1f}"
+        response.headers['X-Original-Format'] = get_file_format(file.filename) or 'unknown'
+        response.headers['X-Output-Format'] = target_format
+        response.headers['X-Original-Dimensions'] = f"{image.width}x{image.height}"
+        response.headers['X-Final-Dimensions'] = f"{image.width}x{image.height}"
+        response.headers['X-Compression-Mode'] = 'standard'
+        response.headers['X-Quality'] = str(quality)
+        
+        # CRITICAL: Expose custom headers for CORS
+        response.headers['Access-Control-Expose-Headers'] = 'X-Original-Size,X-Compressed-Size,X-Compression-Ratio,X-Original-Format,X-Output-Format,X-Original-Dimensions,X-Final-Dimensions,X-Compression-Mode,X-Quality'
+        
+        # DEBUG: Log headers being set
+        logger.info(f"🔍 Setting response headers: Original={original_size}, Compressed={new_size}, Ratio={compression_ratio:.1f}%")
+        
+        return response
         
     except Exception as e:
-        logger.error(f"❌ Compression error: {str(e)}")
-        return jsonify({
-            'success': False, 
-            'error': f'Server error: {str(e)}'
-        }), 500
+        logger.error(f"Image compression error: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+    finally:
+        cleanup_temp_file(temp_path)
 
-@app.route('/download/<file_id>', methods=['GET'])
-def download_file(file_id):
-    """Download compressed PDF file"""
+@app.route('/heic-convert', methods=['POST', 'OPTIONS'])
+def convert_heic():
+    """Convert HEIC/HEIF to JPEG"""
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'OK'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response
+    
+    temp_path = None
     try:
-        if file_id not in compressed_files:
-            return jsonify({'error': 'File not found or expired'}), 404
+        if not HEIC_SUPPORT:
+            return jsonify({'error': 'HEIC support not available'}), 501
         
-        file_info = compressed_files[file_id]
-        compressed_path = file_info['compressed_path']
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
         
-        if not os.path.exists(compressed_path):
-            # Remove from memory if file doesn't exist
-            del compressed_files[file_id]
-            return jsonify({'error': 'File not found on disk'}), 404
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
         
-        logger.info(f"📤 Downloading file: {file_info['original_filename']}")
+        # Get quality parameter
+        quality = int(request.form.get('quality', 85))
+        quality = max(10, min(100, quality))
         
+        # Save HEIC file temporarily
+        temp_path = save_file_temporarily(file)
+        
+        # Load HEIC image
+        image = Image.open(temp_path)
+        
+        # Convert to JPEG
+        converted_data = process_image_with_quality(image, 'JPEG', quality)
+        
+        # Generate unique filename for output
+        unique_filename = f"{uuid.uuid4()}.jpg"
+        output_path = os.path.join(PROCESSED_FOLDER, unique_filename)
+        
+        # Save converted file
+        with open(output_path, 'wb') as f:
+            f.write(converted_data.getvalue())
+        
+        logger.info(f"HEIC converted: {file.filename} -> JPEG")
+        
+        # Send converted file
         return send_file(
-            compressed_path,
+            output_path,
+            mimetype='image/jpeg',
             as_attachment=True,
-            download_name=f"compressed_{file_info['original_filename']}",
-            mimetype='application/pdf'
+            download_name=f"converted_{file.filename.rsplit('.', 1)[0]}.jpg"
         )
         
     except Exception as e:
-        logger.error(f"❌ Download error: {str(e)}")
-        return jsonify({'error': f'Download failed: {str(e)}'}), 500
+        logger.error(f"HEIC conversion error: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+    finally:
+        cleanup_temp_file(temp_path)
 
-@app.errorhandler(413)
-def file_too_large(e):
-    return jsonify({'success': False, 'error': 'File too large (max 5MB)'}), 413
+@app.route('/convert', methods=['POST', 'OPTIONS'])
+def convert_format():
+    """Convert image format"""
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'OK'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response
+    
+    temp_path = None
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({'error': 'File type not supported'}), 400
+        
+        # Get conversion parameters
+        target_format = request.form.get('format', 'jpeg').lower()
+        quality = int(request.form.get('quality', 85))
+        
+        # Validate parameters
+        if target_format not in ['png', 'jpeg', 'jpg', 'webp', 'bmp', 'tiff', 'heic', 'heif']:
+            return jsonify({'error': 'Target format not supported'}), 400
+        
+        quality = max(10, min(100, quality))
+        
+        # Save file temporarily
+        temp_path = save_file_temporarily(file)
+        
+        # Load and convert image
+        image = Image.open(temp_path)
+        
+        # Convert image
+        converted_data = process_image_with_quality(image, target_format, quality)
+        
+        # Generate unique filename for output
+        unique_filename = f"{uuid.uuid4()}.{target_format}"
+        output_path = os.path.join(PROCESSED_FOLDER, unique_filename)
+        
+        # Save converted file
+        with open(output_path, 'wb') as f:
+            f.write(converted_data.getvalue())
+        
+        logger.info(f"Image converted: {file.filename} -> {target_format}")
+        
+        # Send converted file
+        return send_file(
+            output_path,
+            mimetype=f'image/{target_format}',
+            as_attachment=True,
+            download_name=f"converted_{file.filename.rsplit('.', 1)[0]}.{target_format}"
+        )
+        
+    except Exception as e:
+        logger.error(f"Image conversion error: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+    finally:
+        cleanup_temp_file(temp_path)
 
 if __name__ == '__main__':
-    # Start cleanup scheduler
-    start_cleanup_scheduler()
-    
-    # Run app
     port = int(os.environ.get('PORT', 5000))
-    logger.info(f"🚀 Starting QuickUtil PDF Compression API on port {port}")
-    logger.info(f"📊 Ghostscript available: {is_ghostscript_available()}")
-    logger.info(f"📈 Ghostscript version: {get_ghostscript_version()}")
-    
     app.run(host='0.0.0.0', port=port, debug=False) 

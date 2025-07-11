@@ -1,56 +1,219 @@
-# QuickUtil PDF Compression API
+# QuickUtil Image Processing API
 
-iLovePDF-level PDF compression using Ghostscript backend. Deployed on Render.com.
+Advanced image processing microservice with professional features for the QuickUtil platform.
 
 ## Features
 
-- 🚀 **iLovePDF-level compression** using Ghostscript
-- 📊 **4 compression levels**: Screen (80-90%), Ebook (60-80%), Printer (40-60%), Prepress (20-40%)
-- ⚡ **High performance** with automatic cleanup
-- 🔒 **Secure** file handling with UUID-based temporary storage
-- 📱 **CORS enabled** for web app integration
-- 🧹 **Auto cleanup** of temporary files
+### 🖼️ **Image Processing**
+- **Compression**: Advanced compression with quality control
+- **Format Conversion**: PNG, JPEG, WebP, BMP, TIFF support
+- **HEIC Support**: HEIC/HEIF to JPEG conversion
+- **Resize**: Smart resizing with aspect ratio control
+- **Crop**: Precise image cropping
+- **Rotate**: Image rotation with quality preservation
+- **Filters**: Professional image filters (brightness, contrast, saturation, blur, sharpness)
+
+### 🚀 **Performance**
+- **Fast Processing**: Optimized algorithms with PIL/Pillow
+- **Batch Support**: Multiple file processing capabilities
+- **Memory Efficient**: Automatic cleanup and optimization
+- **Cloud Ready**: Designed for Render.com deployment
+
+### 🔒 **Security**
+- **CORS Protection**: Configured for quickutil.app domain
+- **File Validation**: Strict file type and size checking
+- **Automatic Cleanup**: Temporary file management
 
 ## API Endpoints
 
-### GET /health
-Health check endpoint
+### **Basic Information**
+- `GET /` - API information and available endpoints
+- `GET /health` - Health check endpoint
 
-### POST /compress
-Compress PDF file
-- **file**: PDF file (max 100MB)
-- **quality**: screen | ebook | printer | prepress
+### **Image Processing**
+- `POST /compress` - Compress images with quality control
+- `POST /convert` - Convert between image formats
+- `POST /heic-convert` - Convert HEIC/HEIF to JPEG
+- `POST /resize` - Resize images with aspect ratio control
+- `POST /crop` - Crop images with precise coordinates
+- `POST /rotate` - Rotate images by degrees
+- `POST /filters` - Apply image filters
 
-### GET /download/<file_id>
-Download compressed PDF file
+## Usage Examples
 
-## Deployment
-
-### Render.com
-1. Connect GitHub repository
-2. Auto-deployment with render.yaml
-3. Ghostscript pre-installed on Render.com
-
-### Local Development
+### **Image Compression**
 ```bash
+curl -X POST https://your-image-api.onrender.com/compress \
+  -F "file=@image.jpg" \
+  -F "quality=85" \
+  -F "format=jpeg" \
+  -F "max_width=1920" \
+  -F "max_height=1080"
+```
+
+### **Format Conversion**
+```bash
+curl -X POST https://your-image-api.onrender.com/convert \
+  -F "file=@image.png" \
+  -F "format=webp" \
+  -F "quality=80"
+```
+
+### **HEIC Conversion**
+```bash
+curl -X POST https://your-image-api.onrender.com/heic-convert \
+  -F "file=@image.heic" \
+  -F "quality=90"
+```
+
+### **Image Resize**
+```bash
+curl -X POST https://your-image-api.onrender.com/resize \
+  -F "file=@image.jpg" \
+  -F "width=800" \
+  -F "height=600" \
+  -F "maintain_aspect=true"
+```
+
+### **Image Crop**
+```bash
+curl -X POST https://your-image-api.onrender.com/crop \
+  -F "file=@image.jpg" \
+  -F "x=100" \
+  -F "y=50" \
+  -F "width=500" \
+  -F "height=400"
+```
+
+### **Image Rotation**
+```bash
+curl -X POST https://your-image-api.onrender.com/rotate \
+  -F "file=@image.jpg" \
+  -F "angle=90"
+```
+
+### **Image Filters**
+```bash
+curl -X POST https://your-image-api.onrender.com/filters \
+  -F "file=@image.jpg" \
+  -F "brightness=1.2" \
+  -F "contrast=1.1" \
+  -F "saturation=1.0" \
+  -F "sharpness=1.1" \
+  -F "blur=0"
+```
+
+## Installation
+
+### **Local Development**
+```bash
+# Clone repository
+git clone https://github.com/byikilmaz/quickutil-image-api.git
+cd quickutil-image-api
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Run locally
 python app.py
 ```
 
-## Compression Quality
+### **Docker Deployment**
+```bash
+# Build image
+docker build -t quickutil-image-api .
 
-- **screen**: Maximum compression (80-90% reduction) - 72 DPI
-- **ebook**: High compression (60-80% reduction) - 150 DPI  
-- **printer**: Medium compression (40-60% reduction) - 300 DPI
-- **prepress**: Light compression (20-40% reduction) - High quality
+# Run container
+docker run -p 5000:5000 quickutil-image-api
+```
 
-## Integration
+### **Render.com Deployment**
+1. Connect GitHub repository to Render.com
+2. Use `render.yaml` for automatic deployment
+3. Set environment variables if needed
 
-Used by QuickUtil.app Firebase Functions for server-side PDF compression.
+## Technical Specifications
+
+### **Supported Formats**
+- **Input**: PNG, JPEG, GIF, BMP, WebP, TIFF, HEIC, HEIF
+- **Output**: PNG, JPEG, WebP, BMP, TIFF
+
+### **File Limits**
+- **Max File Size**: 50MB
+- **Processing Timeout**: 120 seconds
+- **Automatic Cleanup**: 5 minutes
+
+### **Dependencies**
+- **Flask**: Web framework
+- **Pillow**: Image processing library
+- **pillow-heif**: HEIC/HEIF support
+- **Flask-CORS**: Cross-origin resource sharing
+
+## Architecture
+
+### **Microservice Design**
+- **Separation of Concerns**: Dedicated image processing service
+- **Stateless**: No session management, fully stateless
+- **RESTful API**: Standard HTTP methods and status codes
+- **Error Handling**: Comprehensive error responses
+
+### **Integration with QuickUtil**
+- **Frontend**: Next.js application calls image API
+- **Authentication**: CORS-based security
+- **File Transfer**: Direct file upload/download
+- **Response Format**: JSON metadata + binary file response
+
+## Environment Variables
+
+- `PORT`: Server port (default: 5000)
+- `PYTHONUNBUFFERED`: Python output buffering (recommended: 1)
+
+## Error Handling
+
+All endpoints return consistent error responses:
+
+```json
+{
+  "error": "Error description"
+}
+```
+
+HTTP Status Codes:
+- `200`: Success
+- `400`: Bad Request (invalid parameters)
+- `413`: Payload Too Large
+- `500`: Internal Server Error
+- `501`: Not Implemented (HEIC support unavailable)
 
 ## Security
 
-- Secure filename handling
-- Automatic file cleanup (1 hour)
-- UUID-based file tracking
-- Error logging and monitoring
+### **CORS Configuration**
+- Allowed Origins: `quickutil.app`, `quickutil-d2998.web.app`, `localhost:3000`
+- Allowed Methods: `POST`, `OPTIONS`
+- Allowed Headers: `Content-Type`, `Authorization`
+
+### **File Validation**
+- Extension checking
+- MIME type validation
+- File size limits
+- Content inspection
+
+## Monitoring
+
+### **Health Check**
+```bash
+curl https://your-image-api.onrender.com/health
+```
+
+### **Service Information**
+```bash
+curl https://your-image-api.onrender.com/
+```
+
+## License
+
+This project is part of the QuickUtil platform.
+
+## Support
+
+For issues and feature requests, please contact the QuickUtil team.

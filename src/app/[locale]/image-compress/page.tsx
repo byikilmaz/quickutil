@@ -20,7 +20,8 @@ import {
 } from '@/lib/serverImageUtils';
 
 interface CompressionResult {
-  originalFile: File;
+  file: File;
+  originalFile?: File;
   compressedBlob: Blob;
   originalSize: number;
   compressedSize: number;
@@ -49,12 +50,14 @@ function ImageCompress({ locale }: { locale: string }) {
   // Component state - Step-based like PDF convert
   const [currentStep, setCurrentStep] = useState<'upload' | 'configure' | 'processing' | 'result'>('upload');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // NEW: For HEIC preview
   const [quality, setQuality] = useState<number>(0.8);
-  const [format, setFormat] = useState<'jpeg' | 'png' | 'webp'>('jpeg');
+  const [format, setFormat] = useState<'jpeg' | 'png' | 'webp' | 'heic'>('jpeg');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [compressionResult, setCompressionResult] = useState<CompressionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [heicNotification, setHeicNotification] = useState<string | null>(null);
 
   // Refs for smooth scrolling and auto-focus
   const uploadRef = useRef<HTMLDivElement>(null);
@@ -80,103 +83,187 @@ function ImageCompress({ locale }: { locale: string }) {
     }
   }, [currentStep]);
 
-  // File selection handler
-  const handleFileSelect = (file: File) => {
-    if (!canUseFeature('image_compress')) {
-      setShowAuthModal(true);
-      return;
+  // NEW: Generate preview URL for HEIC files
+  const generatePreviewUrl = async (file: File) => {
+    if (isHEICFormat(file)) {
+      try {
+        console.log('🖼️ HEIC detected, converting for preview...');
+        const convertedFile = await convertHEICToJPEG(file);
+        const previewUrl = URL.createObjectURL(convertedFile);
+        setPreviewUrl(previewUrl);
+        console.log('✅ HEIC preview generated successfully');
+      } catch (error) {
+        console.error('❌ HEIC preview generation failed:', error);
+        setPreviewUrl(null);
+      }
+    } else {
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewUrl(previewUrl);
     }
+  };
 
-    setSelectedFile(file);
-    setCurrentStep('configure');
-    setError(null);
+  // File selection handler
+  const handleFileSelect = async (file: File) => {
+    if (!file) return;
     
-    // Smooth scroll to configure section
-    setTimeout(() => {
-      configureRef.current?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }, 100);
-
-    // Then scroll to process button
-    setTimeout(() => {
-      processButtonRef.current?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'center'
-      });
-    }, 600);
+    try {
+      setError(null);
+      setSelectedFile(file);
+      
+      // 🎯 AUTO FORMAT SELECTION: Detect input format and set as default
+      const fileExtension = file.name.split('.').pop()?.toLowerCase();
+      let autoFormat: 'jpeg' | 'png' | 'webp' | 'heic' = 'jpeg';
+      
+      if (fileExtension === 'png') {
+        autoFormat = 'png';
+      } else if (fileExtension === 'webp') {
+        autoFormat = 'webp';
+      } else if (fileExtension === 'heic' || fileExtension === 'heif') {
+        // ⚠️ TEMPORARY: Backend doesn't support HEIC → HEIC yet, use JPEG
+        autoFormat = 'jpeg';
+        console.log('⚠️ HEIC → JPEG (temporary until backend supports HEIC output)');
+        
+        // Show user notification about HEIC format
+        setHeicNotification('📱 HEIC dosyası algılandı! Şimdilik JPEG formatına dönüştürülerek sıkıştırılacak.');
+        setTimeout(() => {
+          setHeicNotification(null);
+        }, 5000);
+      } else {
+        autoFormat = 'jpeg'; // Default for JPG, JPEG, and others
+      }
+      
+      setFormat(autoFormat);
+      console.log(`🎯 Auto format selection: ${file.name} (${file.type}) -> ${autoFormat}`);
+      
+      // Handle HEIC format for preview
+      if (isHEICFormat(file)) {
+        console.log('🖼️ HEIC detected, converting for preview...');
+        setPreviewUrl(null);
+        
+        try {
+          const convertedBlob = await convertHEICToJPEG(file);
+          const previewUrl = URL.createObjectURL(convertedBlob);
+          setPreviewUrl(previewUrl);
+          console.log('✅ HEIC preview generated successfully');
+        } catch (conversionError) {
+          console.error('❌ HEIC preview conversion failed:', conversionError);
+          setError('HEIC dosyası önizlemesi oluşturulamadı');
+        }
+      } else {
+        // Regular image preview
+        const previewUrl = URL.createObjectURL(file);
+        setPreviewUrl(previewUrl);
+      }
+      
+      // Move to configure step
+      setCurrentStep('configure');
+      
+      // Smooth scroll to configure section
+      setTimeout(() => {
+        configureRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+      
+    } catch (error) {
+      console.error('File selection error:', error);
+      setError('Dosya seçilirken hata oluştu');
+    }
   };
 
   // Compression handler
   const handleCompress = async () => {
     if (!selectedFile) return;
 
-    setIsProcessing(true);
-    setCurrentStep('processing');
-    setProcessingProgress(0);
-
-    // Smooth scroll to processing section
-    setTimeout(() => {
-      processingRef.current?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }, 100);
-
     try {
-      // Start progress simulation
+      setIsProcessing(true);
+      setCurrentStep('processing');
+      setError(null);
+
+      // Smooth scroll to processing section
+      setTimeout(() => {
+        processingRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+
+      // Animate progress bar
+      setProcessingProgress(0);
       const progressInterval = setInterval(() => {
         setProcessingProgress(prev => {
-          const newProgress = prev + Math.random() * 10;
-          return newProgress > 85 ? 85 : newProgress;
+          if (prev >= 95) {
+            clearInterval(progressInterval);
+            return 95;
+          }
+          return prev + Math.random() * 10;
         });
-      }, 300);
+      }, 200);
 
-      // Validate image file
-      const validation = validateImageFile(selectedFile);
-      if (!validation.isValid) {
-        throw new Error(validation.error);
-      }
-
-      // NEW: Handle HEIC format first
-      let processedFile = selectedFile;
-      if (isHEICFormat(selectedFile)) {
-        try {
-          console.log('📱 HEIC format detected in image-compress, converting to JPEG first...');
-          processedFile = await convertHEICToJPEG(selectedFile);
-          console.log('✅ HEIC converted to JPEG successfully for compression');
-        } catch (error) {
-          console.error('❌ HEIC conversion failed in image-compress:', error);
-          throw new Error(`HEIC format işlenemedi: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
-        }
-      }
-
-      // Check if server API is available
-      const serverAvailable = await checkAPIHealth();
+      // Check if we have an already processed file (e.g., from HEIC conversion)
+      const processedFile = selectedFile;
       
+      console.log('🔄 Starting compression process...');
+      console.log('📁 File details:', {
+        name: processedFile.name,
+        size: processedFile.size,
+        type: processedFile.type
+      });
+
       let result: CompressionResult;
 
-      if (serverAvailable) {
-        // Use server compression (professional quality)
-        const serverOptions: ServerCompressionOptions = {
+      // Check if server API is available
+      const apiAvailable = await checkAPIHealth();
+      console.log('🌐 API Health Check:', apiAvailable);
+
+      if (apiAvailable) {
+        // Use server-side compression
+        console.log('🚀 Using server-side compression...');
+        
+        const serverOptions = {
           quality: Math.round(quality * 100),
-          format: format.toUpperCase() as 'JPEG' | 'PNG' | 'WEBP',
-          mode: 'aggressive'
+          format: format.toUpperCase() as 'JPEG' | 'PNG' | 'WEBP' | 'HEIC',
+          mode: 'aggressive' as const
         };
+
+        console.log('⚙️ Server compression options:', serverOptions);
 
         const serverResult = await compressImageWithServer(processedFile, serverOptions);
         
+        console.log('✅ Server compression completed:', {
+          originalSize: serverResult.originalSize,
+          compressedSize: serverResult.compressedSize,
+          compressionRatio: serverResult.compressionRatio,
+          metadata: serverResult.metadata
+        });
+
+        // Create compression result from server response
         result = {
-          originalFile: serverResult.originalFile,
+          file: serverResult.file,
+          originalFile: processedFile,
           compressedBlob: serverResult.compressedBlob,
           originalSize: serverResult.originalSize,
           compressedSize: serverResult.compressedSize,
           compressionRatio: serverResult.compressionRatio,
           downloadUrl: serverResult.downloadUrl
         };
+
+        console.log('📊 Final compression result:', {
+          originalSize: result.originalSize,
+          compressedSize: result.compressedSize,
+          compressionRatio: result.compressionRatio,
+          downloadUrl: result.downloadUrl ? 'URL exists' : 'URL missing',
+          'result.originalSize type': typeof result.originalSize,
+          'result.compressedSize type': typeof result.compressedSize,
+          'result.originalSize value': result.originalSize,
+          'result.compressedSize value': result.compressedSize
+        });
+        
       } else {
         // Mobile-optimized client compression
+        console.log('📱 Using client-side compression...');
+        
         const { compressImageAdvanced, getMobileOptimizedSettings } = await import('@/lib/imageUtils');
         
         // Get mobile-optimized compression settings
@@ -186,7 +273,7 @@ function ImageCompress({ locale }: { locale: string }) {
         const finalSettings = {
           ...optimizedSettings,
           quality: optimizedSettings.quality * quality, // Apply user quality preference
-          format: format as 'png' | 'jpeg' | 'webp' // Apply user format preference
+          format: format as 'png' | 'jpeg' | 'webp' | 'heic' // Apply user format preference
         };
         
         console.log('🎯 Using mobile-optimized compression:', finalSettings);
@@ -194,18 +281,33 @@ function ImageCompress({ locale }: { locale: string }) {
         const clientResult = await compressImageAdvanced(processedFile, finalSettings);
         
         result = {
+          file: clientResult.file,
           originalFile: processedFile,
           compressedBlob: new Blob([clientResult.file]),
           originalSize: clientResult.originalSize,
-          compressedSize: clientResult.newSize,
+          compressedSize: clientResult.newSize || clientResult.file.size,
           compressionRatio: (1 - clientResult.compressionRatio) * 100,
           downloadUrl: URL.createObjectURL(clientResult.file)
         };
+
+        console.log('📊 Client compression result:', result);
       }
       
       // Clear progress interval and set to 100%
       clearInterval(progressInterval);
       setProcessingProgress(100);
+
+      // Validate result before setting state
+      if (!result.originalSize || !result.compressedSize) {
+        throw new Error('Compression metadata is missing or invalid');
+      }
+
+      console.log('✅ Setting compression result state:', {
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        compressionRatio: result.compressionRatio,
+        downloadUrl: result.downloadUrl ? 'URL created' : 'Missing URL'
+      });
 
       setCompressionResult(result);
       setCurrentStep('result');
@@ -221,16 +323,17 @@ function ImageCompress({ locale }: { locale: string }) {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
+      console.error('❌ Compression error:', err);
       setError(`Resim sıkıştırılırken bir hata oluştu: ${errorMessage}`);
       setIsProcessing(false);
       setCurrentStep('configure');
-      console.error('Image compression error:', err);
     }
   };
 
   // Reset handler
   const handleReset = () => {
     setSelectedFile(null);
+    setPreviewUrl(null); // Reset preview URL
     setCompressionResult(null);
     setCurrentStep('upload');
     setIsProcessing(false);
@@ -288,17 +391,17 @@ function ImageCompress({ locale }: { locale: string }) {
             <div className="text-center mb-8">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
                 <SparklesIcon className="h-4 w-4 mr-2 text-purple-600 animate-pulse" />
-                {getText('imageCompress.badge', '✨ 2M+ Resim Sıkıştırıldı • AI Destekli')}
+                ✨ 2M+ Resim Sıkıştırıldı • AI Destekli
               </div>
             </div>
 
             {/* Enhanced Title */}
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent mb-4">
-                🖼️ {getText('imageCompress.title', 'Resim Sıkıştırma')}
+                🖼️ Resim Sıkıştırma
               </h1>
               <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-                {getText('imageCompress.subtitle', 'Yapay zeka destekli teknoloji ile resimlerinizi kalitesini koruyarak sıkıştırın')}
+                Yapay zeka destekli teknoloji ile resimlerinizi kalitesini koruyarak sıkıştırın
               </p>
             </div>
 
@@ -326,10 +429,10 @@ function ImageCompress({ locale }: { locale: string }) {
                   {/* Dynamic Text */}
                   <div className="text-center">
                     <div className="text-lg font-bold mb-2">
-                      📸 {getText('imageCompress.selectFile', 'Resim Dosyasını Seç')}
+                      📸 Resim Dosyasını Seç
                     </div>
                     <div className="text-sm opacity-90">
-                      ✨ {getText('imageCompress.aiPowered', 'Yapay Zeka Destekli Sıkıştırma')}
+                      ✨ Yapay Zeka Destekli Sıkıştırma
                     </div>
                   </div>
 
@@ -368,24 +471,24 @@ function ImageCompress({ locale }: { locale: string }) {
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <CheckCircleIcon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{getText('imageCompress.features.smaller', '%90 Daha Küçük')}</h3>
-                <p className="text-gray-600 text-sm">{getText('imageCompress.features.smallerDesc', 'Yapay zeka teknolojisi ile kaliteyi koruyarak maksimum sıkıştırma')}</p>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">%90 Daha Küçük</h3>
+                <p className="text-gray-600 text-sm">Yapay zeka teknolojisi ile kaliteyi koruyarak maksimum sıkıştırma</p>
               </div>
               
               <div className="text-center group">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <SparklesIcon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{getText('imageCompress.features.aiPowered', 'AI Destekli')}</h3>
-                <p className="text-gray-600 text-sm">{getText('imageCompress.features.aiPoweredDesc', 'Akıllı algoritmalar ile her resim için en optimal ayarları bulur')}</p>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">AI Destekli</h3>
+                <p className="text-gray-600 text-sm">Akıllı algoritmalar ile her resim için en optimal ayarları bulur</p>
               </div>
               
               <div className="text-center group">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <PhotoIcon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{getText('imageCompress.features.qualityKept', 'Kalite Korunur')}</h3>
-                <p className="text-gray-600 text-sm">{getText('imageCompress.features.qualityKeptDesc', 'Görsel kaliteyi en üst seviyede tutarak dosya boyutunu azaltır')}</p>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">Kalite Korunur</h3>
+                <p className="text-gray-600 text-sm">Görsel kaliteyi en üst seviyede tutarak dosya boyutunu azaltır</p>
               </div>
             </div>
           </div>
@@ -400,8 +503,25 @@ function ImageCompress({ locale }: { locale: string }) {
                 onClick={() => setError(null)}
                 className="mt-2 text-red-600 hover:text-red-800 text-sm underline"
               >
-                {getText('imageCompress.close', 'Kapat')}
+                Kapat
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* HEIC Notification */}
+        {heicNotification && (
+          <div className="max-w-2xl mx-auto mb-8 px-4">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 text-center animate-fade-in">
+              <div className="flex items-center justify-center mb-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
+                  <SparklesIcon className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-blue-800 font-medium">{heicNotification}</p>
+              </div>
+              <p className="text-blue-600 text-sm">
+                🚀 HEIC direkt sıkıştırma özelliği çok yakında aktif olacak!
+              </p>
             </div>
           </div>
         )}
@@ -416,7 +536,7 @@ function ImageCompress({ locale }: { locale: string }) {
               {/* Header */}
               <div className="text-center mb-12">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                  🎯 {getText('imageCompress.settings.title', 'Sıkıştırma Ayarları')}
+                  🎯 Sıkıştırma Ayarları
                 </h1>
               </div>
 
@@ -428,38 +548,47 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                       <PhotoIcon className="h-5 w-5 mr-2 text-purple-600" />
-📸 {getText('imageCompress.settings.preview', 'Önizleme')}
+                      📸 Önizleme
                     </h3>
                     
                     <div className="space-y-4">
                       {/* File Preview */}
                       <div className="relative bg-gray-50 rounded-xl p-4 text-center">
                         <div className="w-full h-48 flex items-center justify-center">
-                          <img
-                            src={URL.createObjectURL(selectedFile)}
-                            alt="Preview"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
-                            style={{ maxWidth: '100%', maxHeight: '100%' }}
-                          />
+                          {previewUrl ? (
+                            <img
+                              src={previewUrl}
+                              alt="Preview"
+                              className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                              style={{ maxWidth: '100%', maxHeight: '100%' }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <div className="text-gray-400">
+                                <PhotoIcon className="h-16 w-16 mx-auto mb-2" />
+                                <p className="text-sm">Önizleme yükleniyor...</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       
                       {/* File Info */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">📄 {getText('imageCompress.fileInfo.file', 'Dosya')}:</span>
+                          <span className="text-sm text-gray-600">📄 Dosya:</span>
                           <span className="text-sm font-medium text-gray-900 truncate max-w-32" title={selectedFile.name}>
                             {selectedFile.name}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">📊 {getText('imageCompress.fileInfo.size', 'Boyut')}:</span>
+                          <span className="text-sm text-gray-600">📊 Boyut:</span>
                           <span className="text-sm font-medium text-gray-900">
                             {formatFileSize(selectedFile.size)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">🎨 {getText('imageCompress.fileInfo.format', 'Format')}:</span>
+                          <span className="text-sm text-gray-600">🎨 Format:</span>
                           <span className="text-sm font-medium text-gray-900 uppercase">
                             {selectedFile.type.split('/')[1]}
                           </span>
@@ -476,14 +605,14 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
                       <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
-⚙️ {getText('imageCompress.settings.title', 'Sıkıştırma Ayarları')}
+                      ⚙️ Sıkıştırma Ayarları
                     </h3>
                     
                     <div className="space-y-6">
                       {/* Quality Slider */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">
-🎯 {getText('imageCompress.settings.qualityLevel', 'Kalite Seviyesi')}: {Math.round(quality * 100)}%
+                          🎯 Kalite Seviyesi: {Math.round(quality * 100)}%
                         </label>
                         <input
                           type="range"
@@ -495,16 +624,16 @@ function ImageCompress({ locale }: { locale: string }) {
                           className="w-full h-3 bg-gradient-to-r from-red-200 via-yellow-200 to-green-200 rounded-lg appearance-none cursor-pointer"
                         />
                         <div className="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>{getText('imageCompress.settings.small', 'Küçük dosya')}</span>
-                          <span>{getText('imageCompress.settings.balanced', 'Dengeli')}</span>
-                          <span>{getText('imageCompress.settings.high', 'Yüksek kalite')}</span>
+                          <span>Küçük dosya</span>
+                          <span>Dengeli</span>
+                          <span>Yüksek kalite</span>
                         </div>
                       </div>
                       
                       {/* Format Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">
-📄 {getText('imageCompress.settings.outputFormat', 'Çıktı Formatı')}
+                          📄 Çıktı Formatı
                         </label>
                         <div className="grid grid-cols-3 gap-3">
                           {(['jpeg', 'png', 'webp'] as const).map((fmt) => (
@@ -519,13 +648,46 @@ function ImageCompress({ locale }: { locale: string }) {
                             >
                               <div className="font-medium text-sm uppercase">{fmt}</div>
                               <div className="text-xs text-gray-500 mt-1">
-                                {fmt === 'jpeg' && getText('imageCompress.settings.smallest', 'En küçük')}
-                                {fmt === 'png' && getText('imageCompress.settings.transparency', 'Şeffaflık')}
-                                {fmt === 'webp' && getText('imageCompress.settings.modern', 'Modern')}
+                                {fmt === 'jpeg' && 'En küçük'}
+                                {fmt === 'png' && 'Şeffaflık'}
+                                {fmt === 'webp' && 'Modern'}
                               </div>
                             </button>
                           ))}
                         </div>
+                        
+                        {/* HEIC Format Option - Only show for HEIC input files */}
+                        {selectedFile && (selectedFile.type === 'image/heic' || selectedFile.type === 'image/heif') && (
+                          <div className="mt-4">
+                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                                    <span className="text-white font-bold text-xs">📱</span>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium text-purple-900">HEIC Formatında Kalmalı mı?</h4>
+                                    <p className="text-sm text-purple-700">iPhone/iPad fotoğrafları için önerilen format</p>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() => setFormat('heic')}
+                                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                                    format === 'heic'
+                                      ? 'bg-purple-500 text-white shadow-lg'
+                                      : 'bg-white text-purple-700 border border-purple-300 hover:bg-purple-50'
+                                  }`}
+                                >
+                                  {format === 'heic' ? '✓ HEIC Seçili' : 'HEIC Kullan'}
+                                </button>
+                              </div>
+                              <div className="mt-3 text-xs text-purple-600">
+                                💡 HEIC format'ı Apple'ın en verimli sıkıştırma teknolojisidir. 
+                                Aynı kalitede JPEG'den %50 daha küçük dosya boyutu sağlar.
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -541,14 +703,14 @@ function ImageCompress({ locale }: { locale: string }) {
                       {isProcessing ? (
                         <div className="flex items-center space-x-3">
                           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                          <span>{getText('imageCompress.compressing', 'Sıkıştırılıyor...')}</span>
+                          <span>Sıkıştırılıyor...</span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
                           </div>
-                          <span>🚀 {getText('imageCompress.startCompression', 'Sıkıştırmayı Başlat')}</span>
+                          <span>🚀 Sıkıştırmayı Başlat</span>
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <ArrowLeftIcon className="h-5 w-5 text-white rotate-180" />
                           </div>
@@ -590,18 +752,18 @@ function ImageCompress({ locale }: { locale: string }) {
               {/* Processing Status */}
               <div className="mb-8">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-🤖 {getText('imageCompress.processing.title', 'AI Sıkıştırma İşlemi')}
+                  🤖 AI Sıkıştırma İşlemi
                 </h2>
                 <p className="text-gray-600 text-lg">
-{getText('imageCompress.processing.description', 'Yapay zeka en optimal ayarları hesaplıyor...')}
+                  Yapay zeka en optimal ayarları hesaplıyor...
                 </p>
               </div>
 
               {/* Enhanced Progress Bar */}
               <div className="mb-8">
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>{getText('imageCompress.processing.progress', 'İlerleme')}</span>
-                  <span>{processingProgress}%</span>
+                  <span>İlerleme</span>
+                  <span>{Math.round(processingProgress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
                   <div 
@@ -624,7 +786,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 0 ? '✓' : '1'}
                   </div>
-                  <span className="font-medium">{getText('imageCompress.processing.step1', 'Resim analiz ediliyor')}</span>
+                  <span className="font-medium">Resim analiz ediliyor</span>
                 </div>
                 
                 <div className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
@@ -635,7 +797,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 30 ? '✓' : '2'}
                   </div>
-                  <span className="font-medium">{getText('imageCompress.processing.step2', 'Optimal ayarlar hesaplanıyor')}</span>
+                  <span className="font-medium">Optimal ayarlar hesaplanıyor</span>
                 </div>
                 
                 <div className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
@@ -646,7 +808,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 60 ? '✓' : '3'}
                   </div>
-                  <span className="font-medium">{getText('imageCompress.processing.step3', 'Sıkıştırma uygulanıyor')}</span>
+                  <span className="font-medium">Sıkıştırma uygulanıyor</span>
                 </div>
                 
                 <div className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
@@ -657,7 +819,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 90 ? '✓' : '4'}
                   </div>
-                  <span className="font-medium">{getText('imageCompress.processing.step4', 'Sonuç hazırlanıyor')}</span>
+                  <span className="font-medium">Sonuç hazırlanıyor</span>
                 </div>
               </div>
             </div>
@@ -682,7 +844,7 @@ function ImageCompress({ locale }: { locale: string }) {
                 </div>
                 
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
-🎉 {getText('imageCompress.result.title', 'Sıkıştırma Tamamlandı!')}
+                  🎉 Sıkıştırma Tamamlandı!
                 </h2>
                 
                 {/* Compression Stats */}
@@ -693,7 +855,7 @@ function ImageCompress({ locale }: { locale: string }) {
                     </div>
                   </div>
                   <p className="text-green-800 font-medium text-lg">
-                    📉 {getText('imageCompress.result.savedSize', 'Dosya boyutu azaldı')}: {formatFileSize(compressionResult.originalSize - compressionResult.compressedSize)} {getText('imageCompress.result.saved', 'tasarruf')}
+                    📉 Dosya boyutu azaldı: {formatFileSize(compressionResult.originalSize - compressionResult.compressedSize)} tasarruf
                   </p>
                 </div>
               </div>
@@ -702,14 +864,14 @@ function ImageCompress({ locale }: { locale: string }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-📤 {getText('imageCompress.result.original', 'Orijinal Resim')}
+                    📤 Orijinal Resim
                   </h3>
                   <div className="space-y-4">
                     {/* Original Image Preview */}
                     <div className="bg-gray-50 rounded-xl p-4 text-center">
                       <div className="w-full h-32 flex items-center justify-center">
                         <img
-                          src={URL.createObjectURL(compressionResult.originalFile)}
+                          src={previewUrl || ''}
                           alt="Original"
                           className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
                           style={{ maxWidth: '100%', maxHeight: '100%' }}
@@ -720,14 +882,14 @@ function ImageCompress({ locale }: { locale: string }) {
                       <div className="text-2xl font-bold text-red-600 mb-1">
                         {formatFileSize(compressionResult.originalSize)}
                       </div>
-                      <div className="text-sm text-red-700">{getText('imageCompress.result.fileSize', 'Dosya Boyutu')}</div>
+                      <div className="text-sm text-red-700">Dosya Boyutu</div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-📥 {getText('imageCompress.result.compressed', 'Sıkıştırılmış Resim')}
+                    📥 Sıkıştırılmış Resim
                   </h3>
                   <div className="space-y-4">
                     {/* Compressed Image Preview */}
@@ -745,7 +907,7 @@ function ImageCompress({ locale }: { locale: string }) {
                       <div className="text-2xl font-bold text-green-600 mb-1">
                         {formatFileSize(compressionResult.compressedSize)}
                       </div>
-                      <div className="text-sm text-green-700">{getText('imageCompress.result.newSize', 'Yeni Boyut')}</div>
+                      <div className="text-sm text-green-700">Yeni Boyut</div>
                     </div>
                   </div>
                 </div>
@@ -755,11 +917,11 @@ function ImageCompress({ locale }: { locale: string }) {
               <div className="text-center mb-8">
                 <a
                   href={compressionResult.downloadUrl}
-                  download={`compressed_${compressionResult.originalFile.name}`}
+                  download={`compressed_${compressionResult.originalFile?.name || 'image'}`}
                   className="inline-flex items-center bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl px-8 py-4 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-green-500/30 transform hover:scale-105"
                 >
                   <CloudArrowUpIcon className="h-6 w-6 mr-3" />
-🎉 {getText('imageCompress.result.download', 'Sıkıştırılmış Resmi İndir')}
+                  🎉 Sıkıştırılmış Resmi İndir
                 </a>
               </div>
 
@@ -769,7 +931,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   onClick={handleReset}
                   className="text-purple-600 hover:text-purple-800 font-medium text-lg underline"
                 >
-🔄 {getText('imageCompress.result.newCompression', 'Yeni Resim Sıkıştır')}
+                  🔄 Yeni Resim Sıkıştır
                 </button>
               </div>
             </div>
