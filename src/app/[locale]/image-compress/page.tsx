@@ -122,12 +122,12 @@ function ImageCompress({ locale }: { locale: string }) {
       } else if (fileExtension === 'webp') {
         autoFormat = 'webp';
       } else if (fileExtension === 'heic' || fileExtension === 'heif') {
-        // ⚠️ TEMPORARY: Backend doesn't support HEIC → HEIC yet, use JPEG
-        autoFormat = 'jpeg';
-        console.log('⚠️ HEIC → JPEG (temporary until backend supports HEIC output)');
+        // ✅ HEIC → HEIC: Backend now supports native HEIC compression!
+        autoFormat = 'heic';
+        console.log('✅ HEIC → HEIC (native HEIC compression active)');
         
         // Show user notification about HEIC format
-        setHeicNotification('📱 HEIC dosyası algılandı! Şimdilik JPEG formatına dönüştürülerek sıkıştırılacak.');
+        setHeicNotification('📱 HEIC dosyası algılandı! Orijinal HEIC formatında sıkıştırılacak.');
         setTimeout(() => {
           setHeicNotification(null);
         }, 5000);
