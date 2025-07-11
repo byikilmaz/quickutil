@@ -1931,7 +1931,58 @@ const translations = {
     'cookiePolicy.typesOfCookies': 'Types de Cookies',
     'cookiePolicy.cookieManagement': 'Gestion des Cookies',
     'cookiePolicy.thirdParty': 'Cookies Tiers',
-    'cookiePolicy.contact': 'Contact'
+    'cookiePolicy.contact': 'Contact',
+    
+    // ABOUT PAGE - FRANÇAIS DETAYLI
+    'about.title': 'À Propos de Nous',
+    'about.subtitle': 'Équipe QuickUtil.app - Mission, vision et valeurs',
+    'about.mission': 'Notre Mission',
+    'about.vision': 'Notre Vision',
+    'about.statistics': 'Nos Statistiques',
+    'about.values': 'Nos Valeurs',
+    
+    // TEAM PAGE - FRANÇAIS DETAYLI
+    'team.title': 'Notre Équipe',
+    'team.subtitle': 'Rencontrez notre équipe expérimentée et passionnée axée sur la création de solutions innovantes',
+    'team.intro': 'Ce qui rend QuickUtil.app puissant, c\'est notre approche axée sur le développement continu et l\'innovation.',
+    'team.joinTeam': 'Rejoignez Notre Équipe',
+    'team.joinDescription': 'Aimeriez-vous faire partie de notre équipe en croissance et faire la différence ?',
+    'team.openPositions': 'Voir les Postes Ouverts',
+    'team.contact': 'Nous Contacter',
+    
+    // TEAM MEMBERS - FRANÇAIS
+    'team.alexandra.name': 'Alexandra Thompson',
+    'team.alexandra.role': 'Fondatrice et PDG',
+    'team.alexandra.bio': 'Diplômée en Génie Informatique de Stanford. A fondé QuickUtil.app avec plus de 10 ans d\'expérience technologique.',
+    'team.michael.name': 'Michael Rodriguez', 
+    'team.michael.role': 'Directeur Technique (CTO)',
+    'team.michael.bio': 'Diplômé en Génie Logiciel du MIT. 12 ans d\'expérience en développement de logiciels d\'entreprise.',
+    'team.sarah.name': 'Sarah Williams',
+    'team.sarah.role': 'Designer en Chef',
+    'team.sarah.bio': 'Diplômée de la Parsons School of Design. 8 ans d\'expérience en design UX/UI.',
+    
+    // HARDCODED TEXTS REPLACEMENT - FRANÇAIS
+    'common.users': 'Utilisateurs',
+    'common.filesProcessed': 'Fichiers Traités',
+    'common.uptime': 'Disponibilité',
+    'common.support': 'Support',
+    'common.userFocused': 'Centré sur l\'Utilisateur',
+    'common.security': 'Sécurité',
+    'common.fast': 'Rapide',
+    'common.quality': 'Qualité',
+    'common.userFocusedDesc': 'Nous priorisons toujours l\'expérience utilisateur',
+    'common.securityDesc': 'La sécurité des données est notre plus haute priorité',
+    'common.fastDesc': 'Nous offrons des performances et une vitesse maximales',
+    'common.qualityDesc': 'Nous garantissons des sorties de haute qualité',
+    'common.teamMembers': 'Membres de l\'Équipe',
+    'common.yearsExperience': 'Années d\'Expérience',
+    'common.happyUsers': 'Utilisateurs Satisfaits',
+    'common.support24': 'Support 24/7',
+    'common.meetOurTeam': 'Rencontrez Notre Équipe',
+    'common.remoteWork': 'Travail à Distance',
+    'common.greatCulture': 'Grande Culture',
+    'common.remoteWorkDesc': 'Travaillez de n\'importe où dans le monde',
+    'common.greatCultureDesc': 'Environnement de travail positif favorisant l\'innovation'
   }
 };
 

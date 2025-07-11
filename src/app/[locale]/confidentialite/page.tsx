@@ -72,6 +72,8 @@ export default async function PrivacyPage({ params }: Props) {
             <p className="text-gray-700 leading-relaxed mb-6">
               {finalLocale === 'tr' ? 
                 'Bu Gizlilik Sözleşmesi, QuickUtil.app platformu kullanıcılarının kişisel verilerinin korunması ve işlenmesi hakkında bilgi vermek amacıyla hazırlanmıştır. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında veri sorumlusu sıfatıyla faaliyet göstermekteyiz.' :
+                finalLocale === 'fr' ?
+                'Cette Politique de Confidentialité est préparée pour informer les utilisateurs de la plateforme QuickUtil.app sur la protection et le traitement des données personnelles. Nous opérons en tant que responsable de traitement sous les lois applicables de protection de la vie privée, y compris le RGPD.' :
                 'This Privacy Policy is prepared to inform QuickUtil.app platform users about the protection and processing of personal data. We operate as a data controller under applicable privacy laws including GDPR.'
               }
             </p>
@@ -86,22 +88,26 @@ export default async function PrivacyPage({ params }: Props) {
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {finalLocale === 'tr' ? 'Hesap Bilgileri:' : 'Account Information:'}
+                  {finalLocale === 'tr' ? 'Hesap Bilgileri:' : finalLocale === 'fr' ? 'Informations de Compte :' : 'Account Information:'}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
                   {finalLocale === 'tr' ? 
                     'E-posta adresi, ad-soyad, hesap oluşturma tarihi ve son giriş bilgileri.' :
+                    finalLocale === 'fr' ?
+                    'Adresse e-mail, prénom et nom, date de création du compte et informations de dernière connexion.' :
                     'Email address, first and last name, account creation date and last login information.'
                   }
                 </p>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {finalLocale === 'tr' ? 'Dosya Bilgileri:' : 'File Information:'}
+                  {finalLocale === 'tr' ? 'Dosya Bilgileri:' : finalLocale === 'fr' ? 'Informations de Fichier :' : 'File Information:'}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
                   {finalLocale === 'tr' ? 
                     'Yüklenen dosyaların boyutu, türü, işleme tarihi ve süreleri. Dosya içerikleri işlem sonrası otomatik olarak silinir.' :
+                    finalLocale === 'fr' ?
+                    'Taille, type, date et durée de traitement des fichiers téléchargés. Le contenu des fichiers est automatiquement supprimé après traitement.' :
                     'Size, type, processing date and duration of uploaded files. File contents are automatically deleted after processing.'
                   }
                 </p>
@@ -120,6 +126,8 @@ export default async function PrivacyPage({ params }: Props) {
                 <span className="text-green-500 mr-2">✓</span>
                 {finalLocale === 'tr' ? 
                   'Platform hizmetlerinin sunulması ve kullanıcı deneyiminin iyileştirilmesi' :
+                  finalLocale === 'fr' ?
+                  'Fourniture des services de plateforme et amélioration de l\'expérience utilisateur' :
                   'Providing platform services and improving user experience'
                 }
               </li>
@@ -127,6 +135,8 @@ export default async function PrivacyPage({ params }: Props) {
                 <span className="text-green-500 mr-2">✓</span>
                 {finalLocale === 'tr' ? 
                   'Teknik destek sağlanması ve sorunların çözülmesi' :
+                  finalLocale === 'fr' ?
+                  'Fourniture du support technique et résolution des problèmes' :
                   'Providing technical support and solving problems'
                 }
               </li>
@@ -134,6 +144,8 @@ export default async function PrivacyPage({ params }: Props) {
                 <span className="text-green-500 mr-2">✓</span>
                 {finalLocale === 'tr' ? 
                   'Platform güvenliğinin sağlanması ve kötüye kullanımın önlenmesi' :
+                  finalLocale === 'fr' ?
+                  'Assurer la sécurité de la plateforme et prévenir les abus' :
                   'Ensuring platform security and preventing misuse'
                 }
               </li>
@@ -141,6 +153,8 @@ export default async function PrivacyPage({ params }: Props) {
                 <span className="text-green-500 mr-2">✓</span>
                 {finalLocale === 'tr' ? 
                   'Yasal yükümlülüklerin yerine getirilmesi' :
+                  finalLocale === 'fr' ?
+                  'Accomplissement des obligations légales' :
                   'Fulfilling legal obligations'
                 }
               </li>

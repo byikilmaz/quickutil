@@ -68,6 +68,8 @@ export default async function AboutPage({ params }: Props) {
               <p className="text-gray-600 leading-relaxed">
                 {finalLocale === 'tr' ? 
                   'Dijital dünyada dosya işleme süreçlerini herkes için erişilebilir, hızlı ve güvenli hale getirmek. QuickUtil.app olarak, karmaşık teknik süreçleri basit ve kullanıcı dostu araçlara dönüştürüyoruz.' :
+                  finalLocale === 'fr' ?
+                  'Rendre le traitement de fichiers accessible, rapide et sécurisé pour tous dans le monde numérique. Chez QuickUtil.app, nous transformons les processus techniques complexes en outils simples et conviviaux.' :
                   'Making file processing accessible, fast and secure for everyone in the digital world. As QuickUtil.app, we transform complex technical processes into simple and user-friendly tools.'
                 }
               </p>
@@ -78,6 +80,8 @@ export default async function AboutPage({ params }: Props) {
               <p className="text-gray-600 leading-relaxed">
                 {finalLocale === 'tr' ? 
                   'Dünya genelinde dosya işleme alanında lider platform olmak ve milyonlarca kullanıcının dijital hayatını kolaylaştırmak. Sürekli yenilik ve kullanıcı deneyimi odaklı gelişim ile sektörde standartları belirlemek.' :
+                  finalLocale === 'fr' ?
+                  'Devenir la plateforme leader dans le traitement de fichiers à l\'échelle mondiale et simplifier la vie numérique de millions d\'utilisateurs. Établir les standards de l\'industrie grâce à l\'innovation continue et au développement axé sur l\'expérience utilisateur.' :
                   'To become the leading platform in file processing worldwide and simplify the digital lives of millions of users. Setting industry standards through continuous innovation and user experience-focused development.'
                 }
               </p>
@@ -91,10 +95,10 @@ export default async function AboutPage({ params }: Props) {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { value: '1M+', label: finalLocale === 'tr' ? 'Kullanıcı' : 'Users' },
-                { value: '50M+', label: finalLocale === 'tr' ? 'İşlenen Dosya' : 'Files Processed' },
-                { value: '99.9%', label: finalLocale === 'tr' ? 'Uptime' : 'Uptime' },
-                { value: '24/7', label: finalLocale === 'tr' ? 'Destek' : 'Support' }
+                { value: '1M+', label: finalLocale === 'tr' ? 'Kullanıcı' : finalLocale === 'fr' ? 'Utilisateurs' : 'Users' },
+                { value: '50M+', label: finalLocale === 'tr' ? 'İşlenen Dosya' : finalLocale === 'fr' ? 'Fichiers Traités' : 'Files Processed' },
+                { value: '99.9%', label: finalLocale === 'tr' ? 'Uptime' : finalLocale === 'fr' ? 'Disponibilité' : 'Uptime' },
+                { value: '24/7', label: finalLocale === 'tr' ? 'Destek' : finalLocale === 'fr' ? 'Support' : 'Support' }
               ].map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">{stat.value}</div>
@@ -113,23 +117,23 @@ export default async function AboutPage({ params }: Props) {
               {[
                 {
                   icon: <HeartIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Kullanıcı Odaklı' : 'User Focused',
-                  desc: finalLocale === 'tr' ? 'Her zaman kullanıcı deneyimini ön planda tutuyoruz' : 'We always prioritize user experience'
+                  title: finalLocale === 'tr' ? 'Kullanıcı Odaklı' : finalLocale === 'fr' ? 'Centré sur l\'Utilisateur' : 'User Focused',
+                  desc: finalLocale === 'tr' ? 'Her zaman kullanıcı deneyimini ön planda tutuyoruz' : finalLocale === 'fr' ? 'Nous priorisons toujours l\'expérience utilisateur' : 'We always prioritize user experience'
                 },
                 {
                   icon: <ShieldCheckIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Güvenlik' : 'Security',
-                  desc: finalLocale === 'tr' ? 'Verilerinizin güvenliği en yüksek önceliğimiz' : 'Data security is our highest priority'
+                  title: finalLocale === 'tr' ? 'Güvenlik' : finalLocale === 'fr' ? 'Sécurité' : 'Security',
+                  desc: finalLocale === 'tr' ? 'Verilerinizin güvenliği en yüksek önceliğimiz' : finalLocale === 'fr' ? 'La sécurité des données est notre plus haute priorité' : 'Data security is our highest priority'
                 },
                 {
                   icon: <BoltIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Hızlı' : 'Fast',
-                  desc: finalLocale === 'tr' ? 'Maksimum performans ve hız sunuyoruz' : 'We provide maximum performance and speed'
+                  title: finalLocale === 'tr' ? 'Hızlı' : finalLocale === 'fr' ? 'Rapide' : 'Fast',
+                  desc: finalLocale === 'tr' ? 'Maksimum performans ve hız sunuyoruz' : finalLocale === 'fr' ? 'Nous offrons des performances et une vitesse maximales' : 'We provide maximum performance and speed'
                 },
                 {
                   icon: <CheckCircleIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Kalite' : 'Quality',
-                  desc: finalLocale === 'tr' ? 'Yüksek kaliteli çıktılar garanti ediyoruz' : 'We guarantee high-quality outputs'
+                  title: finalLocale === 'tr' ? 'Kalite' : finalLocale === 'fr' ? 'Qualité' : 'Quality',
+                  desc: finalLocale === 'tr' ? 'Yüksek kaliteli çıktılar garanti ediyoruz' : finalLocale === 'fr' ? 'Nous garantissons des sorties de haute qualité' : 'We guarantee high-quality outputs'
                 }
               ].map((value, index) => (
                 <div key={index} className="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors">

@@ -58,22 +58,22 @@ export default async function TeamPage({ params }: Props) {
     {
       icon: <UserGroupIcon className="w-8 h-8" />,
       number: '3+',
-      label: finalLocale === 'tr' ? 'Ekip Üyesi' : finalLocale === 'en' ? 'Team Members' : 'Miembros del Equipo'
+      label: finalLocale === 'tr' ? 'Ekip Üyesi' : finalLocale === 'en' ? 'Team Members' : finalLocale === 'fr' ? 'Membres de l\'Équipe' : 'Miembros del Equipo'
     },
     {
       icon: <ChartBarIcon className="w-8 h-8" />,
       number: '10+',
-      label: finalLocale === 'tr' ? 'Yıl Deneyim' : finalLocale === 'en' ? 'Years Experience' : 'Años de Experiencia'
+      label: finalLocale === 'tr' ? 'Yıl Deneyim' : finalLocale === 'en' ? 'Years Experience' : finalLocale === 'fr' ? 'Années d\'Expérience' : 'Años de Experiencia'
     },
     {
       icon: <HeartIcon className="w-8 h-8" />,
       number: '100K+',
-      label: finalLocale === 'tr' ? 'Mutlu Kullanıcı' : finalLocale === 'en' ? 'Happy Users' : 'Usuarios Felices'
+      label: finalLocale === 'tr' ? 'Mutlu Kullanıcı' : finalLocale === 'en' ? 'Happy Users' : finalLocale === 'fr' ? 'Utilisateurs Satisfaits' : 'Usuarios Felices'
     },
     {
       icon: <BoltIcon className="w-8 h-8" />,
       number: '24/7',
-      label: finalLocale === 'tr' ? 'Destek' : finalLocale === 'en' ? 'Support' : 'Soporte'
+      label: finalLocale === 'tr' ? 'Destek' : finalLocale === 'en' ? 'Support' : finalLocale === 'fr' ? 'Support 24/7' : 'Soporte'
     }
   ];
 
@@ -157,7 +157,8 @@ export default async function TeamPage({ params }: Props) {
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
                 {finalLocale === 'tr' ? 'Takım Üyelerimiz' : 
-                 finalLocale === 'en' ? 'Meet Our Team' : 
+                 finalLocale === 'en' ? 'Meet Our Team' :
+                 finalLocale === 'fr' ? 'Rencontrez Notre Équipe' :
                  'Conoce a Nuestro Equipo'}
               </h2>
               <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
@@ -230,12 +231,14 @@ export default async function TeamPage({ params }: Props) {
                 <MapPinIcon className="w-8 h-8 text-blue-200 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">
                   {finalLocale === 'tr' ? 'Uzaktan Çalışma' : 
-                   finalLocale === 'en' ? 'Remote Work' : 
+                   finalLocale === 'en' ? 'Remote Work' :
+                   finalLocale === 'fr' ? 'Travail à Distance' :
                    'Trabajo Remoto'}
                 </h3>
                 <p className="text-blue-100">
                   {finalLocale === 'tr' ? 'Dünyanın her yerinden çalışabilme imkanı' : 
-                   finalLocale === 'en' ? 'Work from anywhere in the world' : 
+                   finalLocale === 'en' ? 'Work from anywhere in the world' :
+                   finalLocale === 'fr' ? 'Travaillez de n\'importe où dans le monde' :
                    'Trabaja desde cualquier lugar del mundo'}
                 </p>
               </div>
@@ -244,12 +247,14 @@ export default async function TeamPage({ params }: Props) {
                 <HeartIcon className="w-8 h-8 text-blue-200 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">
                   {finalLocale === 'tr' ? 'Harika Kültür' : 
-                   finalLocale === 'en' ? 'Great Culture' : 
+                   finalLocale === 'en' ? 'Great Culture' :
+                   finalLocale === 'fr' ? 'Grande Culture' :
                    'Gran Cultura'}
                 </h3>
                 <p className="text-blue-100">
                   {finalLocale === 'tr' ? 'İnovasyonu destekleyen pozitif çalışma ortamı' : 
-                   finalLocale === 'en' ? 'Positive work environment supporting innovation' : 
+                   finalLocale === 'en' ? 'Positive work environment supporting innovation' :
+                   finalLocale === 'fr' ? 'Environnement de travail positif favorisant l\'innovation' :
                    'Ambiente de trabajo positivo que apoya la innovación'}
                 </p>
               </div>
