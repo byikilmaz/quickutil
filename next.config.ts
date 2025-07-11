@@ -44,8 +44,8 @@ const nextConfig: NextConfig = {
   
   // Cache busting and optimization
   generateBuildId: async () => {
-    // Generate unique build ID based on timestamp
-    return `build-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    // Cache buster for HEIC update
+    return `heic-support-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
   },
   
   // Asset optimization
@@ -78,29 +78,11 @@ const nextConfig: NextConfig = {
   },
   
   // Webpack config for better chunking
-  webpack: (config, { dev, isServer }) => {
-    if (!dev && !isServer) {
-      // Optimize chunks for better caching
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: -10,
-            chunks: 'all',
-          },
-        },
-      };
-    }
-    // Force cache busting for assets
-    config.output.filename = 'static/chunks/[name]-[contenthash].js';
-    config.output.chunkFilename = 'static/chunks/[name]-[contenthash].js';
+  webpack: (config: any) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': './src',
+    };
     return config;
   },
   
