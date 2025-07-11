@@ -288,7 +288,7 @@ function ImageCompress({ locale }: { locale: string }) {
             <div className="text-center mb-8">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
                 <SparklesIcon className="h-4 w-4 mr-2 text-purple-600 animate-pulse" />
-{getText('imageCompress.badge', '✨ 2M+ Resim Sıkıştırıldı • AI Destekli')}
+                {getText('imageCompress.badge', '✨ 2M+ Resim Sıkıştırıldı • AI Destekli')}
               </div>
             </div>
 
@@ -400,7 +400,7 @@ function ImageCompress({ locale }: { locale: string }) {
                 onClick={() => setError(null)}
                 className="mt-2 text-red-600 hover:text-red-800 text-sm underline"
               >
-{getText('imageCompress.close', 'Kapat')}
+                {getText('imageCompress.close', 'Kapat')}
               </button>
             </div>
           </div>
