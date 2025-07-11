@@ -709,88 +709,61 @@ export function isHEICFormat(file: File): boolean {
          file.name.toLowerCase().endsWith('.heif');
 }
 
-// NEW: Convert HEIC to JPEG using File API
+// NEW: Convert HEIC to JPEG using heic2any library
 export async function convertHEICToJPEG(file: File): Promise<File> {
   try {
-    console.log('🔄 Converting HEIC to JPEG:', file.name);
+    console.log('🔄 Converting HEIC to JPEG with heic2any library');
+    console.log('📁 Input file:', file.name, 'Size:', formatFileSize(file.size), 'Type:', file.type);
     
-    // Create a temporary image element to test if browser can handle HEIC
-    const img = new Image();
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    // Dynamic import to avoid SSR issues
+    const heic2any = (await import('heic2any')).default;
+    console.log('📦 heic2any library loaded successfully');
     
-    if (!ctx) {
-      throw new Error('Canvas context not available');
-    }
-    
-    return new Promise((resolve, reject) => {
-      img.onload = () => {
-        try {
-          console.log('✅ HEIC loaded successfully, converting to JPEG');
-          
-          // Set canvas dimensions to match image
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          
-          // Draw image to canvas
-          ctx.drawImage(img, 0, 0);
-          
-          // Convert to JPEG blob with high quality
-          canvas.toBlob((blob) => {
-            if (!blob) {
-              reject(new Error('HEIC to JPEG conversion failed'));
-              return;
-            }
-            
-            // Create new JPEG file
-            const jpegFile = new File(
-              [blob],
-              file.name.replace(/\.(heic|heif)$/i, '.jpg'),
-              {
-                type: 'image/jpeg',
-                lastModified: Date.now()
-              }
-            );
-            
-            console.log('✅ HEIC converted to JPEG:', {
-              originalSize: file.size,
-              newSize: jpegFile.size,
-              originalName: file.name,
-              newName: jpegFile.name
-            });
-            
-            resolve(jpegFile);
-            URL.revokeObjectURL(img.src);
-          }, 'image/jpeg', 0.95); // High quality conversion
-          
-        } catch (error) {
-          console.error('❌ HEIC conversion error:', error);
-          URL.revokeObjectURL(img.src);
-          reject(error);
-        }
-      };
-      
-      img.onerror = () => {
-        console.error('❌ HEIC loading failed - browser may not support HEIC');
-        URL.revokeObjectURL(img.src);
-        
-        // If direct loading fails, suggest server-side conversion
-        reject(new Error('HEIC format not supported by browser. Please use server-side conversion.'));
-      };
-      
-      // Try to load HEIC file
-      img.src = URL.createObjectURL(file);
-      
-      // Timeout after 10 seconds
-      setTimeout(() => {
-        URL.revokeObjectURL(img.src);
-        reject(new Error('HEIC conversion timeout'));
-      }, 10000);
+    // Convert HEIC to JPEG blob
+    console.log('🚀 Starting HEIC conversion...');
+    const result = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.95
     });
     
+    console.log('✅ HEIC conversion completed');
+    console.log('📊 Conversion result type:', typeof result);
+    
+    // Handle result (can be Blob or Blob array)
+    let jpegBlob: Blob;
+    if (Array.isArray(result)) {
+      console.log('📦 Result is array with', result.length, 'items');
+      jpegBlob = result[0];
+    } else {
+      console.log('📦 Result is single blob');
+      jpegBlob = result;
+    }
+    
+    console.log('📦 Final JPEG blob size:', formatFileSize(jpegBlob.size));
+    
+    // Create new JPEG file
+    const jpegFileName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+    const jpegFile = new File([jpegBlob], jpegFileName, {
+      type: 'image/jpeg',
+      lastModified: file.lastModified
+    });
+    
+    console.log('✅ HEIC successfully converted to JPEG');
+    console.log('📊 Size change:', formatFileSize(file.size), '→', formatFileSize(jpegFile.size));
+    console.log('📄 Name change:', file.name, '→', jpegFile.name);
+    
+    return jpegFile;
+    
   } catch (error) {
-    console.error('❌ HEIC conversion failed:', error);
-    throw error;
+    console.error('❌ HEIC conversion failed with heic2any:', error);
+    console.error('🔍 Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    
+    throw new Error(`HEIC dönüştürme başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
   }
 }
 
