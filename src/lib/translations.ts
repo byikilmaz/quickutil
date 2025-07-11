@@ -1619,6 +1619,47 @@ const translations = {
     'cookiePolicy.cookieManagement': 'Cookie Management',
     'cookiePolicy.thirdParty': 'Third-Party Cookies',
     'cookiePolicy.contact': 'Contact'
+  },
+  
+  fr: {
+    // Homepage namespace translations
+    'homepage.title': 'QuickUtil',
+    'homepage.subtitle': 'Outils PDF et image alimentés par IA. Intelligent. Rapide. Gratuit.',
+    'homepage.startButton': 'Commencer avec l\'IA',
+    
+    // Navigation & Header  
+    'navigation.pdfTools': 'Outils PDF',
+    'navigation.imageTools': 'Outils Image',
+    'navigation.login': 'Connexion',
+    'navigation.logout': 'Déconnexion',
+    
+    // Footer translations
+    'footer.tools': 'Outils',
+    'footer.company': 'Entreprise',
+    'footer.about': 'À Propos',
+    'footer.privacy': 'Politique de Confidentialité',
+    'footer.cookies': 'Politique de Cookies',
+    'footer.copyright': 'QuickUtil.app - Tous droits réservés.',
+    'footer.country': '🇫🇷 Depuis la France',
+    
+    // AUTH MODAL TRANSLATIONS
+    'auth.welcomeTitle': 'Bienvenue de Retour',
+    'auth.createAccountTitle': 'Créer un Compte',
+    'auth.loginSubtitle': 'Accédez à vos outils favoris',
+    'auth.firstName': 'Prénom',
+    'auth.lastName': 'Nom',
+    'auth.email': 'Email',
+    'auth.password': 'Mot de Passe',
+    'auth.login': 'Se Connecter',
+    'auth.register': 'S\'inscrire',
+    
+    // TOOLS TEXTS
+    'tools.pdfCompress': 'IA Compression PDF',
+    'tools.pdfConvert': 'IA Conversion PDF',
+    'tools.imageCompress': 'IA Compression Image',
+    'tools.imageResize': 'IA Redimensionnement Image',
+    'tools.imageRotate': 'IA Rotation Image',
+    'tools.imageFilters': 'IA Filtres Image'
   }
 };
 
