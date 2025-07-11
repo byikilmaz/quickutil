@@ -1744,9 +1744,12 @@ const translations = {
     // TOOLS TEXTS
     'tools.pdfCompress': 'IA Compression PDF',
     'tools.pdfConvert': 'IA Conversion PDF',
+    'tools.pdfEsign': 'IA Signature Électronique',
     'tools.imageCompress': 'IA Compression Image',
-    'tools.imageResize': 'IA Redimensionnement Image',
+    'tools.imageResize': 'IA Redimensionnement Image', 
+    'tools.imageCrop': 'IA Recadrage Image',
     'tools.imageRotate': 'IA Rotation Image',
+    'tools.imageFormat': 'IA Conversion Format',
     'tools.imageFilters': 'IA Filtres Image',
     
     // TOOLS DESCRIPTIONS - FRANÇAIS
