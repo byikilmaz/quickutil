@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { SparklesIcon, PhotoIcon, CheckCircleIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useDropzone } from 'react-dropzone';
@@ -274,7 +274,8 @@ function InteractiveCropBox({
   );
 }
 
-export default function ImageCrop() {
+export default function ImageCrop({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = React.use(params);
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
@@ -551,7 +552,7 @@ export default function ImageCrop() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <SparklesIcon className="h-4 w-4 text-purple-600 animate-pulse mr-2" />
-              3M+ Resim Kırpıldı • AI Destekli
+{locale === 'en' ? '3M+ Images Cropped • AI-Powered' : '3M+ Resim Kırpıldı • AI Destekli'}
             </div>
             
             <h1 className="text-5xl font-bold mb-4">
