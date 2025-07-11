@@ -39,6 +39,65 @@ export interface CompressOptions {
   maxHeight?: number;
 }
 
+// NEW: Mobile-optimized compression detection
+export function isMobileDevice(): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+export function getDevicePixelRatio(): number {
+  return window.devicePixelRatio || 1;
+}
+
+// NEW: Mobile-optimized compression settings
+export function getMobileOptimizedSettings(fileSize: number, originalFormat: string): CompressOptions {
+  const isMobile = isMobileDevice();
+  const devicePixelRatio = getDevicePixelRatio();
+  
+  console.log('🔍 Device info:', { isMobile, devicePixelRatio, fileSize, originalFormat });
+  
+  if (isMobile) {
+    // Mobile-specific optimization
+    if (fileSize > 5 * 1024 * 1024) { // > 5MB
+      return {
+        quality: 0.5, // Lower quality for mobile
+        format: 'jpeg', // Force JPEG for better compression
+        maxWidth: Math.min(1920, Math.floor(1920 / devicePixelRatio)), // Normalize for DPI
+        maxHeight: Math.min(1080, Math.floor(1080 / devicePixelRatio))
+      };
+    } else if (fileSize > 2 * 1024 * 1024) { // > 2MB
+      return {
+        quality: 0.6,
+        format: 'jpeg',
+        maxWidth: Math.min(1600, Math.floor(1600 / devicePixelRatio)),
+        maxHeight: Math.min(900, Math.floor(900 / devicePixelRatio))
+      };
+    } else if (fileSize > 1 * 1024 * 1024) { // > 1MB
+      return {
+        quality: 0.7,
+        format: originalFormat === 'image/png' ? 'jpeg' : undefined, // Convert PNG to JPEG on mobile
+        maxWidth: Math.floor(1200 / devicePixelRatio),
+        maxHeight: Math.floor(800 / devicePixelRatio)
+      };
+    } else {
+      return {
+        quality: 0.8,
+        format: originalFormat === 'image/png' && fileSize > 500 * 1024 ? 'jpeg' : undefined // Convert large PNGs
+      };
+    }
+  } else {
+    // Desktop settings (existing)
+    if (fileSize > 5 * 1024 * 1024) {
+      return { quality: 0.6, maxWidth: 1920, maxHeight: 1080 };
+    } else if (fileSize > 2 * 1024 * 1024) {
+      return { quality: 0.7, maxWidth: 2560, maxHeight: 1440 };
+    } else if (fileSize > 1 * 1024 * 1024) {
+      return { quality: 0.8 };
+    } else {
+      return { quality: 0.9 };
+    }
+  }
+}
+
 export async function convertImage(
   file: File,
   options: ConversionOptions
@@ -193,7 +252,7 @@ export function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// NEW: Advanced image compression
+// NEW: Advanced image compression with mobile optimization
 export async function compressImageAdvanced(
   file: File,
   options: CompressOptions
@@ -210,7 +269,26 @@ export async function compressImageAdvanced(
 
     img.onload = () => {
       try {
+        const isMobile = isMobileDevice();
+        const devicePixelRatio = getDevicePixelRatio();
+        
+        console.log('🖼️ Image compression started:', {
+          isMobile,
+          devicePixelRatio,
+          originalSize: file.size,
+          originalDimensions: { width: img.width, height: img.height },
+          inputFormat: file.type
+        });
+
         let { width, height } = img;
+        
+        // Mobile-specific canvas normalization
+        if (isMobile && devicePixelRatio > 1) {
+          // Normalize dimensions for high-DPI mobile devices
+          width = Math.floor(width / devicePixelRatio);
+          height = Math.floor(height / devicePixelRatio);
+          console.log('📱 Mobile DPI normalization:', { width, height, devicePixelRatio });
+        }
         
         // Apply max dimensions if specified
         if (options.maxWidth && width > options.maxWidth) {
@@ -223,19 +301,45 @@ export async function compressImageAdvanced(
           height = options.maxHeight;
         }
 
+        // Ensure minimum dimensions (prevent too small images)
+        width = Math.max(width, 100);
+        height = Math.max(height, 100);
+
+        // Set canvas dimensions (normalized for mobile)
         canvas.width = width;
         canvas.height = height;
 
-        // Enable image smoothing for better quality
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
+        // Mobile-optimized canvas settings
+        if (isMobile) {
+          // Lower quality settings for mobile to ensure smaller file sizes
+          ctx.imageSmoothingEnabled = devicePixelRatio > 2 ? false : true;
+          ctx.imageSmoothingQuality = devicePixelRatio > 2 ? 'low' : 'medium';
+        } else {
+          // Desktop high-quality settings
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+        }
 
         // Draw image to canvas
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Determine output format
-        const outputFormat = options.format || getImageFormat(file.type);
+        // Determine output format with mobile optimization
+        let outputFormat = options.format || getImageFormat(file.type);
+        
+        // Force JPEG for mobile if PNG is too large
+        if (isMobile && file.type === 'image/png' && file.size > 500 * 1024) {
+          outputFormat = 'jpeg';
+          console.log('📱 Mobile PNG→JPEG conversion for better compression');
+        }
+
         const mimeType = `image/${outputFormat}`;
+
+        // Mobile-optimized quality settings
+        let finalQuality = options.quality;
+        if (isMobile && finalQuality > 0.8) {
+          finalQuality = Math.min(finalQuality, 0.8); // Cap mobile quality at 0.8
+          console.log('📱 Mobile quality capped at:', finalQuality);
+        }
 
         canvas.toBlob(
           (blob) => {
@@ -254,6 +358,17 @@ export async function compressImageAdvanced(
             );
 
             const compressionRatio = blob.size / file.size;
+            const sizeReduction = ((file.size - blob.size) / file.size) * 100;
+
+            console.log('✅ Compression completed:', {
+              originalSize: file.size,
+              newSize: blob.size,
+              sizeReduction: sizeReduction.toFixed(1) + '%',
+              compressionRatio: compressionRatio.toFixed(3),
+              finalDimensions: { width, height },
+              outputFormat,
+              isMobile
+            });
 
             resolve({
               file: newFile,
@@ -265,9 +380,10 @@ export async function compressImageAdvanced(
             URL.revokeObjectURL(img.src);
           },
           mimeType,
-          options.quality
+          finalQuality
         );
       } catch (error) {
+        console.error('❌ Image compression error:', error);
         URL.revokeObjectURL(img.src);
         reject(error);
       }

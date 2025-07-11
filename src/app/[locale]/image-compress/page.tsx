@@ -162,9 +162,22 @@ function ImageCompress({ locale }: { locale: string }) {
           downloadUrl: serverResult.downloadUrl
         };
       } else {
-        // Fallback to client compression
-        const { compressImage } = await import('@/lib/imageUtils');
-        const clientResult = await compressImage(selectedFile, quality);
+        // Mobile-optimized client compression
+        const { compressImageAdvanced, getMobileOptimizedSettings } = await import('@/lib/imageUtils');
+        
+        // Get mobile-optimized compression settings
+        const optimizedSettings = getMobileOptimizedSettings(selectedFile.size, selectedFile.type);
+        
+        // Apply user preferences to optimized settings
+        const finalSettings = {
+          ...optimizedSettings,
+          quality: optimizedSettings.quality * quality, // Apply user quality preference
+          format: format as 'png' | 'jpeg' | 'webp' // Apply user format preference
+        };
+        
+        console.log('🎯 Using mobile-optimized compression:', finalSettings);
+        
+        const clientResult = await compressImageAdvanced(selectedFile, finalSettings);
         
         result = {
           originalFile: selectedFile,
