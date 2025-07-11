@@ -955,7 +955,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 30 ? '✓' : '2'}
                   </div>
-                  <span className="font-medium">Optimal ayarlar hesaplanıyor</span>
+                  <span className="font-medium">{locale === 'en' ? 'Calculating optimal settings' : 'Optimal ayarlar hesaplanıyor'}</span>
                 </div>
                 
                 <div className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
@@ -966,7 +966,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 60 ? '✓' : '3'}
                   </div>
-                  <span className="font-medium">Sıkıştırma uygulanıyor</span>
+                  <span className="font-medium">{locale === 'en' ? 'Applying compression' : 'Sıkıştırma uygulanıyor'}</span>
                 </div>
                 
                 <div className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
@@ -977,7 +977,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 90 ? '✓' : '4'}
                   </div>
-                  <span className="font-medium">Sonuç hazırlanıyor</span>
+                  <span className="font-medium">{locale === 'en' ? 'Preparing result' : 'Sonuç hazırlanıyor'}</span>
                 </div>
               </div>
             </div>
@@ -1054,14 +1054,14 @@ function ImageCompress({ locale }: { locale: string }) {
                       <div className="text-2xl font-bold text-red-600 mb-1">
                         {formatFileSize(compressionResult.originalSize)}
                       </div>
-                      <div className="text-sm text-red-700">Dosya Boyutu</div>
+                      <div className="text-sm text-red-700">{locale === 'en' ? 'File Size' : 'Dosya Boyutu'}</div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                    📥 Sıkıştırılmış Resim
+{locale === 'en' ? '📥 Compressed Image' : '📥 Sıkıştırılmış Resim'}
                   </h3>
                   <div className="space-y-4">
                     {/* Compressed Image Preview */}
@@ -1079,7 +1079,7 @@ function ImageCompress({ locale }: { locale: string }) {
                       <div className="text-2xl font-bold text-green-600 mb-1">
                         {formatFileSize(compressionResult.compressedSize)}
                       </div>
-                      <div className="text-sm text-green-700">Yeni Boyut</div>
+                      <div className="text-sm text-green-700">{locale === 'en' ? 'New Size' : 'Yeni Boyut'}</div>
                     </div>
                   </div>
                 </div>
