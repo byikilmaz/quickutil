@@ -3,8 +3,8 @@
  * GitHub, Firebase ve kod hatalarını analiz eden kapsamlı sistem
  */
 
-import { analytics } from './firebase';
-import { logEvent } from 'firebase/analytics';
+// import { analytics } from './firebase';
+// import { logEvent } from 'firebase/analytics';
 
 // Error categories
 export enum ErrorCategory {
@@ -104,14 +104,14 @@ export const analyzeFirebaseError = (error: FirebaseError, data: FirebaseErrorDa
   errorHistory.push(analysis);
 
   // Log to Firebase Analytics
-  if (analytics) {
-    logEvent(analytics, 'error_analyzed', {
-      error_category: analysis.category,
-      error_severity: analysis.severity,
-      error_code: data.code,
-      session_id: currentSessionId
-    });
-  }
+  // if (analytics) {
+  //   logEvent(analytics, 'error_analyzed', {
+  //     error_category: analysis.category,
+  //     error_severity: analysis.severity,
+  //     error_code: data.code,
+  //     session_id: currentSessionId
+  //   });
+  // }
 
   // Console logging for development
   if (process.env.NODE_ENV === 'development') {
@@ -152,14 +152,14 @@ export const analyzeGitHubError = (error: GitHubError, data: GitHubErrorData): E
   errorHistory.push(analysis);
 
   // Log to Firebase Analytics
-  if (analytics) {
-    logEvent(analytics, 'error_analyzed', {
-      error_category: analysis.category,
-      error_severity: analysis.severity,
-      error_code: data.status.toString(),
-      session_id: currentSessionId
-    });
-  }
+  // if (analytics) {
+  //   logEvent(analytics, 'error_analyzed', {
+  //     error_category: analysis.category,
+  //     error_severity: analysis.severity,
+  //     error_code: data.status.toString(),
+  //     session_id: currentSessionId
+  //   });
+  // }
 
   // Console logging for development
   if (process.env.NODE_ENV === 'development') {
@@ -199,14 +199,14 @@ export const analyzeCodeError = (error: Error, data: CodeErrorData): ErrorAnalys
   errorHistory.push(analysis);
 
   // Log to Firebase Analytics
-  if (analytics) {
-    logEvent(analytics, 'error_analyzed', {
-      error_category: analysis.category,
-      error_severity: analysis.severity,
-      error_code: error.name,
-      session_id: currentSessionId
-    });
-  }
+  // if (analytics) {
+  //   logEvent(analytics, 'error_analyzed', {
+  //     error_category: analysis.category,
+  //     error_severity: analysis.severity,
+  //     error_code: error.name,
+  //     session_id: currentSessionId
+  //   });
+  // }
 
   // Console logging for development
   if (process.env.NODE_ENV === 'development') {

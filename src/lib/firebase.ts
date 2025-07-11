@@ -3,7 +3,7 @@ import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions } from 'firebase/functions';
-import { getAnalytics } from 'firebase/analytics';
+// import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -36,14 +36,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Initialize Analytics (client-side only, with error handling)
-let analytics: ReturnType<typeof getAnalytics> | null = null;
-try {
-  if (typeof window !== 'undefined') {
-    analytics = getAnalytics(app);
-  }
-} catch (error: unknown) {
-  console.warn('Analytics initialization failed:', error);
-}
-
+const analytics: any = null;
+// Analytics will be initialized lazily when first accessed
 export { analytics };
 export { app }; 

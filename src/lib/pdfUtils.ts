@@ -3,8 +3,8 @@
 // =====================================
 
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { logEvent } from 'firebase/analytics';
-import { analytics } from '@/lib/firebase';
+// import { logEvent } from 'firebase/analytics';
+// import { analytics } from '@/lib/firebase';
 
 // Types
 export interface CompressionResult {
@@ -88,15 +88,15 @@ export async function compressPDF(
     const processingTime = endTime - startTime;
     
     // Track analytics
-    if (analytics) {
-      logEvent(analytics, 'pdf_compression_success', {
-        original_size: serverResult.originalSize,
-        compressed_size: serverResult.compressedSize,
-        compression_ratio: serverResult.compressionRatio,
-        processing_time: processingTime,
-        quality: options.quality
-      });
-    }
+    // if (analytics) {
+    //   logEvent(analytics, 'pdf_compression_success', {
+    //     original_size: serverResult.originalSize,
+    //     compressed_size: serverResult.compressedSize,
+    //     compression_ratio: serverResult.compressionRatio,
+    //     processing_time: processingTime,
+    //     quality: options.quality
+    //   });
+    // }
     
     return {
       compressedBlob,
@@ -111,13 +111,13 @@ export async function compressPDF(
     console.error('❌ PDF compression failed:', error);
     
     // Track error analytics
-    if (analytics) {
-      logEvent(analytics, 'pdf_compression_error', {
-        error_message: error instanceof Error ? error.message : 'Unknown error',
-        file_size: file.size,
-        quality: options.quality
-      });
-    }
+    // if (analytics) {
+    //   logEvent(analytics, 'pdf_compression_error', {
+    //     error_message: error instanceof Error ? error.message : 'Unknown error',
+    //     file_size: file.size,
+    //     quality: options.quality
+    //   });
+    // }
     
     throw error;
   }
