@@ -248,7 +248,7 @@ export default function HomePage() {
             <div className="text-center mb-20">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-6 py-2 rounded-full text-sm font-bold mb-6">
                 <SparklesIcon className="h-4 w-4 mr-2 animate-pulse" />
-                AI Features
+{locale === 'en' ? 'AI Features' : locale === 'es' ? 'Funciones de IA' : 'AI Features'}
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
                 {t('aiSection.title')}
@@ -328,13 +328,13 @@ export default function HomePage() {
             <div className="text-center mb-20">
               <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-6 py-2 rounded-full text-sm font-bold mb-6">
                 <DocumentIcon className="h-4 w-4 mr-2" />
-                PDF Tools
+{locale === 'en' ? 'PDF Tools' : locale === 'es' ? 'Herramientas PDF' : 'PDF Tools'}
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
                 {t('pdfSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                Yapay zeka ile PDF işleme deneyiminizi dönüştürün
+                {locale === 'en' ? 'Transform your PDF processing experience with AI' : locale === 'es' ? 'Transforma tu experiencia de procesamiento de PDF con IA' : 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün'}
               </p>
             </div>
 
@@ -384,13 +384,13 @@ export default function HomePage() {
             <div className="text-center mb-20">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-6 py-2 rounded-full text-sm font-bold mb-6">
                 <PhotoIcon className="h-4 w-4 mr-2" />
-                Image Tools
+{locale === 'en' ? 'Image Tools' : locale === 'es' ? 'Herramientas de Imagen' : 'Image Tools'}
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
                 {t('imageSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                Akıllı algoritmalar ile resim işleme sanatı
+                {locale === 'en' ? 'The art of image processing with smart algorithms' : locale === 'es' ? 'El arte del procesamiento de imágenes con algoritmos inteligentes' : 'Akıllı algoritmalar ile resim işleme sanatı'}
               </p>
             </div>
 
