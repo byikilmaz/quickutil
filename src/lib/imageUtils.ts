@@ -726,7 +726,7 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
       const result = await heic2any({
         blob: file,
         toType: 'image/jpeg',
-        quality: 0.95
+        quality: 0.9 // Slightly lower quality for compatibility
       });
       
       console.log('✅ HEIC conversion completed');
@@ -776,7 +776,20 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined
     });
-    throw new Error(`HEIC dönüştürme başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+    
+    // User-friendly error message with workaround
+    const userMessage = `HEIC dönüştürme başarısız. 
+    
+📱 iPhone/iPad Kullanıcıları için Hızlı Çözüm:
+1. Fotoğraflar uygulamasını açın
+2. Fotoğrafınızı seçin
+3. Paylaş butonuna tıklayın  
+4. "JPEG olarak kopyala" seçeneğini seçin
+5. Kopyalanan JPEG dosyasını buraya yükleyin
+
+Ya da Settings > Camera > Format'tan "Most Compatible" seçeneğini aktif edin.`;
+    
+    throw new Error(userMessage);
   }
 }
 
