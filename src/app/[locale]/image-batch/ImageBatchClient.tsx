@@ -134,6 +134,19 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
     }
   };
 
+  // Focus upload area on initial load
+  useEffect(() => {
+    if (currentStep === 'upload' && uploadRef.current) {
+      setTimeout(() => {
+        uploadRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        uploadRef.current?.focus();
+      }, 500);
+    }
+  }, [currentStep]);
+
   // Auto-scroll functionality
   const scrollToStep = (step: StepType) => {
     const refs = {
@@ -151,8 +164,11 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
           block: 'center',
           inline: 'nearest'
         });
-        targetRef.current?.focus();
-      }, 100);
+        // Add focus ring styling and focus
+        setTimeout(() => {
+          targetRef.current?.focus();
+        }, 100);
+      }, 500); // Increased timeout for better DOM update waiting
     }
   };
 
@@ -183,7 +199,10 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
     
     if (newBatchFiles.length > 0) {
       setCurrentStep('configure');
-      scrollToStep('configure');
+      // Wait for state update and DOM rendering before scrolling
+      setTimeout(() => {
+        scrollToStep('configure');
+      }, 100);
     }
   }, []);
 
@@ -407,7 +426,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         
         {/* STEP 1: UPLOAD */}
-        <div ref={uploadRef} className={`py-16 min-h-screen ${currentStep === 'upload' ? 'animate-fade-in' : ''}`}>
+        <div ref={uploadRef} tabIndex={-1} className={`py-16 min-h-screen focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-opacity-50 rounded-xl ${currentStep === 'upload' ? 'animate-fade-in' : ''}`}>
           <div className="text-center mb-12">
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg backdrop-blur-sm">
               <QueueListIcon className="h-4 w-4 text-purple-600 mr-2" />
@@ -466,7 +485,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
 
         {/* STEP 2: CONFIGURE */}
         {currentStep !== 'upload' && batchFiles.length > 0 && (
-          <div ref={configureRef} className={`py-16 min-h-screen ${currentStep === 'configure' ? 'animate-fade-in' : ''}`}>
+          <div ref={configureRef} tabIndex={-1} className={`py-16 min-h-screen focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-opacity-50 rounded-xl ${currentStep === 'configure' ? 'animate-fade-in' : ''}`}>
             <div className="text-center mb-12">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg backdrop-blur-sm">
                 <CogIcon className="h-4 w-4 text-purple-600 mr-2" />
@@ -586,7 +605,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
 
         {/* STEP 3: PROCESSING */}
         {currentStep === 'processing' && (
-          <div ref={processingRef} className="py-8 sm:py-12 lg:py-16 min-h-screen flex items-center justify-center animate-fade-in px-4">
+          <div ref={processingRef} tabIndex={-1} className="py-8 sm:py-12 lg:py-16 min-h-screen flex items-center justify-center animate-fade-in px-4 focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-opacity-50 rounded-xl">
             <div className="max-w-sm sm:max-w-lg lg:max-w-2xl mx-auto text-center">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8 shadow-lg backdrop-blur-sm">
                 <ArrowPathIcon className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 mr-2 animate-spin" />
@@ -635,7 +654,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
 
         {/* STEP 4: RESULT */}
         {currentStep === 'result' && (
-          <div ref={resultRef} className="py-16 min-h-screen animate-fade-in">
+                      <div ref={resultRef} tabIndex={-1} className="py-16 min-h-screen animate-fade-in focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-opacity-50 rounded-xl">
             <div className="text-center mb-12">
               <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800 px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg backdrop-blur-sm">
                 <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
