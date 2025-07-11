@@ -594,7 +594,9 @@ function ImageResizeContent({ locale }: { locale: string }) {
                             placeholder={locale === 'en' ? 'Enter percentage...' : locale === 'es' ? 'Ingresa porcentaje...' : 'Enter percentage...'}
                           />
                           <p className="text-sm text-gray-600 mt-2">
-                            {locale === 'en' ? 'Result:' : locale === 'es' ? 'Resultado:' : 'Result:'} {Math.round(originalDimensions.width * (percentageValue / 100))}×{Math.round(originalDimensions.height * (percentageValue / 100))}
+                            <span className="text-purple-600 font-medium">
+                              {locale === 'en' ? 'Result:' : locale === 'es' ? 'Resultado:' : 'Result:'} {Math.round(originalDimensions.width * (percentageValue / 100))}×{Math.round(originalDimensions.height * (percentageValue / 100))}
+                            </span>
                           </p>
                         </div>
                       )}
@@ -672,11 +674,11 @@ function ImageResizeContent({ locale }: { locale: string }) {
                   </div>
                   
                   <h3 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
-                    🤖 AI Resizing Your Image
+                    {locale === 'en' ? '🤖 AI Resizing Your Image' : locale === 'es' ? '🤖 IA Redimensionando tu Imagen' : '🤖 AI Resizing Your Image'}
                   </h3>
                   
                   <p className="text-xl text-gray-700 mb-8 font-medium">
-                    Please wait while we process your image with precision...
+                    {locale === 'en' ? 'Please wait while we process your image with precision...' : locale === 'es' ? 'Por favor espera mientras procesamos tu imagen con precisión...' : 'Please wait while we process your image with precision...'}
                   </p>
                   
                   {/* Progress bar with shimmer - larger */}
@@ -689,17 +691,17 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     </div>
                   </div>
                   
-                  <p className="text-lg text-purple-600 font-semibold">{processingProgress}% Complete</p>
+                  <p className="text-lg text-purple-600 font-semibold">{processingProgress}% {locale === 'en' ? 'Complete' : locale === 'es' ? 'Completo' : 'Complete'}</p>
                   
                   {/* Processing status */}
                   <div className="mt-8 bg-purple-50 rounded-2xl p-4 border border-purple-100">
                     <div className="flex items-center justify-center space-x-3">
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
                       <span className="text-purple-700 font-medium">
-                        {processingProgress < 15 ? 'Analyzing image...' :
-                         processingProgress < 35 ? 'Preparing resize...' :
-                         processingProgress < 60 ? 'Calculating dimensions...' :
-                         processingProgress < 85 ? 'Resizing image...' : 'Finalizing...'}
+                        {processingProgress < 15 ? (locale === 'en' ? 'Analyzing image...' : locale === 'es' ? 'Analizando imagen...' : 'Analyzing image...') :
+                         processingProgress < 35 ? (locale === 'en' ? 'Preparing resize...' : locale === 'es' ? 'Preparando redimensión...' : 'Preparing resize...') :
+                         processingProgress < 60 ? (locale === 'en' ? 'Calculating dimensions...' : locale === 'es' ? 'Calculando dimensiones...' : 'Calculating dimensions...') :
+                         processingProgress < 85 ? (locale === 'en' ? 'Resizing image...' : locale === 'es' ? 'Redimensionando imagen...' : 'Resizing image...') : (locale === 'en' ? 'Finalizing...' : locale === 'es' ? 'Finalizando...' : 'Finalizing...')}
                       </span>
                     </div>
                   </div>
@@ -721,15 +723,15 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     </div>
                     
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-                      ✅ Resize Complete!
+                      {locale === 'en' ? '✅ Resize Complete!' : locale === 'es' ? '✅ ¡Redimensión Completa!' : '✅ Resize Complete!'}
                     </h2>
-                    <p className="text-gray-600">Your image has been resized successfully</p>
+                    <p className="text-gray-600">{locale === 'en' ? 'Your image has been resized successfully' : locale === 'es' ? 'Tu imagen ha sido redimensionada exitosamente' : 'Your image has been resized successfully'}</p>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-8 mb-8">
                     {/* Before */}
                     <div className="text-center">
-                      <h3 className="font-semibold text-gray-900 mb-4">Original</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4">{locale === 'en' ? 'Original' : locale === 'es' ? 'Original' : 'Original'}</h3>
                       <div className="bg-gray-50 rounded-lg p-4 mb-4">
                         <img
                           src={URL.createObjectURL(resizeResult.originalFile)}
@@ -745,7 +747,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
 
                     {/* After */}
                     <div className="text-center">
-                      <h3 className="font-semibold text-gray-900 mb-4">Resized</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4">{locale === 'en' ? 'Resized' : locale === 'es' ? 'Redimensionada' : 'Resized'}</h3>
                       <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 mb-4 border-2 border-purple-200">
                         <img
                           src={resizeResult.downloadUrl}
@@ -767,14 +769,14 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-3 mx-auto"
                     >
                       <CheckCircleIcon className="h-6 w-6" />
-                      <span>📥 Download Resized Image</span>
+                      <span>{locale === 'en' ? '📥 Download Resized Image' : locale === 'es' ? '📥 Descargar Imagen Redimensionada' : '📥 Download Resized Image'}</span>
                     </button>
                     
                     <button
                       onClick={resetToStart}
                       className="text-gray-600 hover:text-gray-900 px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                     >
-                      Resize Another Image
+                      {locale === 'en' ? 'Resize Another Image' : locale === 'es' ? 'Redimensionar Otra Imagen' : 'Resize Another Image'}
                     </button>
                   </div>
                 </div>

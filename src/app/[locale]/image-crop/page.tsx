@@ -522,11 +522,11 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                   {locale === 'en' ? 'Image Crop' : locale === 'es' ? 'Recortar Imagen' : 'Image Crop'}
                 </h1>
-                <p className="text-sm text-gray-600">Step {
+                <p className="text-sm text-gray-600">{locale === 'en' ? 'Step' : locale === 'es' ? 'Paso' : 'Paso'} {
                   currentStep === 'upload' ? '1' : 
                   currentStep === 'configure' ? '2' : 
                   currentStep === 'processing' ? '3' : '4'
-                } of 4</p>
+                } {locale === 'en' ? 'of 4' : locale === 'es' ? 'de 4' : 'de 4'}</p>
               </div>
             </div>
             
@@ -536,7 +536,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                 className="flex items-center space-x-2 px-4 py-2 bg-white/50 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/70 transition-all duration-200"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
-                <span>New Image</span>
+                <span>{locale === 'en' ? 'New Image' : locale === 'es' ? 'Nueva Imagen' : 'Nueva Imagen'}</span>
               </button>
             )}
           </div>
@@ -611,15 +611,15 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
             <div className="mt-8 grid grid-cols-3 gap-4">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🔒</div>
-                <p className="text-sm font-medium text-gray-700">Secure Processing</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Secure Processing' : locale === 'es' ? 'Procesamiento Seguro' : 'Procesamiento Seguro'}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">⚡</div>
-                <p className="text-sm font-medium text-gray-700">Lightning Fast</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Lightning Fast' : locale === 'es' ? 'Súper Rápido' : 'Súper Rápido'}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">✂️</div>
-                <p className="text-sm font-medium text-gray-700">Precise Cropping</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Precise Cropping' : locale === 'es' ? 'Recorte Preciso' : 'Recorte Preciso'}</p>
               </div>
             </div>
           </div>
@@ -634,18 +634,18 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
               <div className="p-8">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                    Configure Crop Area
+                    {locale === 'en' ? 'Configure Crop Area' : locale === 'es' ? 'Configurar Área de Recorte' : 'Configurar Área de Recorte'}
                   </h2>
-                  <p className="text-gray-600">Select the area you want to keep</p>
+                  <p className="text-gray-600">{locale === 'en' ? 'Select the area you want to keep' : locale === 'es' ? 'Selecciona el área que quieres conservar' : 'Selecciona el área que quieres conservar'}</p>
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
                   {/* Left: Interactive Preview (2/3) */}
                   <div className="lg:col-span-2">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                      <h3 className="font-semibold text-gray-900 mb-4 text-center">Interactive Crop Preview</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4 text-center">{locale === 'en' ? 'Interactive Crop Preview' : locale === 'es' ? 'Vista Previa de Recorte Interactiva' : 'Vista Previa de Recorte Interactiva'}</h3>
                       <p className="text-sm text-gray-600 mb-4 text-center">
-                        🎯 Drag the handles to adjust crop area or click center to move
+                        {locale === 'en' ? '🎯 Drag the handles to adjust crop area or click center to move' : locale === 'es' ? '🎯 Arrastra las manijas para ajustar el área de recorte o haz clic en el centro para mover' : '🎯 Arrastra las manijas para ajustar el área de recorte o haz clic en el centro para mover'}
                       </p>
                       <InteractiveCropBox
                         imageUrl={previewUrl}
@@ -666,42 +666,42 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                       
                       {/* Preset Crops */}
                       <div>
-                        <label className="block text-sm font-medium text-black mb-3">Quick Presets</label>
+                        <label className="block text-sm font-medium text-black mb-3">{locale === 'en' ? 'Quick Presets' : locale === 'es' ? 'Ajustes Rápidos' : 'Ajustes Rápidos'}</label>
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => applyPresetCrop('square')}
                             className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
-                            🔲 Square
+                            {locale === 'en' ? '🔲 Square' : locale === 'es' ? '🔲 Cuadrado' : '🔲 Cuadrado'}
                           </button>
                           <button
                             onClick={() => applyPresetCrop('center')}
                             className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
-                            🎯 Center
+                            {locale === 'en' ? '🎯 Center' : locale === 'es' ? '🎯 Centro' : '🎯 Centro'}
                           </button>
                           <button
                             onClick={() => applyPresetCrop('wide')}
                             className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
-                            📐 Wide
+                            {locale === 'en' ? '📐 Wide' : locale === 'es' ? '📐 Ancho' : '📐 Ancho'}
                           </button>
                           <button
                             onClick={() => applyPresetCrop('tall')}
                             className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
                           >
-                            📏 Tall
+                            {locale === 'en' ? '📏 Tall' : locale === 'es' ? '📏 Alto' : '📏 Alto'}
                           </button>
                         </div>
                       </div>
 
                       {/* Crop Dimensions */}
                       <div>
-                        <label className="block text-sm font-medium text-black mb-3">Crop Dimensions</label>
+                        <label className="block text-sm font-medium text-black mb-3">{locale === 'en' ? 'Crop Dimensions' : locale === 'es' ? 'Dimensiones de Recorte' : 'Dimensiones de Recorte'}</label>
                         <div className="space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">X Position</label>
+                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'X Position' : locale === 'es' ? 'Posición X' : 'Posición X'}</label>
                               <input
                                 type="number"
                                 value={cropOptions.x}
@@ -722,13 +722,13 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                                 style={{ 
                                   color: '#000000 !important'
                                 } as any}
-                                placeholder="Enter X..."
+                                placeholder={locale === 'en' ? 'Enter X...' : locale === 'es' ? 'Ingresa X...' : 'Ingresa X...'}
                                 min="0"
                                 max={originalDimensions.width}
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">Y Position</label>
+                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'Y Position' : locale === 'es' ? 'Posición Y' : 'Posición Y'}</label>
                               <input
                                 type="number"
                                 value={cropOptions.y}
@@ -749,7 +749,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                                 style={{ 
                                   color: '#000000 !important'
                                 } as any}
-                                placeholder="Enter Y..."
+                                placeholder={locale === 'en' ? 'Enter Y...' : locale === 'es' ? 'Ingresa Y...' : 'Ingresa Y...'}
                                 min="0"
                                 max={originalDimensions.height}
                               />
@@ -757,7 +757,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">Width</label>
+                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'Width' : locale === 'es' ? 'Ancho' : 'Ancho'}</label>
                               <input
                                 type="number"
                                 value={cropOptions.width}
@@ -778,13 +778,13 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                                 style={{ 
                                   color: '#000000 !important'
                                 } as any}
-                                placeholder="Enter width..."
+                                placeholder={locale === 'en' ? 'Enter width...' : locale === 'es' ? 'Ingresa ancho...' : 'Ingresa ancho...'}
                                 min="1"
                                 max={originalDimensions.width}
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">Height</label>
+                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'Height' : locale === 'es' ? 'Alto' : 'Alto'}</label>
                               <input
                                 type="number"
                                 value={cropOptions.height}
@@ -805,7 +805,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                                 style={{ 
                                   color: '#000000 !important'
                                 } as any}
-                                placeholder="Enter height..."
+                                placeholder={locale === 'en' ? 'Enter height...' : locale === 'es' ? 'Ingresa alto...' : 'Ingresa alto...'}
                                 min="1"
                                 max={originalDimensions.height}
                               />
@@ -822,7 +822,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
                       >
                         <PhotoIcon className="h-6 w-6" />
-                        <span>✂️ Start Cropping</span>
+                        <span>{locale === 'en' ? '✂️ Start Cropping' : locale === 'es' ? '✂️ Comenzar Recorte' : '✂️ Comenzar Recorte'}</span>
                       </button>
                     </div>
                   </div>
@@ -864,11 +864,11 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                   </div>
                   
                   <h3 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
-                    ✂️ AI Cropping Your Image
+                    {locale === 'en' ? '✂️ AI Cropping Your Image' : locale === 'es' ? '✂️ IA Recortando tu Imagen' : '✂️ IA Recortando tu Imagen'}
                   </h3>
                   
                   <p className="text-xl text-gray-700 mb-8 font-medium">
-                    Please wait while we precisely crop your image...
+                    {locale === 'en' ? 'Please wait while we precisely crop your image...' : locale === 'es' ? 'Por favor espera mientras recortamos tu imagen con precisión...' : 'Por favor espera mientras recortamos tu imagen con precisión...'}
                   </p>
                   
                   {/* Progress bar with shimmer - larger */}
@@ -881,17 +881,17 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                     </div>
                   </div>
                   
-                  <p className="text-lg text-purple-600 font-semibold">{processingProgress}% Complete</p>
+                  <p className="text-lg text-purple-600 font-semibold">{processingProgress}% {locale === 'en' ? 'Complete' : locale === 'es' ? 'Completo' : 'Completo'}</p>
                   
                   {/* Processing status */}
                   <div className="mt-8 bg-purple-50 rounded-2xl p-4 border border-purple-100">
                     <div className="flex items-center justify-center space-x-3">
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
                       <span className="text-purple-700 font-medium">
-                        {processingProgress < 15 ? 'Analyzing crop area...' :
-                         processingProgress < 35 ? 'Preparing crop...' :
-                         processingProgress < 60 ? 'Calculating dimensions...' :
-                         processingProgress < 85 ? 'Cropping image...' : 'Finalizing...'}
+                        {processingProgress < 15 ? (locale === 'en' ? 'Analyzing crop area...' : locale === 'es' ? 'Analizando área de recorte...' : 'Analizando área de recorte...') :
+                         processingProgress < 35 ? (locale === 'en' ? 'Preparing crop...' : locale === 'es' ? 'Preparando recorte...' : 'Preparando recorte...') :
+                         processingProgress < 60 ? (locale === 'en' ? 'Calculating dimensions...' : locale === 'es' ? 'Calculando dimensiones...' : 'Calculando dimensiones...') :
+                         processingProgress < 85 ? (locale === 'en' ? 'Cropping image...' : locale === 'es' ? 'Recortando imagen...' : 'Recortando imagen...') : (locale === 'en' ? 'Finalizing...' : locale === 'es' ? 'Finalizando...' : 'Finalizando...')}
                       </span>
                     </div>
                   </div>
@@ -913,15 +913,15 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                     </div>
                     
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-                      ✂️ Crop Complete!
+                      {locale === 'en' ? '✂️ Crop Complete!' : locale === 'es' ? '✂️ ¡Recorte Completo!' : '✂️ ¡Recorte Completo!'}
                     </h2>
-                    <p className="text-gray-600">Your image has been cropped successfully</p>
+                    <p className="text-gray-600">{locale === 'en' ? 'Your image has been cropped successfully' : locale === 'es' ? 'Tu imagen ha sido recortada exitosamente' : 'Tu imagen ha sido recortada exitosamente'}</p>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-8 mb-8">
                     {/* Before */}
                     <div className="text-center">
-                      <h3 className="font-semibold text-gray-900 mb-4">Original</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4">{locale === 'en' ? 'Original' : locale === 'es' ? 'Original' : 'Original'}</h3>
                       <div className="bg-gray-50 rounded-lg p-4 mb-4">
                         <img
                           src={previewUrl}
@@ -937,7 +937,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
 
                     {/* After */}
                     <div className="text-center">
-                      <h3 className="font-semibold text-gray-900 mb-4">Cropped</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4">{locale === 'en' ? 'Cropped' : locale === 'es' ? 'Recortada' : 'Recortada'}</h3>
                       <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 mb-4 border-2 border-purple-200">
                         <img
                           src={cropResult.downloadUrl}
@@ -959,14 +959,14 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                       className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-3 mx-auto"
                     >
                       <CheckCircleIcon className="h-6 w-6" />
-                      <span>✂️ Download Cropped Image</span>
+                      <span>{locale === 'en' ? '✂️ Download Cropped Image' : locale === 'es' ? '✂️ Descargar Imagen Recortada' : '✂️ Descargar Imagen Recortada'}</span>
                     </button>
                     
                     <button
                       onClick={resetToStart}
                       className="text-gray-600 hover:text-gray-900 px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                     >
-                      Crop Another Image
+                      {locale === 'en' ? 'Crop Another Image' : locale === 'es' ? 'Recortar Otra Imagen' : 'Recortar Otra Imagen'}
                     </button>
                   </div>
                 </div>
