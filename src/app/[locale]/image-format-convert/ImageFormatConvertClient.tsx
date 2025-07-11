@@ -19,6 +19,7 @@ import {
   AdjustmentsHorizontalIcon
 } from '@heroicons/react/24/outline';
 import { getTranslations } from '@/lib/translations';
+import { isHEICFormat, convertHEICToJPEG } from '@/lib/imageUtils';
 
 interface ConversionResult {
   name: string;
@@ -138,6 +139,19 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
         // Progress update
         setProcessingProgress(Math.round((i / files.length) * 100));
 
+        // NEW: Handle HEIC format first
+        let processedFile = file;
+        if (isHEICFormat(file)) {
+          try {
+            console.log('📱 HEIC format detected in image-format-convert, converting to JPEG first...');
+            processedFile = await convertHEICToJPEG(file);
+            console.log('✅ HEIC converted to JPEG successfully for format conversion');
+          } catch (error) {
+            console.error('❌ HEIC conversion failed in image-format-convert:', error);
+            throw new Error(`HEIC format işlenemedi: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+          }
+        }
+
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
@@ -157,7 +171,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                   name: convertedFileName,
                   url: url,
                   size: blob.size,
-                  originalFormat: file.type.split('/')[1] || 'unknown',
+                  originalFormat: file.type.split('/')[1] || (isHEICFormat(file) ? 'heic' : 'unknown'),
                   newFormat: outputFormat
                 });
                 
@@ -168,8 +182,13 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
             }, `image/${outputFormat}`, 0.9);
           };
 
-          img.onerror = () => reject(new Error('Image load failed'));
-          img.src = URL.createObjectURL(file);
+          img.onerror = () => {
+            console.error('❌ Image load failed in image-format-convert');
+            reject(new Error('Image load failed'));
+          };
+          
+          // Use processed file (converted from HEIC if needed)
+          img.src = URL.createObjectURL(processedFile);
         });
       }
 
@@ -180,7 +199,8 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
       }, 500);
       
     } catch (error) {
-      setError(getText('imageFormatConvert.conversionError'));
+      console.error('❌ Image format conversion error:', error);
+      setError(getText('imageFormatConvert.conversionError', `Dönüştürme hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`));
     } finally {
       setIsProcessing(false);
     }
@@ -259,7 +279,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                   <input
                     type="file"
                     multiple
-                    accept="image/*"
+                    accept="image/*,.heic,.heif"
                     onChange={handleFileUpload}
                     className="hidden"
                   />
