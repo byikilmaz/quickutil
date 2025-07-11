@@ -1659,7 +1659,175 @@ const translations = {
     'tools.imageCompress': 'IA Compression Image',
     'tools.imageResize': 'IA Redimensionnement Image',
     'tools.imageRotate': 'IA Rotation Image',
-    'tools.imageFilters': 'IA Filtres Image'
+    'tools.imageFilters': 'IA Filtres Image',
+    
+    // PDF COMPRESS TRANSLATIONS
+    'pdfCompress.title': 'Compression PDF IA',
+    'pdfCompress.subtitle': 'Optimisez vos fichiers PDF avec l\'intelligence artificielle',
+    'pdfCompress.selectFiles': 'Sélectionnez Vos Fichiers PDF',
+    'pdfCompress.dragDrop': 'Glissez et déposez les fichiers ici ou cliquez pour sélectionner',
+    'pdfCompress.startCompression': 'Commencer la Compression',
+    'pdfCompress.compressing': 'Compression du PDF...',
+    'pdfCompress.completed': 'Compression Terminée !',
+    'pdfCompress.downloadFile': 'Télécharger le Fichier',
+    'pdfCompress.newCompression': 'Nouvelle Compression',
+    'pdfCompress.compressionLevel': 'Niveau de Compression',
+    'pdfCompress.light': 'Léger',
+    'pdfCompress.medium': 'Moyen',
+    'pdfCompress.high': 'Élevé',
+    
+    // PDF CONVERT TRANSLATIONS  
+    'pdfConvert.title': 'Conversion PDF IA',
+    'pdfConvert.subtitle': 'Convertissez vos fichiers PDF vers les formats désirés',
+    'pdfConvert.selectFile': 'Sélectionner un Fichier PDF',
+    'pdfConvert.startConversion': 'Commencer la Conversion',
+    'pdfConvert.completed': 'terminé',
+    'pdfConvert.successTitle': 'Terminé avec Succès !',
+    'pdfConvert.download': 'Télécharger',
+    'pdfConvert.newConversion': 'Nouvelle Conversion',
+    'pdfConvert.processing': 'Traitement avec IA...',
+    
+    // IMAGE COMPRESS TRANSLATIONS
+    'imageCompress.badge': '2M+ Images Compressées • Avec IA',
+    'imageCompress.title': 'Compression d\'Image',
+    'imageCompress.description': 'Compressez vos images en préservant la qualité',
+    'imageCompress.selectFile': 'Sélectionner un Fichier Image',
+    'imageCompress.startCompression': 'Commencer la Compression',
+    'imageCompress.compressing': 'Compression...',
+    'imageCompress.result.title': 'Compression Terminée !',
+    'imageCompress.result.download': 'Télécharger l\'Image Compressée',
+    'imageCompress.result.newCompression': 'Comprimer une Nouvelle Image',
+    
+    // IMAGE RESIZE TRANSLATIONS
+    'imageResize.badge': '5M+ Images Redimensionnées • Avec IA',
+    'imageResize.title': 'Redimensionnement d\'Image',
+    'imageResize.description': 'Redimensionnez facilement vos images à n\'importe quelle taille',
+    'imageResize.configure.startResize': 'Commencer le Redimensionnement',
+    'imageResize.result.title': 'Redimensionnement Terminé !',
+    'imageResize.result.download': 'Télécharger l\'Image Redimensionnée',
+    'imageResize.result.newResize': 'Redimensionner une Nouvelle Image',
+    
+    // IMAGE ROTATE TRANSLATIONS
+    'imageRotate.badge': '500K+ Images Pivotées • Avec IA',
+    'imageRotate.title': 'Rotation d\'Image',
+    'imageRotate.description': 'Pivotez facilement vos images à n\'importe quel angle',
+    'imageRotate.configure.startRotation': '🚀 Commencer la Rotation',
+    'imageRotate.result.successTitle': 'Rotation Terminée',
+    'imageRotate.result.downloadButton': 'Télécharger l\'Image Pivotée',
+    'imageRotate.result.newImageButton': 'Pivoter une Nouvelle Image',
+    
+    // IMAGE FORMAT CONVERT TRANSLATIONS
+    'imageFormatConvert.badge': 'Convertisseur de Formats d\'Image',
+    'imageFormatConvert.title': 'Convertisseur de Formats d\'Image',
+    'imageFormatConvert.description': 'Convertissez entre JPEG, PNG, WebP et autres formats',
+    'imageFormatConvert.configure.startConversion': 'Commencer la Conversion',
+    'imageFormatConvert.result.title': 'Conversion Terminée !',
+    'imageFormatConvert.result.download': 'Télécharger l\'Image Convertie',
+    'imageFormatConvert.result.convertAnother': 'Nouvelle Conversion',
+    
+    // IMAGE FILTERS TRANSLATIONS
+    'imageFilters.badge': 'Filtres Professionnels',
+    'imageFilters.title': 'Professionnel',
+    'imageFilters.subtitle': 'Filtres d\'Image',
+    'imageFilters.description': 'Appliquez des filtres de qualité studio à vos images',
+    'imageFilters.configure.apply': 'Appliquer les Filtres',
+    'imageFilters.result.title': 'Filtres Appliqués !',
+    'imageFilters.result.download': 'Télécharger l\'Image Filtrée',
+    'imageFilters.result.newFilter': 'Nouveau Filtre',
+    
+    // Story Page - FRENCH
+    story: {
+      title: 'Notre Histoire',
+      subtitle: 'Le parcours de fondation et la vision de QuickUtil.app',
+      intro: 'QuickUtil.app a été fondée avec le rêve de révolutionner le domaine du traitement de fichiers.',
+      
+      timeline: {
+        2019: {
+          title: 'Naissance des Idées',
+          description: 'Tout a commencé à Stanford quand notre équipe a réalisé les difficultés que rencontraient les utilisateurs pour traiter des fichiers de manière sécurisée et efficace.'
+        },
+        2020: {
+          title: 'Formation de l\'Équipe',
+          description: 'Nous avons rassemblé une équipe diversifiée d\'ingénieurs, de designers et d\'experts produit, tous partageant la même vision.'
+        },
+        2021: {
+          title: 'Premiers Pas',
+          description: 'Nous avons lancé notre premier prototype axé sur la compression PDF. Les réactions initiales des utilisateurs ont été incroyablement positives.'
+        },
+        2022: {
+          title: 'Lancement de la Plateforme',
+          description: 'QuickUtil.app a été officiellement lancée avec un ensemble complet d\'outils de traitement de fichiers.'
+        },
+        2023: {
+          title: 'Croissance et Développement',
+          description: 'Nous avons ajouté de nouvelles fonctionnalités comme les outils de traitement d\'images, la conversion de formats et le traitement par lots.'
+        },
+        2024: {
+          title: 'Expansion Mondiale',
+          description: 'Nous nous sommes étendus à 8 langues différentes et avons établi notre présence mondiale.'
+        },
+        2025: {
+          title: 'Vision Future',
+          description: 'Nous continuons d\'innover avec les technologies IA, de nouvelles intégrations et des fonctionnalités avancées.'
+        }
+      },
+      
+      mission: {
+        title: 'Notre Mission',
+        description: 'Rendre les opérations de traitement de fichiers faciles, rapides et sécurisées pour tous.'
+      },
+      
+      vision: {
+        title: 'Notre Vision',
+        description: 'Être la plateforme de traitement de fichiers la plus fiable et conviviale au monde.'
+      },
+      
+      values: {
+        title: 'Nos Valeurs',
+        items: [
+          {
+            name: 'Focus Utilisateur',
+            description: 'Chaque décision que nous prenons se concentre sur l\'amélioration de l\'expérience utilisateur.'
+          },
+          {
+            name: 'Confidentialité & Sécurité',
+            description: 'La confidentialité des utilisateurs est sacrée pour nous. Tout le traitement se fait dans le navigateur de l\'utilisateur.'
+          },
+          {
+            name: 'Innovation Continue',
+            description: 'Nous n\'arrêtons jamais d\'innover. Nous intégrons continuellement les dernières technologies.'
+          },
+          {
+            name: 'Durabilité',
+            description: 'Nous sommes conscients de notre responsabilité envers l\'environnement.'
+          }
+        ]
+      },
+      
+      cta: {
+        title: 'Faites Partie de Notre Histoire',
+        description: 'Transformez votre expérience de traitement de fichiers avec QuickUtil.app.',
+        button: 'Commencer Maintenant'
+      }
+    },
+    
+    // Privacy Policy - FRENCH
+    'privacy.title': 'Politique de Confidentialité',
+    'privacy.subtitle': 'Informations sur la protection et le traitement des données personnelles',
+    'privacy.dataController': 'Responsable du Traitement des Données',
+    'privacy.collectedData': 'Données Collectées',
+    'privacy.processingPurpose': 'Objectif du Traitement',
+    'privacy.dataSecurity': 'Sécurité des Données',
+    'privacy.userRights': 'Droits des Utilisateurs',
+    
+    // Cookie Policy - FRENCH
+    'cookiePolicy.title': 'Politique de Cookies',
+    'cookiePolicy.subtitle': 'Informations sur l\'utilisation des cookies chez QuickUtil.app',
+    'cookiePolicy.whatAreCookies': 'Que sont les Cookies ?',
+    'cookiePolicy.typesOfCookies': 'Types de Cookies',
+    'cookiePolicy.cookieManagement': 'Gestion des Cookies',
+    'cookiePolicy.thirdParty': 'Cookies Tiers',
+    'cookiePolicy.contact': 'Contact'
   }
 };
 
