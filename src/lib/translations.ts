@@ -92,6 +92,82 @@ const translations = {
     'footer.copyright': 'QuickUtil.app - Todos los derechos reservados.',
     'footer.poweredBy': 'Desarrollado por:',
     'footer.country': '🇪🇸 Desde España',
+    
+    // Story Page - ESPAÑOL
+    story: {
+      title: 'Nuestra Historia',
+      subtitle: 'El viaje de fundación y visión de QuickUtil.app',
+      intro: 'QuickUtil.app fue fundada con el sueño de revolucionar el campo del procesamiento de archivos. Desde nuestros humildes comienzos hasta convertirnos en una plataforma global confiable por millones, aquí está nuestra historia...',
+      
+      timeline: {
+        2019: {
+          title: 'Nacimiento de las Ideas',
+          description: 'Todo comenzó en Stanford cuando nuestro equipo se dio cuenta de las dificultades que enfrentaban los usuarios para procesar archivos de manera segura y eficiente. La idea de crear una plataforma que fuera simple, potente y centrada en la privacidad comenzó a tomar forma.'
+        },
+        2020: {
+          title: 'Unión del Equipo',
+          description: 'Reunimos a un equipo diverso de ingenieros, diseñadores y expertos en productos, todos compartiendo la misma visión. A pesar de los desafíos de trabajar de forma remota, nuestra pasión por resolver problemas reales nos mantuvo unidos.'
+        },
+        2021: {
+          title: 'Primeros Pasos',
+          description: 'Lanzamos nuestro primer prototipo centrándonos en la compresión de PDF. Las primeras reacciones de los usuarios fueron increíblemente positivas, confirmando que estábamos en el camino correcto. Cada comentario fue valioso para mejorar nuestro producto.'
+        },
+        2022: {
+          title: 'Lanzamiento de la Plataforma',
+          description: 'QuickUtil.app fue oficialmente lanzado con un conjunto completo de herramientas de procesamiento de archivos. El procesamiento del lado del cliente, que garantiza la privacidad del usuario, se convirtió en nuestra principal ventaja diferenciadora.'
+        },
+        2023: {
+          title: 'Crecimiento y Desarrollo',
+          description: 'Agregamos nuevas funciones como herramientas de procesamiento de imágenes, conversión de formatos y procesamiento por lotes. Nuestra base de usuarios creció exponencialmente y comenzamos a recibir reconocimiento internacional.'
+        },
+        2024: {
+          title: 'Expansión Global',
+          description: 'Expandimos a 8 idiomas diferentes y establecimos nuestra presencia global. Mejoramos nuestra infraestructura para servir a millones de usuarios simultáneamente mientras manteníamos nuestros estándares de velocidad y seguridad.'
+        },
+        2025: {
+          title: 'Visión del Futuro',
+                     description: 'Continuamos innovando con tecnologías de IA, nuevas integraciones y características avanzadas. Nuestro objetivo es hacer que el procesamiento de archivos sea aún más inteligente, rápido y accesible para todos.'
+         }
+       },
+       
+       mission: {
+         title: 'Nuestra Misión',
+         description: 'Hacer que las operaciones de procesamiento de archivos sean fáciles, rápidas y seguras para todos. Creemos que la tecnología debe simplificar la vida, no complicarla. Por eso desarrollamos herramientas intuitivas que cualquier persona puede usar, independientemente de su nivel técnico.'
+       },
+       
+       vision: {
+         title: 'Nuestra Visión',
+         description: 'Ser la plataforma de procesamiento de archivos más confiable y fácil de usar del mundo. Visualizamos un futuro donde el procesamiento de archivos sea tan simple como hacer clic en un botón, manteniendo siempre los más altos estándares de privacidad y seguridad.'
+       },
+       
+       values: {
+         title: 'Nuestros Valores',
+         items: [
+           {
+             name: 'Enfoque en el Usuario',
+             description: 'Cada decisión que tomamos se centra en mejorar la experiencia del usuario. Escuchamos activamente los comentarios y desarrollamos funciones que realmente agregan valor a la vida diaria de nuestros usuarios.'
+           },
+           {
+             name: 'Privacidad y Seguridad',
+             description: 'La privacidad del usuario es sagrada para nosotros. Todos los procesamientos se realizan en el navegador del usuario, sin enviar datos a nuestros servidores. Tu información permanece privada, siempre.'
+           },
+           {
+             name: 'Innovación Continua',
+             description: 'Nunca dejamos de innovar. Integramos continuamente las últimas tecnologías, mejoramos nuestros algoritmos y expandimos nuestras capacidades para ofrecer las mejores soluciones.'
+           },
+           {
+             name: 'Sostenibilidad',
+             description: 'Somos conscientes de nuestra responsabilidad hacia el medio ambiente. Optimizamos nuestros procesos para el consumo de energía y trabajamos hacia un futuro tecnológico más verde.'
+           }
+         ]
+       },
+       
+       cta: {
+         title: 'Sé Parte de Nuestra Historia',
+         description: 'Transforma tu experiencia de procesamiento de archivos con QuickUtil.app, la elección de millones de usuarios en todo el mundo.',
+         button: 'Comenzar Ahora'
+       }
+     }
   },
   tr: {
     // Ana sayfa namespace düzeltmeleri
@@ -172,6 +248,82 @@ const translations = {
     'footer.aiProcessing': 'AI İşleme',
     'footer.poweredBy': 'Destekleyen:',
     'footer.country': '🇹🇷 Türkiye\'den',
+    
+    // Story Page - TÜRKÇE
+    story: {
+      title: 'Hikayemiz',
+      subtitle: 'QuickUtil.app\'in kuruluş hikayesi ve vizyonumuz',
+      intro: 'QuickUtil.app, dosya işleme alanında devrim yaratma hayaliyle kuruldu. Mütevazı başlangıçlarımızdan milyonlarca kullanıcının güvendiği küresel bir platform haline gelene kadar, işte hikayemiz...',
+      
+      timeline: {
+        2019: {
+          title: 'Fikirlerin Doğuşu',
+          description: 'Her şey Stanford\'da ekibimizin, kullanıcıların dosyaları güvenli ve verimli şekilde işleme konusunda yaşadıkları zorlukları fark etmesiyle başladı. Basit, güçlü ve gizlilik odaklı bir platform yaratma fikri şekillenmeye başladı.'
+        },
+        2020: {
+          title: 'Ekibin Bir Araya Gelmesi',
+          description: 'Mühendisler, tasarımcılar ve ürün uzmanlarından oluşan çeşitli bir ekibi bir araya getirdik, hepsi aynı vizyonu paylaşıyordu. Uzaktan çalışmanın zorluklarına rağmen, gerçek sorunları çözme tutkumuz bizi bir arada tuttu.'
+        },
+        2021: {
+          title: 'İlk Adımlar',
+          description: 'PDF sıkıştırmaya odaklanarak ilk prototipimizi piyasaya sürdük. Kullanıcılardan gelen ilk tepkiler inanılmaz derecede olumlu oldu ve doğru yolda olduğumuzu doğruladı. Her geri bildirim ürünümüzü geliştirmek için değerliydi.'
+        },
+        2022: {
+          title: 'Platform Lansmanı',
+          description: 'QuickUtil.app, eksiksiz bir dosya işleme araçları seti ile resmi olarak piyasaya sürüldü. Kullanıcı gizliliğini garanti eden istemci tarafı işleme, ana farklılaştırıcı avantajımız oldu.'
+        },
+        2023: {
+          title: 'Büyüme ve Gelişim',
+          description: 'Görüntü işleme araçları, format dönüştürme ve toplu işleme gibi yeni özellikler ekledik. Kullanıcı tabanımız katlanarak büyüdü ve uluslararası tanınırlık almaya başladık.'
+        },
+        2024: {
+          title: 'Global Genişleme',
+          description: '8 farklı dile genişledik ve global varlığımızı kurduk. Hız ve güvenlik standartlarımızı korurken milyonlarca kullanıcıya aynı anda hizmet verecek şekilde altyapımızı geliştirdik.'
+        },
+        2025: {
+          title: 'Gelecek Vizyonu',
+          description: 'AI teknolojileri, yeni entegrasyonlar ve gelişmiş özelliklerle yenilik yapmaya devam ediyoruz. Amacımız dosya işlemeyi herkes için daha akıllı, hızlı ve erişilebilir hale getirmek.'
+        }
+      },
+      
+      mission: {
+        title: 'Misyonumuz',
+        description: 'Dosya işleme işlemlerini herkes için kolay, hızlı ve güvenli hale getirmek. Teknolojinin hayatı kolaylaştırması gerektiğine, karmaşıklaştırmaması gerektiğine inanıyoruz. Bu yüzden teknik seviyesi ne olursa olsun herkesin kullanabileceği sezgisel araçlar geliştiriyoruz.'
+      },
+      
+      vision: {
+        title: 'Vizyonumuz',
+        description: 'Dünyanın en güvenilir ve kullanıcı dostu dosya işleme platformu olmak. Dosya işlemenin bir düğmeye tıklamak kadar basit olduğu, her zaman en yüksek gizlilik ve güvenlik standartlarını korurken bir gelecek hayal ediyoruz.'
+      },
+      
+      values: {
+        title: 'Değerlerimiz',
+        items: [
+          {
+            name: 'Kullanıcı Odaklılık',
+            description: 'Aldığımız her karar kullanıcı deneyimini geliştirmeye odaklanır. Geri bildirimleri aktif olarak dinler ve kullanıcılarımızın günlük hayatına gerçekten değer katan özellikler geliştiririz.'
+          },
+          {
+            name: 'Gizlilik & Güvenlik',
+            description: 'Kullanıcı gizliliği bizim için kutsal. Tüm işlemler kullanıcının tarayıcısında gerçekleşir, veriler sunucularımıza gönderilmez. Bilgileriniz her zaman özel kalır.'
+          },
+          {
+            name: 'Sürekli İnovasyon',
+            description: 'Yenilik yapmayı asla bırakmayız. En son teknolojileri sürekli entegre eder, algoritmalarımızı geliştirir ve en iyi çözümleri sunmak için yeteneklerimizi genişletiriz.'
+          },
+          {
+            name: 'Sürdürülebilirlik',
+            description: 'Çevreye karşı sorumluluğumuzun bilincindeyiz. Süreçlerimizi enerji tüketimi için optimize ediyor ve daha yeşil bir teknoloji geleceği için çalışıyoruz.'
+          }
+        ]
+      },
+      
+      cta: {
+        title: 'Hikayemizin Parçası Olun',
+        description: 'Milyonlarca kullanıcının tercih ettiği QuickUtil.app ile dosya işleme deneyiminizi dönüştürün.',
+        button: 'Hemen Başlayın'
+      }
+    },
     
     // Common UI metinleri
     'common.selectFile': 'Dosya seç',
@@ -1110,7 +1262,83 @@ const translations = {
     'imageFilters.result.appliedFilters': 'Applied Filters',
     'imageFilters.result.processingTime': 'Processing Time',
     'imageFilters.result.downloadFiltered': 'Download Filtered Image',
-    'imageFilters.result.newFilter': 'New Filter'
+    'imageFilters.result.newFilter': 'New Filter',
+    
+    // Story Page - ENGLISH
+    story: {
+      title: 'Our Story',
+      subtitle: 'The founding journey and vision of QuickUtil.app',
+      intro: 'QuickUtil.app was founded with the dream of revolutionizing the file processing field. From our humble beginnings to becoming a global platform trusted by millions, here is our story...',
+      
+      timeline: {
+        2019: {
+          title: 'Birth of Ideas',
+          description: 'It all started at Stanford when our team realized the difficulties users faced in processing files securely and efficiently. The idea of creating a platform that was simple, powerful, and privacy-focused began to take shape.'
+        },
+        2020: {
+          title: 'Team Coming Together',
+          description: 'We brought together a diverse team of engineers, designers, and product experts, all sharing the same vision. Despite the challenges of working remotely, our passion for solving real problems kept us united.'
+        },
+        2021: {
+          title: 'First Steps',
+          description: 'We launched our first prototype focusing on PDF compression. The initial reactions from users were incredibly positive, confirming that we were on the right track. Every feedback was valuable for improving our product.'
+        },
+        2022: {
+          title: 'Platform Launch',
+          description: 'QuickUtil.app was officially launched with a complete set of file processing tools. Client-side processing, which guarantees user privacy, became our main differentiating advantage.'
+        },
+        2023: {
+          title: 'Growth and Development',
+          description: 'We added new features like image processing tools, format conversion, and batch processing. Our user base grew exponentially and we began receiving international recognition.'
+        },
+        2024: {
+          title: 'Global Expansion',
+          description: 'We expanded to 8 different languages and established our global presence. We improved our infrastructure to serve millions of users simultaneously while maintaining our speed and security standards.'
+        },
+        2025: {
+          title: 'Future Vision',
+          description: 'We continue to innovate with AI technologies, new integrations, and advanced features. Our goal is to make file processing even smarter, faster, and more accessible for everyone.'
+        }
+      },
+      
+      mission: {
+        title: 'Our Mission',
+        description: 'To make file processing operations easy, fast, and secure for everyone. We believe technology should simplify life, not complicate it. That\'s why we develop intuitive tools that anyone can use, regardless of their technical level.'
+      },
+      
+      vision: {
+        title: 'Our Vision',
+        description: 'To be the world\'s most reliable and user-friendly file processing platform. We envision a future where file processing is as simple as clicking a button, while always maintaining the highest standards of privacy and security.'
+      },
+      
+      values: {
+        title: 'Our Values',
+        items: [
+          {
+            name: 'User Focus',
+            description: 'Every decision we make focuses on improving the user experience. We actively listen to feedback and develop features that truly add value to our users\' daily lives.'
+          },
+          {
+            name: 'Privacy & Security',
+            description: 'User privacy is sacred to us. All processing happens in the user\'s browser, no data is sent to our servers. Your information remains private, always.'
+          },
+          {
+            name: 'Continuous Innovation',
+            description: 'We never stop innovating. We continuously integrate the latest technologies, improve our algorithms, and expand our capabilities to deliver the best solutions.'
+          },
+          {
+            name: 'Sustainability',
+            description: 'We are conscious of our responsibility towards the environment. We optimize our processes for energy consumption and work towards a greener technology future.'
+          }
+        ]
+      },
+      
+      cta: {
+        title: 'Be Part of Our Story',
+        description: 'Transform your file processing experience with QuickUtil.app, the choice of millions of users worldwide.',
+        button: 'Get Started Now'
+      }
+    }
   }
 };
 
