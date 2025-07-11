@@ -207,12 +207,12 @@ export function getCompressionSavings(originalSize: number, compressedSize: numb
 
 // Utility function to validate image file
 export function validateImageFile(file: File): { isValid: boolean; error?: string } {
-  const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/bmp', 'image/tiff'];
+  const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/bmp', 'image/tiff', 'image/heic', 'image/heif'];
   
   if (!validTypes.includes(file.type.toLowerCase())) {
     return {
       isValid: false,
-      error: `Unsupported file type: ${file.type}. Supported types: PNG, JPEG, WebP, BMP, TIFF`
+      error: `Unsupported file type: ${file.type}. Supported types: PNG, JPEG, WebP, BMP, TIFF, HEIC, HEIF`
     };
   }
 

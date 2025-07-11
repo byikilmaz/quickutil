@@ -132,7 +132,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => handleFileSelect(acceptedFiles),
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif', '.heic', '.heif']
     },
     multiple: false
   });

@@ -114,7 +114,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
       }
     },
     accept: {
-      'image/*': ['.jpg', '.jpeg', '.png', '.webp']
+      'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif']
     },
     multiple: false
   });

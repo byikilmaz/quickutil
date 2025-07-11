@@ -257,6 +257,20 @@ export async function compressImageAdvanced(
   file: File,
   options: CompressOptions
 ): Promise<ConversionResult> {
+  
+  // NEW: Handle HEIC format first
+  let processedFile = file;
+  if (isHEICFormat(file)) {
+    try {
+      console.log('📱 HEIC format detected, converting to JPEG first...');
+      processedFile = await convertHEICToJPEG(file);
+      console.log('✅ HEIC converted to JPEG successfully');
+    } catch (error) {
+      console.error('❌ HEIC conversion failed:', error);
+      throw new Error(`HEIC format işlenemedi: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+    }
+  }
+  
   return new Promise((resolve, reject) => {
     const img = new Image();
     const canvas = document.createElement('canvas');
@@ -276,8 +290,11 @@ export async function compressImageAdvanced(
           isMobile,
           devicePixelRatio,
           originalSize: file.size,
+          processedSize: processedFile.size,
+          originalFormat: file.type,
+          processedFormat: processedFile.type,
           originalDimensions: { width: img.width, height: img.height },
-          inputFormat: file.type
+          isHEIC: isHEICFormat(file)
         });
 
         let { width, height } = img;
@@ -324,10 +341,10 @@ export async function compressImageAdvanced(
         ctx.drawImage(img, 0, 0, width, height);
 
         // Determine output format with mobile optimization
-        let outputFormat = options.format || getImageFormat(file.type);
+        let outputFormat = options.format || getImageFormat(processedFile.type);
         
-        // Force JPEG for mobile if PNG is too large
-        if (isMobile && file.type === 'image/png' && file.size > 500 * 1024) {
+        // Force JPEG for mobile if PNG is too large or if converted from HEIC
+        if (isMobile && (processedFile.type === 'image/png' && processedFile.size > 500 * 1024 || isHEICFormat(file))) {
           outputFormat = 'jpeg';
           console.log('📱 Mobile PNG→JPEG conversion for better compression');
         }
@@ -367,7 +384,8 @@ export async function compressImageAdvanced(
               compressionRatio: compressionRatio.toFixed(3),
               finalDimensions: { width, height },
               outputFormat,
-              isMobile
+              isMobile,
+              wasHEIC: isHEICFormat(file)
             });
 
             resolve({
@@ -394,7 +412,8 @@ export async function compressImageAdvanced(
       reject(new Error('Failed to load image'));
     };
 
-    img.src = URL.createObjectURL(file);
+    // Use processed file (converted from HEIC if needed)
+    img.src = URL.createObjectURL(processedFile);
   });
 }
 
@@ -676,9 +695,103 @@ export function validateImageFormat(file: File): boolean {
     'image/jpg',
     'image/webp',
     'image/gif',
-    'image/svg+xml'
+    'image/svg+xml',
+    'image/heic',  // NEW: HEIC support
+    'image/heif'   // NEW: HEIF support
   ];
   return supportedTypes.includes(file.type);
+}
+
+// NEW: HEIC format detection
+export function isHEICFormat(file: File): boolean {
+  return file.type === 'image/heic' || file.type === 'image/heif' || 
+         file.name.toLowerCase().endsWith('.heic') || 
+         file.name.toLowerCase().endsWith('.heif');
+}
+
+// NEW: Convert HEIC to JPEG using File API
+export async function convertHEICToJPEG(file: File): Promise<File> {
+  try {
+    console.log('🔄 Converting HEIC to JPEG:', file.name);
+    
+    // Create a temporary image element to test if browser can handle HEIC
+    const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
+    
+    return new Promise((resolve, reject) => {
+      img.onload = () => {
+        try {
+          console.log('✅ HEIC loaded successfully, converting to JPEG');
+          
+          // Set canvas dimensions to match image
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          
+          // Draw image to canvas
+          ctx.drawImage(img, 0, 0);
+          
+          // Convert to JPEG blob with high quality
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              reject(new Error('HEIC to JPEG conversion failed'));
+              return;
+            }
+            
+            // Create new JPEG file
+            const jpegFile = new File(
+              [blob],
+              file.name.replace(/\.(heic|heif)$/i, '.jpg'),
+              {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              }
+            );
+            
+            console.log('✅ HEIC converted to JPEG:', {
+              originalSize: file.size,
+              newSize: jpegFile.size,
+              originalName: file.name,
+              newName: jpegFile.name
+            });
+            
+            resolve(jpegFile);
+            URL.revokeObjectURL(img.src);
+          }, 'image/jpeg', 0.95); // High quality conversion
+          
+        } catch (error) {
+          console.error('❌ HEIC conversion error:', error);
+          URL.revokeObjectURL(img.src);
+          reject(error);
+        }
+      };
+      
+      img.onerror = () => {
+        console.error('❌ HEIC loading failed - browser may not support HEIC');
+        URL.revokeObjectURL(img.src);
+        
+        // If direct loading fails, suggest server-side conversion
+        reject(new Error('HEIC format not supported by browser. Please use server-side conversion.'));
+      };
+      
+      // Try to load HEIC file
+      img.src = URL.createObjectURL(file);
+      
+      // Timeout after 10 seconds
+      setTimeout(() => {
+        URL.revokeObjectURL(img.src);
+        reject(new Error('HEIC conversion timeout'));
+      }, 10000);
+    });
+    
+  } catch (error) {
+    console.error('❌ HEIC conversion failed:', error);
+    throw error;
+  }
 }
 
 // Helper function to get optimal compression settings

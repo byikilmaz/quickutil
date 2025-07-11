@@ -329,7 +329,7 @@ function ImageCompress({ locale }: { locale: string }) {
                     const selectedFile = Array.isArray(file) ? file[0] : file;
                     handleFileSelect(selectedFile);
                   }}
-                  acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']}
+                  acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/heic', 'image/heif']}
                   maxSize={10 * 1024 * 1024}
                   multiple={false}
                   title=""

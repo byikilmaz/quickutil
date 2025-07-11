@@ -323,7 +323,7 @@ export default function ImageConvert() {
                     const selectedFile = Array.isArray(file) ? file[0] : file;
                     handleFileSelect(selectedFile);
                   }}
-                  acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp']}
+                  acceptedTypes={['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/heic', 'image/heif']}
                   maxSize={50 * 1024 * 1024}
                   multiple={false}
                   title=""

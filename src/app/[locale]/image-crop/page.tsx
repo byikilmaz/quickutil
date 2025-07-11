@@ -308,7 +308,7 @@ export default function ImageCrop() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => handleFileSelect(acceptedFiles),
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif', '.heic', '.heif']
     },
     multiple: false
   });
