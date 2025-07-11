@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { getTranslations } from '@/lib/translations';
+import { isHEICFormat, convertHEICToJPEG } from '@/lib/imageUtils';
 import { 
   compressImageWithServer, 
   checkAPIHealth, 
@@ -138,6 +139,19 @@ function ImageCompress({ locale }: { locale: string }) {
         throw new Error(validation.error);
       }
 
+      // NEW: Handle HEIC format first
+      let processedFile = selectedFile;
+      if (isHEICFormat(selectedFile)) {
+        try {
+          console.log('📱 HEIC format detected in image-compress, converting to JPEG first...');
+          processedFile = await convertHEICToJPEG(selectedFile);
+          console.log('✅ HEIC converted to JPEG successfully for compression');
+        } catch (error) {
+          console.error('❌ HEIC conversion failed in image-compress:', error);
+          throw new Error(`HEIC format işlenemedi: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+        }
+      }
+
       // Check if server API is available
       const serverAvailable = await checkAPIHealth();
       
@@ -151,7 +165,7 @@ function ImageCompress({ locale }: { locale: string }) {
           mode: 'aggressive'
         };
 
-        const serverResult = await compressImageWithServer(selectedFile, serverOptions);
+        const serverResult = await compressImageWithServer(processedFile, serverOptions);
         
         result = {
           originalFile: serverResult.originalFile,
@@ -166,7 +180,7 @@ function ImageCompress({ locale }: { locale: string }) {
         const { compressImageAdvanced, getMobileOptimizedSettings } = await import('@/lib/imageUtils');
         
         // Get mobile-optimized compression settings
-        const optimizedSettings = getMobileOptimizedSettings(selectedFile.size, selectedFile.type);
+        const optimizedSettings = getMobileOptimizedSettings(processedFile.size, processedFile.type);
         
         // Apply user preferences to optimized settings
         const finalSettings = {
@@ -177,10 +191,10 @@ function ImageCompress({ locale }: { locale: string }) {
         
         console.log('🎯 Using mobile-optimized compression:', finalSettings);
         
-        const clientResult = await compressImageAdvanced(selectedFile, finalSettings);
+        const clientResult = await compressImageAdvanced(processedFile, finalSettings);
         
         result = {
-          originalFile: selectedFile,
+          originalFile: processedFile,
           compressedBlob: new Blob([clientResult.file]),
           originalSize: clientResult.originalSize,
           compressedSize: clientResult.newSize,
