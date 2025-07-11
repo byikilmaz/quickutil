@@ -887,12 +887,42 @@ function PDFConvert({ locale }: { locale: string }) {
                 
                 <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
                   {[
-                    { href: '/pdf-compress', icon: '📦', title: 'PDF Sıkıştır', color: 'from-red-500 to-orange-500' },
-                    { href: '/pdf-merge', icon: '📑', title: 'PDF Birleştir', color: 'from-green-500 to-emerald-500' },
-                    { href: '/pdf-split', icon: '✂️', title: 'PDF Böl', color: 'from-blue-500 to-cyan-500' },
-                    { href: '/image-convert', icon: '🖼️', title: 'Resim Dönüştür', color: 'from-purple-500 to-pink-500' },
-                    { href: '/image-compress', icon: '📷', title: 'Resim Sıkıştır', color: 'from-yellow-500 to-orange-500' },
-                    { href: '/image-resize', icon: '📐', title: 'Resim Boyutlandır', color: 'from-indigo-500 to-purple-500' }
+                    { 
+                      href: '/pdf-compress', 
+                      icon: '📦', 
+                      title: locale === 'en' ? 'PDF Compress' : locale === 'es' ? 'Comprimir PDF' : 'PDF Sıkıştır', 
+                      color: 'from-red-500 to-orange-500' 
+                    },
+                    { 
+                      href: '/pdf-merge', 
+                      icon: '📑', 
+                      title: locale === 'en' ? 'PDF Merge' : locale === 'es' ? 'Combinar PDF' : 'PDF Birleştir', 
+                      color: 'from-green-500 to-emerald-500' 
+                    },
+                    { 
+                      href: '/pdf-split', 
+                      icon: '✂️', 
+                      title: locale === 'en' ? 'PDF Split' : locale === 'es' ? 'Dividir PDF' : 'PDF Böl', 
+                      color: 'from-blue-500 to-cyan-500' 
+                    },
+                    { 
+                      href: '/image-convert', 
+                      icon: '🖼️', 
+                      title: locale === 'en' ? 'Convert Image' : locale === 'es' ? 'Convertir Imagen' : 'Resim Dönüştür', 
+                      color: 'from-purple-500 to-pink-500' 
+                    },
+                    { 
+                      href: '/image-compress', 
+                      icon: '📷', 
+                      title: locale === 'en' ? 'Compress Image' : locale === 'es' ? 'Comprimir Imagen' : 'Resim Sıkıştır', 
+                      color: 'from-yellow-500 to-orange-500' 
+                    },
+                    { 
+                      href: '/image-resize', 
+                      icon: '📐', 
+                      title: locale === 'en' ? 'Resize Image' : locale === 'es' ? 'Redimensionar Imagen' : 'Resim Boyutlandır', 
+                      color: 'from-indigo-500 to-purple-500' 
+                    }
                   ].map((tool) => (
                     <Link
                       key={tool.href}
