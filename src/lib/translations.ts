@@ -1622,6 +1622,37 @@ const translations = {
   },
   
   fr: {
+    // Homepage ana key'ler (namespace olmadan)
+    'title': 'QuickUtil',
+    'subtitle': 'Outils PDF et image alimentés par IA. Intelligent. Rapide. Gratuit.',
+    'aiSubtitle': 'L\'IA optimise automatiquement vos fichiers, nous garantissons la meilleure qualité',
+    'startButton': 'Commencer avec l\'IA',
+    'signupButton': 'S\'inscrire',
+    'pdfSection': 'Outils PDF avec IA',
+    'imageSection': 'Outils Image avec IA',
+    'ctaTitle': 'Commencez maintenant avec l\'IA',
+    'ctaDesc': 'Optimisez automatiquement vos fichiers avec nos outils d\'intelligence artificielle.',
+    
+    // Features namespace
+    'features.ai': 'Avec IA',
+    'features.aiDesc': 'Optimisation automatique avec intelligence artificielle',
+    'features.free': 'Gratuit',
+    'features.freeDesc': 'Tous les outils IA entièrement gratuits',
+    'features.secure': 'Sécurisé',
+    'features.secureDesc': 'Protégé par SSL, suppression automatique',
+    'features.smart': 'Analyse Intelligente',
+    'features.smartDesc': 'L\'IA analyse vos fichiers et sélectionne la meilleure configuration',
+    
+    // AI Section namespace
+    'aiSection.title': 'Pourquoi l\'IA est-elle importante ?',
+    'aiSection.subtitle': 'La technologie IA de QuickUtil.app analyse vos fichiers et sélectionne automatiquement les paramètres optimaux',
+    'aiSection.feature1': 'Optimisation Automatique de la Qualité',
+    'aiSection.feature1Desc': 'L\'IA analyse le contenu de votre fichier et sélectionne les meilleurs paramètres de compression',
+    'aiSection.feature2': 'Conversion Intelligente de Format',
+    'aiSection.feature2Desc': 'Recommande les meilleures options de format et de qualité selon le type de fichier',
+    'aiSection.feature3': 'Traitement Rapide',
+    'aiSection.feature3Desc': '75% plus rapide grâce aux algorithmes IA',
+    
     // Homepage namespace translations
     'homepage.title': 'QuickUtil',
     'homepage.subtitle': 'Outils PDF et image alimentés par IA. Intelligent. Rapide. Gratuit.',
@@ -1683,6 +1714,21 @@ const translations = {
     'footer.cookies': 'Politique de Cookies',
     'footer.copyright': 'QuickUtil.app - Tous droits réservés.',
     'footer.country': '🇫🇷 Depuis la France',
+    'footer.aiTagline': 'Outils de traitement de fichiers alimentés par IA. Algorithmes intelligents, traitement rapide, résultats sécurisés.',
+    'footer.aiTools': 'Outils IA',
+    'footer.aiPdfCompress': 'IA Compression PDF',
+    'footer.aiImageCompress': 'IA Compression Image',
+    'footer.aiBatchProcessing': 'IA Traitement par Lots',
+    'footer.aiBlog': 'IA Blog',
+    'footer.story': 'Notre Histoire',
+    'footer.team': 'Équipe',
+    'footer.aiSupport': 'Support IA',
+    'footer.aiSecure': 'IA Sécurisé',
+    'footer.aiProcessing': 'IA Traitement',
+    'footer.poweredBy': 'Alimenté par',
+    'footer.aboutUrl': 'a-propos',
+    'footer.privacyUrl': 'confidentialite',
+    'footer.cookiesUrl': 'cookies',
     
     // AUTH MODAL TRANSLATIONS
     'auth.welcomeTitle': 'Bienvenue de Retour',
@@ -1713,6 +1759,7 @@ const translations = {
     'tools.imageRotateDesc': 'Nivellement automatique et correction de perspective',
     'tools.imageFormatDesc': 'Recommandation du format et qualité les plus adaptés',
     'tools.imageFiltersDesc': 'Effets automatiques avec intelligence artificielle',
+    'tools.batchProcessing': 'Traitement par Lots IA',
     'tools.batchProcessingDesc': 'Traitement de multiples fichiers avec configuration automatique',
     
     // PDF COMPRESS TRANSLATIONS
