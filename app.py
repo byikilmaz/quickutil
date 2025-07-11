@@ -16,6 +16,12 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import threading
 import time
+import pillow_heif  # NEW: HEIC support
+from PIL import Image # NEW: Pillow for HEIC conversion
+import io # NEW: BytesIO for HEIC conversion
+
+# NEW: Register HEIF opener with Pillow
+pillow_heif.register_heif_opener()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,6 +35,7 @@ UPLOAD_FOLDER = '/tmp/uploads'
 COMPRESSED_FOLDER = '/tmp/compressed'
 MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size (Render.com free tier limit)
 CLEANUP_INTERVAL = 3600  # 1 hour cleanup interval
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'tiff', 'heic', 'heif'}  # NEW: HEIC/HEIF support
 
 # Ensure directories exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -410,6 +417,70 @@ def download_file(file_id):
     except Exception as e:
         logger.error(f"❌ Download error: {str(e)}")
         return jsonify({'error': f'Download failed: {str(e)}'}), 500
+
+@app.route('/convert-heic', methods=['POST'])
+def convert_heic():
+    """
+    Convert HEIC format to JPEG using Pillow-HEIF
+    Fallback for client-side HEIC conversion failures
+    """
+    try:
+        logger.info("HEIC conversion request received")
+        
+        # Check if file is present
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        # Validate file extension
+        if not file.filename.lower().endswith(('.heic', '.heif')):
+            return jsonify({'error': 'File must be HEIC or HEIF format'}), 400
+        
+        logger.info(f"Processing HEIC file: {file.filename}")
+        
+        # Read and convert HEIC to JPEG
+        try:
+            # Open HEIC file with Pillow
+            heic_image = Image.open(file.stream)
+            logger.info(f"HEIC image loaded: {heic_image.size} pixels, mode: {heic_image.mode}")
+            
+            # Convert to RGB if needed
+            if heic_image.mode != 'RGB':
+                heic_image = heic_image.convert('RGB')
+                logger.info("Converted image to RGB mode")
+            
+            # Save as JPEG to memory
+            output = io.BytesIO()
+            heic_image.save(output, format='JPEG', quality=95, optimize=True)
+            output.seek(0)
+            
+            # Generate new filename
+            original_name = os.path.splitext(file.filename)[0]
+            new_filename = f"{original_name}_converted.jpg"
+            
+            logger.info(f"HEIC conversion successful: {new_filename}")
+            
+            return send_file(
+                output,
+                mimetype='image/jpeg',
+                as_attachment=True,
+                download_name=new_filename
+            )
+            
+        except Exception as conversion_error:
+            logger.error(f"HEIC conversion failed: {str(conversion_error)}")
+            return jsonify({
+                'error': 'HEIC conversion failed',
+                'details': str(conversion_error)
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"HEIC conversion endpoint error: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.errorhandler(413)
 def file_too_large(e):

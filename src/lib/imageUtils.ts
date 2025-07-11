@@ -709,61 +709,115 @@ export function isHEICFormat(file: File): boolean {
          file.name.toLowerCase().endsWith('.heif');
 }
 
-// NEW: Convert HEIC to JPEG using heic2any library
+// NEW: Convert HEIC to JPEG using heic2any library with server-side fallback
 export async function convertHEICToJPEG(file: File): Promise<File> {
   try {
     console.log('🔄 Converting HEIC to JPEG with heic2any library');
     console.log('📁 Input file:', file.name, 'Size:', formatFileSize(file.size), 'Type:', file.type);
     
-    // Dynamic import to avoid SSR issues
-    const heic2any = (await import('heic2any')).default;
-    console.log('📦 heic2any library loaded successfully');
-    
-    // Convert HEIC to JPEG blob
-    console.log('🚀 Starting HEIC conversion...');
-    const result = await heic2any({
-      blob: file,
-      toType: 'image/jpeg',
-      quality: 0.95
-    });
-    
-    console.log('✅ HEIC conversion completed');
-    console.log('📊 Conversion result type:', typeof result);
-    
-    // Handle result (can be Blob or Blob array)
-    let jpegBlob: Blob;
-    if (Array.isArray(result)) {
-      console.log('📦 Result is array with', result.length, 'items');
-      jpegBlob = result[0];
-    } else {
-      console.log('📦 Result is single blob');
-      jpegBlob = result;
+    // Try client-side conversion first
+    try {
+      // Dynamic import to avoid SSR issues
+      const heic2any = (await import('heic2any')).default;
+      console.log('📦 heic2any library loaded successfully');
+      
+      // Convert HEIC to JPEG blob
+      console.log('🚀 Starting HEIC conversion...');
+      const result = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.95
+      });
+      
+      console.log('✅ HEIC conversion completed');
+      console.log('📊 Conversion result type:', typeof result);
+      
+      // Handle different result types
+      let convertedBlob: Blob;
+      if (Array.isArray(result)) {
+        convertedBlob = result[0] as Blob;
+      } else {
+        convertedBlob = result as Blob;
+      }
+      
+      // Create new file with converted blob
+      const convertedFile = new File(
+        [convertedBlob],
+        file.name.replace(/\.(heic|heif)$/i, '.jpg'),
+        {
+          type: 'image/jpeg',
+          lastModified: Date.now()
+        }
+      );
+      
+      console.log('📄 Converted file created:', convertedFile.name, 'Size:', formatFileSize(convertedFile.size));
+      return convertedFile;
+      
+    } catch (clientError) {
+      console.warn('❌ Client-side HEIC conversion failed, trying server-side fallback');
+      console.log('🔍 Client error details:', clientError);
+      
+      // Try server-side conversion as fallback
+      return await convertHEICToJPEGServerSide(file);
     }
     
-    console.log('📦 Final JPEG blob size:', formatFileSize(jpegBlob.size));
-    
-    // Create new JPEG file
-    const jpegFileName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
-    const jpegFile = new File([jpegBlob], jpegFileName, {
-      type: 'image/jpeg',
-      lastModified: file.lastModified
-    });
-    
-    console.log('✅ HEIC successfully converted to JPEG');
-    console.log('📊 Size change:', formatFileSize(file.size), '→', formatFileSize(jpegFile.size));
-    console.log('📄 Name change:', file.name, '→', jpegFile.name);
-    
-    return jpegFile;
-    
   } catch (error) {
-    console.error('❌ HEIC conversion failed with heic2any:', error);
-    console.error('🔍 Error details:', {
+    console.error('❌ HEIC conversion failed completely:', error);
+    console.log('🔍 Error details:', {
       name: error instanceof Error ? error.name : 'Unknown',
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined
     });
-    
     throw new Error(`HEIC dönüştürme başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+  }
+}
+
+// NEW: Server-side HEIC conversion fallback
+async function convertHEICToJPEGServerSide(file: File): Promise<File> {
+  try {
+    console.log('🌐 Starting server-side HEIC conversion...');
+    
+    // Create form data for server upload
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // Get server URL from environment or use default
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://quickutil-server.onrender.com';
+    const convertEndpoint = `${serverUrl}/convert-heic`;
+    
+    console.log('📡 Sending HEIC file to server:', convertEndpoint);
+    
+    const response = await fetch(convertEndpoint, {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
+    }
+    
+    // Get converted JPEG blob
+    const convertedBlob = await response.blob();
+    
+    // Create new file with converted blob
+    const convertedFile = new File(
+      [convertedBlob],
+      file.name.replace(/\.(heic|heif)$/i, '.jpg'),
+      {
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      }
+    );
+    
+    console.log('✅ Server-side HEIC conversion successful');
+    console.log('📄 Converted file:', convertedFile.name, 'Size:', formatFileSize(convertedFile.size));
+    
+    return convertedFile;
+    
+  } catch (error) {
+    console.error('❌ Server-side HEIC conversion failed:', error);
+    throw new Error(`Server-side HEIC dönüştürme başarısız: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
   }
 }
 
