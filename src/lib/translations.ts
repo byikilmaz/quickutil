@@ -1,4 +1,72 @@
 const translations = {
+  es: {
+    // Homepage - Ana sayfa
+    'homepage.title': 'QuickUtil',
+    'homepage.subtitle': 'Herramientas PDF e imagen con IA. Inteligente. Rápido. Gratis.',
+    'homepage.aiSubtitle': 'La IA optimiza automáticamente tus archivos, garantizamos la mejor calidad',
+    'homepage.startButton': 'Empezar con IA',
+    'homepage.signupButton': 'Registrarse',
+    
+    // Homepage AI Section
+    'homepage.aiSection.title': '¿Por qué es importante la IA?',
+    'homepage.aiSection.subtitle': 'La tecnología IA de QuickUtil.app analiza tus archivos y selecciona automáticamente la configuración óptima',
+    'homepage.aiSection.feature1': 'Optimización Automática de Calidad',
+    'homepage.aiSection.feature1Desc': 'La IA analiza el contenido de tu archivo y selecciona la mejor configuración de compresión',
+    'homepage.aiSection.feature2': 'Conversión Inteligente de Formato',
+    'homepage.aiSection.feature2Desc': 'Recomienda las mejores opciones de formato y calidad según el tipo de archivo',
+    'homepage.aiSection.feature3': 'Procesamiento Rápido',
+    'homepage.aiSection.feature3Desc': '75% más rápido gracias a algoritmos con IA',
+    
+    // Homepage Features
+    'homepage.features.ai': 'Con IA',
+    'homepage.features.aiDesc': 'Optimización automática con inteligencia artificial',
+    'homepage.features.free': 'Gratis',
+    'homepage.features.freeDesc': 'Todas las herramientas IA completamente gratis',
+    'homepage.features.secure': 'Seguro',
+    'homepage.features.secureDesc': 'Protegido con SSL, eliminación automática',
+    'homepage.features.smart': 'Análisis Inteligente',
+    'homepage.features.smartDesc': 'La IA analiza tus archivos y selecciona la mejor configuración',
+    
+    // Homepage Sections
+    'homepage.pdfSection': 'Herramientas PDF con IA',
+    'homepage.imageSection': 'Herramientas de Imagen con IA',
+    
+    // Homepage CTA
+    'homepage.ctaTitle': 'Empieza ahora con IA',
+    'homepage.ctaDesc': 'Optimiza automáticamente tus archivos con nuestras herramientas de inteligencia artificial.',
+    
+    // TOOLS METINLERI - ESPAÑOL
+    'tools.pdfCompress': 'IA Comprimir PDF',
+    'tools.pdfCompressDesc': 'Equilibrio óptimo de calidad y tamaño con IA',
+    'tools.pdfConvert': 'IA Convertir PDF',
+    'tools.pdfConvertDesc': 'Selección inteligente de formato y optimización de calidad',
+    'tools.pdfEsign': 'IA E-Firma',
+    'tools.pdfEsignDesc': 'Posición automática de firma y edición',
+    'tools.imageCompress': 'IA Comprimir Imagen',
+    'tools.imageCompressDesc': 'Optimización inteligente de imágenes con inteligencia artificial',
+    'tools.imageResize': 'IA Redimensionar Imagen',
+    'tools.imageResizeDesc': 'Protección automática de proporción y ajuste de calidad',
+    'tools.imageCrop': 'IA Recortar Imagen',
+    'tools.imageCropDesc': 'Recorte automático con reconocimiento inteligente de objetos',
+    'tools.imageRotate': 'IA Rotar Imagen',
+    'tools.imageRotateDesc': 'Nivelación automática y corrección de perspectiva',
+    'tools.imageFormat': 'IA Convertir Formato de Imagen',
+    'tools.imageFormatDesc': 'Recomendación de formato y calidad más adecuados',
+    'tools.imageFilters': 'IA Filtros de Imagen',
+    'tools.imageFiltersDesc': 'Efectos automáticos con inteligencia artificial',
+    'tools.batchProcessing': 'IA Procesamiento por Lotes',
+    'tools.batchProcessingDesc': 'Procesamiento de múltiples archivos con configuración automática',
+    
+    // Navigation & Common - ESPAÑOL
+    'navigation.pdfTools': 'Herramientas PDF',
+    'navigation.imageTools': 'Herramientas de Imagen',
+    'navigation.batchProcessing': 'Procesamiento por Lotes',
+    'navigation.blog': 'Blog',
+    'navigation.login': 'Iniciar Sesión',
+    'navigation.logout': 'Cerrar Sesión',
+    'navigation.admin': 'Admin',
+    'profile.title': 'Perfil',
+  },
   tr: {
     // Ana sayfa namespace düzeltmeleri
     'homepage.title': 'QuickUtil',
