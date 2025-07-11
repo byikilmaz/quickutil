@@ -721,13 +721,37 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
       const heic2any = (await import('heic2any')).default;
       console.log('📦 heic2any library loaded successfully');
       
-      // Convert HEIC to JPEG blob
-      console.log('🚀 Starting HEIC conversion...');
-      const result = await heic2any({
-        blob: file,
-        toType: 'image/jpeg',
-        quality: 0.9 // Slightly lower quality for compatibility
-      });
+      // Convert HEIC to JPEG blob with multiple quality attempts
+      console.log('🚀 Starting HEIC conversion with progressive quality...');
+      
+      // Try different quality levels for better compatibility
+      const qualityLevels = [0.8, 0.9, 0.7, 0.6, 0.5];
+      let conversionError: any = null;
+      let result: any = null;
+      
+      for (const quality of qualityLevels) {
+        try {
+          console.log(`🔄 Trying HEIC conversion with quality: ${quality}`);
+          result = await heic2any({
+            blob: file,
+            toType: 'image/jpeg',
+            quality: quality
+          });
+          
+          console.log(`✅ HEIC conversion successful with quality: ${quality}`);
+          break; // Success - exit the loop
+          
+        } catch (attemptError) {
+          console.log(`❌ Quality ${quality} failed:`, attemptError);
+          conversionError = attemptError;
+          continue;
+        }
+      }
+      
+      // If all quality levels failed, throw the last error
+      if (!result) {
+        throw conversionError || new Error('All quality levels failed');
+      }
       
       console.log('✅ HEIC conversion completed');
       console.log('📊 Conversion result type:', typeof result);
@@ -803,7 +827,7 @@ async function convertHEICToJPEGServerSide(file: File): Promise<File> {
     formData.append('file', file);
     
     // Get server URL from environment or use default
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://quickutil-server.onrender.com';
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://quickutil-pdf-api.onrender.com';
     const convertEndpoint = `${serverUrl}/convert-heic`;
     
     console.log('📡 Sending HEIC file to server:', convertEndpoint);
