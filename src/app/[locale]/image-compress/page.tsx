@@ -407,7 +407,7 @@ function ImageCompress({ locale }: { locale: string }) {
       <div className="relative z-10">
         
         {/* STEP 1: UPLOAD */}
-        <div ref={uploadRef} className={`py-6 md:py-12 transition-all duration-500 ${
+        <div ref={uploadRef} className={`py-4 md:py-8 transition-all duration-500 ${
           currentStep === 'upload' ? 'opacity-100' : 'opacity-50 pointer-events-none'
         }`}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -427,11 +427,11 @@ function ImageCompress({ locale }: { locale: string }) {
             </div>
 
             {/* Enhanced Title */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent mb-3">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent mb-2">
 {locale === 'en' ? '🖼️ Image Compression' : '🖼️ Resim Sıkıştırma'}
               </h1>
-              <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-gray-700 max-w-2xl mx-auto">
 {locale === 'en' ? 'Compress your images while preserving quality with AI-powered technology' : 'Yapay zeka destekli teknoloji ile resimlerinizi kalitesini koruyarak sıkıştırın'}
               </p>
             </div>
@@ -440,7 +440,7 @@ function ImageCompress({ locale }: { locale: string }) {
             <div className="max-w-md mx-auto text-center">
               <div className="relative group cursor-pointer">
                 {/* Main Upload Button */}
-                <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-2xl px-8 py-6 text-lg font-bold transition-all duration-500 shadow-xl hover:shadow-purple-500/40 flex flex-col items-center justify-center transform hover:scale-105 group-hover:rotate-1">
+                <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-2xl px-6 py-4 text-lg font-bold transition-all duration-500 shadow-xl hover:shadow-purple-500/40 flex flex-col items-center justify-center transform hover:scale-105 group-hover:rotate-1">
                   
                   {/* Animated Upload Icon */}
                   <div className="relative mb-3">
@@ -497,39 +497,39 @@ function ImageCompress({ locale }: { locale: string }) {
             </div>
 
             {/* Enhanced Trust Indicators */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mt-6">
               <div className="text-center group">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <CheckCircleIcon className="h-6 w-6 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <CheckCircleIcon className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">
+                <h3 className="text-sm font-bold text-gray-800 mb-1">
                   {locale === 'en' ? '90% Smaller' : '%90 Daha Küçük'}
                 </h3>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 text-xs leading-tight">
                   {locale === 'en' ? 'Maximum compression while preserving quality with AI technology' : 'Yapay zeka teknolojisi ile kaliteyi koruyarak maksimum sıkıştırma'}
                 </p>
               </div>
               
               <div className="text-center group">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <SparklesIcon className="h-6 w-6 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <SparklesIcon className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">
+                <h3 className="text-sm font-bold text-gray-800 mb-1">
                   {locale === 'en' ? 'AI-Powered' : 'AI Destekli'}
                 </h3>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 text-xs leading-tight">
                   {locale === 'en' ? 'Smart algorithms find optimal settings for each image' : 'Akıllı algoritmalar ile her resim için en optimal ayarları bulur'}
                 </p>
               </div>
               
               <div className="text-center group">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <PhotoIcon className="h-6 w-6 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <PhotoIcon className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">
+                <h3 className="text-sm font-bold text-gray-800 mb-1">
                   {locale === 'en' ? 'Quality Preserved' : 'Kalite Korunur'}
                 </h3>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 text-xs leading-tight">
                   {locale === 'en' ? 'Reduces file size while maintaining visual quality at the highest level' : 'Görsel kaliteyi en üst seviyede tutarak dosya boyutunu azaltır'}
                 </p>
               </div>
@@ -985,7 +985,7 @@ function ImageCompress({ locale }: { locale: string }) {
         </div>
 
         {/* STEP 5: RESULT */}
-        <div ref={resultRef} className={`py-8 md:py-12 transition-all duration-500 ${
+        <div ref={resultRef} className={`py-4 md:py-8 transition-all duration-500 ${
           currentStep === 'result' ? 'opacity-100' : 'opacity-50 pointer-events-none'
         }`}>
           {compressionResult && (
@@ -1002,22 +1002,22 @@ function ImageCompress({ locale }: { locale: string }) {
               </div>
 
               {/* Success Header */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-6">
                 {/* Success Animation */}
-                <div className="relative w-24 h-24 mx-auto mb-4">
+                <div className="relative w-20 h-20 mx-auto mb-3">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center animate-bounce">
-                    <CheckCircleIcon className="h-12 w-12 text-white" />
+                    <CheckCircleIcon className="h-10 w-10 text-white" />
                   </div>
                   <div className="absolute inset-0 border-4 border-green-300 rounded-full animate-ping opacity-40"></div>
                   <div className="absolute -inset-2 border-2 border-green-200 rounded-full animate-pulse opacity-30"></div>
                 </div>
                 
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-3">
+                <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-3">
 {locale === 'en' ? '✅ Success!' : '✅ İşlem Başarılı!'}
                 </h2>
                 
                 {/* Compression Stats */}
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 mb-8">
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4 mb-6">
                   <div className="flex items-center justify-center mb-4">
                     <div className="text-6xl font-bold text-green-600">
                       {Math.round(compressionResult.compressionRatio)}%
@@ -1033,15 +1033,15 @@ function ImageCompress({ locale }: { locale: string }) {
               </div>
 
               {/* Comparison */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+                  <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center">
 {locale === 'en' ? '📤 Original Image' : '📤 Orijinal Resim'}
                   </h3>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Original Image Preview */}
-                    <div className="bg-gray-50 rounded-xl p-4 text-center">
-                      <div className="w-full h-32 flex items-center justify-center">
+                    <div className="bg-gray-50 rounded-xl p-3 text-center">
+                      <div className="w-full h-24 flex items-center justify-center">
                         <img
                           src={previewUrl || ''}
                           alt="Original"
@@ -1059,14 +1059,14 @@ function ImageCompress({ locale }: { locale: string }) {
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+                  <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center">
 {locale === 'en' ? '📥 Compressed Image' : '📥 Sıkıştırılmış Resim'}
                   </h3>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Compressed Image Preview */}
-                    <div className="bg-gray-50 rounded-xl p-4 text-center">
-                      <div className="w-full h-32 flex items-center justify-center">
+                    <div className="bg-gray-50 rounded-xl p-3 text-center">
+                      <div className="w-full h-24 flex items-center justify-center">
                         <img
                           src={compressionResult.downloadUrl}
                           alt="Compressed"
@@ -1086,7 +1086,7 @@ function ImageCompress({ locale }: { locale: string }) {
               </div>
 
               {/* Download Button */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-6">
                 <a
                   href={compressionResult.downloadUrl}
                   download={`compressed_${compressionResult.originalFile?.name || 'image'}`}
