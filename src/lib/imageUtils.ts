@@ -757,6 +757,14 @@ export async function convertHEICToJPEG(file: File): Promise<File> {
       console.warn('❌ Client-side HEIC conversion failed, trying server-side fallback');
       console.log('🔍 Client error details:', clientError);
       
+      // Check if it's a common heic2any error
+      const errorMessage = clientError instanceof Error ? clientError.message : String(clientError);
+      if (errorMessage.includes('Could not parse HEIF file') || 
+          errorMessage.includes('format not supported') ||
+          errorMessage.includes('ERR_LIBHEIF')) {
+        console.log('🔧 heic2any library compatibility issue detected, using server fallback');
+      }
+      
       // Try server-side conversion as fallback
       return await convertHEICToJPEGServerSide(file);
     }
