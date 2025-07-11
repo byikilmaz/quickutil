@@ -418,12 +418,20 @@ def download_file(file_id):
         logger.error(f"❌ Download error: {str(e)}")
         return jsonify({'error': f'Download failed: {str(e)}'}), 500
 
-@app.route('/convert-heic', methods=['POST'])
+@app.route('/convert-heic', methods=['POST', 'OPTIONS'])
 def convert_heic():
     """
     Convert HEIC format to JPEG using Pillow-HEIF
     Fallback for client-side HEIC conversion failures
     """
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'OK'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+    
     try:
         logger.info("HEIC conversion request received")
         
@@ -464,12 +472,15 @@ def convert_heic():
             
             logger.info(f"HEIC conversion successful: {new_filename}")
             
-            return send_file(
+            response = send_file(
                 output,
                 mimetype='image/jpeg',
                 as_attachment=True,
                 download_name=new_filename
             )
+            # Add CORS headers
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
             
         except Exception as conversion_error:
             logger.error(f"HEIC conversion failed: {str(conversion_error)}")
