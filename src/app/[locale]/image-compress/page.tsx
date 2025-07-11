@@ -48,7 +48,7 @@ function ImageCompress({ locale }: { locale: string }) {
   };
   
   // Component state - Step-based like PDF convert
-  const [currentStep, setCurrentStep] = useState<'upload' | 'configure' | 'processing' | 'result'>('upload');
+  const [currentStep, setCurrentStep] = useState<'upload' | 'file-loading' | 'configure' | 'processing' | 'result'>('upload');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // NEW: For HEIC preview
   const [quality, setQuality] = useState<number>(0.8);
@@ -110,6 +110,9 @@ function ImageCompress({ locale }: { locale: string }) {
       setError(null);
       setSelectedFile(file);
       
+      // Move to file-loading step immediately
+      setCurrentStep('file-loading');
+      
       // 🎯 AUTO FORMAT SELECTION: Detect input format and set as default
       const fileExtension = file.name.split('.').pop()?.toLowerCase();
       let autoFormat: 'jpeg' | 'png' | 'webp' | 'heic' = 'jpeg';
@@ -135,7 +138,7 @@ function ImageCompress({ locale }: { locale: string }) {
       setFormat(autoFormat);
       console.log(`🎯 Auto format selection: ${file.name} (${file.type}) -> ${autoFormat}`);
       
-      // Handle HEIC format for preview
+      // Handle HEIC format for preview (with loading feedback)
       if (isHEICFormat(file)) {
         console.log('🖼️ HEIC detected, converting for preview...');
         setPreviewUrl(null);
@@ -148,6 +151,8 @@ function ImageCompress({ locale }: { locale: string }) {
         } catch (conversionError) {
           console.error('❌ HEIC preview conversion failed:', conversionError);
           setError('HEIC dosyası önizlemesi oluşturulamadı');
+          setCurrentStep('upload'); // Go back to upload on error
+          return;
         }
       } else {
         // Regular image preview
@@ -155,7 +160,7 @@ function ImageCompress({ locale }: { locale: string }) {
         setPreviewUrl(previewUrl);
       }
       
-      // Move to configure step
+      // Move to configure step after processing is complete
       setCurrentStep('configure');
       
       // Smooth scroll to configure section
@@ -169,6 +174,7 @@ function ImageCompress({ locale }: { locale: string }) {
     } catch (error) {
       console.error('File selection error:', error);
       setError('Dosya seçilirken hata oluştu');
+      setCurrentStep('upload'); // Go back to upload on error
     }
   };
 
@@ -339,6 +345,7 @@ function ImageCompress({ locale }: { locale: string }) {
     setIsProcessing(false);
     setProcessingProgress(0);
     setError(null);
+    setHeicNotification(null); // Reset HEIC notification
     setQuality(0.8);
     setFormat('jpeg');
   };
@@ -522,6 +529,79 @@ function ImageCompress({ locale }: { locale: string }) {
               <p className="text-blue-600 text-sm">
                 🚀 HEIC direkt sıkıştırma özelliği çok yakında aktif olacak!
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* FILE LOADING STEP */}
+        {currentStep === 'file-loading' && (
+          <div className="py-16 transition-all duration-500">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center">
+                {/* Enhanced Loading Animation */}
+                <div className="relative mx-auto mb-8 w-32 h-32">
+                  {/* Multiple rotating rings */}
+                  <div className="absolute inset-0 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
+                  <div className="absolute inset-2 border-4 border-transparent border-t-purple-500 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
+                  <div className="absolute inset-4 border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDuration: '1s', animationDirection: 'reverse' }}></div>
+                  
+                  {/* Center icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+                      <PhotoIcon className="h-8 w-8 text-white animate-pulse" />
+                    </div>
+                  </div>
+                  
+                  {/* Floating sparkles */}
+                  <div className="absolute top-2 right-2 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
+                  <div className="absolute bottom-2 left-2 w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                  <div className="absolute top-1/2 left-0 w-2 h-2 bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
+                </div>
+
+                {/* Loading Text */}
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                    📂 Dosya İşleniyor...
+                  </h2>
+                  <p className="text-lg text-gray-700 mb-2">
+                    {selectedFile && isHEICFormat(selectedFile) 
+                      ? '📱 HEIC dosyası dönüştürülüyor...' 
+                      : '🖼️ Resim önizlemesi hazırlanıyor...'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Bu işlem birkaç saniye sürebilir
+                  </p>
+                </div>
+
+                {/* File Info */}
+                {selectedFile && (
+                  <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-purple-200 p-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                        <PhotoIcon className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="font-semibold text-gray-900 truncate">{selectedFile.name}</p>
+                        <p className="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Progress Dots */}
+                <div className="flex justify-center space-x-2 mt-8">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-3 h-3 bg-purple-500 rounded-full animate-bounce"
+                      style={{ 
+                        animationDelay: `${i * 0.2}s`,
+                        animationDuration: '1s'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
