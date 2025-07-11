@@ -127,7 +127,11 @@ function ImageCompress({ locale }: { locale: string }) {
         console.log('✅ HEIC → HEIC (native HEIC compression active)');
         
         // Show user notification about HEIC format
-        setHeicNotification('📱 HEIC dosyası algılandı! Orijinal HEIC formatında sıkıştırılacak.');
+        setHeicNotification(
+          locale === 'en' 
+            ? '📱 HEIC file detected! It will be compressed in original HEIC format.' 
+            : '📱 HEIC dosyası algılandı! Orijinal HEIC formatında sıkıştırılacak.'
+        );
         setTimeout(() => {
           setHeicNotification(null);
         }, 5000);
@@ -150,7 +154,11 @@ function ImageCompress({ locale }: { locale: string }) {
           console.log('✅ HEIC preview generated successfully');
         } catch (conversionError) {
           console.error('❌ HEIC preview conversion failed:', conversionError);
-          setError('HEIC dosyası önizlemesi oluşturulamadı');
+          setError(
+            locale === 'en' 
+              ? 'Could not create HEIC file preview' 
+              : 'HEIC dosyası önizlemesi oluşturulamadı'
+          );
           setCurrentStep('upload'); // Go back to upload on error
           return;
         }
@@ -173,7 +181,11 @@ function ImageCompress({ locale }: { locale: string }) {
       
     } catch (error) {
       console.error('File selection error:', error);
-      setError('Dosya seçilirken hata oluştu');
+      setError(
+        locale === 'en' 
+          ? 'Error occurred while selecting file' 
+          : 'Dosya seçilirken hata oluştu'
+      );
       setCurrentStep('upload'); // Go back to upload on error
     }
   };
@@ -328,9 +340,15 @@ function ImageCompress({ locale }: { locale: string }) {
       }, 500);
 
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata oluştu';
+      const errorMessage = err instanceof Error ? err.message : (
+        locale === 'en' ? 'Unknown error occurred' : 'Bilinmeyen hata oluştu'
+      );
       console.error('❌ Compression error:', err);
-      setError(`Resim sıkıştırılırken bir hata oluştu: ${errorMessage}`);
+      setError(
+        locale === 'en' 
+          ? `An error occurred while compressing the image: ${errorMessage}`
+          : `Resim sıkıştırılırken bir hata oluştu: ${errorMessage}`
+      );
       setIsProcessing(false);
       setCurrentStep('configure');
     }
@@ -400,21 +418,21 @@ function ImageCompress({ locale }: { locale: string }) {
                 <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                   1
                 </div>
-                📸 Resim Seçimi
+{locale === 'en' ? '📸 Image Selection' : '📸 Resim Seçimi'}
               </div>
               <div className="inline-flex items-center bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">
                 <SparklesIcon className="h-3 w-3 mr-1 text-purple-600 animate-pulse" />
-                ✨ 2M+ Resim Sıkıştırıldı
+{locale === 'en' ? '✨ 2M+ Images Compressed' : '✨ 2M+ Resim Sıkıştırıldı'}
               </div>
             </div>
 
             {/* Enhanced Title */}
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent mb-3">
-                🖼️ Resim Sıkıştırma
+{locale === 'en' ? '🖼️ Image Compression' : '🖼️ Resim Sıkıştırma'}
               </h1>
               <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-                Yapay zeka destekli teknoloji ile resimlerinizi kalitesini koruyarak sıkıştırın
+{locale === 'en' ? 'Compress your images while preserving quality with AI-powered technology' : 'Yapay zeka destekli teknoloji ile resimlerinizi kalitesini koruyarak sıkıştırın'}
               </p>
             </div>
 
@@ -442,10 +460,10 @@ function ImageCompress({ locale }: { locale: string }) {
                   {/* Dynamic Text */}
                   <div className="text-center">
                     <div className="text-lg font-bold mb-2">
-                      📸 Resim Dosyasını Seç
+{locale === 'en' ? '📸 Select Image File' : '📸 Resim Dosyasını Seç'}
                     </div>
                     <div className="text-sm opacity-90">
-                      ✨ Yapay Zeka Destekli Sıkıştırma
+                      {locale === 'en' ? '✨ AI-Powered Compression' : '✨ Yapay Zeka Destekli Sıkıştırma'}
                     </div>
                   </div>
 
@@ -484,24 +502,36 @@ function ImageCompress({ locale }: { locale: string }) {
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <CheckCircleIcon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">%90 Daha Küçük</h3>
-                <p className="text-gray-600 text-xs">Yapay zeka teknolojisi ile kaliteyi koruyarak maksimum sıkıştırma</p>
+                <h3 className="text-base font-bold text-gray-800 mb-1">
+                  {locale === 'en' ? '90% Smaller' : '%90 Daha Küçük'}
+                </h3>
+                <p className="text-gray-600 text-xs">
+                  {locale === 'en' ? 'Maximum compression while preserving quality with AI technology' : 'Yapay zeka teknolojisi ile kaliteyi koruyarak maksimum sıkıştırma'}
+                </p>
               </div>
               
               <div className="text-center group">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <SparklesIcon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">AI Destekli</h3>
-                <p className="text-gray-600 text-xs">Akıllı algoritmalar ile her resim için en optimal ayarları bulur</p>
+                <h3 className="text-base font-bold text-gray-800 mb-1">
+                  {locale === 'en' ? 'AI-Powered' : 'AI Destekli'}
+                </h3>
+                <p className="text-gray-600 text-xs">
+                  {locale === 'en' ? 'Smart algorithms find optimal settings for each image' : 'Akıllı algoritmalar ile her resim için en optimal ayarları bulur'}
+                </p>
               </div>
               
               <div className="text-center group">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <PhotoIcon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">Kalite Korunur</h3>
-                <p className="text-gray-600 text-xs">Görsel kaliteyi en üst seviyede tutarak dosya boyutunu azaltır</p>
+                <h3 className="text-base font-bold text-gray-800 mb-1">
+                  {locale === 'en' ? 'Quality Preserved' : 'Kalite Korunur'}
+                </h3>
+                <p className="text-gray-600 text-xs">
+                  {locale === 'en' ? 'Reduces file size while maintaining visual quality at the highest level' : 'Görsel kaliteyi en üst seviyede tutarak dosya boyutunu azaltır'}
+                </p>
               </div>
             </div>
           </div>
@@ -516,7 +546,7 @@ function ImageCompress({ locale }: { locale: string }) {
                 onClick={() => setError(null)}
                 className="mt-2 text-red-600 hover:text-red-800 text-sm underline"
               >
-                Kapat
+{locale === 'en' ? 'Close' : 'Kapat'}
               </button>
             </div>
           </div>
@@ -533,7 +563,7 @@ function ImageCompress({ locale }: { locale: string }) {
                 <p className="text-blue-800 font-medium">{heicNotification}</p>
               </div>
               <p className="text-blue-600 text-sm">
-                🚀 HEIC direkt sıkıştırma özelliği çok yakında aktif olacak!
+{locale === 'en' ? '🚀 HEIC direct compression feature will be active very soon!' : '🚀 HEIC direkt sıkıştırma özelliği çok yakında aktif olacak!'}
               </p>
             </div>
           </div>
@@ -550,7 +580,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                     2
                   </div>
-                  📤 Resim Yükleniyor...
+{locale === 'en' ? '📤 Uploading Image...' : '📤 Resim Yükleniyor...'}
                 </div>
               </div>
 
@@ -581,15 +611,15 @@ function ImageCompress({ locale }: { locale: string }) {
                 {/* Loading Text */}
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-                    📂 Dosya İşleniyor...
+{locale === 'en' ? '📂 Processing File...' : '📂 Dosya İşleniyor...'}
                   </h2>
                   <p className="text-base text-gray-700 mb-2">
                     {selectedFile && isHEICFormat(selectedFile) 
-                      ? '📱 HEIC dosyası dönüştürülüyor...' 
-                      : '🖼️ Resim önizlemesi hazırlanıyor...'}
+                      ? (locale === 'en' ? '📱 Converting HEIC file...' : '📱 HEIC dosyası dönüştürülüyor...') 
+                      : (locale === 'en' ? '🖼️ Preparing image preview...' : '🖼️ Resim önizlemesi hazırlanıyor...')}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Bu işlem birkaç saniye sürebilir
+{locale === 'en' ? 'This process may take a few seconds' : 'Bu işlem birkaç saniye sürebilir'}
                   </p>
                 </div>
 
@@ -639,14 +669,14 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                     3
                   </div>
-                  ⚙️ Sıkıştırma Ayarları
+                  {locale === 'en' ? '⚙️ Compression Settings' : '⚙️ Sıkıştırma Ayarları'}
                 </div>
               </div>
 
               {/* Header */}
               <div className="text-center mb-8">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                  🎯 Kalite ve Format Seçimi
+{locale === 'en' ? '🎯 Quality and Format Selection' : '🎯 Kalite ve Format Seçimi'}
                 </h1>
               </div>
 
@@ -658,7 +688,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                       <PhotoIcon className="h-5 w-5 mr-2 text-purple-600" />
-                      📸 Önizleme
+{locale === 'en' ? '📸 Preview' : '📸 Önizleme'}
                     </h3>
                     
                     <div className="space-y-4">
@@ -676,7 +706,7 @@ function ImageCompress({ locale }: { locale: string }) {
                             <div className="w-full h-full flex items-center justify-center">
                               <div className="text-gray-400">
                                 <PhotoIcon className="h-16 w-16 mx-auto mb-2" />
-                                <p className="text-sm">Önizleme yükleniyor...</p>
+                                <p className="text-sm">{locale === 'en' ? 'Loading preview...' : 'Önizleme yükleniyor...'}</p>
                               </div>
                             </div>
                           )}
@@ -686,19 +716,19 @@ function ImageCompress({ locale }: { locale: string }) {
                       {/* File Info */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">📄 Dosya:</span>
+                          <span className="text-sm text-gray-600">{locale === 'en' ? '📄 File:' : '📄 Dosya:'}</span>
                           <span className="text-sm font-medium text-gray-900 truncate max-w-32" title={selectedFile.name}>
                             {selectedFile.name}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">📊 Boyut:</span>
+                          <span className="text-sm text-gray-600">{locale === 'en' ? '📊 Size:' : '📊 Boyut:'}</span>
                           <span className="text-sm font-medium text-gray-900">
                             {formatFileSize(selectedFile.size)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">🎨 Format:</span>
+                          <span className="text-sm text-gray-600">{locale === 'en' ? '🎨 Format:' : '🎨 Format:'}</span>
                           <span className="text-sm font-medium text-gray-900 uppercase">
                             {selectedFile.type.split('/')[1]}
                           </span>
@@ -715,14 +745,14 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
                       <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
-                      ⚙️ Sıkıştırma Ayarları
+{locale === 'en' ? '⚙️ Compression Settings' : '⚙️ Sıkıştırma Ayarları'}
                     </h3>
                     
                     <div className="space-y-6">
                       {/* Quality Slider */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">
-                          🎯 Kalite Seviyesi: {Math.round(quality * 100)}%
+{locale === 'en' ? `🎯 Quality Level: ${Math.round(quality * 100)}%` : `🎯 Kalite Seviyesi: ${Math.round(quality * 100)}%`}
                         </label>
                         <input
                           type="range"
@@ -733,17 +763,17 @@ function ImageCompress({ locale }: { locale: string }) {
                           onChange={(e) => setQuality(parseFloat(e.target.value))}
                           className="w-full h-3 bg-gradient-to-r from-red-200 via-yellow-200 to-green-200 rounded-lg appearance-none cursor-pointer"
                         />
-                        <div className="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>Küçük dosya</span>
-                          <span>Dengeli</span>
-                          <span>Yüksek kalite</span>
-                        </div>
+                                                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>{locale === 'en' ? 'Small file' : 'Küçük dosya'}</span>
+                            <span>{locale === 'en' ? 'Balanced' : 'Dengeli'}</span>
+                            <span>{locale === 'en' ? 'High quality' : 'Yüksek kalite'}</span>
+                          </div>
                       </div>
                       
                       {/* Format Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">
-                          📄 Çıktı Formatı
+{locale === 'en' ? '📄 Output Format' : '📄 Çıktı Formatı'}
                         </label>
                         <div className="grid grid-cols-3 gap-3">
                           {(['jpeg', 'png', 'webp'] as const).map((fmt) => (
@@ -758,9 +788,9 @@ function ImageCompress({ locale }: { locale: string }) {
                             >
                               <div className="font-medium text-sm uppercase">{fmt}</div>
                               <div className="text-xs text-gray-500 mt-1">
-                                {fmt === 'jpeg' && 'En küçük'}
-                                {fmt === 'png' && 'Şeffaflık'}
-                                {fmt === 'webp' && 'Modern'}
+                                {fmt === 'jpeg' && (locale === 'en' ? 'Smallest' : 'En küçük')}
+                                {fmt === 'png' && (locale === 'en' ? 'Transparency' : 'Şeffaflık')}
+                                {fmt === 'webp' && (locale === 'en' ? 'Modern' : 'Modern')}
                               </div>
                             </button>
                           ))}
@@ -776,8 +806,12 @@ function ImageCompress({ locale }: { locale: string }) {
                                     <span className="text-white font-bold text-xs">📱</span>
                                   </div>
                                   <div>
-                                    <h4 className="font-medium text-purple-900">HEIC Formatında Kalmalı mı?</h4>
-                                    <p className="text-sm text-purple-700">iPhone/iPad fotoğrafları için önerilen format</p>
+                                    <h4 className="font-medium text-purple-900">
+                                      {locale === 'en' ? 'Keep in HEIC Format?' : 'HEIC Formatında Kalmalı mı?'}
+                                    </h4>
+                                    <p className="text-sm text-purple-700">
+                                      {locale === 'en' ? 'Recommended format for iPhone/iPad photos' : 'iPhone/iPad fotoğrafları için önerilen format'}
+                                    </p>
                                   </div>
                                 </div>
                                 <button
@@ -788,12 +822,16 @@ function ImageCompress({ locale }: { locale: string }) {
                                       : 'bg-white text-purple-700 border border-purple-300 hover:bg-purple-50'
                                   }`}
                                 >
-                                  {format === 'heic' ? '✓ HEIC Seçili' : 'HEIC Kullan'}
+{format === 'heic' 
+                                    ? (locale === 'en' ? '✓ HEIC Selected' : '✓ HEIC Seçili') 
+                                    : (locale === 'en' ? 'Use HEIC' : 'HEIC Kullan')}
                                 </button>
                               </div>
                               <div className="mt-3 text-xs text-purple-600">
-                                💡 HEIC format'ı Apple'ın en verimli sıkıştırma teknolojisidir. 
-                                Aynı kalitede JPEG'den %50 daha küçük dosya boyutu sağlar.
+                                {locale === 'en' 
+                                  ? '💡 HEIC format is Apple\'s most efficient compression technology. It provides 50% smaller file size than JPEG at the same quality.' 
+                                  : '💡 HEIC format\'ı Apple\'ın en verimli sıkıştırma teknolojisidir. Aynı kalitede JPEG\'den %50 daha küçük dosya boyutu sağlar.'
+                                }
                               </div>
                             </div>
                           </div>
@@ -813,14 +851,14 @@ function ImageCompress({ locale }: { locale: string }) {
                       {isProcessing ? (
                         <div className="flex items-center space-x-3">
                           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                          <span>Sıkıştırılıyor...</span>
+                          <span>{locale === 'en' ? 'Compressing...' : 'Sıkıştırılıyor...'}</span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
                           </div>
-                          <span>🚀 Sıkıştırmayı Başlat</span>
+                          <span>{locale === 'en' ? '🚀 Start Compression' : '🚀 Sıkıştırmayı Başlat'}</span>
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <ArrowLeftIcon className="h-5 w-5 text-white rotate-180" />
                           </div>
@@ -847,7 +885,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                     4
                   </div>
-                  🚀 Sıkıştırma İşlemi
+{locale === 'en' ? '🚀 Compression Process' : '🚀 Sıkıştırma İşlemi'}
                 </div>
               </div>
 
@@ -872,17 +910,17 @@ function ImageCompress({ locale }: { locale: string }) {
               {/* Processing Status */}
               <div className="mb-6">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-                  🤖 AI Sıkıştırma İşlemi
+{locale === 'en' ? '🤖 AI Compression Process' : '🤖 AI Sıkıştırma İşlemi'}
                 </h2>
                 <p className="text-gray-700 text-base">
-                  Yapay zeka en optimal ayarları hesaplıyor...
+{locale === 'en' ? 'AI is calculating optimal settings...' : 'Yapay zeka en optimal ayarları hesaplıyor...'}
                 </p>
               </div>
 
               {/* Enhanced Progress Bar */}
               <div className="mb-8">
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>İlerleme</span>
+                  <span>{locale === 'en' ? 'Progress' : 'İlerleme'}</span>
                   <span>{Math.round(processingProgress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
@@ -906,7 +944,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 0 ? '✓' : '1'}
                   </div>
-                  <span className="font-medium">Resim analiz ediliyor</span>
+                  <span className="font-medium">{locale === 'en' ? 'Analyzing image' : 'Resim analiz ediliyor'}</span>
                 </div>
                 
                 <div className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
@@ -959,7 +997,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                     5
                   </div>
-                  🎉 Sıkıştırma Tamamlandı
+{locale === 'en' ? '🎉 Compression Complete' : '🎉 Sıkıştırma Tamamlandı'}
                 </div>
               </div>
 
@@ -975,7 +1013,7 @@ function ImageCompress({ locale }: { locale: string }) {
                 </div>
                 
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-3">
-                  ✅ İşlem Başarılı!
+{locale === 'en' ? '✅ Success!' : '✅ İşlem Başarılı!'}
                 </h2>
                 
                 {/* Compression Stats */}
@@ -986,7 +1024,10 @@ function ImageCompress({ locale }: { locale: string }) {
                     </div>
                   </div>
                   <p className="text-green-800 font-medium text-lg">
-                    📉 Dosya boyutu azaldı: {formatFileSize(compressionResult.originalSize - compressionResult.compressedSize)} tasarruf
+{locale === 'en' 
+                      ? `📉 File size reduced: ${formatFileSize(compressionResult.originalSize - compressionResult.compressedSize)} saved`
+                      : `📉 Dosya boyutu azaldı: ${formatFileSize(compressionResult.originalSize - compressionResult.compressedSize)} tasarruf`
+                    }
                   </p>
                 </div>
               </div>
@@ -995,7 +1036,7 @@ function ImageCompress({ locale }: { locale: string }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                    📤 Orijinal Resim
+{locale === 'en' ? '📤 Original Image' : '📤 Orijinal Resim'}
                   </h3>
                   <div className="space-y-4">
                     {/* Original Image Preview */}
@@ -1052,7 +1093,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   className="inline-flex items-center bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl px-8 py-4 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-green-500/30 transform hover:scale-105"
                 >
                   <CloudArrowUpIcon className="h-6 w-6 mr-3" />
-                  🎉 Sıkıştırılmış Resmi İndir
+{locale === 'en' ? '🎉 Download Compressed Image' : '🎉 Sıkıştırılmış Resmi İndir'}
                 </a>
               </div>
 
@@ -1062,7 +1103,7 @@ function ImageCompress({ locale }: { locale: string }) {
                   onClick={handleReset}
                   className="text-purple-600 hover:text-purple-800 font-medium text-lg underline"
                 >
-                  🔄 Yeni Resim Sıkıştır
+{locale === 'en' ? '🔄 Compress New Image' : '🔄 Yeni Resim Sıkıştır'}
                 </button>
               </div>
             </div>
