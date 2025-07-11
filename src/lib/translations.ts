@@ -646,11 +646,11 @@ const translations = {
     'tools.imageRotate': 'AI Resim Döndür',
     'tools.imageRotateDesc': 'Otomatik düzleme ve perspektif düzeltme',
     'tools.imageFormat': 'AI Resim Format Dönüştür',
-    'tools.imageFormatDesc': 'En uygun format ve kalite önerisi',
+    'tools.imageFormatDesc': 'Recomendación de formato y calidad más adecuados',
     'tools.imageFilters': 'AI Resim Filtreler',
-    'tools.imageFiltersDesc': 'Yapay zeka destekli otomatik efektler',
+    'tools.imageFiltersDesc': 'Efectos automáticos con inteligencia artificial',
     'tools.batchProcessing': 'AI Toplu İşlem',
-    'tools.batchProcessingDesc': 'Çoklu dosya işleme otomatik ayarlarla',
+    'tools.batchProcessingDesc': 'Procesamiento de múltiples archivos con configuración automática',
 
     // PDF COMPRESS SAYFA METINLERI
     'pdfCompress.title': 'AI PDF Sıkıştırma',
@@ -884,7 +884,7 @@ const translations = {
     'imageRotate.upload.title': 'Resim Yükleyin',
     'imageRotate.upload.description': 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin',
     'imageRotate.upload.uploadText': 'Resim Yükleyin',
-    'imageRotate.upload.dropText': 'Dosyayı Bırakın',
+    'imageRotate.upload.dropText': 'Soltar Archivo',
     'imageRotate.upload.dragOrSelect': 'Dosyayı sürükleyip bırakın veya seçin',
     'imageRotate.upload.selectFile': 'Dosya Seçin',
     'imageRotate.upload.fileTypes': 'JPEG, PNG, WebP • Max 50MB',
@@ -1625,13 +1625,55 @@ const translations = {
     // Homepage namespace translations
     'homepage.title': 'QuickUtil',
     'homepage.subtitle': 'Outils PDF et image alimentés par IA. Intelligent. Rapide. Gratuit.',
+    'homepage.aiSubtitle': 'L\'IA optimise automatiquement vos fichiers, nous garantissons la meilleure qualité',
     'homepage.startButton': 'Commencer avec l\'IA',
+    'homepage.signupButton': 'S\'inscrire',
     
-    // Navigation & Header  
+    // Homepage AI Section
+    'homepage.aiSection.title': 'Pourquoi l\'IA est-elle importante ?',
+    'homepage.aiSection.subtitle': 'La technologie IA de QuickUtil.app analyse vos fichiers et sélectionne automatiquement les paramètres optimaux',
+    'homepage.aiSection.feature1': 'Optimisation Automatique de la Qualité',
+    'homepage.aiSection.feature1Desc': 'L\'IA analyse le contenu de votre fichier et sélectionne les meilleurs paramètres de compression',
+    'homepage.aiSection.feature2': 'Conversion Intelligente de Format',
+    'homepage.aiSection.feature2Desc': 'Recommande les meilleures options de format et de qualité selon le type de fichier',
+    'homepage.aiSection.feature3': 'Traitement Rapide',
+    'homepage.aiSection.feature3Desc': '75% plus rapide grâce aux algorithmes IA',
+    
+    // Homepage Features
+    'homepage.features.ai': 'Avec IA',
+    'homepage.features.aiDesc': 'Optimisation automatique avec intelligence artificielle',
+    'homepage.features.free': 'Gratuit',
+    'homepage.features.freeDesc': 'Tous les outils IA entièrement gratuits',
+    'homepage.features.secure': 'Sécurisé',
+    'homepage.features.secureDesc': 'Protégé par SSL, suppression automatique',
+    'homepage.features.smart': 'Analyse Intelligente',
+    'homepage.features.smartDesc': 'L\'IA analyse vos fichiers et sélectionne la meilleure configuration',
+    
+    // Homepage Sections
+    'homepage.pdfSection': 'Outils PDF avec IA',
+    'homepage.imageSection': 'Outils Image avec IA',
+    
+    // Homepage CTA
+    'homepage.ctaTitle': 'Commencez maintenant avec l\'IA',
+    'homepage.ctaDesc': 'Optimisez automatiquement vos fichiers avec nos outils d\'intelligence artificielle.',
+    
     'navigation.pdfTools': 'Outils PDF',
     'navigation.imageTools': 'Outils Image',
+    'navigation.batchProcessing': 'Traitement par lots',
+    'navigation.blog': 'Blog',
     'navigation.login': 'Connexion',
     'navigation.logout': 'Déconnexion',
+    'navigation.admin': 'Admin',
+    'profile.title': 'Profil',
+    
+    // Header texts
+    'header.pdfTools': 'Outils PDF',
+    'header.imageTools': 'Outils Image',
+    'header.blog': 'Blog',
+    'header.login': 'Connexion',
+    'header.logout': 'Déconnexion',
+    'header.profile': 'Profil',
+    'header.admin': 'Admin',
     
     // Footer translations
     'footer.tools': 'Outils',
@@ -1660,6 +1702,18 @@ const translations = {
     'tools.imageResize': 'IA Redimensionnement Image',
     'tools.imageRotate': 'IA Rotation Image',
     'tools.imageFilters': 'IA Filtres Image',
+    
+    // TOOLS DESCRIPTIONS - FRANÇAIS
+    'tools.pdfCompressDesc': 'Équilibre optimal de qualité et taille avec IA',
+    'tools.pdfConvertDesc': 'Sélection intelligente de format et optimisation de qualité',
+    'tools.pdfEsignDesc': 'Position automatique de signature et édition',
+    'tools.imageCompressDesc': 'Optimisation intelligente d\'images avec intelligence artificielle',
+    'tools.imageResizeDesc': 'Protection automatique des proportions et ajustement de qualité',
+    'tools.imageCropDesc': 'Recadrage automatique avec reconnaissance intelligente d\'objets',
+    'tools.imageRotateDesc': 'Nivellement automatique et correction de perspective',
+    'tools.imageFormatDesc': 'Recommandation du format et qualité les plus adaptés',
+    'tools.imageFiltersDesc': 'Effets automatiques avec intelligence artificielle',
+    'tools.batchProcessingDesc': 'Traitement de multiples fichiers avec configuration automatique',
     
     // PDF COMPRESS TRANSLATIONS
     'pdfCompress.title': 'Compression PDF IA',
