@@ -394,9 +394,15 @@ function ImageCompress({ locale }: { locale: string }) {
         }`}>
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            {/* AI Badge */}
+            {/* Step Indicator */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
+              <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-6 py-3 rounded-full text-lg font-bold shadow-lg mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                  1
+                </div>
+                📸 Resim Seçimi
+              </div>
+              <div className="inline-flex items-center bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium">
                 <SparklesIcon className="h-4 w-4 mr-2 text-purple-600 animate-pulse" />
                 ✨ 2M+ Resim Sıkıştırıldı • AI Destekli
               </div>
@@ -533,29 +539,43 @@ function ImageCompress({ locale }: { locale: string }) {
           </div>
         )}
 
-        {/* FILE LOADING STEP */}
+        {/* STEP 2: FILE LOADING */}
         {currentStep === 'file-loading' && (
-          <div className="py-16 transition-all duration-500">
+          <div className="py-16 transition-all duration-500 animate-fade-in">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              
+              {/* Step Indicator */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-200 text-blue-800 px-6 py-3 rounded-full text-lg font-bold shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                    2
+                  </div>
+                  📤 Resim Yükleniyor...
+                </div>
+              </div>
+
               <div className="text-center">
                 {/* Enhanced Loading Animation */}
-                <div className="relative mx-auto mb-8 w-32 h-32">
+                <div className="relative mx-auto mb-8 w-40 h-40">
                   {/* Multiple rotating rings */}
-                  <div className="absolute inset-0 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
-                  <div className="absolute inset-2 border-4 border-transparent border-t-purple-500 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
-                  <div className="absolute inset-4 border-4 border-transparent border-t-pink-500 rounded-full animate-spin" style={{ animationDuration: '1s', animationDirection: 'reverse' }}></div>
+                  <div className="absolute inset-0 border-4 border-purple-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
+                  <div className="absolute inset-2 border-4 border-transparent border-t-purple-500 border-r-purple-500 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
+                  <div className="absolute inset-4 border-4 border-transparent border-t-pink-500 border-r-pink-500 rounded-full animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
+                  <div className="absolute inset-6 border-4 border-transparent border-t-blue-500 rounded-full animate-spin" style={{ animationDuration: '1s' }}></div>
                   
-                  {/* Center icon */}
+                  {/* Center icon with pulsing effect */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                      <PhotoIcon className="h-8 w-8 text-white animate-pulse" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
+                      <PhotoIcon className="h-10 w-10 text-white animate-bounce" />
                     </div>
                   </div>
                   
-                  {/* Floating sparkles */}
-                  <div className="absolute top-2 right-2 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
-                  <div className="absolute bottom-2 left-2 w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                  <div className="absolute top-1/2 left-0 w-2 h-2 bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
+                  {/* Floating sparkles around the circle */}
+                  <div className="absolute top-3 right-6 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+                  <div className="absolute bottom-4 left-4 w-3 h-3 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                  <div className="absolute top-1/2 left-2 w-2 h-2 bg-blue-400 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
+                  <div className="absolute top-6 left-1/2 w-3 h-3 bg-pink-400 rounded-full animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+                  <div className="absolute bottom-6 right-4 w-2 h-2 bg-purple-400 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
                 </div>
 
                 {/* Loading Text */}
@@ -606,17 +626,27 @@ function ImageCompress({ locale }: { locale: string }) {
           </div>
         )}
 
-        {/* STEP 2: CONFIGURE */}
+        {/* STEP 3: CONFIGURE */}
         <div ref={configureRef} className={`py-16 transition-all duration-500 ${
           currentStep === 'configure' ? 'opacity-100' : 'opacity-50 pointer-events-none'
         }`}>
           {selectedFile && (
             <div className="max-w-6xl mx-auto px-4">
               
+              {/* Step Indicator */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-blue-100 border border-green-200 text-green-800 px-6 py-3 rounded-full text-lg font-bold shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                    3
+                  </div>
+                  ⚙️ Sıkıştırma Ayarları
+                </div>
+              </div>
+
               {/* Header */}
               <div className="text-center mb-12">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                  🎯 Sıkıştırma Ayarları
+                  🎯 Kalite ve Format Seçimi
                 </h1>
               </div>
 
@@ -804,16 +834,26 @@ function ImageCompress({ locale }: { locale: string }) {
           )}
         </div>
 
-        {/* STEP 3: PROCESSING */}
+        {/* STEP 4: PROCESSING */}
         <div ref={processingRef} className={`py-16 transition-all duration-500 ${
           currentStep === 'processing' ? 'opacity-100' : 'opacity-50 pointer-events-none'
         }`}>
           {isProcessing && (
             <div className="max-w-2xl mx-auto px-4 text-center">
               
+              {/* Step Indicator */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-red-100 border border-orange-200 text-orange-800 px-6 py-3 rounded-full text-lg font-bold shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                    4
+                  </div>
+                  🚀 Sıkıştırma İşlemi
+                </div>
+              </div>
+
               {/* Processing Animation */}
               <div className="relative mb-12">
-                <div className="relative w-32 h-32 mx-auto">
+                <div className="relative w-40 h-40 mx-auto">
                   {/* Multiple rotating rings */}
                   <div className="absolute inset-0 border-8 border-purple-200 rounded-full"></div>
                   <div className="absolute inset-0 border-8 border-transparent border-t-purple-600 rounded-full animate-spin"></div>
@@ -822,8 +862,8 @@ function ImageCompress({ locale }: { locale: string }) {
                   
                   {/* Center icon */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center animate-pulse">
-                      <PhotoIcon className="h-6 w-6 text-white" />
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center animate-pulse">
+                      <PhotoIcon className="h-8 w-8 text-white" />
                     </div>
                   </div>
                 </div>
@@ -831,10 +871,10 @@ function ImageCompress({ locale }: { locale: string }) {
 
               {/* Processing Status */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
                   🤖 AI Sıkıştırma İşlemi
                 </h2>
-                <p className="text-gray-600 text-lg">
+                <p className="text-gray-700 text-lg">
                   Yapay zeka en optimal ayarları hesaplıyor...
                 </p>
               </div>
@@ -906,25 +946,36 @@ function ImageCompress({ locale }: { locale: string }) {
           )}
         </div>
 
-        {/* STEP 4: RESULT */}
+        {/* STEP 5: RESULT */}
         <div ref={resultRef} className={`py-16 transition-all duration-500 ${
           currentStep === 'result' ? 'opacity-100' : 'opacity-50 pointer-events-none'
         }`}>
           {compressionResult && (
             <div className="max-w-4xl mx-auto px-4">
               
+              {/* Step Indicator */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800 px-6 py-3 rounded-full text-lg font-bold shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                    5
+                  </div>
+                  🎉 Sıkıştırma Tamamlandı
+                </div>
+              </div>
+
               {/* Success Header */}
               <div className="text-center mb-12">
                 {/* Success Animation */}
-                <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="relative w-32 h-32 mx-auto mb-6">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center animate-bounce">
-                    <CheckCircleIcon className="h-12 w-12 text-white" />
+                    <CheckCircleIcon className="h-16 w-16 text-white" />
                   </div>
                   <div className="absolute inset-0 border-4 border-green-300 rounded-full animate-ping opacity-40"></div>
+                  <div className="absolute -inset-2 border-2 border-green-200 rounded-full animate-pulse opacity-30"></div>
                 </div>
                 
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
-                  🎉 Sıkıştırma Tamamlandı!
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
+                  ✅ İşlem Başarılı!
                 </h2>
                 
                 {/* Compression Stats */}
