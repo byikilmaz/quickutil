@@ -200,12 +200,6 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
   // Start batch processing
   const handleStartProcessing = useCallback(async () => {
     if (batchFiles.length === 0) return;
-    
-    // Check feature access
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
 
     setIsProcessing(true);
     setCurrentStep('processing');
@@ -430,7 +424,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
               </span>
             </h1>
             
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-800 max-w-3xl mx-auto leading-relaxed">
               {getText('imageBatch.description', 'Process multiple images at once with powerful batch operations. Compress, resize, crop, and transform your images efficiently.')}
             </p>
           </div>
@@ -453,10 +447,10 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">
                     {getText('imageBatch.upload.title', 'Select Multiple Images')}
                   </h3>
-                  <p className="text-gray-600 text-lg">
+                  <p className="text-gray-800 text-lg">
                     {getText('imageBatch.upload.description', 'Drag and drop your images or click to browse')}
                   </p>
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-sm text-gray-800 mt-2">
                     {getText('imageBatch.upload.formats', 'Supports: JPEG, PNG, WebP, GIF • Max 50 files • 50MB each')}
                   </p>
                 </div>
@@ -482,7 +476,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                 {getText('imageBatch.configure.title', 'Configure Batch Operation')}
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-800 max-w-2xl mx-auto">
                 {getText('imageBatch.configure.description', 'Choose operation type and configure parameters for all files')}
               </p>
             </div>
@@ -503,7 +497,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
                           <PhotoIcon className="h-8 w-8 text-purple-600" />
                           <div>
                             <p className="font-medium text-gray-900">{file.file.name}</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-800">
                               {(file.file.size / 1024 / 1024).toFixed(2)} MB
                             </p>
                           </div>
@@ -556,13 +550,13 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
                             }`}
                           >
                             <div className={`flex-shrink-0 ${
-                              selectedOperation === operation ? 'text-purple-600' : 'text-gray-500'
+                              selectedOperation === operation ? 'text-purple-600' : 'text-gray-800'
                             }`}>
                               {info.icon}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="font-medium">{info.name}</div>
-                              <div className="text-xs text-gray-600">{info.description}</div>
+                              <div className="text-xs text-gray-800">{info.description}</div>
                             </div>
                           </button>
                         );
@@ -603,7 +597,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
                 {getText('imageBatch.processing.title', 'Processing Your Images')}
               </h2>
 
-              <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-12">
+              <p className="text-base sm:text-lg lg:text-xl text-gray-800 mb-8 sm:mb-12">
                 {getText('imageBatch.processing.description', 'Please wait while we process your batch of images...')}
               </p>
 
@@ -651,7 +645,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                 {getText('imageBatch.result.title', 'Batch Processing Complete!')}
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-800 max-w-2xl mx-auto">
                 {getText('imageBatch.result.description', 'All files have been processed successfully')}
               </p>
             </div>
@@ -666,7 +660,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
                     <CheckCircleIcon className="h-6 w-6 text-green-600" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{getCompletedCount()}</div>
-                  <div className="text-gray-600">{getText('imageBatch.result.completed', 'Completed')}</div>
+                  <div className="text-gray-800">{getText('imageBatch.result.completed', 'Completed')}</div>
                 </div>
                 
                 <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 text-center">
@@ -674,7 +668,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
                     <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{getErrorCount()}</div>
-                  <div className="text-gray-600">{getText('imageBatch.result.errors', 'Errors')}</div>
+                  <div className="text-gray-800">{getText('imageBatch.result.errors', 'Errors')}</div>
                 </div>
                 
                 <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-6 text-center">
@@ -682,7 +676,7 @@ export default function ImageBatchClient({ locale }: ImageBatchClientProps) {
                     <QueueListIcon className="h-6 w-6 text-purple-600" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{batchFiles.length}</div>
-                  <div className="text-gray-600">{getText('imageBatch.result.total', 'Total Files')}</div>
+                  <div className="text-gray-800">{getText('imageBatch.result.total', 'Total Files')}</div>
                 </div>
               </div>
 
