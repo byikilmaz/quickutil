@@ -345,13 +345,13 @@ function ImageResizeContent({ locale }: { locale: string }) {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Image Resize
+                  {locale === 'en' ? 'Image Resize' : locale === 'es' ? 'Redimensionar Imagen' : 'Image Resize'}
                 </h1>
-                <p className="text-sm text-gray-600">Step {
+                <p className="text-sm text-gray-600">{locale === 'en' ? 'Step' : locale === 'es' ? 'Paso' : 'Step'} {
                   currentStep === 'upload' ? '1' : 
                   currentStep === 'configure' ? '2' : 
                   currentStep === 'processing' ? '3' : '4'
-                } of 4</p>
+                } {locale === 'en' ? 'of 4' : locale === 'es' ? 'de 4' : 'of 4'}</p>
               </div>
             </div>
             
@@ -361,7 +361,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                 className="flex items-center space-x-2 px-4 py-2 bg-white/50 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/70 transition-all duration-200"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
-                <span>New Image</span>
+                <span>{locale === 'en' ? 'New Image' : locale === 'es' ? 'Nueva Imagen' : 'New Image'}</span>
               </button>
             )}
           </div>
@@ -377,17 +377,17 @@ function ImageResizeContent({ locale }: { locale: string }) {
           <div className="text-center mb-8">
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <SparklesIcon className="h-4 w-4 text-purple-600 animate-pulse mr-2" />
-              5M+ Resim Boyutlandırıldı • AI Destekli
+              {locale === 'en' ? '5M+ Images Resized • AI Powered' : locale === 'es' ? '5M+ Imágenes Redimensionadas • Con IA' : '5M+ Resim Boyutlandırıldı • AI Destekli'}
             </div>
             
             <h1 className="text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                📐 Image Resize
+                {locale === 'en' ? '📐 Image Resize' : locale === 'es' ? '📐 Redimensionar Imagen' : '📐 Image Resize'}
               </span>
             </h1>
             
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-              Resize your images to any dimension with precision and quality
+              {locale === 'en' ? 'Resize your images to any dimension with precision and quality' : locale === 'es' ? 'Redimensiona tus imágenes a cualquier dimensión con precisión y calidad' : 'Resize your images to any dimension with precision and quality'}
             </p>
           </div>
 
@@ -417,14 +417,17 @@ function ImageResizeContent({ locale }: { locale: string }) {
                 </div>
                 
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {isDragActive ? 'Drop your image here' : 'Select Image to Resize'}
+                  {isDragActive 
+                    ? (locale === 'en' ? 'Drop your image here' : locale === 'es' ? 'Suelta tu imagen aquí' : 'Drop your image here')
+                    : (locale === 'en' ? 'Select Image to Resize' : locale === 'es' ? 'Seleccionar Imagen para Redimensionar' : 'Select Image to Resize')
+                  }
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  PNG, JPEG, WebP, GIF • Up to 50MB
+                  {locale === 'en' ? 'PNG, JPEG, WebP, GIF • Up to 50MB' : locale === 'es' ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB'}
                 </p>
                 
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 inline-block">
-                  Choose File
+                  {locale === 'en' ? 'Choose File' : locale === 'es' ? 'Elegir Archivo' : 'Choose File'}
                 </div>
               </div>
             </div>
@@ -433,15 +436,15 @@ function ImageResizeContent({ locale }: { locale: string }) {
             <div className="mt-8 grid grid-cols-3 gap-4">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🔒</div>
-                <p className="text-sm font-medium text-gray-700">Secure Processing</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Secure Processing' : locale === 'es' ? 'Procesamiento Seguro' : 'Secure Processing'}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">⚡</div>
-                <p className="text-sm font-medium text-gray-700">Lightning Fast</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Lightning Fast' : locale === 'es' ? 'Súper Rápido' : 'Lightning Fast'}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🎯</div>
-                <p className="text-sm font-medium text-gray-700">Pixel Perfect</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Pixel Perfect' : locale === 'es' ? 'Píxel Perfecto' : 'Pixel Perfect'}</p>
               </div>
             </div>
           </div>
@@ -456,18 +459,18 @@ function ImageResizeContent({ locale }: { locale: string }) {
               <div className="p-8">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                    Configure Resize Settings
+                    {locale === 'en' ? 'Configure Resize Settings' : locale === 'es' ? 'Configurar Ajustes de Redimensión' : 'Configure Resize Settings'}
                   </h2>
-                  <p className="text-gray-600">Set your desired dimensions and options</p>
+                  <p className="text-gray-600">{locale === 'en' ? 'Set your desired dimensions and options' : locale === 'es' ? 'Establece tus dimensiones y opciones deseadas' : 'Set your desired dimensions and options'}</p>
                 </div>
 
                 <div className="grid lg:grid-cols-5 gap-8">
                   {/* Left: Interactive Preview (3/5) */}
                   <div className="lg:col-span-3">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                      <h3 className="font-semibold text-gray-900 mb-4 text-center">Live Preview</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4 text-center">{locale === 'en' ? 'Live Preview' : locale === 'es' ? 'Vista Previa en Vivo' : 'Live Preview'}</h3>
                       <p className="text-sm text-gray-600 mb-4 text-center">
-                        🎯 Adjust dimensions using controls on the right and see live preview
+                        {locale === 'en' ? '🎯 Adjust dimensions using controls on the right and see live preview' : locale === 'es' ? '🎯 Ajusta las dimensiones usando los controles de la derecha y ve la vista previa en vivo' : '🎯 Adjust dimensions using controls on the right and see live preview'}
                       </p>
                       <SimplePreviewBox
                         imageUrl={URL.createObjectURL(file)}
@@ -490,7 +493,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       
                       {/* Resize Mode Toggle */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Resize Mode</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">{locale === 'en' ? 'Resize Mode' : locale === 'es' ? 'Modo de Redimensión' : 'Resize Mode'}</label>
                         <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
                           <button
                             onClick={() => setResizeMode('pixels')}
@@ -500,7 +503,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                                 : 'text-gray-600 hover:text-gray-900'
                             }`}
                           >
-                            By Pixels
+                            {locale === 'en' ? 'By Pixels' : locale === 'es' ? 'Por Píxeles' : 'By Pixels'}
                           </button>
                           <button
                             onClick={() => setResizeMode('percentage')}
@@ -510,7 +513,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                                 : 'text-gray-600 hover:text-gray-900'
                             }`}
                           >
-                            By Percentage
+                            {locale === 'en' ? 'By Percentage' : locale === 'es' ? 'Por Porcentaje' : 'By Percentage'}
                           </button>
                         </div>
                       </div>
@@ -520,7 +523,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                         <div className="grid grid-cols-1 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Width (px)
+                              {locale === 'en' ? 'Width (px)' : locale === 'es' ? 'Ancho (px)' : 'Width (px)'}
                             </label>
                             <input
                               type="number"
@@ -538,12 +541,12 @@ function ImageResizeContent({ locale }: { locale: string }) {
                                 }
                               }}
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
-                              placeholder="Enter width..."
+                              placeholder={locale === 'en' ? 'Enter width...' : locale === 'es' ? 'Ingresa ancho...' : 'Enter width...'}
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Height (px)
+                              {locale === 'en' ? 'Height (px)' : locale === 'es' ? 'Alto (px)' : 'Height (px)'}
                             </label>
                             <input
                               type="number"
@@ -561,14 +564,14 @@ function ImageResizeContent({ locale }: { locale: string }) {
                                 }
                               }}
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
-                              placeholder="Enter height..."
+                              placeholder={locale === 'en' ? 'Enter height...' : locale === 'es' ? 'Ingresa alto...' : 'Enter height...'}
                             />
                           </div>
                         </div>
                       ) : (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Resize to % of original
+                            {locale === 'en' ? 'Resize to % of original' : locale === 'es' ? 'Redimensionar al % del original' : 'Resize to % of original'}
                           </label>
                           <input
                             type="number"
@@ -588,10 +591,10 @@ function ImageResizeContent({ locale }: { locale: string }) {
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
                             min="1"
                             max="500"
-                            placeholder="Enter percentage..."
+                            placeholder={locale === 'en' ? 'Enter percentage...' : locale === 'es' ? 'Ingresa porcentaje...' : 'Enter percentage...'}
                           />
                           <p className="text-sm text-gray-600 mt-2">
-                            Result: {Math.round(originalDimensions.width * (percentageValue / 100))}×{Math.round(originalDimensions.height * (percentageValue / 100))}
+                            {locale === 'en' ? 'Result:' : locale === 'es' ? 'Resultado:' : 'Result:'} {Math.round(originalDimensions.width * (percentageValue / 100))}×{Math.round(originalDimensions.height * (percentageValue / 100))}
                           </p>
                         </div>
                       )}
@@ -605,7 +608,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                             onChange={(e) => setMaintainAspectRatio(e.target.checked)}
                             className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                           />
-                          <span className="text-sm text-gray-700">Maintain aspect ratio</span>
+                          <span className="text-sm text-gray-700">{locale === 'en' ? 'Maintain aspect ratio' : locale === 'es' ? 'Mantener relación de aspecto' : 'Maintain aspect ratio'}</span>
                         </label>
                         
                         <label className="flex items-center space-x-3">
@@ -615,7 +618,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                             onChange={(e) => setDoNotEnlarge(e.target.checked)}
                             className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                           />
-                          <span className="text-sm text-gray-700">Do not enlarge if smaller</span>
+                          <span className="text-sm text-gray-700">{locale === 'en' ? 'Do not enlarge if smaller' : locale === 'es' ? 'No agrandar si es más pequeño' : 'Do not enlarge if smaller'}</span>
                         </label>
                       </div>
 
@@ -627,7 +630,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
                       >
                         <PhotoIcon className="h-6 w-6" />
-                        <span>🚀 Start Resizing</span>
+                        <span>{locale === 'en' ? '🚀 Start Resizing' : locale === 'es' ? '🚀 Comenzar Redimensión' : '🚀 Start Resizing'}</span>
                       </button>
                     </div>
                   </div>

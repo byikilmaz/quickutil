@@ -520,7 +520,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Image Crop
+                  {locale === 'en' ? 'Image Crop' : locale === 'es' ? 'Recortar Imagen' : 'Image Crop'}
                 </h1>
                 <p className="text-sm text-gray-600">Step {
                   currentStep === 'upload' ? '1' : 
@@ -557,12 +557,12 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
             
             <h1 className="text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                ✂️ Image Crop
+                {locale === 'en' ? '✂️ Image Crop' : locale === 'es' ? '✂️ Recortar Imagen' : '✂️ Image Crop'}
               </span>
             </h1>
             
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-              Crop your images to the perfect size and focus on what matters most
+              {locale === 'en' ? 'Crop your images to the perfect size and focus on what matters most' : locale === 'es' ? 'Recorta tus imágenes al tamaño perfecto y enfócate en lo que más importa' : 'Crop your images to the perfect size and focus on what matters most'}
             </p>
           </div>
 
@@ -592,14 +592,17 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                 </div>
                 
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {isDragActive ? 'Drop your image here' : 'Select Image to Crop'}
+                  {isDragActive 
+                    ? (locale === 'en' ? 'Drop your image here' : locale === 'es' ? 'Suelta tu imagen aquí' : 'Drop your image here')
+                    : (locale === 'en' ? 'Select Image to Crop' : locale === 'es' ? 'Seleccionar Imagen para Recortar' : 'Select Image to Crop')
+                  }
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  PNG, JPEG, WebP, GIF • Up to 50MB
+                  {locale === 'en' ? 'PNG, JPEG, WebP, GIF • Up to 50MB' : locale === 'es' ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB'}
                 </p>
                 
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 inline-block">
-                  Choose File
+                  {locale === 'en' ? 'Choose File' : locale === 'es' ? 'Elegir Archivo' : 'Choose File'}
                 </div>
               </div>
             </div>
