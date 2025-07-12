@@ -27,9 +27,51 @@ export default function HomePage() {
   const locale = (params.locale as string) || 'tr';
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   
+  // Multi-language flags for hardcoded texts
+  const isTurkish = locale === 'tr';
+  const isFrench = locale === 'fr';
+  const isSpanish = locale === 'es';
+  const isGerman = locale === 'de';
+  const isEnglish = locale === 'en';
+  
   // Translation hooks
   const t = useTranslations('homepage', locale);
   const tTools = useTranslations('tools', locale);
+  
+  // Debug logging for locale detection and translations
+  console.log('🐛 DEBUG - Homepage Locale:', locale);
+  console.log('🐛 DEBUG - Language flags:', { isTurkish, isFrench, isSpanish, isGerman, isEnglish });
+  
+  // Translation variables for debugging (created after flags are set)
+  const aiPlatformText = isTurkish ? 'AI Destekli Platform' : 
+                        isFrench ? 'Plateforme Alimentée par l\'IA' : 
+                        isSpanish ? 'Plataforma Impulsada por IA' : 
+                        isGerman ? 'KI-Gestützte Plattform' : 
+                        'AI Powered Platform';
+                        
+  const aiFeaturesText = isTurkish ? 'AI Özellikleri' : 
+                        isFrench ? 'Fonctionnalités IA' : 
+                        isSpanish ? 'Funciones de IA' : 
+                        isGerman ? 'KI-Funktionen' : 
+                        'AI Features';
+                        
+  const pdfToolsText = isTurkish ? 'PDF Araçları' : 
+                      isFrench ? 'Outils PDF' : 
+                      isSpanish ? 'Herramientas PDF' : 
+                      isGerman ? 'PDF-Tools' : 
+                      'PDF Tools';
+                      
+  const imageToolsText = isTurkish ? 'Resim Araçları' : 
+                        isFrench ? 'Outils Image' : 
+                        isSpanish ? 'Herramientas de Imagen' : 
+                        isGerman ? 'Bild-Tools' : 
+                        'Image Tools';
+  
+  // Enhanced debug logging with translation values
+  console.log('🐛 DEBUG - AI Platform Text:', aiPlatformText);
+  console.log('🐛 DEBUG - AI Features Text:', aiFeaturesText);
+  console.log('🐛 DEBUG - PDF Tools Text:', pdfToolsText);
+  console.log('🐛 DEBUG - Image Tools Text:', imageToolsText);
 
   const pdfTools = [
     {
@@ -191,7 +233,7 @@ export default function HomePage() {
                 <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
                   <CpuChipIcon className="h-4 w-4 text-white animate-pulse" />
                 </div>
-                <span>✨ AI Powered Platform ✨</span>
+                <span>✨ {aiPlatformText} ✨</span>
                 <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center ml-3">
                   <SparklesIcon className="h-4 w-4 text-white animate-spin" />
                 </div>
@@ -248,7 +290,7 @@ export default function HomePage() {
             <div className="text-center mb-20">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-6 py-2 rounded-full text-sm font-bold mb-6">
                 <SparklesIcon className="h-4 w-4 mr-2 animate-pulse" />
-                {locale === 'en' ? 'AI Features' : locale === 'es' ? 'Funciones de IA' : locale === 'fr' ? 'Fonctionnalités IA' : 'AI Özellikleri'}
+                {aiFeaturesText}
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
                 {t('aiSection.title')}
@@ -328,13 +370,17 @@ export default function HomePage() {
             <div className="text-center mb-20">
               <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-6 py-2 rounded-full text-sm font-bold mb-6">
                 <DocumentIcon className="h-4 w-4 mr-2" />
-                {locale === 'en' ? 'PDF Tools' : locale === 'es' ? 'Herramientas PDF' : locale === 'fr' ? 'Outils PDF' : 'PDF Araçları'}
+                {pdfToolsText}
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
                 {t('pdfSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {locale === 'en' ? 'Transform your PDF processing experience with AI' : locale === 'es' ? 'Transforma tu experiencia de procesamiento de PDF con IA' : locale === 'fr' ? 'Transformez votre expérience de traitement PDF avec l\'IA' : 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün'}
+                {isTurkish ? 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün' : 
+                 isFrench ? 'Transformez votre expérience de traitement PDF avec l\'IA' : 
+                 isSpanish ? 'Transforma tu experiencia de procesamiento de PDF con IA' : 
+                 isGerman ? 'Verwandeln Sie Ihre PDF-Verarbeitung mit KI' : 
+                 'Transform your PDF processing experience with AI'}
               </p>
             </div>
 
@@ -384,13 +430,17 @@ export default function HomePage() {
             <div className="text-center mb-20">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-6 py-2 rounded-full text-sm font-bold mb-6">
                 <PhotoIcon className="h-4 w-4 mr-2" />
-                {locale === 'en' ? 'Image Tools' : locale === 'es' ? 'Herramientas de Imagen' : locale === 'fr' ? 'Outils Image' : 'Resim Araçları'}
+                {imageToolsText}
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
                 {t('imageSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {locale === 'en' ? 'The art of image processing with smart algorithms' : locale === 'es' ? 'El arte del procesamiento de imágenes con algoritmos inteligentes' : locale === 'fr' ? 'L\'art du traitement d\'images avec des algorithmes intelligents' : 'Akıllı algoritmalar ile resim işleme sanatı'}
+                {isTurkish ? 'Akıllı algoritmalar ile resim işleme sanatı' : 
+                 isFrench ? 'L\'art du traitement d\'images avec des algorithmes intelligents' : 
+                 isSpanish ? 'El arte del procesamiento de imágenes con algoritmos inteligentes' : 
+                 isGerman ? 'Die Kunst der Bildverarbeitung mit intelligenten Algorithmen' : 
+                 'The art of image processing with smart algorithms'}
               </p>
             </div>
 
