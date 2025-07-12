@@ -36,13 +36,15 @@ function SimplePreviewBox({
   originalDimensions, 
   width, 
   height,
-  getText
+  getText,
+  locale
 }: {
   imageUrl: string;
   originalDimensions: { width: number; height: number };
   width: number | undefined;
   height: number | undefined;
   getText: (key: string, fallback: string) => string;
+  locale: string;
 }) {
   // Calculate preview dimensions
   const previewWidth = width || originalDimensions.width;
@@ -71,12 +73,15 @@ function SimplePreviewBox({
         {/* Size comparison indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-center">
           <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded text-sm font-medium">
-            {previewWidth === originalDimensions.width && previewHeight === originalDimensions.height 
-              ? getText('imageResize.preview.originalSize', 'Orijinal Boyut')
-              : previewWidth < originalDimensions.width || previewHeight < originalDimensions.height
-              ? getText('imageResize.preview.shrinking', 'Küçültülüyor')
-              : getText('imageResize.preview.enlarging', 'Büyütülüyor')
-            }
+            {(() => {
+              const sizeText = previewWidth === originalDimensions.width && previewHeight === originalDimensions.height 
+                ? (locale === 'fr' ? 'Taille Originale' : 'Original Size')
+                : previewWidth < originalDimensions.width || previewHeight < originalDimensions.height
+                ? (locale === 'fr' ? 'Réduction' : 'Shrinking')
+                : (locale === 'fr' ? 'Agrandissement' : 'Enlarging');
+              console.log('🐛 DEBUG - Size Comparison Text:', sizeText, '(locale:', locale + ')');
+              return sizeText;
+            })()}
           </div>
         </div>
       </div>
@@ -227,11 +232,11 @@ function ImageResizeContent({ locale }: { locale: string }) {
 
       // Simulate progress steps with longer delays for better visibility
       const progressSteps = [
-        { progress: 15, message: 'Analyzing image...', delay: 800 },
-        { progress: 35, message: 'Preparing resize...', delay: 1000 },
-        { progress: 60, message: 'Calculating dimensions...', delay: 1200 },
-        { progress: 85, message: 'Resizing image...', delay: 1000 },
-        { progress: 100, message: 'Finalizing...', delay: 800 }
+        { progress: 15, delay: 800 },
+        { progress: 35, delay: 1000 },
+        { progress: 60, delay: 1200 },
+        { progress: 85, delay: 1000 },
+        { progress: 100, delay: 800 }
       ];
 
       for (const step of progressSteps) {
@@ -347,8 +352,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                 <PhotoIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-{(() => {
-                  const headerTitle = locale === 'en' ? 'Image Resize' : locale === 'es' ? 'Redimensionar Imagen' : locale === 'fr' ? 'Redimensionner Image' : 'Image Resize';
+                {(() => {
+                  const headerTitle = locale === 'fr' ? 'Redimensionner Image' : 'Image Resize';
                   console.log('🐛 DEBUG - Header Title:', headerTitle, '(locale:', locale + ')');
                   return (
                     <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -356,9 +361,9 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     </h1>
                   );
                 })()}
-{(() => {
-                  const stepText = locale === 'en' ? 'Step' : locale === 'es' ? 'Paso' : locale === 'fr' ? 'Étape' : 'Step';
-                  const ofText = locale === 'en' ? 'of 4' : locale === 'es' ? 'de 4' : locale === 'fr' ? 'sur 4' : 'of 4';
+                {(() => {
+                  const stepText = locale === 'fr' ? 'Étape' : 'Step';
+                  const ofText = locale === 'fr' ? 'sur 4' : 'of 4';
                   const stepNumber = currentStep === 'upload' ? '1' : currentStep === 'configure' ? '2' : currentStep === 'processing' ? '3' : '4';
                   console.log('🐛 DEBUG - Step Info:', `${stepText} ${stepNumber} ${ofText}`, '(locale:', locale + ')');
                   return (
@@ -374,8 +379,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                 className="flex items-center space-x-2 px-4 py-2 bg-white/50 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/70 transition-all duration-200"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
-{(() => {
-                  const newImageText = locale === 'en' ? 'New Image' : locale === 'es' ? 'Nueva Imagen' : locale === 'fr' ? 'Nouvelle Image' : 'New Image';
+                {(() => {
+                  const newImageText = locale === 'fr' ? 'Nouvelle Image' : 'New Image';
                   console.log('🐛 DEBUG - New Image Button:', newImageText, '(locale:', locale + ')');
                   return <span>{newImageText}</span>;
                 })()}
@@ -394,8 +399,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
           <div className="text-center mb-8">
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <SparklesIcon className="h-4 w-4 text-purple-600 animate-pulse mr-2" />
-{(() => {
-                const statsText = locale === 'en' ? '5M+ Images Resized • AI Powered' : locale === 'es' ? '5M+ Imágenes Redimensionadas • Con IA' : locale === 'fr' ? '5M+ Images Redimensionnées • IA' : '5M+ Resim Boyutlandırıldı • AI Destekli';
+              {(() => {
+                const statsText = locale === 'fr' ? '5M+ Images Redimensionnées • IA' : '5M+ Images Resized • AI Powered';
                 console.log('🐛 DEBUG - Stats Text:', statsText, '(locale:', locale + ')');
                 return statsText;
               })()}
@@ -403,8 +408,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
             
             <h1 className="text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-{(() => {
-                  const mainTitle = locale === 'en' ? '📐 Image Resize' : locale === 'es' ? '📐 Redimensionar Imagen' : locale === 'fr' ? '📐 Redimensionner Image' : '📐 Image Resize';
+                {(() => {
+                  const mainTitle = locale === 'fr' ? '📐 Redimensionner Image' : '📐 Image Resize';
                   console.log('🐛 DEBUG - Main Title:', mainTitle, '(locale:', locale + ')');
                   return mainTitle;
                 })()}
@@ -412,14 +417,14 @@ function ImageResizeContent({ locale }: { locale: string }) {
             </h1>
             
             {(() => {
-                const descriptionText = locale === 'en' ? 'Resize your images to any dimension with precision and quality' : locale === 'es' ? 'Redimensiona tus imágenes a cualquier dimensión con precisión y calidad' : locale === 'fr' ? 'Redimensionnez vos images à toute dimension avec précision et qualité' : 'Resize your images to any dimension with precision and quality';
-                console.log('🐛 DEBUG - Description:', descriptionText, '(locale:', locale + ')');
-                return (
-                  <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-                    {descriptionText}
-                  </p>
-                );
-              })()}
+              const descriptionText = locale === 'fr' ? 'Redimensionnez vos images à toute dimension avec précision et qualité' : 'Resize your images to any dimension with precision and quality';
+              console.log('🐛 DEBUG - Description:', descriptionText, '(locale:', locale + ')');
+              return (
+                <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                  {descriptionText}
+                </p>
+              );
+            })()}
           </div>
 
           {/* Enhanced Upload Area */}
@@ -447,10 +452,10 @@ function ImageResizeContent({ locale }: { locale: string }) {
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg opacity-20 animate-pulse"></div>
                 </div>
                 
-{(() => {
+                {(() => {
                   const uploadTitle = isDragActive 
-                    ? (locale === 'en' ? 'Drop your image here' : locale === 'es' ? 'Suelta tu imagen aquí' : locale === 'fr' ? 'Déposez votre image ici' : 'Drop your image here')
-                    : (locale === 'en' ? 'Select Image to Resize' : locale === 'es' ? 'Seleccionar Imagen para Redimensionar' : locale === 'fr' ? 'Sélectionner Image à Redimensionner' : 'Select Image to Resize');
+                    ? (locale === 'fr' ? 'Déposez votre image ici' : 'Drop your image here')
+                    : (locale === 'fr' ? 'Sélectionner Image à Redimensionner' : 'Select Image to Resize');
                   console.log('🐛 DEBUG - Upload Title:', uploadTitle, '(locale:', locale + ')');
                   return (
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -458,8 +463,9 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     </h3>
                   );
                 })()}
-{(() => {
-                  const formatText = locale === 'en' ? 'PNG, JPEG, WebP, GIF • Up to 50MB' : locale === 'es' ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : locale === 'fr' ? 'PNG, JPEG, WebP, GIF • Jusqu\'à 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB';
+                
+                {(() => {
+                  const formatText = locale === 'fr' ? 'PNG, JPEG, WebP, GIF • Jusqu\'à 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB';
                   console.log('🐛 DEBUG - Format Text:', formatText, '(locale:', locale + ')');
                   return (
                     <p className="text-gray-600 mb-6">
@@ -468,8 +474,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                   );
                 })()}
                 
-{(() => {
-                  const chooseFileText = locale === 'en' ? 'Choose File' : locale === 'es' ? 'Elegir Archivo' : locale === 'fr' ? 'Choisir Fichier' : 'Choose File';
+                {(() => {
+                  const chooseFileText = locale === 'fr' ? 'Choisir Fichier' : 'Choose File';
                   console.log('🐛 DEBUG - Choose File Button:', chooseFileText, '(locale:', locale + ')');
                   return (
                     <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 inline-block">
@@ -484,24 +490,24 @@ function ImageResizeContent({ locale }: { locale: string }) {
             <div className="mt-8 grid grid-cols-3 gap-4">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🔒</div>
-{(() => {
-                  const secureText = locale === 'en' ? 'Secure Processing' : locale === 'es' ? 'Procesamiento Seguro' : locale === 'fr' ? 'Traitement Sécurisé' : 'Secure Processing';
+                {(() => {
+                  const secureText = locale === 'fr' ? 'Traitement Sécurisé' : 'Secure Processing';
                   console.log('🐛 DEBUG - Secure Processing Text:', secureText, '(locale:', locale + ')');
                   return <p className="text-sm font-medium text-gray-700">{secureText}</p>;
                 })()}
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">⚡</div>
-{(() => {
-                  const fastText = locale === 'en' ? 'Lightning Fast' : locale === 'es' ? 'Súper Rápido' : locale === 'fr' ? 'Très Rapide' : 'Lightning Fast';
+                {(() => {
+                  const fastText = locale === 'fr' ? 'Très Rapide' : 'Lightning Fast';
                   console.log('🐛 DEBUG - Lightning Fast Text:', fastText, '(locale:', locale + ')');
                   return <p className="text-sm font-medium text-gray-700">{fastText}</p>;
                 })()}
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🎯</div>
-{(() => {
-                  const pixelText = locale === 'en' ? 'Pixel Perfect' : locale === 'es' ? 'Píxel Perfecto' : locale === 'fr' ? 'Pixel Parfait' : 'Pixel Perfect';
+                {(() => {
+                  const pixelText = locale === 'fr' ? 'Pixel Parfait' : 'Pixel Perfect';
                   console.log('🐛 DEBUG - Pixel Perfect Text:', pixelText, '(locale:', locale + ')');
                   return <p className="text-sm font-medium text-gray-700">{pixelText}</p>;
                 })()}
@@ -518,8 +524,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
               <div className="p-8">
                 <div className="text-center mb-8">
-{(() => {
-                    const configureTitle = locale === 'en' ? 'Configure Resize Settings' : locale === 'es' ? 'Configurar Ajustes de Redimensión' : locale === 'fr' ? 'Configurer Paramètres Redimensionnement' : 'Configure Resize Settings';
+                  {(() => {
+                    const configureTitle = locale === 'fr' ? 'Configurer Paramètres Redimensionnement' : 'Configure Resize Settings';
                     console.log('🐛 DEBUG - Configure Title:', configureTitle, '(locale:', locale + ')');
                     return (
                       <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
@@ -527,37 +533,38 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       </h2>
                     );
                   })()}
-{(() => {
-                      const configureDesc = locale === 'en' ? 'Set your desired dimensions and options' : locale === 'es' ? 'Establece tus dimensiones y opciones deseadas' : locale === 'fr' ? 'Définissez vos dimensions et options souhaitées' : 'Set your desired dimensions and options';
-                      console.log('🐛 DEBUG - Configure Description:', configureDesc, '(locale:', locale + ')');
-                      return <p className="text-gray-600">{configureDesc}</p>;
-                    })()}
+                  {(() => {
+                    const configureDesc = locale === 'fr' ? 'Définissez vos dimensions et options souhaitées' : 'Set your desired dimensions and options';
+                    console.log('🐛 DEBUG - Configure Description:', configureDesc, '(locale:', locale + ')');
+                    return <p className="text-gray-600">{configureDesc}</p>;
+                  })()}
                 </div>
 
                 <div className="grid lg:grid-cols-5 gap-8">
                   {/* Left: Interactive Preview (3/5) */}
                   <div className="lg:col-span-3">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-{(() => {
-                        const previewTitle = locale === 'en' ? 'Live Preview' : locale === 'es' ? 'Vista Previa en Vivo' : locale === 'fr' ? 'Aperçu en Direct' : 'Live Preview';
+                      {(() => {
+                        const previewTitle = locale === 'fr' ? 'Aperçu en Direct' : 'Live Preview';
                         console.log('🐛 DEBUG - Live Preview Title:', previewTitle, '(locale:', locale + ')');
                         return <h3 className="font-semibold text-gray-900 mb-4 text-center">{previewTitle}</h3>;
                       })()}
                       {(() => {
-                          const previewInstructions = locale === 'en' ? '🎯 Adjust dimensions using controls on the right and see live preview' : locale === 'es' ? '🎯 Ajusta las dimensiones usando los controles de la derecha y ve la vista previa en vivo' : locale === 'fr' ? '🎯 Ajustez les dimensions avec les contrôles de droite et voyez l\'aperçu en direct' : '🎯 Adjust dimensions using controls on the right and see live preview';
-                          console.log('🐛 DEBUG - Preview Instructions:', previewInstructions, '(locale:', locale + ')');
-                          return (
-                            <p className="text-sm text-gray-600 mb-4 text-center">
-                              {previewInstructions}
-                            </p>
-                          );
-                        })()}
+                        const previewInstructions = locale === 'fr' ? '🎯 Ajustez les dimensions avec les contrôles de droite et voyez l\'aperçu en direct' : '🎯 Adjust dimensions using controls on the right and see live preview';
+                        console.log('🐛 DEBUG - Preview Instructions:', previewInstructions, '(locale:', locale + ')');
+                        return (
+                          <p className="text-sm text-gray-600 mb-4 text-center">
+                            {previewInstructions}
+                          </p>
+                        );
+                      })()}
                       <SimplePreviewBox
                         imageUrl={URL.createObjectURL(file)}
                         originalDimensions={originalDimensions}
                         width={width}
                         height={height}
                         getText={getText}
+                        locale={locale}
                       />
                       <div className="mt-4 text-sm text-gray-700 text-center bg-white rounded-lg p-3">
                         <p className="font-medium">{file.name}</p>
@@ -573,7 +580,15 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       
                       {/* Resize Mode Toggle */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">{locale === 'en' ? 'Resize Mode' : locale === 'es' ? 'Modo de Redimensión' : 'Resize Mode'}</label>
+                        {(() => {
+                          const resizeModeText = locale === 'fr' ? 'Mode de Redimensionnement' : 'Resize Mode';
+                          console.log('🐛 DEBUG - Resize Mode Label:', resizeModeText, '(locale:', locale + ')');
+                          return (
+                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                              {resizeModeText}
+                            </label>
+                          );
+                        })()}
                         <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
                           <button
                             onClick={() => setResizeMode('pixels')}
@@ -583,7 +598,11 @@ function ImageResizeContent({ locale }: { locale: string }) {
                                 : 'text-gray-600 hover:text-gray-900'
                             }`}
                           >
-                            {locale === 'en' ? 'By Pixels' : locale === 'es' ? 'Por Píxeles' : 'By Pixels'}
+                            {(() => {
+                              const byPixelsText = locale === 'fr' ? 'Par Pixels' : 'By Pixels';
+                              console.log('🐛 DEBUG - By Pixels Button:', byPixelsText, '(locale:', locale + ')');
+                              return byPixelsText;
+                            })()}
                           </button>
                           <button
                             onClick={() => setResizeMode('percentage')}
@@ -593,7 +612,11 @@ function ImageResizeContent({ locale }: { locale: string }) {
                                 : 'text-gray-600 hover:text-gray-900'
                             }`}
                           >
-                            {locale === 'en' ? 'By Percentage' : locale === 'es' ? 'Por Porcentaje' : 'By Percentage'}
+                            {(() => {
+                              const byPercentageText = locale === 'fr' ? 'Par Pourcentage' : 'By Percentage';
+                              console.log('🐛 DEBUG - By Percentage Button:', byPercentageText, '(locale:', locale + ')');
+                              return byPercentageText;
+                            })()}
                           </button>
                         </div>
                       </div>
@@ -602,80 +625,81 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       {resizeMode === 'pixels' ? (
                         <div className="grid grid-cols-1 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              {locale === 'en' ? 'Width (px)' : locale === 'es' ? 'Ancho (px)' : 'Width (px)'}
-                            </label>
+                            {(() => {
+                              const widthText = locale === 'fr' ? 'Largeur (px)' : 'Width (px)';
+                              console.log('🐛 DEBUG - Width Label:', widthText, '(locale:', locale + ')');
+                              return (
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  {widthText}
+                                </label>
+                              );
+                            })()}
                             <input
                               type="number"
                               value={width || ''}
                               onChange={(e) => handleWidthChange(e.target.value)}
-                              onFocus={(e) => {
-                                if (e.target.placeholder) {
-                                  e.target.setAttribute('data-placeholder', e.target.placeholder);
-                                  e.target.placeholder = '';
-                                }
-                              }}
-                              onBlur={(e) => {
-                                if (!e.target.value && e.target.getAttribute('data-placeholder')) {
-                                  e.target.placeholder = e.target.getAttribute('data-placeholder') || '';
-                                }
-                              }}
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
-                              placeholder={locale === 'en' ? 'Enter width...' : locale === 'es' ? 'Ingresa ancho...' : 'Enter width...'}
+                              placeholder={(() => {
+                                const widthPlaceholder = locale === 'fr' ? 'Entrez la largeur...' : 'Enter width...';
+                                console.log('🐛 DEBUG - Width Placeholder:', widthPlaceholder, '(locale:', locale + ')');
+                                return widthPlaceholder;
+                              })()}
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              {locale === 'en' ? 'Height (px)' : locale === 'es' ? 'Alto (px)' : 'Height (px)'}
-                            </label>
+                            {(() => {
+                              const heightText = locale === 'fr' ? 'Hauteur (px)' : 'Height (px)';
+                              console.log('🐛 DEBUG - Height Label:', heightText, '(locale:', locale + ')');
+                              return (
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  {heightText}
+                                </label>
+                              );
+                            })()}
                             <input
                               type="number"
                               value={height || ''}
                               onChange={(e) => handleHeightChange(e.target.value)}
-                              onFocus={(e) => {
-                                if (e.target.placeholder) {
-                                  e.target.setAttribute('data-placeholder', e.target.placeholder);
-                                  e.target.placeholder = '';
-                                }
-                              }}
-                              onBlur={(e) => {
-                                if (!e.target.value && e.target.getAttribute('data-placeholder')) {
-                                  e.target.placeholder = e.target.getAttribute('data-placeholder') || '';
-                                }
-                              }}
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
-                              placeholder={locale === 'en' ? 'Enter height...' : locale === 'es' ? 'Ingresa alto...' : 'Enter height...'}
+                              placeholder={(() => {
+                                const heightPlaceholder = locale === 'fr' ? 'Entrez la hauteur...' : 'Enter height...';
+                                console.log('🐛 DEBUG - Height Placeholder:', heightPlaceholder, '(locale:', locale + ')');
+                                return heightPlaceholder;
+                              })()}
                             />
                           </div>
                         </div>
                       ) : (
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {locale === 'en' ? 'Resize to % of original' : locale === 'es' ? 'Redimensionar al % del original' : 'Resize to % of original'}
-                          </label>
+                          {(() => {
+                            const percentageText = locale === 'fr' ? 'Redimensionner à % de l\'original' : 'Resize to % of original';
+                            console.log('🐛 DEBUG - Percentage Label:', percentageText, '(locale:', locale + ')');
+                            return (
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                {percentageText}
+                              </label>
+                            );
+                          })()}
                           <input
                             type="number"
                             value={percentageValue || ''}
                             onChange={(e) => setPercentageValue(parseFloat(e.target.value) || 100)}
-                            onFocus={(e) => {
-                              if (e.target.placeholder) {
-                                e.target.setAttribute('data-placeholder', e.target.placeholder);
-                                e.target.placeholder = '';
-                              }
-                            }}
-                            onBlur={(e) => {
-                              if (!e.target.value && e.target.getAttribute('data-placeholder')) {
-                                e.target.placeholder = e.target.getAttribute('data-placeholder') || '';
-                              }
-                            }}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-800"
                             min="1"
                             max="500"
-                            placeholder={locale === 'en' ? 'Enter percentage...' : locale === 'es' ? 'Ingresa porcentaje...' : 'Enter percentage...'}
+                            placeholder={(() => {
+                              const percentagePlaceholder = locale === 'fr' ? 'Entrez le pourcentage...' : 'Enter percentage...';
+                              console.log('🐛 DEBUG - Percentage Placeholder:', percentagePlaceholder, '(locale:', locale + ')');
+                              return percentagePlaceholder;
+                            })()}
                           />
                           <p className="text-sm text-gray-600 mt-2">
                             <span className="text-purple-600 font-medium">
-                              {locale === 'en' ? 'Result:' : locale === 'es' ? 'Resultado:' : 'Result:'} {Math.round(originalDimensions.width * (percentageValue / 100))}×{Math.round(originalDimensions.height * (percentageValue / 100))}
+                              {(() => {
+                                const resultText = locale === 'fr' ? 'Résultat:' : 'Result:';
+                                console.log('🐛 DEBUG - Result Text:', resultText, '(locale:', locale + ')');
+                                return resultText;
+                              })()} {Math.round(originalDimensions.width * (percentageValue / 100))}×{Math.round(originalDimensions.height * (percentageValue / 100))}
                             </span>
                           </p>
                         </div>
@@ -690,7 +714,15 @@ function ImageResizeContent({ locale }: { locale: string }) {
                             onChange={(e) => setMaintainAspectRatio(e.target.checked)}
                             className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                           />
-                          <span className="text-sm text-gray-700">{locale === 'en' ? 'Maintain aspect ratio' : locale === 'es' ? 'Mantener relación de aspecto' : 'Maintain aspect ratio'}</span>
+                          {(() => {
+                            const aspectRatioText = locale === 'fr' ? 'Maintenir le ratio d\'aspect' : 'Maintain aspect ratio';
+                            console.log('🐛 DEBUG - Aspect Ratio Checkbox:', aspectRatioText, '(locale:', locale + ')');
+                            return (
+                              <span className="text-sm text-gray-700">
+                                {aspectRatioText}
+                              </span>
+                            );
+                          })()}
                         </label>
                         
                         <label className="flex items-center space-x-3">
@@ -700,7 +732,15 @@ function ImageResizeContent({ locale }: { locale: string }) {
                             onChange={(e) => setDoNotEnlarge(e.target.checked)}
                             className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                           />
-                          <span className="text-sm text-gray-700">{locale === 'en' ? 'Do not enlarge if smaller' : locale === 'es' ? 'No agrandar si es más pequeño' : 'Do not enlarge if smaller'}</span>
+                          {(() => {
+                            const noEnlargeText = locale === 'fr' ? 'Ne pas agrandir si plus petit' : 'Do not enlarge if smaller';
+                            console.log('🐛 DEBUG - No Enlarge Checkbox:', noEnlargeText, '(locale:', locale + ')');
+                            return (
+                              <span className="text-sm text-gray-700">
+                                {noEnlargeText}
+                              </span>
+                            );
+                          })()}
                         </label>
                       </div>
 
@@ -712,8 +752,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
                       >
                         <PhotoIcon className="h-6 w-6" />
-{(() => {
-                          const startText = locale === 'en' ? '🚀 Start Resizing' : locale === 'es' ? '🚀 Comenzar Redimensión' : locale === 'fr' ? '🚀 Commencer le Redimensionnement' : '🚀 Start Resizing';
+                        {(() => {
+                          const startText = locale === 'fr' ? '🚀 Commencer le Redimensionnement' : '🚀 Start Resizing';
                           console.log('🐛 DEBUG - Start Resizing Button:', startText, '(locale:', locale + ')');
                           return <span>{startText}</span>;
                         })()}
@@ -757,8 +797,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     </div>
                   </div>
                   
-{(() => {
-                    const processingTitle = locale === 'en' ? '🤖 AI Resizing Your Image' : locale === 'es' ? '🤖 IA Redimensionando tu Imagen' : locale === 'fr' ? '🤖 IA Redimensionne Votre Image' : '🤖 AI Resizing Your Image';
+                  {(() => {
+                    const processingTitle = locale === 'fr' ? '🤖 IA Redimensionne Votre Image' : '🤖 AI Resizing Your Image';
                     console.log('🐛 DEBUG - Processing Title:', processingTitle, '(locale:', locale + ')');
                     return (
                       <h3 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
@@ -767,8 +807,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     );
                   })()}
                   
-{(() => {
-                    const processingDesc = locale === 'en' ? 'Please wait while we process your image with precision...' : locale === 'es' ? 'Por favor espera mientras procesamos tu imagen con precisión...' : locale === 'fr' ? 'Veuillez patienter pendant que nous traitons votre image avec précision...' : 'Please wait while we process your image with precision...';
+                  {(() => {
+                    const processingDesc = locale === 'fr' ? 'Veuillez patienter pendant que nous traitons votre image avec précision...' : 'Please wait while we process your image with precision...';
                     console.log('🐛 DEBUG - Processing Description:', processingDesc, '(locale:', locale + ')');
                     return (
                       <p className="text-xl text-gray-700 mb-8 font-medium">
@@ -787,8 +827,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     </div>
                   </div>
                   
-{(() => {
-                    const completeText = locale === 'en' ? 'Complete' : locale === 'es' ? 'Completo' : locale === 'fr' ? 'Terminé' : 'Complete';
+                  {(() => {
+                    const completeText = locale === 'fr' ? 'Terminé' : 'Complete';
                     console.log('🐛 DEBUG - Complete Text:', `${processingProgress}% ${completeText}`, '(locale:', locale + ')');
                     return <p className="text-lg text-purple-600 font-semibold">{processingProgress}% {completeText}</p>;
                   })()}
@@ -797,18 +837,18 @@ function ImageResizeContent({ locale }: { locale: string }) {
                   <div className="mt-8 bg-purple-50 rounded-2xl p-4 border border-purple-100">
                     <div className="flex items-center justify-center space-x-3">
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
-{(() => {
+                      {(() => {
                         const getProcessingStatus = () => {
                           if (processingProgress < 15) {
-                            return locale === 'en' ? 'Analyzing image...' : locale === 'es' ? 'Analizando imagen...' : locale === 'fr' ? 'Analyse de l\'image...' : 'Analyzing image...';
+                            return locale === 'fr' ? 'Analyse de l\'image...' : 'Analyzing image...';
                           } else if (processingProgress < 35) {
-                            return locale === 'en' ? 'Preparing resize...' : locale === 'es' ? 'Preparando redimensión...' : locale === 'fr' ? 'Préparation du redimensionnement...' : 'Preparing resize...';
+                            return locale === 'fr' ? 'Préparation du redimensionnement...' : 'Preparing resize...';
                           } else if (processingProgress < 60) {
-                            return locale === 'en' ? 'Calculating dimensions...' : locale === 'es' ? 'Calculando dimensiones...' : locale === 'fr' ? 'Calcul des dimensions...' : 'Calculating dimensions...';
+                            return locale === 'fr' ? 'Calcul des dimensions...' : 'Calculating dimensions...';
                           } else if (processingProgress < 85) {
-                            return locale === 'en' ? 'Resizing image...' : locale === 'es' ? 'Redimensionando imagen...' : locale === 'fr' ? 'Redimensionnement de l\'image...' : 'Resizing image...';
+                            return locale === 'fr' ? 'Redimensionnement de l\'image...' : 'Resizing image...';
                           } else {
-                            return locale === 'en' ? 'Finalizing...' : locale === 'es' ? 'Finalizando...' : locale === 'fr' ? 'Finalisation...' : 'Finalizing...';
+                            return locale === 'fr' ? 'Finalisation...' : 'Finalizing...';
                           }
                         };
                         const statusText = getProcessingStatus();
@@ -834,8 +874,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       <CheckCircleIcon className="h-10 w-10 text-white" />
                     </div>
                     
-{(() => {
-                      const resultTitle = locale === 'en' ? '✅ Resize Complete!' : locale === 'es' ? '✅ ¡Redimensión Completa!' : locale === 'fr' ? '✅ Redimensionnement Terminé !' : '✅ Resize Complete!';
+                    {(() => {
+                      const resultTitle = locale === 'fr' ? '✅ Redimensionnement Terminé !' : '✅ Resize Complete!';
                       console.log('🐛 DEBUG - Result Title:', resultTitle, '(locale:', locale + ')');
                       return (
                         <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
@@ -843,8 +883,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                         </h2>
                       );
                     })()}
-{(() => {
-                      const resultDesc = locale === 'en' ? 'Your image has been resized successfully' : locale === 'es' ? 'Tu imagen ha sido redimensionada exitosamente' : locale === 'fr' ? 'Votre image a été redimensionnée avec succès' : 'Your image has been resized successfully';
+                    {(() => {
+                      const resultDesc = locale === 'fr' ? 'Votre image a été redimensionnée avec succès' : 'Your image has been resized successfully';
                       console.log('🐛 DEBUG - Result Description:', resultDesc, '(locale:', locale + ')');
                       return <p className="text-gray-600">{resultDesc}</p>;
                     })()}
@@ -853,8 +893,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                   <div className="grid md:grid-cols-2 gap-8 mb-8">
                     {/* Before */}
                     <div className="text-center">
-{(() => {
-                        const originalText = locale === 'en' ? 'Original' : locale === 'es' ? 'Original' : locale === 'fr' ? 'Original' : 'Original';
+                      {(() => {
+                        const originalText = locale === 'fr' ? 'Original' : 'Original';
                         console.log('🐛 DEBUG - Original Text:', originalText, '(locale:', locale + ')');
                         return <h3 className="font-semibold text-gray-900 mb-4">{originalText}</h3>;
                       })()}
@@ -873,8 +913,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
 
                     {/* After */}
                     <div className="text-center">
-{(() => {
-                        const resizedText = locale === 'en' ? 'Resized' : locale === 'es' ? 'Redimensionada' : locale === 'fr' ? 'Redimensionnée' : 'Resized';
+                      {(() => {
+                        const resizedText = locale === 'fr' ? 'Redimensionnée' : 'Resized';
                         console.log('🐛 DEBUG - Resized Text:', resizedText, '(locale:', locale + ')');
                         return <h3 className="font-semibold text-gray-900 mb-4">{resizedText}</h3>;
                       })()}
@@ -899,8 +939,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-3 mx-auto"
                     >
                       <CheckCircleIcon className="h-6 w-6" />
-{(() => {
-                        const downloadText = locale === 'en' ? '📥 Download Resized Image' : locale === 'es' ? '📥 Descargar Imagen Redimensionada' : locale === 'fr' ? '📥 Télécharger l\'Image Redimensionnée' : '📥 Download Resized Image';
+                      {(() => {
+                        const downloadText = locale === 'fr' ? '📥 Télécharger l\'Image Redimensionnée' : '📥 Download Resized Image';
                         console.log('🐛 DEBUG - Download Button:', downloadText, '(locale:', locale + ')');
                         return <span>{downloadText}</span>;
                       })()}
@@ -910,8 +950,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       onClick={resetToStart}
                       className="text-gray-600 hover:text-gray-900 px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                     >
-{(() => {
-                        const anotherText = locale === 'en' ? 'Resize Another Image' : locale === 'es' ? 'Redimensionar Otra Imagen' : locale === 'fr' ? 'Redimensionner une Autre Image' : 'Resize Another Image';
+                      {(() => {
+                        const anotherText = locale === 'fr' ? 'Redimensionner une Autre Image' : 'Resize Another Image';
                         console.log('🐛 DEBUG - Another Image Button:', anotherText, '(locale:', locale + ')');
                         return anotherText;
                       })()}
