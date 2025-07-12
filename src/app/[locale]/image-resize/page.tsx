@@ -14,10 +14,10 @@ import {
   resizeImage,
   getImageDimensions,
   formatFileSize,
-  type ConversionResult,
   type ResizeOptions 
 } from '@/lib/imageUtils';
 
+// Types
 interface ResizeResult {
   originalFile: File;
   resizedBlob: Blob;
@@ -30,23 +30,20 @@ interface ResizeResult {
 
 type ResizeMode = 'pixels' | 'percentage';
 
-// Simple Preview Component - No Interactive Resize
+// Simple Preview Component
 function SimplePreviewBox({ 
   imageUrl, 
   originalDimensions, 
   width, 
   height,
-  getText,
   locale
 }: {
   imageUrl: string;
   originalDimensions: { width: number; height: number };
   width: number | undefined;
   height: number | undefined;
-  getText: (key: string, fallback: string) => string;
   locale: string;
 }) {
-  // Calculate preview dimensions
   const previewWidth = width || originalDimensions.width;
   const previewHeight = height || originalDimensions.height;
   
@@ -55,8 +52,6 @@ function SimplePreviewBox({
     : previewWidth < originalDimensions.width || previewHeight < originalDimensions.height
     ? (locale === 'fr' ? 'Réduction' : 'Shrinking')
     : (locale === 'fr' ? 'Agrandissement' : 'Enlarging');
-    
-  console.log('🐛 Size Comparison Text:', sizeText, '(locale:', locale + ')');
   
   return (
     <div className="relative bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-[400px] flex items-center justify-center">
@@ -73,12 +68,10 @@ function SimplePreviewBox({
           }}
         />
         
-        {/* Dimension indicator */}
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/75 text-white px-3 py-1 rounded text-sm font-medium">
           {previewWidth} × {previewHeight}
         </div>
         
-        {/* Size comparison indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-center">
           <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded text-sm font-medium">
             {sizeText}
@@ -95,11 +88,9 @@ export default async function ImageResize({ params }: { params: Promise<{ locale
 }
 
 function ImageResizeContent({ locale }: { locale: string }) {
-  // 🐛 DEBUG: Log the locale received
-  console.log('🌐 ImageResize component - Received locale:', locale);
+  console.log('🌐 ImageResize - Locale:', locale);
   
   const { user } = useAuth();
-  const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
   const [showAuthModal, setShowAuthModal] = useState(false);
   
@@ -115,7 +106,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
   const processingRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
-  // Component state - Step-based like PDF convert
+  // State
   const [currentStep, setCurrentStep] = useState<'upload' | 'configure' | 'processing' | 'result'>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
@@ -129,14 +120,14 @@ function ImageResizeContent({ locale }: { locale: string }) {
   const [processingProgress, setProcessingProgress] = useState(0);
   const [resizeResult, setResizeResult] = useState<ResizeResult | null>(null);
 
-  // Auto-focus on upload area when page loads
+  // Auto-focus on upload area
   useEffect(() => {
     if (currentStep === 'upload' && uploadRef.current) {
       uploadRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [currentStep]);
 
-  // Dropzone for file handling
+  // Dropzone
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => handleFileSelect(acceptedFiles),
     accept: {
@@ -145,7 +136,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
     multiple: false
   });
 
-  // Handle file selection
+  // File selection
   const handleFileSelect = async (files: File[]) => {
     if (files.length === 0) return;
     const selectedFile = files[0];
@@ -159,7 +150,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
       setHeight(dimensions.height);
       setCurrentStep('configure');
       
-      // Scroll to configure section
       setTimeout(() => {
         configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
@@ -168,7 +158,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }
   };
 
-  // Handle width change with aspect ratio
+  // Width change
   const handleWidthChange = (value: string) => {
     const newWidth = value ? parseInt(value) : undefined;
     setWidth(newWidth);
@@ -179,7 +169,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }
   };
 
-  // Handle height change with aspect ratio
+  // Height change
   const handleHeightChange = (value: string) => {
     const newHeight = value ? parseInt(value) : undefined;
     setHeight(newHeight);
@@ -190,30 +180,19 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }
   };
 
-  // Handle interactive resize
-  const handleInteractiveDimensionsChange = (newWidth: number, newHeight: number) => {
-    setWidth(newWidth);
-    setHeight(newHeight);
-  };
-
-  // Start resize process
+  // Start resize
   const startResize = async () => {
     if (!file || !originalDimensions) return;
-
-    // Note: Image resize is a free feature, no authentication required
 
     setCurrentStep('processing');
     setIsProcessing(true);
     setProcessingProgress(0);
 
-    // Scroll to processing section
     setTimeout(() => {
       processingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      processingRef.current?.focus();
     }, 300);
 
     try {
-      // Calculate final dimensions
       let finalWidth: number;
       let finalHeight: number;
 
@@ -225,12 +204,10 @@ function ImageResizeContent({ locale }: { locale: string }) {
         finalHeight = height || originalDimensions.height;
       }
 
-      // Check enlarge restriction
       if (doNotEnlarge && (finalWidth > originalDimensions.width || finalHeight > originalDimensions.height)) {
-        throw new Error('Resim büyütme devre dışı. Mevcut boyuttan küçük bir boyut seçin.');
+        throw new Error('Cannot enlarge image');
       }
 
-      // Simulate progress steps with longer delays for better visibility
       const progressSteps = [
         { progress: 15, delay: 800 },
         { progress: 35, delay: 1000 },
@@ -244,7 +221,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
         await new Promise(resolve => setTimeout(resolve, step.delay));
       }
 
-      // Perform actual resize
       const options: ResizeOptions = {
         width: finalWidth,
         height: finalHeight,
@@ -253,7 +229,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
 
       const result = await resizeImage(file, options);
       
-      // Create resize result
       const resizeData: ResizeResult = {
         originalFile: file,
         resizedBlob: result.file,
@@ -267,12 +242,10 @@ function ImageResizeContent({ locale }: { locale: string }) {
       setResizeResult(resizeData);
       setCurrentStep('result');
 
-      // Scroll to result section
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 300);
 
-      // Track activity
       if (user) {
         await ActivityTracker.createActivity(user.uid, {
           type: 'image_resize',
@@ -294,7 +267,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }
   };
 
-  // Reset to start
+  // Reset
   const resetToStart = () => {
     setCurrentStep('upload');
     setFile(null);
@@ -312,7 +285,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }, 100);
   };
 
-  // Download resized image
+  // Download
   const downloadResizedImage = () => {
     if (resizeResult) {
       const link = document.createElement('a');
@@ -322,88 +295,86 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }
   };
 
-  // Processing status function
+  // Processing status
   const getProcessingStatus = () => {
     if (processingProgress < 15) {
-      return locale === 'fr' ? 'Analyse de l\'image...' : 'Analyzing image...';
+      return locale === 'fr' ? 'Analyse de image...' : 'Analyzing image...';
     } else if (processingProgress < 35) {
-      return locale === 'fr' ? 'Préparation du redimensionnement...' : 'Preparing resize...';
+      return locale === 'fr' ? 'Preparation du redimensionnement...' : 'Preparing resize...';
     } else if (processingProgress < 60) {
       return locale === 'fr' ? 'Calcul des dimensions...' : 'Calculating dimensions...';
     } else if (processingProgress < 85) {
-      return locale === 'fr' ? 'Redimensionnement de l\'image...' : 'Resizing image...';
+      return locale === 'fr' ? 'Redimensionnement de image...' : 'Resizing image...';
     } else {
       return locale === 'fr' ? 'Finalisation...' : 'Finalizing...';
     }
   };
 
-  // Text variables - Fransızca çeviriler
-  const statsText = locale === 'fr' ? '5M+ Images Redimensionnées • IA' : '5M+ Images Resized • AI Powered';
-  const mainTitle = locale === 'fr' ? '📐 Redimensionner Image' : '📐 Image Resize';
-  const description = locale === 'fr' ? 'Redimensionnez vos images à toute dimension avec précision et qualité' : 'Resize your images to any dimension with precision and quality';
-  const headerTitle = locale === 'fr' ? 'Redimensionner Image' : 'Image Resize';
-  const stepText = locale === 'fr' ? 'Étape' : 'Step';
-  const ofText = locale === 'fr' ? 'sur 4' : 'of 4';
+  // FRANSIZCA ÇEVİRİLER - Basit ve güvenli yaklaşım
+  const isFrench = locale === 'fr';
+  
+  // Header texts
+  const statsText = isFrench ? '5M+ Images Redimensionnees • IA' : '5M+ Images Resized • AI Powered';
+  const mainTitle = isFrench ? '📐 Redimensionner Image' : '📐 Image Resize';
+  const description = isFrench ? 'Redimensionnez vos images a toute dimension avec precision et qualite' : 'Resize your images to any dimension with precision and quality';
+  const headerTitle = isFrench ? 'Redimensionner Image' : 'Image Resize';
+  const stepText = isFrench ? 'Etape' : 'Step';
+  const ofText = isFrench ? 'sur 4' : 'of 4';
   const stepNumber = currentStep === 'upload' ? '1' : currentStep === 'configure' ? '2' : currentStep === 'processing' ? '3' : '4';
-  const newImageText = locale === 'fr' ? 'Nouvelle Image' : 'New Image';
+  const newImageText = isFrench ? 'Nouvelle Image' : 'New Image';
   
-  // Upload step texts
+  // Upload step
   const uploadTitle = isDragActive 
-    ? (locale === 'fr' ? 'Déposez votre image ici' : 'Drop your image here')
-    : (locale === 'fr' ? 'Sélectionner Image à Redimensionner' : 'Select Image to Resize');
-  const formatText = locale === 'fr' ? 'PNG, JPEG, WebP, GIF • Jusqu\'à 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB';
-  const chooseFileText = locale === 'fr' ? 'Choisir Fichier' : 'Choose File';
-  const secureText = locale === 'fr' ? 'Traitement Sécurisé' : 'Secure Processing';
-  const fastText = locale === 'fr' ? 'Très Rapide' : 'Lightning Fast';
-  const pixelText = locale === 'fr' ? 'Pixel Parfait' : 'Pixel Perfect';
+    ? (isFrench ? 'Deposez votre image ici' : 'Drop your image here')
+    : (isFrench ? 'Selectionner Image a Redimensionner' : 'Select Image to Resize');
+  const formatText = isFrench ? 'PNG, JPEG, WebP, GIF • Jusqu a 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB';
+  const chooseFileText = isFrench ? 'Choisir Fichier' : 'Choose File';
+  const secureText = isFrench ? 'Traitement Securise' : 'Secure Processing';
+  const fastText = isFrench ? 'Tres Rapide' : 'Lightning Fast';
+  const pixelText = isFrench ? 'Pixel Parfait' : 'Pixel Perfect';
   
-  // Configure step texts
-  const configureTitle = locale === 'fr' ? 'Configurer Paramètres Redimensionnement' : 'Configure Resize Settings';
-  const configureDesc = locale === 'fr' ? 'Définissez vos dimensions et options souhaitées' : 'Set your desired dimensions and options';
-  const previewTitle = locale === 'fr' ? 'Aperçu en Direct' : 'Live Preview';
-  const previewInstructions = locale === 'fr' ? '🎯 Ajustez les dimensions avec les contrôles de droite et voyez l\'aperçu en direct' : '🎯 Adjust dimensions using controls on the right and see live preview';
-  const resizeModeText = locale === 'fr' ? 'Mode de Redimensionnement' : 'Resize Mode';
-  const byPixelsText = locale === 'fr' ? 'Par Pixels' : 'By Pixels';
-  const byPercentageText = locale === 'fr' ? 'Par Pourcentage' : 'By Percentage';
-  const widthText = locale === 'fr' ? 'Largeur (px)' : 'Width (px)';
-  const heightText = locale === 'fr' ? 'Hauteur (px)' : 'Height (px)';
-  const widthPlaceholder = locale === 'fr' ? 'Entrez la largeur...' : 'Enter width...';
-  const heightPlaceholder = locale === 'fr' ? 'Entrez la hauteur...' : 'Enter height...';
-  const percentageText = locale === 'fr' ? 'Redimensionner à % de l\'original' : 'Resize to % of original';
-  const percentagePlaceholder = locale === 'fr' ? 'Entrez le pourcentage...' : 'Enter percentage...';
-  const resultText = locale === 'fr' ? 'Résultat:' : 'Result:';
-  const aspectRatioText = locale === 'fr' ? 'Maintenir le ratio d\'aspect' : 'Maintain aspect ratio';
-  const noEnlargeText = locale === 'fr' ? 'Ne pas agrandir si plus petit' : 'Do not enlarge if smaller';
-  const startText = locale === 'fr' ? '🚀 Commencer le Redimensionnement' : '🚀 Start Resizing';
+  // Configure step
+  const configureTitle = isFrench ? 'Configurer Parametres Redimensionnement' : 'Configure Resize Settings';
+  const configureDesc = isFrench ? 'Definissez vos dimensions et options souhaitees' : 'Set your desired dimensions and options';
+  const previewTitle = isFrench ? 'Apercu en Direct' : 'Live Preview';
+  const previewInstructions = isFrench ? '🎯 Ajustez les dimensions avec les controles de droite et voyez apercu en direct' : '🎯 Adjust dimensions using controls on the right and see live preview';
+  const resizeModeText = isFrench ? 'Mode de Redimensionnement' : 'Resize Mode';
+  const byPixelsText = isFrench ? 'Par Pixels' : 'By Pixels';
+  const byPercentageText = isFrench ? 'Par Pourcentage' : 'By Percentage';
+  const widthText = isFrench ? 'Largeur (px)' : 'Width (px)';
+  const heightText = isFrench ? 'Hauteur (px)' : 'Height (px)';
+  const widthPlaceholder = isFrench ? 'Entrez la largeur...' : 'Enter width...';
+  const heightPlaceholder = isFrench ? 'Entrez la hauteur...' : 'Enter height...';
+  const percentageText = isFrench ? 'Redimensionner a % de original' : 'Resize to % of original';
+  const percentagePlaceholder = isFrench ? 'Entrez le pourcentage...' : 'Enter percentage...';
+  const resultText = isFrench ? 'Resultat:' : 'Result:';
+  const aspectRatioText = isFrench ? 'Maintenir le ratio aspect' : 'Maintain aspect ratio';
+  const noEnlargeText = isFrench ? 'Ne pas agrandir si plus petit' : 'Do not enlarge if smaller';
+  const startText = isFrench ? '🚀 Commencer le Redimensionnement' : '🚀 Start Resizing';
   
-  // Processing step texts
-  const processingTitle = locale === 'fr' ? '🤖 IA Redimensionne Votre Image' : '🤖 AI Resizing Your Image';
-  const processingDesc = locale === 'fr' ? 'Veuillez patienter pendant que nous traitons votre image avec précision...' : 'Please wait while we process your image with precision...';
-  const completeText = locale === 'fr' ? 'Terminé' : 'Complete';
+  // Processing step
+  const processingTitle = isFrench ? '🤖 IA Redimensionne Votre Image' : '🤖 AI Resizing Your Image';
+  const processingDesc = isFrench ? 'Veuillez patienter pendant que nous traitons votre image avec precision...' : 'Please wait while we process your image with precision...';
+  const completeText = isFrench ? 'Termine' : 'Complete';
   
-  // Result step texts
-  const resultTitle = locale === 'fr' ? '✅ Redimensionnement Terminé !' : '✅ Resize Complete!';
-  const resultDescText = locale === 'fr' ? 'Votre image a été redimensionnée avec succès' : 'Your image has been resized successfully';
-  const originalText = locale === 'fr' ? 'Original' : 'Original';
-  const resizedText = locale === 'fr' ? 'Redimensionnée' : 'Resized';
-  const downloadText = locale === 'fr' ? '📥 Télécharger l\'Image Redimensionnée' : '📥 Download Resized Image';
-  const anotherText = locale === 'fr' ? 'Redimensionner une Autre Image' : 'Resize Another Image';
+  // Result step
+  const resultTitle = isFrench ? '✅ Redimensionnement Termine !' : '✅ Resize Complete!';
+  const resultDescText = isFrench ? 'Votre image a ete redimensionnee avec succes' : 'Your image has been resized successfully';
+  const originalText = isFrench ? 'Original' : 'Original';
+  const resizedText = isFrench ? 'Redimensionnee' : 'Resized';
+  const downloadText = isFrench ? '📥 Telecharger Image Redimensionnee' : '📥 Download Resized Image';
+  const anotherText = isFrench ? 'Redimensionner une Autre Image' : 'Resize Another Image';
 
-  // Debug logs for all texts
-  console.log('🐛 DEBUG Texts:', {
-    locale,
-    statsText,
-    mainTitle,
-    description,
-    uploadTitle,
-    configureTitle,
-    processingTitle,
-    resultTitle
-  });
+  // Debug logging
+  console.log('🐛 Current Step:', currentStep);
+  console.log('🐛 Is French:', isFrench);
+  console.log('🐛 Main Title:', mainTitle);
+  console.log('🐛 Result Title:', resultTitle);
+  console.log('🐛 Download Text:', downloadText);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
-      {/* Enhanced Background Elements */}
+      {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[...Array(20)].map((_, i) => (
           <div
@@ -419,7 +390,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
         ))}
       </div>
       
-      {/* SEO */}
       <StructuredData type="website" />
 
       {/* Header */}
@@ -474,16 +444,13 @@ function ImageResizeContent({ locale }: { locale: string }) {
             </p>
           </div>
 
-          {/* Enhanced Upload Area */}
           <div className="max-w-2xl mx-auto">
             <div className="relative">
-              {/* Orbital rings */}
               <div className="absolute inset-0 -m-8">
                 <div className="absolute inset-0 border-2 border-purple-200/30 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
                 <div className="absolute inset-4 border-2 border-pink-200/30 rounded-full animate-spin" style={{ animationDuration: '6s', animationDirection: 'reverse' }}></div>
               </div>
               
-              {/* Floating sparkles */}
               <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0s' }}></div>
               <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-green-400 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '1s' }}></div>
               
@@ -513,7 +480,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
               </div>
             </div>
 
-            {/* Trust indicators */}
             <div className="mt-8 grid grid-cols-3 gap-4">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🔒</div>
@@ -546,7 +512,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                 </div>
 
                 <div className="grid lg:grid-cols-5 gap-8">
-                  {/* Left: Interactive Preview (3/5) */}
+                  {/* Left: Preview */}
                   <div className="lg:col-span-3">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
                       <h3 className="font-semibold text-gray-900 mb-4 text-center">{previewTitle}</h3>
@@ -558,7 +524,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
                         originalDimensions={originalDimensions}
                         width={width}
                         height={height}
-                        getText={getText}
                         locale={locale}
                       />
                       <div className="mt-4 text-sm text-gray-700 text-center bg-white rounded-lg p-3">
@@ -569,11 +534,11 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     </div>
                   </div>
 
-                  {/* Right: Settings (2/5) */}
+                  {/* Right: Settings */}
                   <div className="lg:col-span-2">
                     <div className="space-y-6">
                       
-                      {/* Resize Mode Toggle */}
+                      {/* Mode Toggle */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">
                           {resizeModeText}
@@ -602,7 +567,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                         </div>
                       </div>
 
-                      {/* Resize Controls */}
+                      {/* Controls */}
                       {resizeMode === 'pixels' ? (
                         <div className="grid grid-cols-1 gap-4">
                           <div>
@@ -708,12 +673,9 @@ function ImageResizeContent({ locale }: { locale: string }) {
             <div className="max-w-3xl mx-auto text-center w-full">
               <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-16 relative overflow-hidden">
                 
-                {/* Background gradient animation */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-purple-50/80 opacity-50"></div>
                 
-                {/* Content */}
                 <div className="relative z-10">
-                  {/* Multiple rotating rings - larger and more prominent */}
                   <div className="relative mb-12">
                     <div className="w-40 h-40 mx-auto relative">
                       <div className="absolute inset-0 border-4 border-purple-200 rounded-full"></div>
@@ -721,7 +683,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
                       <div className="absolute inset-4 border-4 border-purple-400 rounded-full animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
                       <div className="absolute inset-6 border-4 border-pink-500 rounded-full animate-spin" style={{ animationDuration: '1s' }}></div>
                       
-                      {/* Center icon - larger */}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <PhotoIcon className="h-16 w-16 text-purple-600 animate-pulse" />
                       </div>
@@ -736,7 +697,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
                     {processingDesc}
                   </p>
                   
-                  {/* Progress bar with shimmer - larger */}
                   <div className="w-full bg-gray-200 rounded-full h-4 mb-6 overflow-hidden shadow-inner">
                     <div 
                       className="h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 relative shadow-lg"
@@ -748,7 +708,6 @@ function ImageResizeContent({ locale }: { locale: string }) {
                   
                   <p className="text-lg text-purple-600 font-semibold">{processingProgress}% {completeText}</p>
                   
-                  {/* Processing status */}
                   <div className="mt-8 bg-purple-50 rounded-2xl p-4 border border-purple-100">
                     <div className="flex items-center justify-center space-x-3">
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
