@@ -46,7 +46,7 @@ export default function HomePage() {
   const aiPlatformText = isTurkish ? 'AI Destekli Platform' : 
                         isFrench ? "Plateforme Alimentée par l'IA" : 
                         isSpanish ? 'Plataforma Impulsada por IA' : 
-                        isGerman ? 'KI-Gestützte Plattform' : 
+                        isGerman ? 'KI-Basierte Plattform' : 
                         'AI Powered Platform';
                         
   const aiFeaturesText = isTurkish ? 'AI Özellikleri' : 
