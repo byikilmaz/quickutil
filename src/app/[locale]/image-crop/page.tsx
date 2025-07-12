@@ -489,6 +489,72 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
     }
   };
 
+  // FRANSIZCA ÇEVİRİLER - Basit ve güvenli yaklaşım
+  const isFrench = locale === 'fr';
+  
+  // Header texts
+  const headerTitle = isFrench ? 'Recadrage d\'Image' : 'Image Crop';
+  const stepText = isFrench ? 'Étape' : 'Step';
+  const ofText = isFrench ? 'sur 4' : 'of 4';
+  const stepNumber = currentStep === 'upload' ? '1' : currentStep === 'configure' ? '2' : currentStep === 'processing' ? '3' : '4';
+  const newImageText = isFrench ? 'Nouvelle Image' : 'New Image';
+  
+  // Upload step
+  const statsText = isFrench ? '3M+ Images Recadrees • Alimente par l\'IA' : '3M+ Images Cropped • AI-Powered';
+  const mainTitle = isFrench ? '✂️ Recadrage d\'Image' : '✂️ Image Crop';
+  const description = isFrench ? 'Recadrez vos images a la taille parfaite et concentrez-vous sur ce qui compte le plus' : 'Crop your images to the perfect size and focus on what matters most';
+  const uploadTitle = isDragActive 
+    ? (isFrench ? 'Deposez votre image ici' : 'Drop your image here')
+    : (isFrench ? 'Selectionner Image a Recadrer' : 'Select Image to Crop');
+  const formatText = isFrench ? 'PNG, JPEG, WebP, GIF • Jusqu\'a 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB';
+  const chooseFileText = isFrench ? 'Choisir Fichier' : 'Choose File';
+  const secureText = isFrench ? 'Traitement Securise' : 'Secure Processing';
+  const fastText = isFrench ? 'Tres Rapide' : 'Lightning Fast';
+  const preciseText = isFrench ? 'Recadrage Precis' : 'Precise Cropping';
+  
+  // Configure step
+  const configureTitle = isFrench ? 'Configurer Zone de Recadrage' : 'Configure Crop Area';
+  const configureDesc = isFrench ? 'Selectionnez la zone que vous souhaitez conserver' : 'Select the area you want to keep';
+  const previewTitle = isFrench ? 'Apercu de Recadrage Interactif' : 'Interactive Crop Preview';
+  const previewInstructions = isFrench ? '🎯 Faites glisser les poignees pour ajuster la zone de recadrage ou cliquez au centre pour deplacer' : '🎯 Drag the handles to adjust crop area or click center to move';
+  const presetsText = isFrench ? 'Prereglages Rapides' : 'Quick Presets';
+  const squareText = isFrench ? '🔲 Carre' : '🔲 Square';
+  const centerText = isFrench ? '🎯 Centre' : '🎯 Center';
+  const wideText = isFrench ? '📐 Large' : '📐 Wide';
+  const tallText = isFrench ? '📏 Haut' : '📏 Tall';
+  const dimensionsText = isFrench ? 'Dimensions de Recadrage' : 'Crop Dimensions';
+  const xPosText = isFrench ? 'Position X' : 'X Position';
+  const yPosText = isFrench ? 'Position Y' : 'Y Position';
+  const widthText = isFrench ? 'Largeur' : 'Width';
+  const heightText = isFrench ? 'Hauteur' : 'Height';
+  const xPlaceholder = isFrench ? 'Entrez X...' : 'Enter X...';
+  const yPlaceholder = isFrench ? 'Entrez Y...' : 'Enter Y...';
+  const widthPlaceholder = isFrench ? 'Entrez la largeur...' : 'Enter width...';
+  const heightPlaceholder = isFrench ? 'Entrez la hauteur...' : 'Enter height...';
+  const startText = isFrench ? '✂️ Commencer le Recadrage' : '✂️ Start Cropping';
+  
+  // Processing step
+  const processingTitle = isFrench ? '✂️ IA Recadre Votre Image' : '✂️ AI Cropping Your Image';
+  const processingDesc = isFrench ? 'Veuillez patienter pendant que nous recadrons votre image avec precision...' : 'Please wait while we precisely crop your image...';
+  const completeText = isFrench ? 'Termine' : 'Complete';
+  
+  // Result step
+  const resultTitle = isFrench ? '✂️ Recadrage Termine !' : '✂️ Crop Complete!';
+  const resultDescText = isFrench ? 'Votre image a ete recadree avec succes' : 'Your image has been cropped successfully';
+  const originalText = isFrench ? 'Original' : 'Original';
+  const croppedText = isFrench ? 'Recadree' : 'Cropped';
+  const downloadText = isFrench ? '✂️ Telecharger Image Recadree' : '✂️ Download Cropped Image';
+  const anotherText = isFrench ? 'Recadrer une Autre Image' : 'Crop Another Image';
+
+  // Debug logging
+  console.log('🐛 Image Crop - Current Step:', currentStep);
+  console.log('🐛 Image Crop - Is French:', isFrench);
+  console.log('🐛 Image Crop - Header Title:', headerTitle);
+  console.log('🐛 Image Crop - Main Title:', mainTitle);
+  console.log('🐛 Image Crop - Processing Title:', processingTitle);
+  console.log('🐛 Image Crop - Result Title:', resultTitle);
+  console.log('🐛 Image Crop - Download Text:', downloadText);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
       {/* Enhanced Background Elements */}
@@ -520,13 +586,9 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  {locale === 'en' ? 'Image Crop' : locale === 'es' ? 'Recortar Imagen' : 'Image Crop'}
+                  {headerTitle}
                 </h1>
-                <p className="text-sm text-gray-600">{locale === 'en' ? 'Step' : locale === 'es' ? 'Paso' : 'Paso'} {
-                  currentStep === 'upload' ? '1' : 
-                  currentStep === 'configure' ? '2' : 
-                  currentStep === 'processing' ? '3' : '4'
-                } {locale === 'en' ? 'of 4' : locale === 'es' ? 'de 4' : 'de 4'}</p>
+                <p className="text-sm text-gray-600">{stepText} {stepNumber} {ofText}</p>
               </div>
             </div>
             
@@ -536,7 +598,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                 className="flex items-center space-x-2 px-4 py-2 bg-white/50 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/70 transition-all duration-200"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
-                <span>{locale === 'en' ? 'New Image' : locale === 'es' ? 'Nueva Imagen' : 'Nueva Imagen'}</span>
+                <span>{newImageText}</span>
               </button>
             )}
           </div>
@@ -552,17 +614,17 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
           <div className="text-center mb-8">
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <SparklesIcon className="h-4 w-4 text-purple-600 animate-pulse mr-2" />
-{locale === 'en' ? '3M+ Images Cropped • AI-Powered' : locale === 'es' ? '3M+ Imágenes Recortadas • Con IA' : '3M+ Resim Kırpıldı • AI Destekli'}
+              {statsText}
             </div>
             
             <h1 className="text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                {locale === 'en' ? '✂️ Image Crop' : locale === 'es' ? '✂️ Recortar Imagen' : '✂️ Image Crop'}
+                {mainTitle}
               </span>
             </h1>
             
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-              {locale === 'en' ? 'Crop your images to the perfect size and focus on what matters most' : locale === 'es' ? 'Recorta tus imágenes al tamaño perfecto y enfócate en lo que más importa' : 'Crop your images to the perfect size and focus on what matters most'}
+              {description}
             </p>
           </div>
 
@@ -592,17 +654,14 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                 </div>
                 
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {isDragActive 
-                    ? (locale === 'en' ? 'Drop your image here' : locale === 'es' ? 'Suelta tu imagen aquí' : 'Drop your image here')
-                    : (locale === 'en' ? 'Select Image to Crop' : locale === 'es' ? 'Seleccionar Imagen para Recortar' : 'Select Image to Crop')
-                  }
+                  {uploadTitle}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {locale === 'en' ? 'PNG, JPEG, WebP, GIF • Up to 50MB' : locale === 'es' ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB'}
+                  {formatText}
                 </p>
                 
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 inline-block">
-                  {locale === 'en' ? 'Choose File' : locale === 'es' ? 'Elegir Archivo' : 'Choose File'}
+                  {chooseFileText}
                 </div>
               </div>
             </div>
@@ -611,15 +670,15 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
             <div className="mt-8 grid grid-cols-3 gap-4">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🔒</div>
-                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Secure Processing' : locale === 'es' ? 'Procesamiento Seguro' : 'Procesamiento Seguro'}</p>
+                <p className="text-sm font-medium text-gray-700">{secureText}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">⚡</div>
-                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Lightning Fast' : locale === 'es' ? 'Súper Rápido' : 'Súper Rápido'}</p>
+                <p className="text-sm font-medium text-gray-700">{fastText}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">✂️</div>
-                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Precise Cropping' : locale === 'es' ? 'Recorte Preciso' : 'Recorte Preciso'}</p>
+                <p className="text-sm font-medium text-gray-700">{preciseText}</p>
               </div>
             </div>
           </div>
@@ -634,18 +693,18 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
               <div className="p-8">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                    {locale === 'en' ? 'Configure Crop Area' : locale === 'es' ? 'Configurar Área de Recorte' : 'Configurar Área de Recorte'}
+                    {configureTitle}
                   </h2>
-                  <p className="text-gray-600">{locale === 'en' ? 'Select the area you want to keep' : locale === 'es' ? 'Selecciona el área que quieres conservar' : 'Selecciona el área que quieres conservar'}</p>
+                  <p className="text-gray-600">{configureDesc}</p>
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
                   {/* Left: Interactive Preview (2/3) */}
                   <div className="lg:col-span-2">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                      <h3 className="font-semibold text-gray-900 mb-4 text-center">{locale === 'en' ? 'Interactive Crop Preview' : locale === 'es' ? 'Vista Previa de Recorte Interactiva' : 'Vista Previa de Recorte Interactiva'}</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4 text-center">{previewTitle}</h3>
                       <p className="text-sm text-gray-600 mb-4 text-center">
-                        {locale === 'en' ? '🎯 Drag the handles to adjust crop area or click center to move' : locale === 'es' ? '🎯 Arrastra las manijas para ajustar el área de recorte o haz clic en el centro para mover' : '🎯 Arrastra las manijas para ajustar el área de recorte o haz clic en el centro para mover'}
+                        {previewInstructions}
                       </p>
                       <InteractiveCropBox
                         imageUrl={previewUrl}
@@ -666,90 +725,60 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                       
                       {/* Preset Crops */}
                       <div>
-                        <label className="block text-sm font-medium text-black mb-3">{locale === 'en' ? 'Quick Presets' : locale === 'es' ? 'Ajustes Rápidos' : 'Ajustes Rápidos'}</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">{presetsText}</label>
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => applyPresetCrop('square')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-gray-700"
                           >
-                            {locale === 'en' ? '🔲 Square' : locale === 'es' ? '🔲 Cuadrado' : '🔲 Cuadrado'}
+                            {squareText}
                           </button>
                           <button
                             onClick={() => applyPresetCrop('center')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-gray-700"
                           >
-                            {locale === 'en' ? '🎯 Center' : locale === 'es' ? '🎯 Centro' : '🎯 Centro'}
+                            {centerText}
                           </button>
                           <button
                             onClick={() => applyPresetCrop('wide')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-gray-700"
                           >
-                            {locale === 'en' ? '📐 Wide' : locale === 'es' ? '📐 Ancho' : '📐 Ancho'}
+                            {wideText}
                           </button>
                           <button
                             onClick={() => applyPresetCrop('tall')}
-                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-black"
+                            className="p-3 border border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-sm font-medium text-gray-700"
                           >
-                            {locale === 'en' ? '📏 Tall' : locale === 'es' ? '📏 Alto' : '📏 Alto'}
+                            {tallText}
                           </button>
                         </div>
                       </div>
 
                       {/* Crop Dimensions */}
                       <div>
-                        <label className="block text-sm font-medium text-black mb-3">{locale === 'en' ? 'Crop Dimensions' : locale === 'es' ? 'Dimensiones de Recorte' : 'Dimensiones de Recorte'}</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">{dimensionsText}</label>
                         <div className="space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'X Position' : locale === 'es' ? 'Posición X' : 'Posición X'}</label>
+                              <label className="block text-xs text-gray-700 font-medium mb-1">{xPosText}</label>
                               <input
                                 type="number"
                                 value={cropOptions.x}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, x: parseInt(e.target.value) || 0 }))}
-                                onFocus={(e) => {
-                                  if (e.target.placeholder) {
-                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
-                                    e.target.placeholder = '';
-                                  }
-                                }}
-                                onBlur={(e) => {
-                                  const placeholder = e.target.getAttribute('data-placeholder');
-                                  if (placeholder && !e.target.value) {
-                                    e.target.placeholder = placeholder;
-                                  }
-                                }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
-                                style={{ 
-                                  color: '#000000 !important'
-                                } as any}
-                                placeholder={locale === 'en' ? 'Enter X...' : locale === 'es' ? 'Ingresa X...' : 'Ingresa X...'}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                                placeholder={xPlaceholder}
                                 min="0"
                                 max={originalDimensions.width}
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'Y Position' : locale === 'es' ? 'Posición Y' : 'Posición Y'}</label>
+                              <label className="block text-xs text-gray-700 font-medium mb-1">{yPosText}</label>
                               <input
                                 type="number"
                                 value={cropOptions.y}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, y: parseInt(e.target.value) || 0 }))}
-                                onFocus={(e) => {
-                                  if (e.target.placeholder) {
-                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
-                                    e.target.placeholder = '';
-                                  }
-                                }}
-                                onBlur={(e) => {
-                                  const placeholder = e.target.getAttribute('data-placeholder');
-                                  if (placeholder && !e.target.value) {
-                                    e.target.placeholder = placeholder;
-                                  }
-                                }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
-                                style={{ 
-                                  color: '#000000 !important'
-                                } as any}
-                                placeholder={locale === 'en' ? 'Enter Y...' : locale === 'es' ? 'Ingresa Y...' : 'Ingresa Y...'}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                                placeholder={yPlaceholder}
                                 min="0"
                                 max={originalDimensions.height}
                               />
@@ -757,55 +786,25 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'Width' : locale === 'es' ? 'Ancho' : 'Ancho'}</label>
+                              <label className="block text-xs text-gray-700 font-medium mb-1">{widthText}</label>
                               <input
                                 type="number"
                                 value={cropOptions.width}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, width: parseInt(e.target.value) || 0 }))}
-                                onFocus={(e) => {
-                                  if (e.target.placeholder) {
-                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
-                                    e.target.placeholder = '';
-                                  }
-                                }}
-                                onBlur={(e) => {
-                                  const placeholder = e.target.getAttribute('data-placeholder');
-                                  if (placeholder && !e.target.value) {
-                                    e.target.placeholder = placeholder;
-                                  }
-                                }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
-                                style={{ 
-                                  color: '#000000 !important'
-                                } as any}
-                                placeholder={locale === 'en' ? 'Enter width...' : locale === 'es' ? 'Ingresa ancho...' : 'Ingresa ancho...'}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                                placeholder={widthPlaceholder}
                                 min="1"
                                 max={originalDimensions.width}
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-black font-medium mb-1">{locale === 'en' ? 'Height' : locale === 'es' ? 'Alto' : 'Alto'}</label>
+                              <label className="block text-xs text-gray-700 font-medium mb-1">{heightText}</label>
                               <input
                                 type="number"
                                 value={cropOptions.height}
                                 onChange={(e) => setCropOptions(prev => ({ ...prev, height: parseInt(e.target.value) || 0 }))}
-                                onFocus={(e) => {
-                                  if (e.target.placeholder) {
-                                    e.target.setAttribute('data-placeholder', e.target.placeholder);
-                                    e.target.placeholder = '';
-                                  }
-                                }}
-                                onBlur={(e) => {
-                                  const placeholder = e.target.getAttribute('data-placeholder');
-                                  if (placeholder && !e.target.value) {
-                                    e.target.placeholder = placeholder;
-                                  }
-                                }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm crop-input text-black"
-                                style={{ 
-                                  color: '#000000 !important'
-                                } as any}
-                                placeholder={locale === 'en' ? 'Enter height...' : locale === 'es' ? 'Ingresa alto...' : 'Ingresa alto...'}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
+                                placeholder={heightPlaceholder}
                                 min="1"
                                 max={originalDimensions.height}
                               />
@@ -822,7 +821,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
                       >
                         <PhotoIcon className="h-6 w-6" />
-                        <span>{locale === 'en' ? '✂️ Start Cropping' : locale === 'es' ? '✂️ Comenzar Recorte' : '✂️ Comenzar Recorte'}</span>
+                        <span>{startText}</span>
                       </button>
                     </div>
                   </div>
@@ -864,11 +863,11 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                   </div>
                   
                   <h3 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
-                    {locale === 'en' ? '✂️ AI Cropping Your Image' : locale === 'es' ? '✂️ IA Recortando tu Imagen' : '✂️ IA Recortando tu Imagen'}
+                    {processingTitle}
                   </h3>
                   
                   <p className="text-xl text-gray-700 mb-8 font-medium">
-                    {locale === 'en' ? 'Please wait while we precisely crop your image...' : locale === 'es' ? 'Por favor espera mientras recortamos tu imagen con precisión...' : 'Por favor espera mientras recortamos tu imagen con precisión...'}
+                    {processingDesc}
                   </p>
                   
                   {/* Progress bar with shimmer - larger */}
@@ -881,17 +880,17 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                     </div>
                   </div>
                   
-                  <p className="text-lg text-purple-600 font-semibold">{processingProgress}% {locale === 'en' ? 'Complete' : locale === 'es' ? 'Completo' : 'Completo'}</p>
+                  <p className="text-lg text-purple-600 font-semibold">{processingProgress}% {completeText}</p>
                   
                   {/* Processing status */}
                   <div className="mt-8 bg-purple-50 rounded-2xl p-4 border border-purple-100">
                     <div className="flex items-center justify-center space-x-3">
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
                       <span className="text-purple-700 font-medium">
-                        {processingProgress < 15 ? (locale === 'en' ? 'Analyzing crop area...' : locale === 'es' ? 'Analizando área de recorte...' : 'Analizando área de recorte...') :
-                         processingProgress < 35 ? (locale === 'en' ? 'Preparing crop...' : locale === 'es' ? 'Preparando recorte...' : 'Preparando recorte...') :
-                         processingProgress < 60 ? (locale === 'en' ? 'Calculating dimensions...' : locale === 'es' ? 'Calculando dimensiones...' : 'Calculando dimensiones...') :
-                         processingProgress < 85 ? (locale === 'en' ? 'Cropping image...' : locale === 'es' ? 'Recortando imagen...' : 'Recortando imagen...') : (locale === 'en' ? 'Finalizing...' : locale === 'es' ? 'Finalizando...' : 'Finalizando...')}
+                        {processingProgress < 15 ? (isFrench ? 'Analyse de la zone de recadrage...' : 'Analyzing crop area...') :
+                         processingProgress < 35 ? (isFrench ? 'Preparation du recadrage...' : 'Preparing crop...') :
+                         processingProgress < 60 ? (isFrench ? 'Calcul des dimensions...' : 'Calculating dimensions...') :
+                         processingProgress < 85 ? (isFrench ? 'Recadrage de l\'image...' : 'Cropping image...') : (isFrench ? 'Finalisation...' : 'Finalizing...')}
                       </span>
                     </div>
                   </div>
@@ -913,15 +912,15 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                     </div>
                     
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-                      {locale === 'en' ? '✂️ Crop Complete!' : locale === 'es' ? '✂️ ¡Recorte Completo!' : '✂️ ¡Recorte Completo!'}
+                      {resultTitle}
                     </h2>
-                    <p className="text-gray-600">{locale === 'en' ? 'Your image has been cropped successfully' : locale === 'es' ? 'Tu imagen ha sido recortada exitosamente' : 'Tu imagen ha sido recortada exitosamente'}</p>
+                    <p className="text-gray-600">{resultDescText}</p>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-8 mb-8">
                     {/* Before */}
                     <div className="text-center">
-                      <h3 className="font-semibold text-gray-900 mb-4">{locale === 'en' ? 'Original' : locale === 'es' ? 'Original' : 'Original'}</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4">{originalText}</h3>
                       <div className="bg-gray-50 rounded-lg p-4 mb-4">
                         <img
                           src={previewUrl}
@@ -937,7 +936,7 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
 
                     {/* After */}
                     <div className="text-center">
-                      <h3 className="font-semibold text-gray-900 mb-4">{locale === 'en' ? 'Cropped' : locale === 'es' ? 'Recortada' : 'Recortada'}</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4">{croppedText}</h3>
                       <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 mb-4 border-2 border-purple-200">
                         <img
                           src={cropResult.downloadUrl}
@@ -959,14 +958,14 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                       className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-3 mx-auto"
                     >
                       <CheckCircleIcon className="h-6 w-6" />
-                      <span>{locale === 'en' ? '✂️ Download Cropped Image' : locale === 'es' ? '✂️ Descargar Imagen Recortada' : '✂️ Descargar Imagen Recortada'}</span>
+                      <span>{downloadText}</span>
                     </button>
                     
                     <button
                       onClick={resetToStart}
                       className="text-gray-600 hover:text-gray-900 px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                     >
-                      {locale === 'en' ? 'Crop Another Image' : locale === 'es' ? 'Recortar Otra Imagen' : 'Recortar Otra Imagen'}
+                      {anotherText}
                     </button>
                   </div>
                 </div>
