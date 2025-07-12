@@ -44,7 +44,7 @@ export default function HomePage() {
   
   // Translation variables for debugging (created after flags are set)
   const aiPlatformText = isTurkish ? 'AI Destekli Platform' : 
-                        isFrench ? 'Plateforme Alimentée par l\'IA' : 
+                        isFrench ? "Plateforme Alimentée par l'IA" : 
                         isSpanish ? 'Plataforma Impulsada por IA' : 
                         isGerman ? 'KI-Gestützte Plattform' : 
                         'AI Powered Platform';
@@ -377,7 +377,7 @@ export default function HomePage() {
               </h2>
               <p className="text-xl text-gray-700">
                 {isTurkish ? 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün' : 
-                 isFrench ? 'Transformez votre expérience de traitement PDF avec l\'IA' : 
+                 isFrench ? "Transformez votre expérience de traitement PDF avec l'IA" : 
                  isSpanish ? 'Transforma tu experiencia de procesamiento de PDF con IA' : 
                  isGerman ? 'Verwandeln Sie Ihre PDF-Verarbeitung mit KI' : 
                  'Transform your PDF processing experience with AI'}
@@ -437,7 +437,7 @@ export default function HomePage() {
               </h2>
               <p className="text-xl text-gray-700">
                 {isTurkish ? 'Akıllı algoritmalar ile resim işleme sanatı' : 
-                 isFrench ? 'L\'art du traitement d\'images avec des algorithmes intelligents' : 
+                 isFrench ? "L'art du traitement d'images avec des algorithmes intelligents" : 
                  isSpanish ? 'El arte del procesamiento de imágenes con algoritmos inteligentes' : 
                  isGerman ? 'Die Kunst der Bildverarbeitung mit intelligenten Algorithmen' : 
                  'The art of image processing with smart algorithms'}
