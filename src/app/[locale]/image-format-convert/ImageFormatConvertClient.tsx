@@ -34,6 +34,8 @@ interface ImageFormatConvertClientProps {
 }
 
 export default function ImageFormatConvertClient({ locale }: ImageFormatConvertClientProps) {
+  console.log('🐛 DEBUG - Image Format Convert Client locale:', locale);
+  
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [results, setResults] = useState<ConversionResult[]>([]);
@@ -51,6 +53,65 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
 
   // Translations alma
   const translations = getTranslations(locale);
+  const isFrench = locale === 'fr';
+
+  // Debug
+  console.log('🐛 DEBUG - isFrench:', isFrench);
+
+  // French translations variables
+  const badgeText = isFrench ? 'Convertisseur de Format d\'Image' : 'Image Format Converter';
+  const titleText = isFrench ? 'Convertisseur de Format d\'Image' : 'Image Format Converter';
+  const descriptionText = isFrench ? 'Convertissez entre JPEG, PNG, WebP et d\'autres formats d\'image rapidement et facilement' : 'Convert between JPEG, PNG, WebP and other image formats quickly and easily';
+  
+  // Step 1 - Upload
+  const uploadTitleText = isFrench ? 'Telecharger Vos Images' : 'Upload Your Images';
+  const dropText = isFrench ? 'Deposez vos images ici' : 'Drop your images here';
+  const supportedFormatsText = isFrench ? 'Supporte JPG, PNG, WebP, GIF et plus' : 'Supports JPG, PNG, WebP, GIF and more';
+  const chooseFileText = isFrench ? 'Choisir Fichiers' : 'Choose Files';
+  
+  // Step 2 - Configure
+  const selectedFilesText = isFrench ? 'Fichiers Selectionnes' : 'Selected Files';
+  const configureTitleText = isFrench ? 'Choisir Format de Sortie' : 'Choose Output Format';
+  const backText = isFrench ? 'Retour' : 'Back';
+  const startConversionText = isFrench ? 'Commencer la Conversion' : 'Start Conversion';
+  
+  // Format descriptions
+  const pngDescText = isFrench ? 'Support de transparence' : 'Transparency support';
+  const jpgDescText = isFrench ? 'Petite taille de fichier' : 'Small file size';
+  const jpegDescText = isFrench ? 'Ideal pour les photos' : 'Ideal for photos';
+  const webpDescText = isFrench ? 'Format web moderne' : 'Modern web format';
+  const gifDescText = isFrench ? 'Support d\'animation' : 'Animation support';
+  const bmpDescText = isFrench ? 'Format bitmap' : 'Bitmap format';
+  
+  // Step 3 - Processing
+  const processingTitleText = isFrench ? 'Conversion des Images' : 'Converting Images';
+  const processingDescText = isFrench ? 'Veuillez patienter pendant que nous convertissons vos images...' : 'Please wait while we convert your images...';
+  
+  // Step 4 - Result
+  const resultTitleText = isFrench ? 'Conversion Terminee !' : 'Conversion Complete!';
+  const resultDescText = isFrench ? 'Vos images ont ete converties avec succes.' : 'Your images have been successfully converted.';
+  const downloadText = isFrench ? 'Telecharger' : 'Download';
+  const convertMoreText = isFrench ? 'Convertir Plus d\'Images' : 'Convert More Images';
+  
+  // Other Tools
+  const otherToolsText = isFrench ? 'Autres Outils d\'Image' : 'Other Image Tools';
+  const compressToolText = isFrench ? 'Compresser' : 'Compress';
+  const resizeToolText = isFrench ? 'Redimensionner' : 'Resize';
+  const cropToolText = isFrench ? 'Recadrer' : 'Crop';
+  const rotateToolText = isFrench ? 'Pivoter' : 'Rotate';
+  const filtersToolText = isFrench ? 'Filtres' : 'Filters';
+  const pdfConvertToolText = isFrench ? 'Convertir PDF' : 'PDF Convert';
+  
+  // Error messages
+  const noFilesErrorText = isFrench ? 'Aucun fichier selectionne' : 'No files selected';
+  const conversionErrorText = isFrench ? 'Erreur de conversion' : 'Conversion error';
+
+  // Debug console logs
+  console.log('🐛 DEBUG - Badge text:', badgeText);
+  console.log('🐛 DEBUG - Title text:', titleText);
+  console.log('🐛 DEBUG - Upload title:', uploadTitleText);
+  console.log('🐛 DEBUG - Processing title:', processingTitleText);
+  console.log('🐛 DEBUG - Result title:', resultTitleText);
 
   // getText function - FIX: Support flat key structure
   const getText = (key: string, fallback?: string): string => {
@@ -121,7 +182,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
   const convertImages = async () => {
     
     if (files.length === 0) {
-      setError(getText('imageFormatConvert.noFilesError'));
+      setError(noFilesErrorText);
       return;
     }
 
@@ -148,7 +209,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
             console.log('✅ HEIC converted to JPEG successfully for format conversion');
           } catch (error) {
             console.error('❌ HEIC conversion failed in image-format-convert:', error);
-            throw new Error(`HEIC format işlenemedi: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+            throw new Error(isFrench ? `Format HEIC non traite: ${error instanceof Error ? error.message : 'Erreur inconnue'}` : `HEIC format işlenemedi: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
           }
         }
 
@@ -200,7 +261,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
       
     } catch (error) {
       console.error('❌ Image format conversion error:', error);
-      setError(getText('imageFormatConvert.conversionError', `Dönüştürme hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`));
+      setError(`${conversionErrorText}: ${error instanceof Error ? error.message : (isFrench ? 'Erreur inconnue' : 'Bilinmeyen hata')}`);
     } finally {
       setIsProcessing(false);
     }
@@ -215,12 +276,12 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
   };
 
   const formatOptions = [
-    { value: 'png', label: 'PNG', description: getText('imageFormatConvert.formatDescriptions.png', 'Transparency support') },
-    { value: 'jpg', label: 'JPG', description: getText('imageFormatConvert.formatDescriptions.jpg', 'Small file size') },
-    { value: 'jpeg', label: 'JPEG', description: getText('imageFormatConvert.formatDescriptions.jpeg', 'Ideal for photos') },
-    { value: 'webp', label: 'WebP', description: getText('imageFormatConvert.formatDescriptions.webp', 'Modern web format') },
-    { value: 'gif', label: 'GIF', description: getText('imageFormatConvert.formatDescriptions.gif', 'Animation support') },
-    { value: 'bmp', label: 'BMP', description: getText('imageFormatConvert.formatDescriptions.bmp', 'Bitmap format') }
+    { value: 'png', label: 'PNG', description: pngDescText },
+    { value: 'jpg', label: 'JPG', description: jpgDescText },
+    { value: 'jpeg', label: 'JPEG', description: jpegDescText },
+    { value: 'webp', label: 'WebP', description: webpDescText },
+    { value: 'gif', label: 'GIF', description: gifDescText },
+    { value: 'bmp', label: 'BMP', description: bmpDescText }
   ];
 
   return (
@@ -237,13 +298,13 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
         <div className="text-center mb-12">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 text-sm font-medium mb-6">
             <SparklesIcon className="w-4 h-4 mr-2" />
-            {getText('imageFormatConvert.badge', 'Image Format Converter')}
+            {badgeText}
           </div>
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
-            {getText('imageFormatConvert.title', 'Image Format Converter')}
+            {titleText}
           </h1>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-            {getText('imageFormatConvert.description', 'Convert between JPEG, PNG, WebP and other image formats quickly and easily')}
+            {descriptionText}
           </p>
         </div>
 
@@ -256,7 +317,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                   1
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  {getText('imageFormatConvert.upload.title', 'Upload Your Images')}
+                  {uploadTitleText}
                 </h2>
               </div>
 
@@ -267,15 +328,15 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
               >
                 <CloudArrowUpIcon className="w-20 h-20 text-purple-400 mx-auto mb-6" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                  {getText('imageFormatConvert.upload.dropText', 'Drop your images here')}
+                  {dropText}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {getText('imageFormatConvert.upload.supportedFormats', 'Supports JPG, PNG, WebP, GIF and more')}
+                  {supportedFormatsText}
                 </p>
                 
                 <label className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer">
                   <PhotoIcon className="w-6 h-6 mr-3" />
-                  {getText('imageFormatConvert.upload.chooseFile', 'Choose Files')}
+                  {chooseFileText}
                   <input
                     type="file"
                     multiple
@@ -307,7 +368,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                 <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-purple-100 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                     <DocumentIcon className="w-5 h-5 mr-2 text-purple-600" />
-                    {getText('imageFormatConvert.configure.selectedFiles', 'Selected Files')}
+                    {selectedFilesText}
                   </h3>
                   <div className="space-y-3">
                     {files.map((file, index) => (
@@ -331,7 +392,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                       2
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                      {getText('imageFormatConvert.configure.title', 'Choose Output Format')}
+                      {configureTitleText}
                     </h2>
                   </div>
 
@@ -366,14 +427,14 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                       onClick={() => setCurrentStep(1)}
                       className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
                     >
-                      {getText('imageFormatConvert.configure.back', 'Back')}
+                      {backText}
                     </button>
                     <button
                       onClick={convertImages}
                       className="flex-1 flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                     >
                       <CogIcon className="w-6 h-6 mr-3" />
-                      {getText('imageFormatConvert.configure.startConversion', 'Start Conversion')}
+                      {startConversionText}
                     </button>
                   </div>
                 </div>
@@ -391,7 +452,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                   3
                 </div>
                 <h2 className="text-3xl font-bold text-gray-900">
-                  {getText('imageFormatConvert.processing.title', 'Converting Images')}
+                  {processingTitleText}
                 </h2>
               </div>
 
@@ -417,7 +478,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
               </div>
 
               <p className="text-gray-600">
-                {getText('imageFormatConvert.processing.description', 'Please wait while we convert your images...')}
+                {processingDescText}
               </p>
             </div>
           </div>
@@ -432,10 +493,10 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                   <CheckCircleIcon className="w-10 h-10" />
                 </div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  {getText('imageFormatConvert.result.title', 'Conversion Complete!')}
+                  {resultTitleText}
                 </h2>
                 <p className="text-gray-600">
-                  {getText('imageFormatConvert.result.description', 'Your images have been successfully converted.')}
+                  {resultDescText}
                 </p>
               </div>
 
@@ -457,7 +518,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                       className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
                       <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
-                      {getText('imageFormatConvert.result.download', 'Download')}
+                      {downloadText}
                     </a>
                   </div>
                 ))}
@@ -468,7 +529,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                   onClick={resetProcess}
                   className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
-                  {getText('imageFormatConvert.result.convertMore', 'Convert More Images')}
+                  {convertMoreText}
                 </button>
               </div>
             </div>
@@ -476,7 +537,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
             {/* Other Tools Section */}
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-purple-100 p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                {getText('imageFormatConvert.otherTools.title', 'Other Image Tools')}
+                {otherToolsText}
               </h3>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                 <Link href={`/${locale}/image-compress`} className="group flex flex-col items-center p-2 rounded-xl hover:bg-purple-50 transition-all duration-200 hover:scale-110 hover:shadow-md">
@@ -484,7 +545,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                     <AdjustmentsHorizontalIcon className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-xs text-center text-gray-700 group-hover:text-purple-600 transition-colors">
-                    {getText('tools.imageCompress', 'Compress')}
+                    {compressToolText}
                   </span>
                 </Link>
 
@@ -493,7 +554,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                     <RectangleGroupIcon className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-xs text-center text-gray-700 group-hover:text-purple-600 transition-colors">
-                    {getText('tools.imageResize', 'Resize')}
+                    {resizeToolText}
                   </span>
                 </Link>
 
@@ -502,7 +563,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                     <RectangleGroupIcon className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-xs text-center text-gray-700 group-hover:text-purple-600 transition-colors">
-                    {getText('tools.imageCrop', 'Crop')}
+                    {cropToolText}
                   </span>
                 </Link>
 
@@ -511,7 +572,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                     <ArrowPathIcon className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-xs text-center text-gray-700 group-hover:text-purple-600 transition-colors">
-                    {getText('tools.imageRotate', 'Rotate')}
+                    {rotateToolText}
                   </span>
                 </Link>
 
@@ -520,7 +581,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                     <PaintBrushIcon className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-xs text-center text-gray-700 group-hover:text-purple-600 transition-colors">
-                    {getText('tools.imageFilters', 'Filters')}
+                    {filtersToolText}
                   </span>
                 </Link>
 
@@ -529,7 +590,7 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
                     <DocumentIcon className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-xs text-center text-gray-700 group-hover:text-purple-600 transition-colors">
-                    {getText('tools.pdfConvert', 'PDF Convert')}
+                    {pdfConvertToolText}
                   </span>
                 </Link>
               </div>
