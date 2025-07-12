@@ -49,19 +49,19 @@ export default function HomePage() {
                         isGerman ? 'KI-Plattform' : 
                         'AI Powered Platform';
                         
-  const aiFeaturesText = isTurkish ? 'AI Özellikleri' : 
+  const aiFeaturesText = isTurkish ? 'AI Ozellikleri' : 
                         isFrench ? 'Fonctionnalités IA' : 
                         isSpanish ? 'Funciones de IA' : 
                         isGerman ? 'KI-Features' : 
                         'AI Features';
                         
-  const pdfToolsText = isTurkish ? 'PDF Araçları' : 
+  const pdfToolsText = isTurkish ? 'PDF Araclari' : 
                       isFrench ? 'Outils PDF' : 
                       isSpanish ? 'Herramientas PDF' : 
                       isGerman ? 'PDF-Tools' : 
                       'PDF Tools';
                       
-  const imageToolsText = isTurkish ? 'Resim Araçları' : 
+  const imageToolsText = isTurkish ? 'Resim Araclari' : 
                         isFrench ? 'Outils Image' : 
                         isSpanish ? 'Herramientas de Imagen' : 
                         isGerman ? 'Bild-Tools' : 
@@ -376,7 +376,7 @@ export default function HomePage() {
                 {t('pdfSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {isTurkish ? 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün' : 
+                {isTurkish ? 'Yapay zeka ile PDF isleme deneyiminizi donusturun' : 
                  isFrench ? "Transformez votre expérience de traitement PDF avec l'IA" : 
                  isSpanish ? 'Transforma tu experiencia de procesamiento de PDF con IA' : 
                  isGerman ? 'PDF-Verarbeitung mit KI' : 
@@ -436,7 +436,7 @@ export default function HomePage() {
                 {t('imageSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {isTurkish ? 'Akıllı algoritmalar ile resim işleme sanatı' : 
+                {isTurkish ? 'Akilli algoritmalar ile resim isleme sanati' : 
                  isFrench ? "L'art du traitement d'images avec des algorithmes intelligents" : 
                  isSpanish ? 'El arte del procesamiento de imágenes con algoritmos inteligentes' : 
                  isGerman ? 'Bildverarbeitung mit KI-Algorithmen' : 
