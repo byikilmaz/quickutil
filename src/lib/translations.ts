@@ -611,6 +611,13 @@ const translations = {
     'pdfCompress.mediumCompressionName': 'EMPFOHLENE KOMPRIMIERUNG',
     'pdfCompress.lightCompressionName': 'GERINGE KOMPRIMIERUNG',
     
+    // IMAGE COMPRESS TRANSLATIONS - UNIQUE KEYS DEUTSCH  
+    'imageCompress.step1.title': '📸 Bildauswahl',
+    'imageCompress.step2.title': '📤 Bild wird hochgeladen...',
+    'imageCompress.step3.title': '⚙️ Komprimierungseinstellungen',
+    'imageCompress.step4.title': '🚀 Komprimierungsprozess',
+    'imageCompress.step5.title': '🎉 Komprimierung abgeschlossen',
+    
     // PDF CONVERT TEXTS - DEUTSCH
     'pdfConvert.title': 'KI PDF-Konvertierung',
     'pdfConvert.subtitle': 'Konvertieren Sie Ihre PDF-Dateien mit KI-gestützten Tools in gewünschte Formate',
