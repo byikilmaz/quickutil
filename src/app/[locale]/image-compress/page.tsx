@@ -35,6 +35,9 @@ export default async function ImageCompressPage({ params }: { params: Promise<{ 
 }
 
 function ImageCompress({ locale }: { locale: string }) {
+  // Debug: Log locale to console
+  console.log('🌐 ImageCompress component locale:', locale);
+  
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
@@ -430,6 +433,8 @@ function ImageCompress({ locale }: { locale: string }) {
                 </div>
                 {locale === 'en' ? '📸 Image Selection' : locale === 'es' ? '📸 Selección de Imagen' : locale === 'fr' ? '📸 Sélection d\'Image' : '📸 Resim Seçimi'}
               </div>
+              {/* Debug info */}
+              <div className="text-xs text-gray-500 mb-2">Debug: locale = "{locale}"</div>
               <div className="inline-flex items-center bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">
                 <SparklesIcon className="h-3 w-3 mr-1 text-purple-600 animate-pulse" />
                 {locale === 'en' ? '✨ 2M+ Images Compressed' : locale === 'es' ? '✨ 2M+ Imágenes Comprimidas' : locale === 'fr' ? '✨ 2M+ Images Comprimées' : '✨ 2M+ Resim Sıkıştırıldı'}
