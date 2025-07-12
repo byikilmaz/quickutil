@@ -345,13 +345,13 @@ function ImageResizeContent({ locale }: { locale: string }) {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  {locale === 'en' ? 'Image Resize' : locale === 'es' ? 'Redimensionar Imagen' : 'Image Resize'}
+                  {locale === 'en' ? 'Image Resize' : locale === 'es' ? 'Redimensionar Imagen' : locale === 'fr' ? 'Redimensionner Image' : 'Image Resize'}
                 </h1>
-                <p className="text-sm text-gray-600">{locale === 'en' ? 'Step' : locale === 'es' ? 'Paso' : 'Step'} {
+                <p className="text-sm text-gray-600">{locale === 'en' ? 'Step' : locale === 'es' ? 'Paso' : locale === 'fr' ? 'Étape' : 'Step'} {
                   currentStep === 'upload' ? '1' : 
                   currentStep === 'configure' ? '2' : 
                   currentStep === 'processing' ? '3' : '4'
-                } {locale === 'en' ? 'of 4' : locale === 'es' ? 'de 4' : 'of 4'}</p>
+                } {locale === 'en' ? 'of 4' : locale === 'es' ? 'de 4' : locale === 'fr' ? 'sur 4' : 'of 4'}</p>
               </div>
             </div>
             
@@ -361,7 +361,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
                 className="flex items-center space-x-2 px-4 py-2 bg-white/50 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/70 transition-all duration-200"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
-                <span>{locale === 'en' ? 'New Image' : locale === 'es' ? 'Nueva Imagen' : 'New Image'}</span>
+                <span>{locale === 'en' ? 'New Image' : locale === 'es' ? 'Nueva Imagen' : locale === 'fr' ? 'Nouvelle Image' : 'New Image'}</span>
               </button>
             )}
           </div>
@@ -377,17 +377,17 @@ function ImageResizeContent({ locale }: { locale: string }) {
           <div className="text-center mb-8">
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
               <SparklesIcon className="h-4 w-4 text-purple-600 animate-pulse mr-2" />
-              {locale === 'en' ? '5M+ Images Resized • AI Powered' : locale === 'es' ? '5M+ Imágenes Redimensionadas • Con IA' : '5M+ Resim Boyutlandırıldı • AI Destekli'}
+              {locale === 'en' ? '5M+ Images Resized • AI Powered' : locale === 'es' ? '5M+ Imágenes Redimensionadas • Con IA' : locale === 'fr' ? '5M+ Images Redimensionnées • IA' : '5M+ Resim Boyutlandırıldı • AI Destekli'}
             </div>
             
             <h1 className="text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                {locale === 'en' ? '📐 Image Resize' : locale === 'es' ? '📐 Redimensionar Imagen' : '📐 Image Resize'}
+                {locale === 'en' ? '📐 Image Resize' : locale === 'es' ? '📐 Redimensionar Imagen' : locale === 'fr' ? '📐 Redimensionner Image' : '📐 Image Resize'}
               </span>
             </h1>
             
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-              {locale === 'en' ? 'Resize your images to any dimension with precision and quality' : locale === 'es' ? 'Redimensiona tus imágenes a cualquier dimensión con precisión y calidad' : 'Resize your images to any dimension with precision and quality'}
+              {locale === 'en' ? 'Resize your images to any dimension with precision and quality' : locale === 'es' ? 'Redimensiona tus imágenes a cualquier dimensión con precisión y calidad' : locale === 'fr' ? 'Redimensionnez vos images à toute dimension avec précision et qualité' : 'Resize your images to any dimension with precision and quality'}
             </p>
           </div>
 
@@ -418,16 +418,16 @@ function ImageResizeContent({ locale }: { locale: string }) {
                 
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {isDragActive 
-                    ? (locale === 'en' ? 'Drop your image here' : locale === 'es' ? 'Suelta tu imagen aquí' : 'Drop your image here')
-                    : (locale === 'en' ? 'Select Image to Resize' : locale === 'es' ? 'Seleccionar Imagen para Redimensionar' : 'Select Image to Resize')
+                    ? (locale === 'en' ? 'Drop your image here' : locale === 'es' ? 'Suelta tu imagen aquí' : locale === 'fr' ? 'Déposez votre image ici' : 'Drop your image here')
+                    : (locale === 'en' ? 'Select Image to Resize' : locale === 'es' ? 'Seleccionar Imagen para Redimensionar' : locale === 'fr' ? 'Sélectionner Image à Redimensionner' : 'Select Image to Resize')
                   }
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {locale === 'en' ? 'PNG, JPEG, WebP, GIF • Up to 50MB' : locale === 'es' ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB'}
+                  {locale === 'en' ? 'PNG, JPEG, WebP, GIF • Up to 50MB' : locale === 'es' ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : locale === 'fr' ? 'PNG, JPEG, WebP, GIF • Jusqu\'à 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB'}
                 </p>
                 
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 inline-block">
-                  {locale === 'en' ? 'Choose File' : locale === 'es' ? 'Elegir Archivo' : 'Choose File'}
+                  {locale === 'en' ? 'Choose File' : locale === 'es' ? 'Elegir Archivo' : locale === 'fr' ? 'Choisir Fichier' : 'Choose File'}
                 </div>
               </div>
             </div>
@@ -436,15 +436,15 @@ function ImageResizeContent({ locale }: { locale: string }) {
             <div className="mt-8 grid grid-cols-3 gap-4">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🔒</div>
-                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Secure Processing' : locale === 'es' ? 'Procesamiento Seguro' : 'Secure Processing'}</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Secure Processing' : locale === 'es' ? 'Procesamiento Seguro' : locale === 'fr' ? 'Traitement Sécurisé' : 'Secure Processing'}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">⚡</div>
-                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Lightning Fast' : locale === 'es' ? 'Súper Rápido' : 'Lightning Fast'}</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Lightning Fast' : locale === 'es' ? 'Súper Rápido' : locale === 'fr' ? 'Très Rapide' : 'Lightning Fast'}</p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
                 <div className="text-2xl mb-2">🎯</div>
-                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Pixel Perfect' : locale === 'es' ? 'Píxel Perfecto' : 'Pixel Perfect'}</p>
+                <p className="text-sm font-medium text-gray-700">{locale === 'en' ? 'Pixel Perfect' : locale === 'es' ? 'Píxel Perfecto' : locale === 'fr' ? 'Pixel Parfait' : 'Pixel Perfect'}</p>
               </div>
             </div>
           </div>
@@ -459,18 +459,18 @@ function ImageResizeContent({ locale }: { locale: string }) {
               <div className="p-8">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                    {locale === 'en' ? 'Configure Resize Settings' : locale === 'es' ? 'Configurar Ajustes de Redimensión' : 'Configure Resize Settings'}
+                    {locale === 'en' ? 'Configure Resize Settings' : locale === 'es' ? 'Configurar Ajustes de Redimensión' : locale === 'fr' ? 'Configurer Paramètres Redimensionnement' : 'Configure Resize Settings'}
                   </h2>
-                  <p className="text-gray-600">{locale === 'en' ? 'Set your desired dimensions and options' : locale === 'es' ? 'Establece tus dimensiones y opciones deseadas' : 'Set your desired dimensions and options'}</p>
+                                      <p className="text-gray-600">{locale === 'en' ? 'Set your desired dimensions and options' : locale === 'es' ? 'Establece tus dimensiones y opciones deseadas' : locale === 'fr' ? 'Définissez vos dimensions et options souhaitées' : 'Set your desired dimensions and options'}</p>
                 </div>
 
                 <div className="grid lg:grid-cols-5 gap-8">
                   {/* Left: Interactive Preview (3/5) */}
                   <div className="lg:col-span-3">
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                      <h3 className="font-semibold text-gray-900 mb-4 text-center">{locale === 'en' ? 'Live Preview' : locale === 'es' ? 'Vista Previa en Vivo' : 'Live Preview'}</h3>
+                      <h3 className="font-semibold text-gray-900 mb-4 text-center">{locale === 'en' ? 'Live Preview' : locale === 'es' ? 'Vista Previa en Vivo' : locale === 'fr' ? 'Aperçu en Direct' : 'Live Preview'}</h3>
                       <p className="text-sm text-gray-600 mb-4 text-center">
-                        {locale === 'en' ? '🎯 Adjust dimensions using controls on the right and see live preview' : locale === 'es' ? '🎯 Ajusta las dimensiones usando los controles de la derecha y ve la vista previa en vivo' : '🎯 Adjust dimensions using controls on the right and see live preview'}
+                                                  {locale === 'en' ? '🎯 Adjust dimensions using controls on the right and see live preview' : locale === 'es' ? '🎯 Ajusta las dimensiones usando los controles de la derecha y ve la vista previa en vivo' : locale === 'fr' ? '🎯 Ajustez les dimensions avec les contrôles de droite et voyez l\'aperçu en direct' : '🎯 Adjust dimensions using controls on the right and see live preview'}
                       </p>
                       <SimplePreviewBox
                         imageUrl={URL.createObjectURL(file)}
