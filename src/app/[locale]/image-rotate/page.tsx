@@ -38,6 +38,15 @@ export default async function ImageRotate({ params }: ImageRotateProps) {
 
 function ImageRotateContent({ locale }: { locale: string }) {
   const translations = getTranslations(locale);
+  const isFrench = locale === 'fr';
+  
+  // French translation helper with debug logging
+  const getFrenchText = (frenchText: string, fallbackText: string) => {
+    const result = isFrench ? frenchText : fallbackText;
+    console.log(`🐛 DEBUG - Image Rotate Text (locale: ${locale}): "${result}"`);
+    return result;
+  };
+  
   const getText = (key: string, fallback: string) => {
     // Handle flat string keys directly (for imageRotate, etc.)
     const flatValue = (translations as any)[key];
@@ -57,6 +66,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
     
     return value || fallback;
   };
+  
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
@@ -222,6 +232,55 @@ function ImageRotateContent({ locale }: { locale: string }) {
     }, 100);
   };
 
+  // French text variables
+  const badgeText = getFrenchText('500K+ Images Pivotees • Alimente par l\'IA', '500K+ Resim Döndürüldü • AI Destekli');
+  const titleText = getFrenchText('🔄 Rotation d\'Image', '🔄 Resim Döndürme');
+  const descriptionText = getFrenchText('Pivotez vos images a l\'angle parfait avec facilite. Notre technologie puissante assure une rotation sans perte de qualite.', 'Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.');
+  const trustNoQualityLoss = getFrenchText('Aucune Perte de Qualite', 'Kalite Kaybı Yok');
+  const trustAllFormats = getFrenchText('Tous les Formats', 'Tüm Formatlar');
+  const trustSecureFast = getFrenchText('Securise & Rapide', 'Güvenli & Hızlı');
+
+  // Step 1 - Upload
+  const uploadTitle = getFrenchText('Telecharger Image', 'Resim Yükleyin');
+  const uploadDescription = getFrenchText('Telechargez vos images au format JPEG, PNG, WebP', 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin');
+  const dropText = getFrenchText('Deposez le Fichier', 'Dosyayı Bırakın');
+  const uploadText = getFrenchText('Telecharger Image', 'Resim Yükleyin');
+  const dragOrSelect = getFrenchText('Glissez-deposez ou selectionnez le fichier', 'Dosyayı sürükleyip bırakın veya seçin');
+  const selectFile = getFrenchText('Selectionner Fichier', 'Dosya Seçin');
+  const fileTypes = getFrenchText('JPEG, PNG, WebP • Max 50MB', 'JPEG, PNG, WebP • Max 50MB');
+
+  // Step 2 - Configure
+  const previewTitle = getFrenchText('Apercu', 'Önizleme');
+  const settingsTitle = getFrenchText('Parametres de Rotation', 'Döndürme Ayarları');
+  const backButton = getFrenchText('Retour', 'Geri');
+  const quickRotationTitle = getFrenchText('Rotation Rapide', 'Hızlı Döndürme');
+  const rotate90Right = getFrenchText('90° Droite', '90° Sağa');
+  const rotate180 = getFrenchText('180° Inverse', '180° Ters');
+  const rotate90Left = getFrenchText('90° Gauche', '90° Sola');
+  const resetAngle = getFrenchText('Reinitialiser', 'Sıfırla');
+  const customAngleTitle = getFrenchText('Angle Personnalise', 'Özel Açı');
+  const currentAngle = getFrenchText('Angle de Rotation:', 'Döndürme Açısı:');
+  const anglePlaceholder = getFrenchText('Angle (0-360°)', 'Açı (0-360°)');
+  const startRotation = getFrenchText('🚀 Commencer la Rotation', '🚀 Döndürmeyi Başlat');
+
+  // Step 3 - Processing
+  const processingTitle = getFrenchText('Rotation d\'Image en Cours...', 'Resim Döndürülüyor...');
+  const processingDescription = getFrenchText('Votre image est pivotee sans perte de qualite grace a notre technologie alimentee par l\'IA', 'AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor');
+  const completed = getFrenchText('termine', 'tamamlandı');
+  const stepAnalysis = getFrenchText('Analyse d\'Image', 'Resim Analizi');
+  const stepRotating = getFrenchText('Rotation', 'Döndürülüyor');
+  const stepOptimizing = getFrenchText('Optimisation', 'Optimize Ediliyor');
+
+  // Step 4 - Result
+  const successTitle = getFrenchText('Rotation Terminee', 'Döndürme Tamamlandı');
+  const successSubtitle = getFrenchText('Votre Image a ete Pivotee avec Succes!', 'Resminiz Başarıyla Döndürüldü!');
+  const beforeTitle = getFrenchText('Avant', 'Öncesi');
+  const afterTitle = getFrenchText('Apres', 'Sonrası');
+  const rotatedImageTitle = getFrenchText('Image Pivotee', 'Döndürülmüş Resim');
+  const rotatedAngle = getFrenchText('pivotee', 'döndürüldü');
+  const downloadButton = getFrenchText('Telecharger l\'Image Pivotee', 'Döndürülmüş Resmi İndir');
+  const newImageButton = getFrenchText('Pivoter une Nouvelle Image', 'Yeni Resim Döndür');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
       {/* Enhanced Background Elements */}
@@ -251,18 +310,18 @@ function ImageRotateContent({ locale }: { locale: string }) {
             {/* AI Badge */}
             <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
               <SparklesIcon className="h-4 w-4 text-purple-600 mr-2 animate-pulse" />
-              {getText('imageRotate.badge', '500K+ Resim Döndürüldü • AI Destekli')}
+              {badgeText}
             </div>
             
             {/* Main Title */}
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent">
-                {getText('imageRotate.title', 'Resim Döndürme')}
+                {titleText}
               </span>
             </h1>
             
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
-              {getText('imageRotate.description', 'Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.')}
+              {descriptionText}
             </p>
 
             {/* Trust Indicators */}
@@ -270,19 +329,19 @@ function ImageRotateContent({ locale }: { locale: string }) {
               <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
                 <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2" />
                 <span className="bg-gradient-to-r from-gray-700 to-gray-800 bg-clip-text text-transparent font-medium">
-                  {getText('imageRotate.trust.noQualityLoss', 'Kalite Kaybı Yok')}
+                  {trustNoQualityLoss}
                 </span>
               </div>
               <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
                 <CheckCircleIcon className="h-4 w-4 text-blue-500 mr-2" />
                 <span className="bg-gradient-to-r from-gray-700 to-gray-800 bg-clip-text text-transparent font-medium">
-                  {getText('imageRotate.trust.allFormats', 'Tüm Formatlar')}
+                  {trustAllFormats}
                 </span>
               </div>
               <div className="flex items-center bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
                 <CheckCircleIcon className="h-4 w-4 text-purple-500 mr-2" />
                 <span className="bg-gradient-to-r from-gray-700 to-gray-800 bg-clip-text text-transparent font-medium">
-                  {getText('imageRotate.trust.secureFast', 'Güvenli & Hızlı')}
+                  {trustSecureFast}
                 </span>
               </div>
             </div>
@@ -299,10 +358,10 @@ function ImageRotateContent({ locale }: { locale: string }) {
 
               <div className="text-center mb-8 relative z-10">
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  {getText('imageRotate.upload.title', 'Resim Yükleyin')}
+                  {uploadTitle}
                 </h2>
                 <p className="text-gray-600 text-lg">
-                  {getText('imageRotate.upload.description', 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin')}
+                  {uploadDescription}
                 </p>
               </div>
 
@@ -338,19 +397,19 @@ function ImageRotateContent({ locale }: { locale: string }) {
                 </div>
 
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  {isDragActive ? getText('imageRotate.upload.dropText', 'Dosyayı Bırakın') : getText('imageRotate.upload.uploadText', 'Resim Yükleyin')}
+                  {isDragActive ? dropText : uploadText}
                 </h3>
                 <p className="text-gray-600 mb-6 text-lg">
-                  {getText('imageRotate.upload.dragOrSelect', 'Dosyayı sürükleyip bırakın veya seçin')}
+                  {dragOrSelect}
                 </p>
                 
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl inline-flex items-center space-x-3 font-semibold">
                   <CloudArrowUpIcon className="h-6 w-6" />
-                  <span>{getText('imageRotate.upload.selectFile', 'Dosya Seçin')}</span>
+                  <span>{selectFile}</span>
                 </div>
                 
                 <p className="text-sm text-gray-500 mt-4">
-                  {getText('imageRotate.upload.fileTypes', 'JPEG, PNG, WebP • Max 50MB')}
+                  {fileTypes}
                 </p>
               </div>
             </div>
@@ -365,7 +424,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                   <div className="lg:w-1/3 p-8 bg-gray-50/50">
                     <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                       <PhotoIcon className="h-6 w-6 text-purple-600 mr-2" />
-                      {getText('imageRotate.configure.previewTitle', 'Önizleme')}
+                      {previewTitle}
                     </h3>
                     
                     {previewUrl && (
@@ -390,14 +449,14 @@ function ImageRotateContent({ locale }: { locale: string }) {
                   <div className="lg:w-2/3 p-8">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-2xl font-semibold text-gray-900">
-                        {getText('imageRotate.configure.settingsTitle', 'Döndürme Ayarları')}
+                        {settingsTitle}
                       </h3>
                       <button
                         onClick={resetProcess}
                         className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
                       >
                         <ArrowLeftIcon className="h-5 w-5 mr-1" />
-                        {getText('imageRotate.configure.backButton', 'Geri')}
+                        {backButton}
                       </button>
                     </div>
 
@@ -405,14 +464,14 @@ function ImageRotateContent({ locale }: { locale: string }) {
                       {/* Quick Rotation Buttons */}
                       <div>
                         <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                          {getText('imageRotate.configure.quickRotationTitle', 'Hızlı Döndürme')}
+                          {quickRotationTitle}
                         </h4>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                           {[
-                            { angle: 90, label: getText('imageRotate.configure.rotate90Right', '90° Sağa'), icon: '↻' },
-                            { angle: 180, label: getText('imageRotate.configure.rotate180', '180° Ters'), icon: '↺' },
-                            { angle: 270, label: getText('imageRotate.configure.rotate90Left', '90° Sola'), icon: '↺' },
-                            { angle: 0, label: getText('imageRotate.configure.resetAngle', 'Sıfırla'), icon: '⟲' }
+                            { angle: 90, label: rotate90Right, icon: '↻' },
+                            { angle: 180, label: rotate180, icon: '↺' },
+                            { angle: 270, label: rotate90Left, icon: '↺' },
+                            { angle: 0, label: resetAngle, icon: '⟲' }
                           ].map((option) => (
                             <button
                               key={option.angle}
@@ -433,12 +492,12 @@ function ImageRotateContent({ locale }: { locale: string }) {
                       {/* Custom Angle */}
                       <div>
                         <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                          {getText('imageRotate.configure.customAngleTitle', 'Özel Açı')}
+                          {customAngleTitle}
                         </h4>
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                              {getText('imageRotate.configure.currentAngle', 'Döndürme Açısı:')} {rotation}°
+                              {currentAngle} {rotation}°
                             </label>
                             <input
                               type="range"
@@ -463,8 +522,8 @@ function ImageRotateContent({ locale }: { locale: string }) {
                             onChange={(e) => setRotation(parseInt(e.target.value) || 0)}
                             min="0"
                             max="360"
-                            placeholder={getText('imageRotate.configure.anglePlaceholder', 'Açı (0-360°)')}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            placeholder={anglePlaceholder}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-500"
                           />
                         </div>
                       </div>
@@ -478,7 +537,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl text-lg flex items-center justify-center space-x-3"
                         >
                           <ArrowPathIcon className="h-6 w-6" />
-                          <span>{getText('imageRotate.configure.startRotation', '🚀 Döndürmeyi Başlat')}</span>
+                          <span>{startRotation}</span>
                         </button>
                       </div>
                     </div>
@@ -525,10 +584,10 @@ function ImageRotateContent({ locale }: { locale: string }) {
                     </div>
 
                     <h3 className="text-4xl font-bold text-gray-900 mb-6">
-                      {getText('imageRotate.processing.title', 'Resim Döndürülüyor...')}
+                      {processingTitle}
                     </h3>
                     <p className="text-gray-600 mb-8 text-lg">
-                      {getText('imageRotate.processing.description', 'AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor')}
+                      {processingDescription}
                     </p>
 
                     {/* Progress Bar - Enhanced */}
@@ -541,7 +600,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                       </div>
                     </div>
                     <p className="text-lg text-gray-600 mb-8">
-                      {Math.round(processingProgress)}% {getText('imageRotate.processing.completed', 'tamamlandı')}
+                      {Math.round(processingProgress)}% {completed}
                     </p>
 
                     {/* Processing Steps - Enhanced */}
@@ -551,7 +610,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                           <CheckCircleIcon className="h-7 w-7 text-white" />
                         </div>
                         <span className="text-base text-gray-700 font-medium">
-                          {getText('imageRotate.processing.steps.analysis', 'Resim Analizi')}
+                          {stepAnalysis}
                         </span>
                       </div>
                       <div className="flex flex-col items-center space-y-3">
@@ -559,7 +618,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                           <ArrowPathIcon className="h-7 w-7 text-white" />
                         </div>
                         <span className="text-base text-gray-700 font-medium">
-                          {getText('imageRotate.processing.steps.rotating', 'Döndürülüyor')}
+                          {stepRotating}
                         </span>
                       </div>
                       <div className="flex flex-col items-center space-y-3">
@@ -567,7 +626,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                           <CheckCircleIcon className="h-7 w-7 text-white" />
                         </div>
                         <span className="text-base text-gray-700 font-medium">
-                          {getText('imageRotate.processing.steps.optimizing', 'Optimize Ediliyor')}
+                          {stepOptimizing}
                         </span>
                       </div>
                     </div>
@@ -584,13 +643,13 @@ function ImageRotateContent({ locale }: { locale: string }) {
                 <div className="p-8 text-center border-b border-gray-200">
                   <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
                     <CheckCircleIcon className="h-4 w-4 mr-2" />
-                    {getText('imageRotate.result.successTitle', 'Döndürme Tamamlandı')}
+                    {successTitle}
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    {getText('imageRotate.result.successSubtitle', 'Resminiz Başarıyla Döndürüldü!')}
+                    {successSubtitle}
                   </h3>
                   <p className="text-gray-600">
-                    {getText('imageRotate.result.successDescription', `${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`)}
+                    {getFrenchText(`${rotateResult.rotationAngle}° rotation realise sans perte de qualite`, `${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`)}
                   </p>
                 </div>
 
@@ -599,7 +658,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                     {/* Before */}
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                        {getText('imageRotate.result.beforeTitle', 'Öncesi')}
+                        {beforeTitle}
                       </h4>
                       <div className="bg-gray-50 rounded-2xl p-4">
                         {previewUrl && (
@@ -619,7 +678,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                     {/* After */}
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                        {getText('imageRotate.result.afterTitle', 'Sonrası')}
+                        {afterTitle}
                       </h4>
                       <div className="bg-green-50 rounded-2xl p-4 border border-green-200">
                         <img
@@ -629,10 +688,10 @@ function ImageRotateContent({ locale }: { locale: string }) {
                         />
                         <div className="mt-4 text-center">
                           <p className="text-sm font-medium text-green-900">
-                            {getText('imageRotate.result.rotatedImageTitle', 'Döndürülmüş Resim')}
+                            {rotatedImageTitle}
                           </p>
                           <p className="text-sm text-green-600">
-                            {formatFileSize(rotateResult.rotatedSize)} • {rotateResult.rotationAngle}° {getText('imageRotate.result.rotatedAngle', 'döndürüldü')}
+                            {formatFileSize(rotateResult.rotatedSize)} • {rotateResult.rotationAngle}° {rotatedAngle}
                           </p>
                         </div>
                       </div>
@@ -647,7 +706,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                       className="inline-flex items-center bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-lg space-x-3"
                     >
                       <CheckCircleIcon className="h-6 w-6" />
-                      <span>{getText('imageRotate.result.downloadButton', 'Döndürülmüş Resmi İndir')}</span>
+                      <span>{downloadButton}</span>
                     </a>
                     
                     <button
@@ -655,7 +714,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                       className="ml-4 inline-flex items-center bg-gray-100 text-gray-700 px-6 py-4 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium"
                     >
                       <ArrowPathIcon className="h-5 w-5 mr-2" />
-                      {getText('imageRotate.result.newImageButton', 'Yeni Resim Döndür')}
+                      {newImageButton}
                     </button>
                   </div>
                 </div>
