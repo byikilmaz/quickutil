@@ -497,7 +497,7 @@ function ImageCompress({ locale }: { locale: string }) {
                       {locale === 'en' ? '📸 Select Image File' : locale === 'es' ? '📸 Seleccionar Archivo de Imagen' : locale === 'fr' ? '📸 Sélectionner le Fichier Image' : '📸 Resim Dosyasını Seç'}
                     </div>
                     <div className="text-sm opacity-90">
-                                              {locale === 'en' ? '✨ AI-Powered Compression' : locale === 'es' ? '✨ Compresión con IA' : locale === 'fr' ? '✨ Compression avec IA' : '✨ Yapay Zeka Destekli Sıkıştırma'}
+                              {getText('imageCompress.aiPoweredCompression', '✨ Yapay Zeka Destekli Sıkıştırma')}
                     </div>
                   </div>
 
