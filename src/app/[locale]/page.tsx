@@ -46,13 +46,13 @@ export default function HomePage() {
   const aiPlatformText = isTurkish ? 'AI Destekli Platform' : 
                         isFrench ? "Plateforme Alimentée par l'IA" : 
                         isSpanish ? 'Plataforma Impulsada por IA' : 
-                        isGerman ? 'KI-Basierte Plattform' : 
+                        isGerman ? 'KI-Plattform' : 
                         'AI Powered Platform';
                         
   const aiFeaturesText = isTurkish ? 'AI Özellikleri' : 
                         isFrench ? 'Fonctionnalités IA' : 
                         isSpanish ? 'Funciones de IA' : 
-                        isGerman ? 'KI-Funktionen' : 
+                        isGerman ? 'KI-Features' : 
                         'AI Features';
                         
   const pdfToolsText = isTurkish ? 'PDF Araçları' : 
@@ -379,7 +379,7 @@ export default function HomePage() {
                 {isTurkish ? 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün' : 
                  isFrench ? "Transformez votre expérience de traitement PDF avec l'IA" : 
                  isSpanish ? 'Transforma tu experiencia de procesamiento de PDF con IA' : 
-                 isGerman ? 'Verwandeln Sie Ihre PDF-Verarbeitung mit KI' : 
+                 isGerman ? 'PDF-Verarbeitung mit KI' : 
                  'Transform your PDF processing experience with AI'}
               </p>
             </div>
@@ -439,7 +439,7 @@ export default function HomePage() {
                 {isTurkish ? 'Akıllı algoritmalar ile resim işleme sanatı' : 
                  isFrench ? "L'art du traitement d'images avec des algorithmes intelligents" : 
                  isSpanish ? 'El arte del procesamiento de imágenes con algoritmos inteligentes' : 
-                 isGerman ? 'Die Kunst der Bildverarbeitung mit intelligenten Algorithmen' : 
+                 isGerman ? 'Bildverarbeitung mit KI-Algorithmen' : 
                  'The art of image processing with smart algorithms'}
               </p>
             </div>
