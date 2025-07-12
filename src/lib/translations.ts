@@ -552,7 +552,7 @@ const translations = {
     'tools.pdfEsign': 'KI E-Signatur',
     'tools.pdfEsignDesc': 'Automatische Signaturpositionierung und -bearbeitung',
     'tools.imageCompress': 'KI Bild-Komprimierung',
-    'tools.imageCompressDesc': 'Intelligente Bildoptimierung mit künstlicher Intelligenz',
+    'tools.imageCompressDesc': 'Intelligente Bildoptimierung mit kunstlicher Intelligenz',
     'tools.imageResize': 'KI Bildgrößenänderung',
     'tools.imageResizeDesc': 'Automatische Seitenverhältnisbeibehaltung und Qualitätsanpassung',
     'tools.imageCrop': 'KI Bildzuschnitt',
@@ -692,18 +692,18 @@ const translations = {
     
     // IMAGE COMPRESS TRANSLATIONS - DEUTSCH
     'imageCompress.title': 'Bild-Komprimierung',
-    'imageCompress.subtitle': 'Komprimieren Sie Ihre Bilder unter Beibehaltung der Qualität mit KI-gestützter Technologie',
+    'imageCompress.subtitle': 'Komprimieren Sie Ihre Bilder unter Beibehaltung der Qualitaet mit KI-gestutzter Technologie',
     'imageCompress.selectFile': 'Bilddatei auswählen',
     'imageCompress.aiPowered': 'KI-gestützte Komprimierung',
-    'imageCompress.badge': '2M+ Bilder komprimiert • KI-gestützt',
+    'imageCompress.badge': '2M+ Bilder komprimiert • KI-gestutzt',
     
     // Features
     'imageCompress.features.smaller': '90% kleiner',
-    'imageCompress.features.smallerDesc': 'Maximale Komprimierung unter Beibehaltung der Qualität mit KI-Technologie',
-    'imageCompress.features.aiPowered': 'KI-gestützt',
-    'imageCompress.features.aiPoweredDesc': 'Intelligente Algorithmen finden optimale Einstellungen für jedes Bild',
-    'imageCompress.features.qualityKept': 'Qualität erhalten',
-    'imageCompress.features.qualityKeptDesc': 'Reduziert Dateigröße bei höchster visueller Qualität',
+    'imageCompress.features.smallerDesc': 'Maximale Komprimierung unter Beibehaltung der Qualitaet mit KI-Technologie',
+    'imageCompress.features.aiPowered': 'KI-gestutzt',
+    'imageCompress.features.aiPoweredDesc': 'Intelligente Algorithmen finden optimale Einstellungen fuer jedes Bild',
+    'imageCompress.features.qualityKept': 'Qualitaet erhalten',
+    'imageCompress.features.qualityKeptDesc': 'Reduziert Dateigroesse bei hoechster visueller Qualitaet',
     
     // Settings
     'imageCompress.settings.title': 'Komprimierungseinstellungen',
