@@ -281,6 +281,12 @@ const translations = {
     'pdfCompress.originalSize': 'Tamaño Original',
     'pdfCompress.compressedSize': 'Tamaño Comprimido',
     'pdfCompress.savedSpace': 'Espacio Ahorrado',
+    'pdfCompress.aiCompressionBadge': 'IA Compresión PDF',
+    'pdfCompress.maxFileSizeText': 'Máximo archivo PDF de 20MB',
+    'pdfCompress.secureProcessingText': 'Procesamiento seguro y confidencial',
+    'pdfCompress.highCompressionName': 'ALTA COMPRESIÓN',
+    'pdfCompress.mediumCompressionName': 'COMPRESIÓN RECOMENDADA',
+    'pdfCompress.lightCompressionName': 'BAJA COMPRESIÓN',
     
     // PDF Convert & Tools - ESPAÑOL
     'pdfConvert.title': 'Conversión PDF con IA',
@@ -598,6 +604,12 @@ const translations = {
     'pdfCompress.processing': 'PDF wird komprimiert...',
     'pdfCompress.otherTools': 'Zu diesem Tool wechseln:',
     'pdfCompress.remove.file': 'Datei entfernen',
+    'pdfCompress.aiCompressionBadge': 'KI PDF-Komprimierung',
+    'pdfCompress.maxFileSizeText': 'Maximale Dateigröße 20MB PDF',
+    'pdfCompress.secureProcessingText': 'Sichere und vertrauliche Verarbeitung',
+    'pdfCompress.highCompressionName': 'HOHE KOMPRIMIERUNG',
+    'pdfCompress.mediumCompressionName': 'EMPFOHLENE KOMPRIMIERUNG',
+    'pdfCompress.lightCompressionName': 'GERINGE KOMPRIMIERUNG',
     
     // PDF CONVERT TEXTS - DEUTSCH
     'pdfConvert.title': 'KI PDF-Konvertierung',
@@ -1298,6 +1310,12 @@ const translations = {
     'pdfCompress.processing': 'PDF küçültülüyor...',
     'pdfCompress.otherTools': 'Şu araca geçiş yap:',
     'pdfCompress.remove.file': 'Dosyayı kaldır',
+    'pdfCompress.aiCompressionBadge': 'AI PDF Sıkıştırma',
+    'pdfCompress.maxFileSizeText': 'Maksimum 20MB PDF dosyası',
+    'pdfCompress.secureProcessingText': 'Güvenli ve gizli işleme',
+    'pdfCompress.highCompressionName': 'YÜKSEK SIKIŞTIRMA',
+    'pdfCompress.mediumCompressionName': 'ÖNERİLEN SIKIŞTIRMA',
+    'pdfCompress.lightCompressionName': 'DÜŞÜK SIKIŞTIRMA',
     
     // IMAGE TOOLS METINLERI
     'imageTools.selectFile': 'Resim dosyasını seç',
@@ -1799,6 +1817,12 @@ const translations = {
     'pdfCompress.processing': 'Compressing PDF...',
     'pdfCompress.otherTools': 'Switch to this tool:',
     'pdfCompress.remove.file': 'Remove file',
+    'pdfCompress.aiCompressionBadge': 'AI PDF Compression',
+    'pdfCompress.maxFileSizeText': 'Maximum 20MB PDF file',
+    'pdfCompress.secureProcessingText': 'Secure and confidential processing',
+    'pdfCompress.highCompressionName': 'HIGH COMPRESSION',
+    'pdfCompress.mediumCompressionName': 'RECOMMENDED COMPRESSION',
+    'pdfCompress.lightCompressionName': 'LOW COMPRESSION',
     
     // IMAGE TOOLS TRANSLATIONS
     'imageTools.selectFile': 'Select image file',
@@ -2353,6 +2377,12 @@ const translations = {
     'pdfCompress.light': 'Léger',
     'pdfCompress.medium': 'Moyen',
     'pdfCompress.high': 'Élevé',
+    'pdfCompress.aiCompressionBadge': 'IA Compression PDF',
+    'pdfCompress.maxFileSizeText': 'Fichier PDF maximum 20MB',
+    'pdfCompress.secureProcessingText': 'Traitement sécurisé et confidentiel',
+    'pdfCompress.highCompressionName': 'HAUTE COMPRESSION',
+    'pdfCompress.mediumCompressionName': 'COMPRESSION RECOMMANDÉE',
+    'pdfCompress.lightCompressionName': 'FAIBLE COMPRESSION',
     
     // PDF CONVERT TRANSLATIONS  
     'pdfConvert.title': 'Conversion PDF IA',

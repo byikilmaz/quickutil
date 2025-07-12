@@ -41,6 +41,27 @@ function PDFCompress({ locale }: { locale: string }) {
   const { uploadFile } = useStorage();
   const { canUseFeature } = useQuota();
   
+  // Enhanced language detection logging
+  useEffect(() => {
+    console.log('📍 PDF Compress Page - Language Detection:', {
+      currentLocale: locale,
+      browserLanguages: typeof window !== 'undefined' ? navigator.languages : null,
+      userAgent: typeof window !== 'undefined' ? navigator.userAgent : null,
+      timestamp: new Date().toISOString()
+    });
+    
+    console.log('🔍 PDF Compress Translations Test:', {
+      title: getText('pdfCompress.title', 'PDF Sıkıştırma'),
+      subtitle: getText('pdfCompress.subtitle', 'Maksimum PDF kalitesi için optimize ederken dosya boyutunu küçültebilirsin.'),
+      aiCompressionBadge: getText('pdfCompress.aiCompressionBadge', 'AI PDF Sıkıştırma'),
+      maxFileSizeText: getText('pdfCompress.maxFileSizeText', 'Maksimum 20MB PDF dosyası'),
+      secureProcessingText: getText('pdfCompress.secureProcessingText', 'Güvenli ve gizli işleme'),
+      highCompressionName: getText('pdfCompress.highCompressionName', 'YÜKSEK SIKIŞTIRMA'),
+      mediumCompressionName: getText('pdfCompress.mediumCompressionName', 'ÖNERİLEN SIKIŞTIRMA'),
+      lightCompressionName: getText('pdfCompress.lightCompressionName', 'DÜŞÜK SIKIŞTIRMA')
+    });
+  }, [locale]);
+  
   // Refs for auto-scrolling
   const uploadRef = useRef<HTMLDivElement>(null);
   const configureRef = useRef<HTMLDivElement>(null);
@@ -333,7 +354,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mr-3">
                   <SparklesIcon className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-purple-800 font-bold text-lg">AI PDF Sıkıştırma</span>
+                <span className="text-purple-800 font-bold text-lg">{getText('pdfCompress.aiCompressionBadge', 'AI PDF Sıkıştırma')}</span>
                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
                   <SparklesIcon className="h-3 w-3 text-white" />
                 </div>
@@ -391,11 +412,11 @@ function PDFCompress({ locale }: { locale: string }) {
             <div className="mt-6 text-sm text-gray-700 space-y-1">
               <p className="flex items-center justify-center">
                 <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
-                Maksimum 20MB PDF dosyası
+                {getText('pdfCompress.maxFileSizeText', 'Maksimum 20MB PDF dosyası')}
               </p>
               <p className="flex items-center justify-center">
                 <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
-                Güvenli ve gizli işleme
+                {getText('pdfCompress.secureProcessingText', 'Güvenli ve gizli işleme')}
               </p>
             </div>
           </div>
@@ -463,19 +484,19 @@ function PDFCompress({ locale }: { locale: string }) {
                   {[
                     { 
                       id: 'screen', 
-                      name: locale === 'en' ? 'High Compression' : 'YÜKSEK SIKIŞTIRMA',
+                      name: getText('pdfCompress.highCompressionName', 'YÜKSEK SIKIŞTIRMA'),
                       desc: getText('pdfCompress.highDesc', 'Küçük dosya boyutu, iyi kalite korunur'),
                       recommended: false
                     },
                     { 
                       id: 'ebook', 
-                      name: locale === 'en' ? 'Medium Compression' : 'ÖNERİLEN SIKIŞTIRMA',
+                      name: getText('pdfCompress.mediumCompressionName', 'ÖNERİLEN SIKIŞTIRMA'),
                       desc: getText('pdfCompress.mediumDesc', 'Mükemmel kalite-boyut dengesi'),
                       recommended: true
                     },
                     { 
                       id: 'printer', 
-                      name: locale === 'en' ? 'Light Compression' : 'DÜŞÜK SIKIŞTIRMA',
+                      name: getText('pdfCompress.lightCompressionName', 'DÜŞÜK SIKIŞTIRMA'),
                       desc: getText('pdfCompress.lightDesc', 'Maksimum kalite, orta sıkıştırma'),
                       recommended: false
                     }
