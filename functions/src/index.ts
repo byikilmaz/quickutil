@@ -210,8 +210,6 @@ async function callPythonCompressionService(
 // REMOVED ALL PDF-LIB FALLBACK FUNCTIONS
 // Now using ONLY Python Ghostscript service
 
-
-
 /**
  * Health Check Endpoint
  */
