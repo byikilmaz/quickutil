@@ -295,78 +295,83 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }
   };
 
-  // Processing status
+  // Processing status with Turkish support
   const getProcessingStatus = () => {
+    const isTurkish = locale === 'tr';
+    const isFrench = locale === 'fr';
+    
     if (processingProgress < 15) {
-      return locale === 'fr' ? 'Analyse de image...' : 'Analyzing image...';
+      return isTurkish ? 'Resim analiz ediliyor...' : (isFrench ? 'Analyse de image...' : 'Analyzing image...');
     } else if (processingProgress < 35) {
-      return locale === 'fr' ? 'Preparation du redimensionnement...' : 'Preparing resize...';
+      return isTurkish ? 'Boyutlandırma hazırlanıyor...' : (isFrench ? 'Preparation du redimensionnement...' : 'Preparing resize...');
     } else if (processingProgress < 60) {
-      return locale === 'fr' ? 'Calcul des dimensions...' : 'Calculating dimensions...';
+      return isTurkish ? 'Boyutlar hesaplanıyor...' : (isFrench ? 'Calcul des dimensions...' : 'Calculating dimensions...');
     } else if (processingProgress < 85) {
-      return locale === 'fr' ? 'Redimensionnement de image...' : 'Resizing image...';
+      return isTurkish ? 'Resim boyutlandırılıyor...' : (isFrench ? 'Redimensionnement de image...' : 'Resizing image...');
     } else {
-      return locale === 'fr' ? 'Finalisation...' : 'Finalizing...';
+      return isTurkish ? 'Sonlandırılıyor...' : (isFrench ? 'Finalisation...' : 'Finalizing...');
     }
   };
 
-  // FRANSIZCA ÇEVİRİLER - Basit ve güvenli yaklaşım
+  // Language detection with Turkish support
+  const isTurkish = locale === 'tr';
   const isFrench = locale === 'fr';
   
-  // Header texts
-  const statsText = isFrench ? '5M+ Images Redimensionnees • IA' : '5M+ Images Resized • AI Powered';
-  const mainTitle = isFrench ? '📐 Redimensionner Image' : '📐 Image Resize';
-  const description = isFrench ? 'Redimensionnez vos images a toute dimension avec precision et qualite' : 'Resize your images to any dimension with precision and quality';
-  const headerTitle = isFrench ? 'Redimensionner Image' : 'Image Resize';
-  const stepText = isFrench ? 'Etape' : 'Step';
-  const ofText = isFrench ? 'sur 4' : 'of 4';
+  // Header texts with Turkish support
+  const statsText = isTurkish ? '5M+ Resim Boyutlandırıldı • AI Destekli' : (isFrench ? '5M+ Images Redimensionnees • IA' : '5M+ Images Resized • AI Powered');
+  const mainTitle = isTurkish ? '📐 Resim Boyutlandırma' : (isFrench ? '📐 Redimensionner Image' : '📐 Image Resize');
+  const description = isTurkish ? 'Resimlerinizi hassas ve kaliteli bir şekilde istediğiniz boyuta getirin' : (isFrench ? 'Redimensionnez vos images a toute dimension avec precision et qualite' : 'Resize your images to any dimension with precision and quality');
+  const headerTitle = isTurkish ? 'Resim Boyutlandırma' : (isFrench ? 'Redimensionner Image' : 'Image Resize');
+  const stepText = isTurkish ? 'Adım' : (isFrench ? 'Etape' : 'Step');
+  const ofText = isTurkish ? '/ 4' : (isFrench ? 'sur 4' : 'of 4');
   const stepNumber = currentStep === 'upload' ? '1' : currentStep === 'configure' ? '2' : currentStep === 'processing' ? '3' : '4';
-  const newImageText = isFrench ? 'Nouvelle Image' : 'New Image';
+  const newImageText = isTurkish ? 'Yeni Resim' : (isFrench ? 'Nouvelle Image' : 'New Image');
   
-  // Upload step
+  // Upload step with Turkish support
   const uploadTitle = isDragActive 
-    ? (isFrench ? 'Deposez votre image ici' : 'Drop your image here')
-    : (isFrench ? 'Selectionner Image a Redimensionner' : 'Select Image to Resize');
-  const formatText = isFrench ? 'PNG, JPEG, WebP, GIF • Jusqu a 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB';
-  const chooseFileText = isFrench ? 'Choisir Fichier' : 'Choose File';
-  const secureText = isFrench ? 'Traitement Securise' : 'Secure Processing';
-  const fastText = isFrench ? 'Tres Rapide' : 'Lightning Fast';
-  const pixelText = isFrench ? 'Pixel Parfait' : 'Pixel Perfect';
+    ? (isTurkish ? 'Resminizi buraya bırakın' : (isFrench ? 'Deposez votre image ici' : 'Drop your image here'))
+    : (isTurkish ? 'Boyutlandırılacak Resim Seç' : (isFrench ? 'Selectionner Image a Redimensionner' : 'Select Image to Resize'));
+  const formatText = isTurkish ? 'PNG, JPEG, WebP, GIF • 50MB\'a kadar' : (isFrench ? 'PNG, JPEG, WebP, GIF • Jusqu a 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB');
+  const chooseFileText = isTurkish ? 'Dosya Seç' : (isFrench ? 'Choisir Fichier' : 'Choose File');
+  const secureText = isTurkish ? 'Güvenli İşlem' : (isFrench ? 'Traitement Securise' : 'Secure Processing');
+  const fastText = isTurkish ? 'Çok Hızlı' : (isFrench ? 'Tres Rapide' : 'Lightning Fast');
+  const pixelText = isTurkish ? 'Piksel Mükemmel' : (isFrench ? 'Pixel Parfait' : 'Pixel Perfect');
   
-  // Configure step
-  const configureTitle = isFrench ? 'Configurer Parametres Redimensionnement' : 'Configure Resize Settings';
-  const configureDesc = isFrench ? 'Definissez vos dimensions et options souhaitees' : 'Set your desired dimensions and options';
-  const previewTitle = isFrench ? 'Apercu en Direct' : 'Live Preview';
-  const previewInstructions = isFrench ? '🎯 Ajustez les dimensions avec les controles de droite et voyez apercu en direct' : '🎯 Adjust dimensions using controls on the right and see live preview';
-  const resizeModeText = isFrench ? 'Mode de Redimensionnement' : 'Resize Mode';
-  const byPixelsText = isFrench ? 'Par Pixels' : 'By Pixels';
-  const byPercentageText = isFrench ? 'Par Pourcentage' : 'By Percentage';
-  const widthText = isFrench ? 'Largeur (px)' : 'Width (px)';
-  const heightText = isFrench ? 'Hauteur (px)' : 'Height (px)';
-  const widthPlaceholder = isFrench ? 'Entrez la largeur...' : 'Enter width...';
-  const heightPlaceholder = isFrench ? 'Entrez la hauteur...' : 'Enter height...';
-  const percentageText = isFrench ? 'Redimensionner a % de original' : 'Resize to % of original';
-  const percentagePlaceholder = isFrench ? 'Entrez le pourcentage...' : 'Enter percentage...';
-  const resultText = isFrench ? 'Resultat:' : 'Result:';
-  const aspectRatioText = isFrench ? 'Maintenir le ratio aspect' : 'Maintain aspect ratio';
-  const noEnlargeText = isFrench ? 'Ne pas agrandir si plus petit' : 'Do not enlarge if smaller';
-  const startText = isFrench ? '🚀 Commencer le Redimensionnement' : '🚀 Start Resizing';
+  // Configure step with Turkish support
+  const configureTitle = isTurkish ? 'Boyutlandırma Ayarlarını Yapılandır' : (isFrench ? 'Configurer Parametres Redimensionnement' : 'Configure Resize Settings');
+  const configureDesc = isTurkish ? 'İstediğiniz boyutları ve seçenekleri ayarlayın' : (isFrench ? 'Definissez vos dimensions et options souhaitees' : 'Set your desired dimensions and options');
+  const previewTitle = isTurkish ? 'Canlı Önizleme' : (isFrench ? 'Apercu en Direct' : 'Live Preview');
+  const previewInstructions = isTurkish ? '🎯 Sağdaki kontrollerle boyutları ayarlayın ve canlı önizlemeyi görün' : (isFrench ? '🎯 Ajustez les dimensions avec les controles de droite et voyez apercu en direct' : '🎯 Adjust dimensions using controls on the right and see live preview');
+  const resizeModeText = isTurkish ? 'Boyutlandırma Modu' : (isFrench ? 'Mode de Redimensionnement' : 'Resize Mode');
+  const byPixelsText = isTurkish ? 'Piksel Bazında' : (isFrench ? 'Par Pixels' : 'By Pixels');
+  const byPercentageText = isTurkish ? 'Yüzde Bazında' : (isFrench ? 'Par Pourcentage' : 'By Percentage');
+  const widthText = isTurkish ? 'Genişlik (px)' : (isFrench ? 'Largeur (px)' : 'Width (px)');
+  const heightText = isTurkish ? 'Yükseklik (px)' : (isFrench ? 'Hauteur (px)' : 'Height (px)');
+  const widthPlaceholder = isTurkish ? 'Genişlik girin...' : (isFrench ? 'Entrez la largeur...' : 'Enter width...');
+  const heightPlaceholder = isTurkish ? 'Yükseklik girin...' : (isFrench ? 'Entrez la hauteur...' : 'Enter height...');
+  const percentageText = isTurkish ? 'Orijinalin %\'sine boyutlandır' : (isFrench ? 'Redimensionner a % de original' : 'Resize to % of original');
+  const percentagePlaceholder = isTurkish ? 'Yüzde girin...' : (isFrench ? 'Entrez le pourcentage...' : 'Enter percentage...');
+  const resultText = isTurkish ? 'Sonuç:' : (isFrench ? 'Resultat:' : 'Result:');
+  const aspectRatioText = isTurkish ? 'En-boy oranını koru' : (isFrench ? 'Maintenir le ratio aspect' : 'Maintain aspect ratio');
+  const noEnlargeText = isTurkish ? 'Küçükse büyütme' : (isFrench ? 'Ne pas agrandir si plus petit' : 'Do not enlarge if smaller');
+  const startText = isTurkish ? '🚀 Boyutlandırmayı Başlat' : (isFrench ? '🚀 Commencer le Redimensionnement' : '🚀 Start Resizing');
   
-  // Processing step
-  const processingTitle = isFrench ? '🤖 IA Redimensionne Votre Image' : '🤖 AI Resizing Your Image';
-  const processingDesc = isFrench ? 'Veuillez patienter pendant que nous traitons votre image avec precision...' : 'Please wait while we process your image with precision...';
-  const completeText = isFrench ? 'Termine' : 'Complete';
+  // Processing step with Turkish support
+  const processingTitle = isTurkish ? '🤖 AI Resminizi Boyutlandırıyor' : (isFrench ? '🤖 IA Redimensionne Votre Image' : '🤖 AI Resizing Your Image');
+  const processingDesc = isTurkish ? 'Resminizi hassas bir şekilde işlerken lütfen bekleyin...' : (isFrench ? 'Veuillez patienter pendant que nous traitons votre image avec precision...' : 'Please wait while we process your image with precision...');
+  const completeText = isTurkish ? 'Tamamlandı' : (isFrench ? 'Termine' : 'Complete');
   
-  // Result step
-  const resultTitle = isFrench ? '✅ Redimensionnement Termine !' : '✅ Resize Complete!';
-  const resultDescText = isFrench ? 'Votre image a ete redimensionnee avec succes' : 'Your image has been resized successfully';
-  const originalText = isFrench ? 'Original' : 'Original';
-  const resizedText = isFrench ? 'Redimensionnee' : 'Resized';
-  const downloadText = isFrench ? '📥 Telecharger Image Redimensionnee' : '📥 Download Resized Image';
-  const anotherText = isFrench ? 'Redimensionner une Autre Image' : 'Resize Another Image';
+  // Result step with Turkish support
+  const resultTitle = isTurkish ? '✅ Boyutlandırma Tamamlandı!' : (isFrench ? '✅ Redimensionnement Termine !' : '✅ Resize Complete!');
+  const resultDescText = isTurkish ? 'Resminiz başarıyla boyutlandırıldı' : (isFrench ? 'Votre image a ete redimensionnee avec succes' : 'Your image has been resized successfully');
+  const originalText = isTurkish ? 'Orijinal' : (isFrench ? 'Original' : 'Original');
+  const resizedText = isTurkish ? 'Boyutlandırılmış' : (isFrench ? 'Redimensionnee' : 'Resized');
+  const downloadText = isTurkish ? '📥 Boyutlandırılmış Resmi İndir' : (isFrench ? '📥 Telecharger Image Redimensionnee' : '📥 Download Resized Image');
+  const anotherText = isTurkish ? 'Başka Resim Boyutlandır' : (isFrench ? 'Redimensionner une Autre Image' : 'Resize Another Image');
 
   // Debug logging
   console.log('🐛 Current Step:', currentStep);
+  console.log('🐛 Is Turkish:', isTurkish);
   console.log('🐛 Is French:', isFrench);
   console.log('🐛 Main Title:', mainTitle);
   console.log('🐛 Result Title:', resultTitle);
