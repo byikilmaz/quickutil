@@ -38,12 +38,14 @@ export default async function ImageRotate({ params }: ImageRotateProps) {
 
 function ImageRotateContent({ locale }: { locale: string }) {
   const translations = getTranslations(locale);
+  const isTurkish = locale === 'tr';
   const isFrench = locale === 'fr';
+  const isEnglish = locale === 'en';
   
-  // French translation helper with debug logging
-  const getFrenchText = (frenchText: string, fallbackText: string) => {
-    const result = isFrench ? frenchText : fallbackText;
-    console.log(`🐛 DEBUG - Image Rotate Text (locale: ${locale}): "${result}"`);
+  // Multi-language translation helper with debug logging (TR, FR, EN)
+  const getMultiLangText = (turkishText: string, frenchText: string, englishText: string) => {
+    const result = isTurkish ? turkishText : (isFrench ? frenchText : englishText);
+    console.log(`🐛 DEBUG - Image Rotate (locale: ${locale}, isTurkish: ${isTurkish}, isFrench: ${isFrench}, isEnglish: ${isEnglish}): "${result}"`);
     return result;
   };
   
@@ -232,54 +234,66 @@ function ImageRotateContent({ locale }: { locale: string }) {
     }, 100);
   };
 
-  // French text variables
-  const badgeText = getFrenchText('500K+ Images Pivotees • Alimente par l\'IA', '500K+ Resim Döndürüldü • AI Destekli');
-  const titleText = getFrenchText('🔄 Rotation d\'Image', '🔄 Resim Döndürme');
-  const descriptionText = getFrenchText('Pivotez vos images a l\'angle parfait avec facilite. Notre technologie puissante assure une rotation sans perte de qualite.', 'Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.');
-  const trustNoQualityLoss = getFrenchText('Aucune Perte de Qualite', 'Kalite Kaybı Yok');
-  const trustAllFormats = getFrenchText('Tous les Formats', 'Tüm Formatlar');
-  const trustSecureFast = getFrenchText('Securise & Rapide', 'Güvenli & Hızlı');
+  // Multi-language text variables (TR, FR, EN)
+  const badgeText = getMultiLangText('500K+ Resim Döndürüldü • AI Destekli', '500K+ Images Pivotees • Alimente par l\'IA', '500K+ Images Rotated • AI-Powered');
+  const titleText = getMultiLangText('🔄 Resim Döndürme', '🔄 Rotation d\'Image', '🔄 Image Rotation');
+  const descriptionText = getMultiLangText('Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.', 'Pivotez vos images a l\'angle parfait avec facilite. Notre technologie puissante assure une rotation sans perte de qualite.', 'Rotate your images to the perfect angle with ease. Our powerful technology ensures no quality loss during rotation.');
+  const trustNoQualityLoss = getMultiLangText('Kalite Kaybı Yok', 'Aucune Perte de Qualite', 'No Quality Loss');
+  const trustAllFormats = getMultiLangText('Tüm Formatlar', 'Tous les Formats', 'All Formats');
+  const trustSecureFast = getMultiLangText('Güvenli & Hızlı', 'Securise & Rapide', 'Secure & Fast');
 
   // Step 1 - Upload
-  const uploadTitle = getFrenchText('Telecharger Image', 'Resim Yükleyin');
-  const uploadDescription = getFrenchText('Telechargez vos images au format JPEG, PNG, WebP', 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin');
-  const dropText = getFrenchText('Deposez le Fichier', 'Dosyayı Bırakın');
-  const uploadText = getFrenchText('Telecharger Image', 'Resim Yükleyin');
-  const dragOrSelect = getFrenchText('Glissez-deposez ou selectionnez le fichier', 'Dosyayı sürükleyip bırakın veya seçin');
-  const selectFile = getFrenchText('Selectionner Fichier', 'Dosya Seçin');
-  const fileTypes = getFrenchText('JPEG, PNG, WebP • Max 50MB', 'JPEG, PNG, WebP • Max 50MB');
+  const uploadTitle = getMultiLangText('Resim Yükleyin', 'Telecharger Image', 'Upload Image');
+  const uploadDescription = getMultiLangText('JPEG, PNG, WebP formatlarında resimlerinizi yükleyin', 'Telechargez vos images au format JPEG, PNG, WebP', 'Upload your images in JPEG, PNG, WebP formats');
+  const dropText = getMultiLangText('Dosyayı Bırakın', 'Deposez le Fichier', 'Drop File');
+  const uploadText = getMultiLangText('Resim Yükleyin', 'Telecharger Image', 'Upload Image');
+  const dragOrSelect = getMultiLangText('Dosyayı sürükleyip bırakın veya seçin', 'Glissez-deposez ou selectionnez le fichier', 'Drag and drop or select file');
+  const selectFile = getMultiLangText('Dosya Seçin', 'Selectionner Fichier', 'Select File');
+  const fileTypes = getMultiLangText('JPEG, PNG, WebP • Max 50MB', 'JPEG, PNG, WebP • Max 50MB', 'JPEG, PNG, WebP • Max 50MB');
 
   // Step 2 - Configure
-  const previewTitle = getFrenchText('Apercu', 'Önizleme');
-  const settingsTitle = getFrenchText('Parametres de Rotation', 'Döndürme Ayarları');
-  const backButton = getFrenchText('Retour', 'Geri');
-  const quickRotationTitle = getFrenchText('Rotation Rapide', 'Hızlı Döndürme');
-  const rotate90Right = getFrenchText('90° Droite', '90° Sağa');
-  const rotate180 = getFrenchText('180° Inverse', '180° Ters');
-  const rotate90Left = getFrenchText('90° Gauche', '90° Sola');
-  const resetAngle = getFrenchText('Reinitialiser', 'Sıfırla');
-  const customAngleTitle = getFrenchText('Angle Personnalise', 'Özel Açı');
-  const currentAngle = getFrenchText('Angle de Rotation:', 'Döndürme Açısı:');
-  const anglePlaceholder = getFrenchText('Angle (0-360°)', 'Açı (0-360°)');
-  const startRotation = getFrenchText('🚀 Commencer la Rotation', '🚀 Döndürmeyi Başlat');
+  const previewTitle = getMultiLangText('Önizleme', 'Apercu', 'Preview');
+  const settingsTitle = getMultiLangText('Döndürme Ayarları', 'Parametres de Rotation', 'Rotation Settings');
+  const backButton = getMultiLangText('Geri', 'Retour', 'Back');
+  const quickRotationTitle = getMultiLangText('Hızlı Döndürme', 'Rotation Rapide', 'Quick Rotation');
+  const rotate90Right = getMultiLangText('90° Sağa', '90° Droite', '90° Right');
+  const rotate180 = getMultiLangText('180° Ters', '180° Inverse', '180° Flip');
+  const rotate90Left = getMultiLangText('90° Sola', '90° Gauche', '90° Left');
+  const resetAngle = getMultiLangText('Sıfırla', 'Reinitialiser', 'Reset');
+  const customAngleTitle = getMultiLangText('Özel Açı', 'Angle Personnalise', 'Custom Angle');
+  const currentAngle = getMultiLangText('Döndürme Açısı:', 'Angle de Rotation:', 'Rotation Angle:');
+  const anglePlaceholder = getMultiLangText('Açı (0-360°)', 'Angle (0-360°)', 'Angle (0-360°)');
+  const startRotation = getMultiLangText('🚀 Döndürmeyi Başlat', '🚀 Commencer la Rotation', '🚀 Start Rotation');
 
   // Step 3 - Processing
-  const processingTitle = getFrenchText('Rotation d\'Image en Cours...', 'Resim Döndürülüyor...');
-  const processingDescription = getFrenchText('Votre image est pivotee sans perte de qualite grace a notre technologie alimentee par l\'IA', 'AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor');
-  const completed = getFrenchText('termine', 'tamamlandı');
-  const stepAnalysis = getFrenchText('Analyse d\'Image', 'Resim Analizi');
-  const stepRotating = getFrenchText('Rotation', 'Döndürülüyor');
-  const stepOptimizing = getFrenchText('Optimisation', 'Optimize Ediliyor');
+  const processingTitle = getMultiLangText('Resim Döndürülüyor...', 'Rotation d\'Image en Cours...', 'Image Rotation in Progress...');
+  const processingDescription = getMultiLangText('AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor', 'Votre image est pivotee sans perte de qualite grace a notre technologie alimentee par l\'IA', 'Your image is being rotated without quality loss using our AI-powered technology');
+  const completed = getMultiLangText('tamamlandı', 'termine', 'completed');
+  const stepAnalysis = getMultiLangText('Resim Analizi', 'Analyse d\'Image', 'Image Analysis');
+  const stepRotating = getMultiLangText('Döndürülüyor', 'Rotation', 'Rotating');
+  const stepOptimizing = getMultiLangText('Optimize Ediliyor', 'Optimisation', 'Optimizing');
 
   // Step 4 - Result
-  const successTitle = getFrenchText('Rotation Terminee', 'Döndürme Tamamlandı');
-  const successSubtitle = getFrenchText('Votre Image a ete Pivotee avec Succes!', 'Resminiz Başarıyla Döndürüldü!');
-  const beforeTitle = getFrenchText('Avant', 'Öncesi');
-  const afterTitle = getFrenchText('Apres', 'Sonrası');
-  const rotatedImageTitle = getFrenchText('Image Pivotee', 'Döndürülmüş Resim');
-  const rotatedAngle = getFrenchText('pivotee', 'döndürüldü');
-  const downloadButton = getFrenchText('Telecharger l\'Image Pivotee', 'Döndürülmüş Resmi İndir');
-  const newImageButton = getFrenchText('Pivoter une Nouvelle Image', 'Yeni Resim Döndür');
+  const successTitle = getMultiLangText('Döndürme Tamamlandı', 'Rotation Terminee', 'Rotation Complete');
+  const successSubtitle = getMultiLangText('Resminiz Başarıyla Döndürüldü!', 'Votre Image a ete Pivotee avec Succes!', 'Your Image has been Rotated Successfully!');
+  const beforeTitle = getMultiLangText('Öncesi', 'Avant', 'Before');
+  const afterTitle = getMultiLangText('Sonrası', 'Apres', 'After');
+  const rotatedImageTitle = getMultiLangText('Döndürülmüş Resim', 'Image Pivotee', 'Rotated Image');
+  const rotatedAngle = getMultiLangText('döndürüldü', 'pivotee', 'rotated');
+  const downloadButton = getMultiLangText('Döndürülmüş Resmi İndir', 'Telecharger l\'Image Pivotee', 'Download Rotated Image');
+  const newImageButton = getMultiLangText('Yeni Resim Döndür', 'Pivoter une Nouvelle Image', 'Rotate New Image');
+
+  // Enhanced debug logging after all variables are defined
+  console.log('🐛 DEBUG - Image Rotate Locale:', locale);
+  console.log('🐛 DEBUG - Language flags:', { isTurkish, isFrench, isEnglish });
+  console.log('🐛 DEBUG - Current step:', currentStep);
+  console.log('🐛 DEBUG - Badge text:', badgeText);
+  console.log('🐛 DEBUG - Title text:', titleText);
+  console.log('🐛 DEBUG - Description text:', descriptionText);
+  console.log('🐛 DEBUG - Upload title:', uploadTitle);
+  console.log('🐛 DEBUG - Processing title:', processingTitle);
+  console.log('🐛 DEBUG - Success title:', successTitle);
+  console.log('🐛 DEBUG - Download button:', downloadButton);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
@@ -649,7 +663,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                     {successSubtitle}
                   </h3>
                   <p className="text-gray-600">
-                    {getFrenchText(`${rotateResult.rotationAngle}° rotation realise sans perte de qualite`, `${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`)}
+                    {getMultiLangText(`${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`, `${rotateResult.rotationAngle}° rotation realise sans perte de qualite`, `${rotateResult.rotationAngle}° rotation completed without quality loss`)}
                   </p>
                 </div>
 
