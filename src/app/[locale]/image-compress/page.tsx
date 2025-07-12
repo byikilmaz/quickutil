@@ -35,6 +35,9 @@ export default async function ImageCompressPage({ params }: { params: Promise<{ 
 }
 
 function ImageCompress({ locale }: { locale: string }) {
+  // 🐛 DEBUG: Log the locale received
+  console.log('🌐 ImageCompress component - Received locale:', locale);
+  
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
@@ -428,7 +431,11 @@ function ImageCompress({ locale }: { locale: string }) {
                 <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                   1
                 </div>
-                {locale === 'en' ? '📸 Image Selection' : locale === 'es' ? '📸 Selección de Imagen' : locale === 'fr' ? '📸 Sélection d\'Image' : '📸 Resim Seçimi'}
+{(() => {
+                  const stepTitle = locale === 'en' ? '📸 Image Selection' : locale === 'es' ? '📸 Selección de Imagen' : locale === 'fr' ? '📸 Sélection d\'Image' : '📸 Resim Seçimi';
+                  console.log('🐛 DEBUG - Step 1 Title:', stepTitle, '(locale:', locale + ')');
+                  return stepTitle;
+                })()}
               </div>
               <div className="inline-flex items-center bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">
                 <SparklesIcon className="h-3 w-3 mr-1 text-purple-600 animate-pulse" />
@@ -872,7 +879,11 @@ function ImageCompress({ locale }: { locale: string }) {
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
                           </div>
-                                                      <span>{locale === 'en' ? '🚀 Start Compression' : locale === 'es' ? '🚀 Iniciar Compresión' : locale === 'fr' ? '🚀 Commencer la Compression' : '🚀 Sıkıştırmayı Başlat'}</span>
+                          {(() => {
+                              const buttonText = locale === 'en' ? '🚀 Start Compression' : locale === 'es' ? '🚀 Iniciar Compresión' : locale === 'fr' ? '🚀 Commencer la Compression' : '🚀 Sıkıştırmayı Başlat';
+                              console.log('🐛 DEBUG - Start Button Text:', buttonText, '(locale:', locale + ')');
+                              return <span>{buttonText}</span>;
+                            })()}
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <ArrowLeftIcon className="h-5 w-5 text-white rotate-180" />
                           </div>
@@ -899,7 +910,11 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                     4
                   </div>
-                  {locale === 'en' ? '🚀 Compression Process' : locale === 'es' ? '🚀 Proceso de Compresión' : locale === 'fr' ? '🚀 Processus de Compression' : '🚀 Sıkıştırma İşlemi'}
+{(() => {
+                    const processTitle = locale === 'en' ? '🚀 Compression Process' : locale === 'es' ? '🚀 Proceso de Compresión' : locale === 'fr' ? '🚀 Processus de Compression' : '🚀 Sıkıştırma İşlemi';
+                    console.log('🐛 DEBUG - Step 3 Process Title:', processTitle, '(locale:', locale + ')');
+                    return processTitle;
+                  })()}
                 </div>
               </div>
 
@@ -924,7 +939,11 @@ function ImageCompress({ locale }: { locale: string }) {
               {/* Processing Status */}
               <div className="mb-6">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-                  {locale === 'en' ? '🤖 AI Compression Process' : locale === 'es' ? '🤖 Proceso de Compresión con IA' : locale === 'fr' ? '🤖 Processus de Compression IA' : '🤖 AI Sıkıştırma İşlemi'}
+{(() => {
+                    const aiTitle = locale === 'en' ? '🤖 AI Compression Process' : locale === 'es' ? '🤖 Proceso de Compresión con IA' : locale === 'fr' ? '🤖 Processus de Compression IA' : '🤖 AI Sıkıştırma İşlemi';
+                    console.log('🐛 DEBUG - Step 4 AI Title:', aiTitle, '(locale:', locale + ')');
+                    return aiTitle;
+                  })()}
                 </h2>
                 <p className="text-gray-700 text-base">
                                       {locale === 'en' ? 'AI is calculating optimal settings...' : locale === 'es' ? 'La IA está calculando configuraciones óptimas...' : locale === 'fr' ? 'L\'IA calcule les paramètres optimaux...' : 'Yapay zeka en optimal ayarları hesaplıyor...'}
@@ -958,7 +977,11 @@ function ImageCompress({ locale }: { locale: string }) {
                   }`}>
                     {processingProgress > 0 ? '✓' : '1'}
                   </div>
-                                      <span className="font-medium">{locale === 'en' ? 'Analyzing image' : locale === 'es' ? 'Analizando imagen' : locale === 'fr' ? 'Analyse de l\'image' : 'Resim analiz ediliyor'}</span>
+                  {(() => {
+                      const analyzingText = locale === 'en' ? 'Analyzing image' : locale === 'es' ? 'Analizando imagen' : locale === 'fr' ? 'Analyse de l\'image' : 'Resim analiz ediliyor';
+                      console.log('🐛 DEBUG - Analyzing Text:', analyzingText, '(locale:', locale + ')');
+                      return <span className="font-medium">{analyzingText}</span>;
+                    })()}
                 </div>
                 
                 <div className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
@@ -1011,7 +1034,11 @@ function ImageCompress({ locale }: { locale: string }) {
                   <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
                     5
                   </div>
-                  {locale === 'en' ? '🎉 Compression Complete' : locale === 'es' ? '🎉 Compresión Completa' : locale === 'fr' ? '🎉 Compression Terminée' : '🎉 Sıkıştırma Tamamlandı'}
+{(() => {
+                    const successTitle = locale === 'en' ? '🎉 Compression Complete' : locale === 'es' ? '🎉 Compresión Completa' : locale === 'fr' ? '🎉 Compression Terminée' : '🎉 Sıkıştırma Tamamlandı';
+                    console.log('🐛 DEBUG - Success Title:', successTitle, '(locale:', locale + ')');
+                    return successTitle;
+                  })()}
                 </div>
               </div>
 
@@ -1111,7 +1138,11 @@ function ImageCompress({ locale }: { locale: string }) {
                   className="inline-flex items-center bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl px-8 py-4 text-lg font-bold transition-all duration-300 shadow-2xl hover:shadow-green-500/30 transform hover:scale-105"
                 >
                   <CloudArrowUpIcon className="h-6 w-6 mr-3" />
-                  {locale === 'en' ? '🎉 Download Compressed Image' : locale === 'es' ? '🎉 Descargar Imagen Comprimida' : locale === 'fr' ? '🎉 Télécharger l\'Image Comprimée' : '🎉 Sıkıştırılmış Resmi İndir'}
+{(() => {
+                    const downloadText = locale === 'en' ? '🎉 Download Compressed Image' : locale === 'es' ? '🎉 Descargar Imagen Comprimida' : locale === 'fr' ? '🎉 Télécharger l\'Image Comprimée' : '🎉 Sıkıştırılmış Resmi İndir';
+                    console.log('🐛 DEBUG - Download Button Text:', downloadText, '(locale:', locale + ')');
+                    return downloadText;
+                  })()}
                 </a>
               </div>
 
@@ -1121,7 +1152,11 @@ function ImageCompress({ locale }: { locale: string }) {
                   onClick={handleReset}
                   className="text-purple-600 hover:text-purple-800 font-medium text-lg underline"
                 >
-                  {locale === 'en' ? '🔄 Compress New Image' : locale === 'es' ? '🔄 Comprimir Nueva Imagen' : locale === 'fr' ? '🔄 Compresser Nouvelle Image' : '🔄 Yeni Resim Sıkıştır'}
+{(() => {
+                    const newImageText = locale === 'en' ? '🔄 Compress New Image' : locale === 'es' ? '🔄 Comprimir Nueva Imagen' : locale === 'fr' ? '🔄 Compresser Nouvelle Image' : '🔄 Yeni Resim Sıkıştır';
+                    console.log('🐛 DEBUG - New Image Button Text:', newImageText, '(locale:', locale + ')');
+                    return newImageText;
+                  })()}
                 </button>
               </div>
             </div>
