@@ -3,21 +3,23 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useTransition, useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import { 
+  changeLanguage, 
+  type SupportedLocale, 
+  supportedLocales 
+} from '@/lib/languageDetection';
 
 // Locale types and configuration
-export type Locale = 'tr' | 'en' | 'es' | 'fr' | 'de' | 'ar' | 'ja' | 'ko';
+export type Locale = SupportedLocale;
 
-export const locales: Locale[] = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+export const locales: Locale[] = [...supportedLocales];
 
 export const localeNames: Record<Locale, { name: string; flag: string }> = {
   tr: { name: 'Türkçe', flag: '🇹🇷' },
   en: { name: 'English', flag: '🇺🇸' },
   es: { name: 'Español', flag: '🇪🇸' },
   fr: { name: 'Français', flag: '🇫🇷' },
-  de: { name: 'Deutsch', flag: '🇩🇪' },
-  ar: { name: 'العربية', flag: '🇸🇦' },
-  ja: { name: '日本語', flag: '🇯🇵' },
-  ko: { name: '한국어', flag: '🇰🇷' }
+  de: { name: 'Deutsch', flag: '🇩🇪' }
 };
 
 export default function LanguageSwitcher() {
@@ -32,10 +34,25 @@ export default function LanguageSwitcher() {
     if (!pathname) return 'tr';
     const segments = pathname.split('/');
     const localeFromPath = segments[1] as Locale;
-    return locales.includes(localeFromPath) ? localeFromPath : 'tr';
+    const isValidLocale = locales.includes(localeFromPath);
+    
+    console.log('🔤 DEBUG - LanguageSwitcher getCurrentLocale:');
+    console.log('  - pathname:', pathname);
+    console.log('  - segments:', segments);
+    console.log('  - localeFromPath:', localeFromPath);
+    console.log('  - isValidLocale:', isValidLocale);
+    
+    return isValidLocale ? localeFromPath : 'tr';
   };
 
   const currentLocale = getCurrentLocale();
+
+  // Enhanced debug logging
+  console.log('🔤 DEBUG - LanguageSwitcher state:');
+  console.log('  - currentLocale:', currentLocale);
+  console.log('  - pathname:', pathname);
+  console.log('  - isPending:', isPending);
+  console.log('  - isOpen:', isOpen);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -49,19 +66,39 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle locale change
+  // Enhanced handle locale change with language detection integration
   const handleLocaleChange = (newLocale: string) => {
+    console.log('🔄 DEBUG - Language change initiated:');
+    console.log('  - from:', currentLocale);
+    console.log('  - to:', newLocale);
+    
     setIsOpen(false);
     
-    if (newLocale === currentLocale) return;
+    if (newLocale === currentLocale) {
+      console.log('🔄 DEBUG - Same locale selected, no change needed');
+      return;
+    }
 
-    // Store language preference in cookie
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Strict`;
+    // Update language preference using our language detection utility
+    changeLanguage(newLocale as SupportedLocale);
+    
+    // Store language preference in cookie as well (for server-side rendering)
+    try {
+      document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Strict`;
+      console.log('🍪 DEBUG - Cookie set successfully:', `NEXT_LOCALE=${newLocale}`);
+    } catch (error) {
+      console.error('🍪 ERROR - Failed to set cookie:', error);
+    }
     
     startTransition(() => {
       // Remove current locale from pathname and add new one
       const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '');
       const newPath = `/${newLocale}${pathWithoutLocale}`;
+      
+      console.log('🔄 DEBUG - Redirecting:');
+      console.log('  - pathWithoutLocale:', pathWithoutLocale);
+      console.log('  - newPath:', newPath);
+      
       router.push(newPath);
     });
   };
@@ -95,7 +132,7 @@ export default function LanguageSwitcher() {
       {isOpen && (
         <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
           <div className="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100">
-            Select Language
+            🌍 Dil Seçin / Select Language
           </div>
           
           {locales.map((locale) => {
@@ -107,7 +144,7 @@ export default function LanguageSwitcher() {
                 onClick={() => handleLocaleChange(locale)}
                 disabled={isPending || isActive}
                 className={`w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors duration-150 ${
-                  isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                  isActive ? 'bg-purple-50 text-purple-700' : 'text-gray-700'
                 } ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
                 role="menuitem"
               >
@@ -116,11 +153,11 @@ export default function LanguageSwitcher() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${isActive ? 'text-blue-700' : 'text-gray-900'}`}>
+                    <span className={`text-sm font-medium ${isActive ? 'text-purple-700' : 'text-gray-900'}`}>
                       {localeNames[locale]?.name || locale.toUpperCase()}
                     </span>
                     {isActive && (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
                     )}
                   </div>
                   <span className="text-xs text-gray-500 block mt-0.5">
@@ -132,7 +169,7 @@ export default function LanguageSwitcher() {
           })}
           
           <div className="px-3 py-2 text-xs text-gray-500 border-t border-gray-100 mt-1">
-            Your preference will be remembered
+            🔧 Tercihiniz hatırlanacak / Your preference will be remembered
           </div>
         </div>
       )}

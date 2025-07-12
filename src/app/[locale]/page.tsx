@@ -1,9 +1,17 @@
 'use client';
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter, usePathname } from 'next/navigation';
 import AuthModal from '@/components/AuthModal';
 import StructuredData from '@/components/StructuredData';
 import { useTranslations } from '@/lib/translations';
+import { 
+  handleLanguageDetection, 
+  debugLanguageInfo, 
+  getLocaleFromPath, 
+  hasLocaleInPath,
+  addLocaleToPath,
+  type SupportedLocale 
+} from '@/lib/languageDetection';
 import { 
   CloudArrowUpIcon,
   CheckCircleIcon,
@@ -24,8 +32,48 @@ import Link from 'next/link';
 
 export default function HomePage() {
   const params = useParams();
-  const locale = (params.locale as string) || 'tr';
+  const router = useRouter();
+  const pathname = usePathname();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isLanguageDetected, setIsLanguageDetected] = useState(false);
+  
+  // Locale bilgisini params'tan al, fallback olarak 'tr' kullan
+  const locale = (params.locale as SupportedLocale) || 'tr';
+  
+  // Browser Language Detection Effect
+  useEffect(() => {
+    // Debug bilgilerini yazdır
+    debugLanguageInfo();
+    
+    console.log('🚀 DEBUG - HomePage mounted with locale:', locale);
+    console.log('🚀 DEBUG - Current pathname:', pathname);
+    
+    // Eğer URL'de locale yoksa, browser dilini algıla ve yönlendir
+    if (!hasLocaleInPath(pathname)) {
+      const detectedLocale = handleLanguageDetection();
+      const newPath = addLocaleToPath(pathname, detectedLocale);
+      
+      console.log('🔄 DEBUG - No locale in path, redirecting to:', newPath);
+      router.replace(newPath);
+      return;
+    }
+    
+    // Eğer URL'de locale varsa ve browser dili farklıysa, kullanıcının tercihini localStorage'a kaydet
+    const urlLocale = getLocaleFromPath(pathname);
+    if (urlLocale && typeof window !== 'undefined') {
+      try {
+        const savedLocale = localStorage.getItem('preferredLocale');
+        if (savedLocale !== urlLocale) {
+          localStorage.setItem('preferredLocale', urlLocale);
+          console.log('🔧 DEBUG - Updated saved locale to URL locale:', urlLocale);
+        }
+      } catch (error) {
+        console.error('🔧 ERROR - Failed to update localStorage:', error);
+      }
+    }
+    
+    setIsLanguageDetected(true);
+  }, [pathname, router, locale]);
   
   // Multi-language flags for hardcoded texts
   const isTurkish = locale === 'tr';
@@ -38,9 +86,13 @@ export default function HomePage() {
   const t = useTranslations('homepage', locale);
   const tTools = useTranslations('tools', locale);
   
-  // Debug logging for locale detection and translations
-  console.log('🐛 DEBUG - Homepage Locale:', locale);
-  console.log('🐛 DEBUG - Language flags:', { isTurkish, isFrench, isSpanish, isGerman, isEnglish });
+  // Enhanced debug logging for locale detection and translations
+  console.log('🐛 DEBUG - Enhanced Language Detection:');
+  console.log('  - Current locale:', locale);
+  console.log('  - Language flags:', { isTurkish, isFrench, isSpanish, isGerman, isEnglish });
+  console.log('  - Is language detected:', isLanguageDetected);
+  console.log('  - Current pathname:', pathname);
+  console.log('  - Has locale in path:', hasLocaleInPath(pathname));
   
   // Translation variables for debugging (created after flags are set)
   const aiPlatformText = isTurkish ? 'AI Destekli Platform' : 
@@ -68,10 +120,31 @@ export default function HomePage() {
                         'Image Tools';
   
   // Enhanced debug logging with translation values
-  console.log('🐛 DEBUG - AI Platform Text:', aiPlatformText);
-  console.log('🐛 DEBUG - AI Features Text:', aiFeaturesText);
-  console.log('🐛 DEBUG - PDF Tools Text:', pdfToolsText);
-  console.log('🐛 DEBUG - Image Tools Text:', imageToolsText);
+  console.log('🐛 DEBUG - Translation Values:');
+  console.log('  - AI Platform Text:', aiPlatformText);
+  console.log('  - AI Features Text:', aiFeaturesText);
+  console.log('  - PDF Tools Text:', pdfToolsText);
+  console.log('  - Image Tools Text:', imageToolsText);
+  console.log('  - Title translation:', t('title'));
+  console.log('  - Subtitle translation:', t('subtitle'));
+
+  // Dil algılanıncaya kadar loading göster
+  if (!isLanguageDetected) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">
+            {isTurkish ? 'Dil algılanıyor...' : 
+             isFrench ? 'Détection de la langue...' : 
+             isSpanish ? 'Detectando idioma...' : 
+             isGerman ? 'Sprache wird erkannt...' : 
+             'Detecting language...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const pdfTools = [
     {
