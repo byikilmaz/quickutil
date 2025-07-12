@@ -53,60 +53,59 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
 
   // Translations alma
   const translations = getTranslations(locale);
+  
+  // Language detection
+  const isTurkish = locale === 'tr';
   const isFrench = locale === 'fr';
+  
+  // Step 1 - Upload texts with Turkish support
+  const badgeText = isTurkish ? '2M+ Resim Dönüştürüldü • AI Destekli' : (isFrench ? '2M+ Images Converties • Alimente par l\'IA' : '2M+ Images Converted • AI-Powered');
+  const titleText = isTurkish ? '🔄 Resim Format Dönüştürücü' : (isFrench ? '🔄 Convertisseur de Format d\'Image' : '🔄 Image Format Converter');
+  const descriptionText = isTurkish ? 'JPEG, PNG, WebP ve diğer resim formatları arasında dönüştürün ve görsellerinizi optimize edin' : (isFrench ? 'Convertissez entre JPEG, PNG, WebP et d\'autres formats d\'image et optimisez vos visuels' : 'Convert between JPEG, PNG, WebP and other image formats and optimize your visuals');
+  const uploadTitleText = isTurkish ? 'Resimlerinizi Yükleyin' : (isFrench ? 'Telecharger Vos Images' : 'Upload Your Images');
+  const dropText = isTurkish ? 'Resimlerinizi buraya bırakın' : (isFrench ? 'Deposez vos images ici' : 'Drop your images here');
+  const supportedFormatsText = isTurkish ? 'JPG, PNG, WebP, GIF ve daha fazlasını destekler' : (isFrench ? 'Supporte JPG, PNG, WebP, GIF et plus' : 'Supports JPG, PNG, WebP, GIF and more');
+  const chooseFileText = isTurkish ? 'Dosya Seç' : (isFrench ? 'Choisir Fichiers' : 'Choose Files');
 
-  // Debug
-  console.log('🐛 DEBUG - isFrench:', isFrench);
+  // Step 2 - Configure texts with Turkish support  
+  const selectedFilesText = isTurkish ? 'Seçilen Dosyalar' : (isFrench ? 'Fichiers Selectionnes' : 'Selected Files');
+  const configureTitleText = isTurkish ? 'Çıktı Formatını Seçin' : (isFrench ? 'Choisir Format de Sortie' : 'Choose Output Format');
+  const backText = isTurkish ? 'Geri' : (isFrench ? 'Retour' : 'Back');
+  const startConversionText = isTurkish ? 'Dönüştürmeyi Başlat' : (isFrench ? 'Commencer la Conversion' : 'Start Conversion');
 
-  // French translations variables
-  const badgeText = isFrench ? 'Convertisseur de Format d\'Image' : 'Image Format Converter';
-  const titleText = isFrench ? 'Convertisseur de Format d\'Image' : 'Image Format Converter';
-  const descriptionText = isFrench ? 'Convertissez entre JPEG, PNG, WebP et d\'autres formats d\'image rapidement et facilement' : 'Convert between JPEG, PNG, WebP and other image formats quickly and easily';
+  // Step 3 - Processing texts with Turkish support
+  const processingTitleText = isTurkish ? '🤖 AI Resimlerinizi Dönüştürüyor' : (isFrench ? '🤖 IA Convertit Vos Images' : '🤖 AI Converting Your Images');
+  const processingDescText = isTurkish ? 'Resimlerinizi işlerken lütfen bekleyin...' : (isFrench ? 'Veuillez patienter pendant que nous traitons vos images...' : 'Please wait while we process your images...');
+
+  // Step 4 - Results texts with Turkish support
+  const resultTitleText = isTurkish ? '✅ Dönüştürme Tamamlandı!' : (isFrench ? '✅ Conversion Terminee !' : '✅ Conversion Complete!');
+  const resultDescText = isTurkish ? 'Resimleriniz başarıyla dönüştürüldü' : (isFrench ? 'Vos images ont ete converties avec succes' : 'Your images have been successfully converted');
+  const downloadText = isTurkish ? 'İndir' : (isFrench ? 'Telecharger' : 'Download');
+  const convertMoreText = isTurkish ? 'Başka Resim Dönüştür' : (isFrench ? 'Convertir Plus d\'Images' : 'Convert More Images');
   
-  // Step 1 - Upload
-  const uploadTitleText = isFrench ? 'Telecharger Vos Images' : 'Upload Your Images';
-  const dropText = isFrench ? 'Deposez vos images ici' : 'Drop your images here';
-  const supportedFormatsText = isFrench ? 'Supporte JPG, PNG, WebP, GIF et plus' : 'Supports JPG, PNG, WebP, GIF and more';
-  const chooseFileText = isFrench ? 'Choisir Fichiers' : 'Choose Files';
+  // Format descriptions with Turkish support
+  const pngDescText = isTurkish ? 'Şeffaflık desteği' : (isFrench ? 'Support de transparence' : 'Transparency support');
+  const jpgDescText = isTurkish ? 'Küçük dosya boyutu' : (isFrench ? 'Petite taille de fichier' : 'Small file size');
+  const jpegDescText = isTurkish ? 'Fotoğraflar için ideal' : (isFrench ? 'Ideal pour les photos' : 'Ideal for photos');
+  const webpDescText = isTurkish ? 'Modern web formatı' : (isFrench ? 'Format web moderne' : 'Modern web format');
+  const gifDescText = isTurkish ? 'Animasyon desteği' : (isFrench ? 'Support d\'animation' : 'Animation support');
+  const bmpDescText = isTurkish ? 'Sıkıştırmasız kalite' : (isFrench ? 'Qualite sans compression' : 'Uncompressed quality');
+
+  // Other tools section with Turkish support
+  const otherToolsText = isTurkish ? 'Diğer Araçlar' : (isFrench ? 'Autres Outils' : 'Other Tools');
+  const compressToolText = isTurkish ? 'Sıkıştır' : (isFrench ? 'Comprimer' : 'Compress');
+  const resizeToolText = isTurkish ? 'Boyutlandır' : (isFrench ? 'Redimensionner' : 'Resize');
+  const cropToolText = isTurkish ? 'Kırp' : (isFrench ? 'Recadrer' : 'Crop');
+  const rotateToolText = isTurkish ? 'Döndür' : (isFrench ? 'Pivoter' : 'Rotate');
+  const filtersToolText = isTurkish ? 'Filtreler' : (isFrench ? 'Filtres' : 'Filters');
+  const pdfConvertToolText = isTurkish ? 'PDF Dönüştür' : (isFrench ? 'Convertir PDF' : 'PDF Convert');
   
-  // Step 2 - Configure
-  const selectedFilesText = isFrench ? 'Fichiers Selectionnes' : 'Selected Files';
-  const configureTitleText = isFrench ? 'Choisir Format de Sortie' : 'Choose Output Format';
-  const backText = isFrench ? 'Retour' : 'Back';
-  const startConversionText = isFrench ? 'Commencer la Conversion' : 'Start Conversion';
-  
-  // Format descriptions
-  const pngDescText = isFrench ? 'Support de transparence' : 'Transparency support';
-  const jpgDescText = isFrench ? 'Petite taille de fichier' : 'Small file size';
-  const jpegDescText = isFrench ? 'Ideal pour les photos' : 'Ideal for photos';
-  const webpDescText = isFrench ? 'Format web moderne' : 'Modern web format';
-  const gifDescText = isFrench ? 'Support d\'animation' : 'Animation support';
-  const bmpDescText = isFrench ? 'Format bitmap' : 'Bitmap format';
-  
-  // Step 3 - Processing
-  const processingTitleText = isFrench ? 'Conversion des Images' : 'Converting Images';
-  const processingDescText = isFrench ? 'Veuillez patienter pendant que nous convertissons vos images...' : 'Please wait while we convert your images...';
-  
-  // Step 4 - Result
-  const resultTitleText = isFrench ? 'Conversion Terminee !' : 'Conversion Complete!';
-  const resultDescText = isFrench ? 'Vos images ont ete converties avec succes.' : 'Your images have been successfully converted.';
-  const downloadText = isFrench ? 'Telecharger' : 'Download';
-  const convertMoreText = isFrench ? 'Convertir Plus d\'Images' : 'Convert More Images';
-  
-  // Other Tools
-  const otherToolsText = isFrench ? 'Autres Outils d\'Image' : 'Other Image Tools';
-  const compressToolText = isFrench ? 'Compresser' : 'Compress';
-  const resizeToolText = isFrench ? 'Redimensionner' : 'Resize';
-  const cropToolText = isFrench ? 'Recadrer' : 'Crop';
-  const rotateToolText = isFrench ? 'Pivoter' : 'Rotate';
-  const filtersToolText = isFrench ? 'Filtres' : 'Filters';
-  const pdfConvertToolText = isFrench ? 'Convertir PDF' : 'PDF Convert';
-  
-  // Error messages
-  const noFilesErrorText = isFrench ? 'Aucun fichier selectionne' : 'No files selected';
-  const conversionErrorText = isFrench ? 'Erreur de conversion' : 'Conversion error';
+  // Error messages with Turkish support
+  const noFilesErrorText = isTurkish ? 'Dosya seçilmedi' : (isFrench ? 'Aucun fichier selectionne' : 'No files selected');
+  const conversionErrorText = isTurkish ? 'Dönüştürme hatası' : (isFrench ? 'Erreur de conversion' : 'Conversion error');
 
   // Debug console logs
+  console.log('🐛 DEBUG - Locale:', locale);
   console.log('🐛 DEBUG - Badge text:', badgeText);
   console.log('🐛 DEBUG - Title text:', titleText);
   console.log('🐛 DEBUG - Upload title:', uploadTitleText);
