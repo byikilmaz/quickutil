@@ -99,11 +99,23 @@ export default function HomePage() {
     return (t as any)?.[key] || fallback;
   };
 
-  // Translation variables using getText with English fallbacks
-  const aiPlatformText = getText('homepage.aiPlatform', 'AI-Powered Platform');
-  const aiFeaturesText = getText('homepage.aiFeatures', 'AI Features');
-  const pdfToolsText = getText('homepage.pdfTools', 'PDF Tools');
-  const imageToolsText = getText('homepage.imageTools', 'Image Tools');
+  // Dynamic fallbacks based on locale
+  const getFallbackText = (trText: string, enText: string): string => {
+    switch (locale) {
+      case 'tr': return trText;
+      case 'en': return enText;
+      case 'es': return enText; // Spanish fallback to English
+      case 'fr': return enText; // French fallback to English  
+      case 'de': return enText; // German fallback to English
+      default: return enText; // Default to English
+    }
+  };
+
+  // Translation variables using dynamic fallbacks
+  const aiPlatformText = getText('homepage.aiPlatform', getFallbackText('AI Destekli Platform', 'AI-Powered Platform'));
+  const aiFeaturesText = getText('homepage.aiFeatures', getFallbackText('AI Özellikleri', 'AI Features'));
+  const pdfToolsText = getText('homepage.pdfTools', getFallbackText('PDF Araçları', 'PDF Tools'));
+  const imageToolsText = getText('homepage.imageTools', getFallbackText('Resim Araçları', 'Image Tools'));
   
   // Enhanced debug logging with translation values
   console.log('🏠 HOMEPAGE DEBUG - Locale Detection:');
