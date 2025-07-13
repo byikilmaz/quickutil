@@ -374,11 +374,11 @@ function ImageCompress({ locale }: { locale: string }) {
     try {
       console.log('Compressing on server with options:', options);
       
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('quality', options.quality.toString());
-      formData.append('format', options.format.toLowerCase()); // Convert to lowercase
-      formData.append('mode', options.mode);
+          const formData = new FormData();
+    formData.append('file', file); // ✅ Backend 'file' key'ini bekliyor
+    formData.append('quality', options.quality.toString());
+    formData.append('format', options.format.toLowerCase()); // Convert to lowercase
+    formData.append('mode', options.mode);
 
       console.log('Sending request to quickutil-image-api...');
       const response = await fetch('https://quickutil-image-api.onrender.com/compress', {
