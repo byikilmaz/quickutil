@@ -60,6 +60,21 @@ function ImageRotateContent({ locale }: { locale: string }) {
     
     return value || fallback;
   };
+
+  // Dynamic fallbacks based on locale
+  const getFallbackText = (trText: string, enText: string): string => {
+    switch (locale) {
+      case 'tr': return trText;
+      case 'en': return enText;
+      case 'es': return enText; // Spanish fallback to English
+      case 'fr': return enText; // French fallback to English  
+      case 'de': return enText; // German fallback to English
+      case 'ar': return enText; // Arabic fallback to English
+      case 'ja': return enText; // Japanese fallback to English
+      case 'ko': return enText; // Korean fallback to English
+      default: return enText;
+    }
+  };
   
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
@@ -226,13 +241,13 @@ function ImageRotateContent({ locale }: { locale: string }) {
     }, 100);
   };
 
-  // Multi-language text variables (TR, FR, ES, EN)
-  const badgeText = getText('imageRotate.badge', '500K+ Resim Döndürüldü • AI Destekli');
-  const titleText = getText('imageRotate.title', '🔄 Resim Döndürme');
-  const descriptionText = getText('imageRotate.description', 'Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.');
-  const trustNoQualityLoss = getText('imageRotate.trust.noQualityLoss', 'Kalite Kaybı Yok');
-  const trustAllFormats = getText('imageRotate.trust.allFormats', 'Tüm Formatlar');
-  const trustSecureFast = getText('imageRotate.trust.secureFast', 'Güvenli & Hızlı');
+  // Multi-language text variables (TR, FR, ES, EN) with dynamic fallbacks
+  const badgeText = getText('imageRotate.badge', getFallbackText('500K+ Resim Döndürüldü • AI Destekli', '500K+ Images Rotated • AI Powered'));
+  const titleText = getText('imageRotate.title', getFallbackText('🔄 Resim Döndürme', '🔄 Image Rotate'));
+  const descriptionText = getText('imageRotate.description', getFallbackText('Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.', 'Easily rotate your images to any angle. Rotate without quality loss using our powerful processing technology.'));
+  const trustNoQualityLoss = getText('imageRotate.trust.noQualityLoss', getFallbackText('Kalite Kaybı Yok', 'No Quality Loss'));
+  const trustAllFormats = getText('imageRotate.trust.allFormats', getFallbackText('Tüm Formatlar', 'All Formats'));
+  const trustSecureFast = getText('imageRotate.trust.secureFast', getFallbackText('Güvenli & Hızlı', 'Secure & Fast'));
 
   // Step 1 - Upload
   const uploadTitle = getText('imageRotate.upload.title', 'Resim Yükleyin');
@@ -258,12 +273,12 @@ function ImageRotateContent({ locale }: { locale: string }) {
   const startRotation = getText('imageRotate.configure.startRotation', '🚀 Döndürmeyi Başlat');
 
   // Step 3 - Processing
-  const processingTitle = getText('imageRotate.processing.title', 'Resim Döndürülüyor...');
-  const processingDescription = getText('imageRotate.processing.description', 'AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor');
-  const completed = getText('imageRotate.processing.completed', 'tamamlandı');
-  const stepAnalysis = getText('imageRotate.processing.stepAnalysis', 'Resim Analizi');
-  const stepRotating = getText('imageRotate.processing.stepRotating', 'Döndürülüyor');
-  const stepOptimizing = getText('imageRotate.processing.stepOptimizing', 'Optimize Ediliyor');
+  const processingTitle = getText('imageRotate.processing.title', getFallbackText('Resim Döndürülüyor...', 'Rotating Image...'));
+  const processingDescription = getText('imageRotate.processing.description', getFallbackText('AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor', 'Your image is being rotated without quality loss using our AI-powered technology'));
+  const completed = getText('imageRotate.processing.completed', getFallbackText('tamamlandı', 'completed'));
+  const stepAnalysis = getText('imageRotate.processing.stepAnalysis', getFallbackText('Resim Analizi', 'Image Analysis'));
+  const stepRotating = getText('imageRotate.processing.stepRotating', getFallbackText('Döndürülüyor', 'Rotating'));
+  const stepOptimizing = getText('imageRotate.processing.stepOptimizing', getFallbackText('Optimize Ediliyor', 'Optimizing'));
 
   // Step 4 - Result
   const successTitle = getText('imageRotate.result.successTitle', 'Döndürme Tamamlandı');
@@ -275,6 +290,48 @@ function ImageRotateContent({ locale }: { locale: string }) {
   const downloadButton = getText('imageRotate.result.downloadButton', 'Döndürülmüş Resmi İndir');
   const newImageButton = getText('imageRotate.result.newImageButton', 'Yeni Resim Döndür');
 
+  // Browser language auto-detection system
+  useEffect(() => {
+    const detectAndRedirectLanguage = () => {
+      if (typeof window === 'undefined') return;
+
+      const currentPath = window.location.pathname;
+      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+      
+      // Check if URL already has locale
+      const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`));
+      
+      if (!hasLocaleInPath) {
+        const browserLanguage = navigator.language.slice(0, 2).toLowerCase();
+        const preferredLanguage = localStorage.getItem('quickutil_preferred_locale');
+        
+        console.log('🌍 IMAGE ROTATE DEBUG - Browser Language Auto-Detection:', {
+          currentPath,
+          browserLanguage,
+          preferredLanguage,
+          supportedLanguages,
+          hasLocaleInPath
+        });
+        
+        let targetLanguage = 'en'; // Default to English
+        
+        if (preferredLanguage && supportedLanguages.includes(preferredLanguage)) {
+          targetLanguage = preferredLanguage;
+        } else if (supportedLanguages.includes(browserLanguage)) {
+          targetLanguage = browserLanguage;
+          localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+        }
+        
+        // Redirect to appropriate language
+        const newPath = `/${targetLanguage}${currentPath}`;
+        console.log('🌍 IMAGE ROTATE DEBUG - Redirecting to:', newPath);
+        window.location.href = newPath;
+      }
+    };
+
+    detectAndRedirectLanguage();
+  }, []);
+
   // Enhanced debug logging after all variables are defined
   console.log('🐛 DEBUG - Image Rotate Locale:', locale);
   console.log('🐛 DEBUG - Current step:', currentStep);
@@ -285,6 +342,12 @@ function ImageRotateContent({ locale }: { locale: string }) {
   console.log('🐛 DEBUG - Processing title:', processingTitle);
   console.log('🐛 DEBUG - Success title:', successTitle);
   console.log('🐛 DEBUG - Download button:', downloadButton);
+  console.log('🔍 IMAGE ROTATE DEBUG - Processing Steps:', {
+    stepAnalysis,
+    stepRotating,
+    stepOptimizing,
+    locale
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
