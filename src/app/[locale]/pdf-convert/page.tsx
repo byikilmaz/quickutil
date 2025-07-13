@@ -51,6 +51,41 @@ function PDFConvert({ locale }: { locale: string }) {
   const { uploadFile } = useStorage();
   const { canUseFeature } = useQuota();
 
+  // Helper function for multi-language fallbacks including French
+  const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
+    console.log(`📄 PDF CONVERT DEBUG - getFallbackText called for locale: ${locale}`);
+    console.log(`  - TR: ${trText}`);
+    console.log(`  - EN: ${enText}`);
+    console.log(`  - ES: ${esText || 'not provided'}`);
+    console.log(`  - FR: ${frText || 'not provided'}`);
+    console.log(`  - DE: ${deText || 'not provided'}`);
+    
+    let result: string;
+    switch (locale) {
+      case 'tr': 
+        result = trText;
+        break;
+      case 'en': 
+        result = enText;
+        break;
+      case 'es': 
+        result = esText || enText;
+        break;
+      case 'fr': 
+        result = frText || enText;
+        break;
+      case 'de': 
+        result = deText || enText;
+        break;
+      default: 
+        result = enText; // Default to English for any other locales
+        break;
+    }
+    
+    console.log(`  - Final result: ${result}`);
+    return result;
+  };
+
   // Get localized text helper function
   const getText = (key: string, fallback: string) => {
     return (t as any)?.[key] || fallback;
@@ -73,63 +108,140 @@ function PDFConvert({ locale }: { locale: string }) {
   const resultRef = useRef<HTMLDivElement>(null);
   const processButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Enhanced debug logging with browser detection for French support
+  useEffect(() => {
+    console.log('📄 PDF CONVERT DEBUG - Enhanced Translation System:');
+    console.log('  - Current locale:', locale);
+    console.log('  - Browser language:', typeof navigator !== 'undefined' ? navigator.language : 'server-side');
+    console.log('  - Browser languages:', typeof navigator !== 'undefined' ? navigator.languages : 'server-side');
+    console.log('  - URL pathname:', typeof window !== 'undefined' ? window.location.pathname : 'server-side');
+    console.log('  - Is French detected:', typeof navigator !== 'undefined' ? navigator.language.startsWith('fr') : false);
+    
+    console.log('📄 PDF CONVERT DEBUG - Sample Translation Values:');
+    console.log('  - Title:', getText('pdfConvert.title', getFallbackText('AI PDF Dönüştürme', 'AI PDF Conversion', 'Conversión de PDF con IA', 'Conversion PDF IA')));
+    console.log('  - Subtitle:', getText('pdfConvert.subtitle', getFallbackText('PDF dosyalarınızı yapay zeka destekli araçlarla istediğiniz formata dönüştürün', 'Convert your PDF files to any format with AI-powered tools', 'Convierte tus archivos PDF a cualquier formato con herramientas impulsadas por IA', 'Convertissez vos fichiers PDF en tout format avec des outils alimentés par IA')));
+    console.log('  - Select Files:', getText('pdfConvert.selectFiles', getFallbackText('PDF Dosyalarını Seç', 'Select PDF Files', 'Selecciona Archivos PDF', 'Sélectionner Fichiers PDF')));
+    console.log('  - Processing:', getText('pdfConvert.processing', getFallbackText('Yapay Zeka ile İşleniyor...', 'Processing with AI...', 'Procesando con IA...', 'Traitement avec IA...')));
+    console.log('  - Success Title:', getText('pdfConvert.successTitle', getFallbackText('Başarıyla Tamamlandı!', 'Successfully Completed!', '¡Completado Exitosamente!', 'Terminé avec Succès!')));
+    
+    // Browser language auto-detection and redirect
+    const detectAndRedirectLanguage = () => {
+      if (typeof window === 'undefined' || typeof navigator === 'undefined') return;
+      
+      console.log('📄 PDF CONVERT DEBUG - Browser Language Detection:');
+      const currentPath = window.location.pathname;
+      const browserLang = navigator.language.toLowerCase();
+      const supportedLangs = ['tr', 'en', 'es', 'fr', 'de'];
+      
+      console.log('  - Current path:', currentPath);
+      console.log('  - Browser language:', browserLang);
+      console.log('  - Browser languages array:', navigator.languages);
+      
+      // Detect target language
+      let targetLang = 'en'; // default
+      
+      if (browserLang.startsWith('tr')) targetLang = 'tr';
+      else if (browserLang.startsWith('es')) targetLang = 'es';
+      else if (browserLang.startsWith('fr')) targetLang = 'fr';
+      else if (browserLang.startsWith('de')) targetLang = 'de';
+      
+      console.log('  - Target language detected:', targetLang);
+      console.log('  - Current locale:', locale);
+      
+      // Check if already on correct language path
+      const currentLangFromPath = currentPath.split('/')[1];
+      if (supportedLangs.includes(currentLangFromPath)) {
+        console.log('  - Already on language-specific path:', currentLangFromPath);
+        
+        // Save preference
+        localStorage.setItem('quickutil_preferred_locale', currentLangFromPath);
+        console.log('  - Saved preference:', currentLangFromPath);
+        return;
+      }
+      
+      // Check localStorage preference
+      const savedLang = localStorage.getItem('quickutil_preferred_locale');
+      if (savedLang && supportedLangs.includes(savedLang)) {
+        console.log('  - Using saved language preference:', savedLang);
+        targetLang = savedLang;
+      }
+      
+      // Only redirect if not already on the correct language
+      if (locale !== targetLang) {
+        const newPath = `/${targetLang}${currentPath.startsWith('/') ? currentPath : '/' + currentPath}`;
+        console.log('  - Redirecting to:', newPath);
+        
+        // Save preference before redirect
+        localStorage.setItem('quickutil_preferred_locale', targetLang);
+        
+        // Perform redirect
+        window.location.href = newPath;
+      } else {
+        console.log('  - Already on correct language, no redirect needed');
+      }
+    };
+    
+    // Run detection
+    detectAndRedirectLanguage();
+  }, [locale]);
+
   // Conversion tools configuration
   const conversionTools = [
     {
       id: 'pdf-to-images',
-      title: getText('pdfToImages.title', 'PDF to Images'),
-      description: getText('pdfToImages.description', 'Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu'),
+      title: getText('pdfToImages.title', getFallbackText('PDF\'den Görsellere', 'PDF to Images', 'PDF a Imágenes', 'PDF vers Images')),
+      description: getText('pdfToImages.description', getFallbackText('Yüksek kaliteli görsel çıktı, akıllı format optimizasyonu', 'High quality image output, smart format optimization', 'Salida de imagen de alta calidad, optimización de formato inteligente', 'Sortie d\'image haute qualité, optimisation de format intelligente')),
       icon: PhotoIcon,
       color: 'from-blue-500 to-cyan-500',
       multiple: false,
       formats: ['PNG', 'JPG'],
       features: [
-        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
-        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
-        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem')
+        getText('pdfTools.features.highQuality', getFallbackText('Yüksek Kaliteli Çıktı', 'High Quality Output', 'Salida de Alta Calidad', 'Sortie Haute Qualité')),
+        getText('pdfTools.features.maxSize', getFallbackText('20MB Dosya Boyutu', '20MB File Size', 'Tamaño de Archivo 20MB', 'Taille de Fichier 20MB')),
+        getText('pdfTools.features.fastProcessing', getFallbackText('Hızlı İşlem', 'Fast Processing', 'Procesamiento Rápido', 'Traitement Rapide'))
       ]
     },
     {
       id: 'pdf-to-text',
-      title: getText('pdfToText.title', 'PDF to Text'),
-      description: getText('pdfToText.description', 'OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma'),
+      title: getText('pdfToText.title', getFallbackText('PDF\'den Metne', 'PDF to Text', 'PDF a Texto', 'PDF vers Texte')),
+      description: getText('pdfToText.description', getFallbackText('OCR teknolojisi, çoklu dil desteği, akıllı metin tanıma', 'OCR technology, multi-language support, smart text recognition', 'Tecnología OCR, soporte multiidioma, reconocimiento de texto inteligente', 'Technologie OCR, support multilingue, reconnaissance de texte intelligente')),
       icon: DocumentTextIcon,
       color: 'from-green-500 to-emerald-500',
       multiple: false,
       formats: ['TXT'],
       features: [
-        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
-        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
-        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem')
+        getText('pdfTools.features.highQuality', getFallbackText('Yüksek Kaliteli Çıktı', 'High Quality Output', 'Salida de Alta Calidad', 'Sortie Haute Qualité')),
+        getText('pdfTools.features.maxSize', getFallbackText('20MB Dosya Boyutu', '20MB File Size', 'Tamaño de Archivo 20MB', 'Taille de Fichier 20MB')),
+        getText('pdfTools.features.fastProcessing', getFallbackText('Hızlı İşlem', 'Fast Processing', 'Procesamiento Rápido', 'Traitement Rapide'))
       ]
     },
     {
       id: 'pdf-split',
-      title: getText('pdfSplit.title', 'PDF Böl'),
-      description: getText('pdfSplit.description', 'Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem'),
+      title: getText('pdfSplit.title', getFallbackText('PDF Böl', 'PDF Split', 'Dividir PDF', 'Diviser PDF')),
+      description: getText('pdfSplit.description', getFallbackText('Akıllı sayfa tanıma, çoklu bölme seçenekleri, toplu işlem', 'Smart page recognition, multiple split options, batch processing', 'Reconocimiento inteligente de páginas, múltiples opciones de división, procesamiento por lotes', 'Reconnaissance intelligente de pages, options de division multiples, traitement par lots')),
       icon: ScissorsIcon,
       color: 'from-purple-500 to-violet-500',
       multiple: false,
       formats: ['PDF'],
       features: [
-        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
-        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
-        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem')
+        getText('pdfTools.features.highQuality', getFallbackText('Yüksek Kaliteli Çıktı', 'High Quality Output', 'Salida de Alta Calidad', 'Sortie Haute Qualité')),
+        getText('pdfTools.features.maxSize', getFallbackText('20MB Dosya Boyutu', '20MB File Size', 'Tamaño de Archivo 20MB', 'Taille de Fichier 20MB')),
+        getText('pdfTools.features.fastProcessing', getFallbackText('Hızlı İşlem', 'Fast Processing', 'Procesamiento Rápido', 'Traitement Rapide'))
       ]
     },
     {
       id: 'pdf-merge',
-      title: getText('pdfMerge.title', 'PDF Birleştir'),
-      description: getText('pdfMerge.description', 'Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği'),
+      title: getText('pdfMerge.title', getFallbackText('PDF Birleştir', 'PDF Merge', 'Combinar PDF', 'Fusionner PDF')),
+      description: getText('pdfMerge.description', getFallbackText('Sürükle-bırak sıralama, otomatik optimizasyon, çoklu dosya desteği', 'Drag-drop ordering, automatic optimization, multiple file support', 'Ordenación de arrastrar y soltar, optimización automática, soporte de múltiples archivos', 'Classement glisser-déposer, optimisation automatique, support de fichiers multiples')),
       icon: Square2StackIcon,
       color: 'from-orange-500 to-red-500',
       multiple: true,
       formats: ['PDF'],
       features: [
-        getText('pdfTools.features.highQuality', 'Yüksek Kaliteli Çıktı'),
-        getText('pdfTools.features.maxSize', '20MB Dosya Boyutu'),
-        getText('pdfTools.features.fastProcessing', 'Hızlı İşlem'),
-        getText('pdfTools.features.multipleFileSupport', 'Çoklu Dosya Desteği')
+        getText('pdfTools.features.highQuality', getFallbackText('Yüksek Kaliteli Çıktı', 'High Quality Output', 'Salida de Alta Calidad', 'Sortie Haute Qualité')),
+        getText('pdfTools.features.maxSize', getFallbackText('20MB Dosya Boyutu', '20MB File Size', 'Tamaño de Archivo 20MB', 'Taille de Fichier 20MB')),
+        getText('pdfTools.features.fastProcessing', getFallbackText('Hızlı İşlem', 'Fast Processing', 'Procesamiento Rápido', 'Traitement Rapide')),
+        getText('pdfTools.features.multipleFileSupport', getFallbackText('Çoklu Dosya Desteği', 'Multiple File Support', 'Soporte de Múltiples Archivos', 'Support de Fichiers Multiples'))
       ]
     }
   ];
@@ -152,7 +264,7 @@ function PDFConvert({ locale }: { locale: string }) {
   // Handle file selection
   const handleFileSelect = (files: File[]) => {
     if (!canUseFeature('pdf_convert')) {
-      setError(getText('pdfConvert.errorQuota', 'Günlük PDF dönüştürme limitiniz doldu. Lütfen yarın tekrar deneyin.'));
+      setError(getText('pdfConvert.errorQuota', getFallbackText('Günlük PDF dönüştürme limitiniz doldu. Lütfen yarın tekrar deneyin.', 'Daily PDF conversion limit reached. Please try again tomorrow.', 'Límite diario de conversión de PDF alcanzado. Inténtalo de nuevo mañana.', 'Limite quotidien de conversion PDF atteint. Veuillez réessayer demain.')));
       return;
     }
 
@@ -162,13 +274,13 @@ function PDFConvert({ locale }: { locale: string }) {
     // File size validation (20MB limit)
     const oversizedFiles = files.filter(file => file.size > 20 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      setError(getText('pdfTools.errors.fileTooLarge', 'Dosya boyutu 20MB\'dan büyük olamaz. Lütfen daha küçük bir dosya seçin.'));
+      setError(getText('pdfTools.errors.fileTooLarge', getFallbackText('Dosya boyutu 20MB\'dan büyük olamaz. Lütfen daha küçük bir dosya seçin.', 'File size cannot exceed 20MB. Please select a smaller file.', 'El tamaño del archivo no puede exceder 20MB. Selecciona un archivo más pequeño.', 'La taille du fichier ne peut pas dépasser 20MB. Veuillez sélectionner un fichier plus petit.')));
       return;
     }
 
     // Multiple file validation
     if (!tool.multiple && files.length > 1) {
-      setError(getText('pdfTools.errors.singleFileOnly', 'Bu araç için sadece tek dosya seçebilirsiniz.'));
+      setError(getText('pdfTools.errors.singleFileOnly', getFallbackText('Bu araç için sadece tek dosya seçebilirsiniz.', 'You can only select one file for this tool.', 'Solo puedes seleccionar un archivo para esta herramienta.', 'Vous ne pouvez sélectionner qu\'un seul fichier pour cet outil.')));
       return;
     }
 
@@ -266,7 +378,7 @@ function PDFConvert({ locale }: { locale: string }) {
 
     } catch (error) {
       console.error('Conversion error:', error);
-      setError(error instanceof Error ? error.message : getText('pdfTools.errors.conversionFailed', 'Dönüştürme başarısız oldu.'));
+      setError(error instanceof Error ? error.message : getText('pdfTools.errors.conversionFailed', getFallbackText('Dönüştürme başarısız oldu.', 'Conversion failed.', 'La conversión falló.', 'La conversion a échoué.')));
     } finally {
       clearInterval(progressInterval);
       setIsProcessing(false);
@@ -307,7 +419,7 @@ function PDFConvert({ locale }: { locale: string }) {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error('ZIP creation error:', err);
-      setError(getText('pdfConvert.errorZip', 'ZIP dosyası oluşturulamadı.'));
+      setError(getText('pdfConvert.errorZip', getFallbackText('ZIP dosyası oluşturulamadı.', 'ZIP file could not be created.', 'No se pudo crear el archivo ZIP.', 'Le fichier ZIP n\'a pas pu être créé.')));
     } finally {
       setIsDownloadingZip(false);
     }
@@ -348,10 +460,10 @@ function PDFConvert({ locale }: { locale: string }) {
             {/* Header */}
             <div className="mb-16">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 px-4">
-                {getText('pdfConvert.title', 'AI PDF Dönüştürme')}
+                {getText('pdfConvert.title', getFallbackText('AI PDF Dönüştürme', 'AI PDF Conversion', 'Conversión de PDF con IA', 'Conversion PDF IA'))}
               </h1>
               <p className="text-base md:text-xl text-gray-700 max-w-2xl mx-auto px-4">
-                {getText('pdfConvert.subtitle', 'PDF dosyalarınızı yapay zeka destekli araçlarla istediğiniz formata dönüştürün')}
+                {getText('pdfConvert.subtitle', getFallbackText('PDF dosyalarınızı yapay zeka destekli araçlarla istediğiniz formata dönüştürün', 'Convert your PDF files to any format with AI-powered tools', 'Convierte tus archivos PDF a cualquier formato con herramientas impulsadas por IA', 'Convertissez vos fichiers PDF en tout format avec des outils alimentés par IA'))}
               </p>
             </div>
 
@@ -435,7 +547,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                       <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
                     </div>
-                    <span>{getText('pdfConvert.continue', 'Devam Et')}</span>
+                    <span>{getText('pdfConvert.continue', getFallbackText('Devam Et', 'Continue', 'Continuar', 'Continuer'))}</span>
                     <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                       <ArrowLeftIcon className="h-5 w-5 text-white rotate-180" />
                     </div>
@@ -457,11 +569,11 @@ function PDFConvert({ locale }: { locale: string }) {
               <div className="text-center mb-12">
                 <div className="mb-4">
                   <p className="text-purple-600 font-medium text-sm md:text-base">
-                    ✨ {conversionTools.find(t => t.id === selectedTool)?.title} {getText('pdfConvert.toolSelected', 'seçildi! Dosya yükleniyor...')}
+                    ✨ {conversionTools.find(t => t.id === selectedTool)?.title} {getText('pdfConvert.toolSelected', getFallbackText('seçildi! Dosya yükleniyor...', 'selected! Uploading file...', '¡seleccionado! Subiendo archivo...', 'sélectionné! Téléchargement du fichier...'))}
                   </p>
                 </div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                  {getText('pdfConvert.uploadFiles', 'Dosya Yükleme')}
+                  {getText('pdfConvert.uploadFiles', getFallbackText('Dosya Yükleme', 'File Upload', 'Subida de Archivo', 'Téléchargement de Fichier'))}
                 </h1>
               </div>
 
@@ -490,12 +602,12 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="text-center">
                       <div className="text-lg font-bold mb-2">
                         {conversionTools.find(t => t.id === selectedTool)?.multiple 
-                          ? `📂 ${getText('pdfConvert.selectFiles', 'PDF Dosyalarını Seç')}`
-                          : `📄 ${getText('pdfConvert.selectFile', 'PDF Dosyasını Seç')}`
+                          ? `📂 ${getText('pdfConvert.selectFiles', getFallbackText('PDF Dosyalarını Seç', 'Select PDF Files', 'Selecciona Archivos PDF', 'Sélectionner Fichiers PDF'))}`
+                          : `📄 ${getText('pdfConvert.selectFile', getFallbackText('PDF Dosyasını Seç', 'Select PDF File', 'Selecciona Archivo PDF', 'Sélectionner Fichier PDF'))}`
                         }
                       </div>
                       <div className="text-sm opacity-90">
-                        ✨ {getText('pdfConvert.aiPowered', 'Yapay Zeka Destekli Dönüştürme')}
+                        ✨ {getText('pdfConvert.aiPowered', getFallbackText('Yapay Zeka Destekli Dönüştürme', 'AI-Powered Conversion', 'Conversión Impulsada por IA', 'Conversion Alimentée par IA'))}
                       </div>
                     </div>
 
@@ -525,7 +637,7 @@ function PDFConvert({ locale }: { locale: string }) {
                                   {/* Enhanced Description with Icons */}
                   <div className="mt-6 space-y-3">
                     <p className="text-lg text-gray-700 font-medium">
-                      🎯 {getText('pdfConvert.dragDrop', 'veya PDF\'i buraya sürükle & bırak')}
+                      🎯 {getText('pdfConvert.dragDrop', getFallbackText('veya PDF\'i buraya sürükle & bırak', 'or drag & drop PDF here', 'o arrastra y suelta PDF aquí', 'ou glisser-déposer PDF ici'))}
                     </p>
                   
                   {/* File Requirements with Visual Elements */}
@@ -559,7 +671,7 @@ function PDFConvert({ locale }: { locale: string }) {
                 <div className="mt-8 max-w-2xl mx-auto">
                   <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <h3 className="font-semibold text-gray-900 mb-4">
-                      {getText('pdfConvert.selectedFiles', 'Seçilen Dosyalar')} ({selectedFiles.length})
+                      {getText('pdfConvert.selectedFiles', getFallbackText('Seçilen Dosyalar', 'Selected Files', 'Archivos Seleccionados', 'Fichiers Sélectionnés'))} ({selectedFiles.length})
                     </h3>
                     
                     <div className="space-y-3">
@@ -598,8 +710,8 @@ function PDFConvert({ locale }: { locale: string }) {
                     >
                       <SparklesIcon className="h-4 w-4 mr-2" />
                       {isProcessing 
-                        ? getText('pdfConvert.processing', 'İşleniyor...') 
-                        : getText('pdfConvert.startConversion', 'Dönüştürmeyi Başlat')
+                        ? getText('pdfConvert.processing', getFallbackText('İşleniyor...', 'Processing...', 'Procesando...', 'Traitement...')) 
+                        : getText('pdfConvert.startConversion', getFallbackText('Dönüştürmeyi Başlat', 'Start Conversion', 'Iniciar Conversión', 'Démarrer la Conversion'))
                       }
                     </button>
                   </div>
@@ -625,7 +737,7 @@ function PDFConvert({ locale }: { locale: string }) {
                   className="text-purple-600 hover:text-purple-700 font-medium text-sm inline-flex items-center"
                 >
                   <ArrowLeftIcon className="h-4 w-4 mr-1" />
-                  {getText('pdfConvert.backToTools', 'Araç Seçimine Dön')}
+                  {getText('pdfConvert.backToTools', getFallbackText('Araç Seçimine Dön', 'Back to Tool Selection', 'Volver a Selección de Herramientas', 'Retour à la Sélection d\'Outils'))}
                 </button>
               </div>
             </div>
@@ -662,10 +774,10 @@ function PDFConvert({ locale }: { locale: string }) {
               </div>
               
               <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                {getText('pdfConvert.processing', 'Yapay Zeka ile İşleniyor...')}
+                {getText('pdfConvert.processing', getFallbackText('Yapay Zeka ile İşleniyor...', 'Processing with AI...', 'Procesando con IA...', 'Traitement avec IA...'))}
               </h2>
               <p className="text-lg text-gray-700 mb-8">
-                {getText('pdfConvert.processingDesc', 'AI algoritmaları dosyalarınızı optimize ediyor')}
+                {getText('pdfConvert.processingDesc', getFallbackText('AI algoritmaları dosyalarınızı optimize ediyor', 'AI algorithms are optimizing your files', 'Los algoritmos de IA están optimizando tus archivos', 'Les algorithmes IA optimisent vos fichiers'))}
               </p>
             </div>
 
@@ -699,9 +811,9 @@ function PDFConvert({ locale }: { locale: string }) {
               {/* Processing Steps with Icons */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { icon: '📄', label: getText('pdfConvert.fileUploading', 'Dosya Yükleniyor'), step: 1 },
-                  { icon: '🤖', label: getText('pdfConvert.aiAnalyzing', 'AI Analiz Yapıyor'), step: 2 },
-                  { icon: '⚡', label: getText('pdfConvert.conversionCompleting', 'Dönüştürme Tamamlanıyor'), step: 3 }
+                  { icon: '📄', label: getText('pdfConvert.fileUploading', getFallbackText('Dosya Yükleniyor', 'File Uploading', 'Subiendo Archivo', 'Téléchargement du Fichier')), step: 1 },
+                  { icon: '🤖', label: getText('pdfConvert.aiAnalyzing', getFallbackText('AI Analiz Yapıyor', 'AI Analyzing', 'IA Analizando', 'IA en cours d\'Analyse')), step: 2 },
+                  { icon: '⚡', label: getText('pdfConvert.conversionCompleting', getFallbackText('Dönüştürme Tamamlanıyor', 'Conversion Completing', 'Conversión Completándose', 'Conversion en cours de Finalisation')), step: 3 }
                 ].map((item, idx) => (
                   <div key={idx} className={`relative p-4 rounded-2xl border-2 transition-all duration-500 ${
                     processingProgress > (idx + 1) * 33 
@@ -733,7 +845,7 @@ function PDFConvert({ locale }: { locale: string }) {
                   <SparklesIcon className="h-4 w-4 text-white" />
                 </div>
                 <p className="text-lg font-medium">
-                  ✨ {getText('pdfConvert.aiOptimizingBest', 'Yapay zeka dosyalarınızı en iyi şekilde optimize ediyor...')}
+                  ✨ {getText('pdfConvert.aiOptimizingBest', getFallbackText('Yapay zeka dosyalarınızı en iyi şekilde optimize ediyor...', 'AI is optimizing your files in the best way...', 'La IA está optimizando tus archivos de la mejor manera...', 'L\'IA optimise vos fichiers de la meilleure façon...'))}
                 </p>
               </div>
             </div>
@@ -778,10 +890,10 @@ function PDFConvert({ locale }: { locale: string }) {
                 </div>
                 
                 <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
-                  🎉 {getText('pdfConvert.successTitle', 'Başarıyla Tamamlandı!')}
+                  🎉 {getText('pdfConvert.successTitle', getFallbackText('Başarıyla Tamamlandı!', 'Successfully Completed!', '¡Completado Exitosamente!', 'Terminé avec Succès!'))}
                 </h2>
                 <p className="text-xl text-gray-700 mb-8">
-                  ✨ {getText('pdfConvert.successDesc', 'PDF dosyalarınız yapay zeka ile dönüştürüldü')}
+                  ✨ {getText('pdfConvert.successDesc', getFallbackText('PDF dosyalarınız yapay zeka ile dönüştürüldü', 'Your PDF files have been converted with AI', 'Tus archivos PDF han sido convertidos con IA', 'Vos fichiers PDF ont été convertis avec IA'))}
                 </p>
               </div>
 
@@ -790,7 +902,7 @@ function PDFConvert({ locale }: { locale: string }) {
                 <div className="mb-12">
                   <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center justify-center">
                     <span className="mr-3">📁</span>
-                    {getText('pdfConvert.convertedFiles', 'Dönüştürülen Dosyalar')}
+                    {getText('pdfConvert.convertedFiles', getFallbackText('Dönüştürülen Dosyalar', 'Converted Files', 'Archivos Convertidos', 'Fichiers Convertis'))}
                     <span className="ml-3 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 px-3 py-1 rounded-full text-lg">
                       {conversionResult.convertedCount}
                     </span>
@@ -826,7 +938,7 @@ function PDFConvert({ locale }: { locale: string }) {
                           className="w-full bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 text-white rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center transform hover:scale-105"
                         >
                           <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
-                          ⬇️ {getText('pdfConvert.download', 'İndir')}
+                          ⬇️ {getText('pdfConvert.download', getFallbackText('İndir', 'Download', 'Descargar', 'Télécharger'))}
                         </a>
                       </div>
                     ))}
@@ -850,7 +962,7 @@ function PDFConvert({ locale }: { locale: string }) {
                     <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                       <SparklesIcon className="h-5 w-5 text-white animate-pulse" />
                     </div>
-                    <span>🔄 {getText('pdfConvert.newConversion', 'Yeni Dönüştürme')}</span>
+                    <span>🔄 {getText('pdfConvert.newConversion', getFallbackText('Yeni Dönüştürme', 'New Conversion', 'Nueva Conversión', 'Nouvelle Conversion'))}</span>
                   </div>
                 </button>
                 
@@ -870,7 +982,7 @@ function PDFConvert({ locale }: { locale: string }) {
                         )}
                       </div>
                       <span>
-                        {isDownloadingZip ? '📦 ZIP Hazırlanıyor...' : `📦 ${getText('pdfConvert.downloadAllZip', 'Hepsini İndir (ZIP)')}`}
+                        {isDownloadingZip ? '📦 ZIP Hazırlanıyor...' : `📦 ${getText('pdfConvert.downloadAllZip', getFallbackText('Hepsini İndir (ZIP)', 'Download All (ZIP)', 'Descargar Todo (ZIP)', 'Tout Télécharger (ZIP)'))}`}
                       </span>
                     </div>
                   </button>
@@ -881,7 +993,7 @@ function PDFConvert({ locale }: { locale: string }) {
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 border border-gray-200">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
                   <span className="mr-3">🛠️</span>
-                  {getText('pdfConvert.otherTools', 'Diğer PDF Araçları')}
+                  {getText('pdfConvert.otherTools', getFallbackText('Diğer PDF Araçları', 'Other PDF Tools', 'Otras Herramientas PDF', 'Autres Outils PDF'))}
                   <span className="ml-3">✨</span>
                 </h3>
                 
@@ -890,37 +1002,37 @@ function PDFConvert({ locale }: { locale: string }) {
                     { 
                       href: '/pdf-compress', 
                       icon: '📦', 
-                      title: locale === 'en' ? 'PDF Compress' : locale === 'es' ? 'Comprimir PDF' : 'PDF Sıkıştır', 
+                      title: getFallbackText('PDF Sıkıştır', 'PDF Compress', 'Comprimir PDF', 'Compresser PDF'), 
                       color: 'from-red-500 to-orange-500' 
                     },
                     { 
                       href: '/pdf-merge', 
                       icon: '📑', 
-                      title: locale === 'en' ? 'PDF Merge' : locale === 'es' ? 'Combinar PDF' : 'PDF Birleştir', 
+                      title: getFallbackText('PDF Birleştir', 'PDF Merge', 'Combinar PDF', 'Fusionner PDF'), 
                       color: 'from-green-500 to-emerald-500' 
                     },
                     { 
                       href: '/pdf-split', 
                       icon: '✂️', 
-                      title: locale === 'en' ? 'PDF Split' : locale === 'es' ? 'Dividir PDF' : 'PDF Böl', 
+                      title: getFallbackText('PDF Böl', 'PDF Split', 'Dividir PDF', 'Diviser PDF'), 
                       color: 'from-blue-500 to-cyan-500' 
                     },
                     { 
                       href: '/image-convert', 
                       icon: '🖼️', 
-                      title: locale === 'en' ? 'Convert Image' : locale === 'es' ? 'Convertir Imagen' : 'Resim Dönüştür', 
+                      title: getFallbackText('Resim Dönüştür', 'Convert Image', 'Convertir Imagen', 'Convertir Image'), 
                       color: 'from-purple-500 to-pink-500' 
                     },
                     { 
                       href: '/image-compress', 
                       icon: '📷', 
-                      title: locale === 'en' ? 'Compress Image' : locale === 'es' ? 'Comprimir Imagen' : 'Resim Sıkıştır', 
+                      title: getFallbackText('Resim Sıkıştır', 'Compress Image', 'Comprimir Imagen', 'Compresser Image'), 
                       color: 'from-yellow-500 to-orange-500' 
                     },
                     { 
                       href: '/image-resize', 
                       icon: '📐', 
-                      title: locale === 'en' ? 'Resize Image' : locale === 'es' ? 'Redimensionar Imagen' : 'Resim Boyutlandır', 
+                      title: getFallbackText('Resim Boyutlandır', 'Resize Image', 'Redimensionar Imagen', 'Redimensionner Image'), 
                       color: 'from-indigo-500 to-purple-500' 
                     }
                   ].map((tool) => (
