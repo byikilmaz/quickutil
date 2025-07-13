@@ -99,11 +99,11 @@ export default function HomePage() {
     return (t as any)?.[key] || fallback;
   };
 
-  // Translation variables using getText
-  const aiPlatformText = getText('homepage.aiPlatform', 'AI Destekli Platform');
-  const aiFeaturesText = getText('homepage.aiFeatures', 'AI Özellikleri');
-  const pdfToolsText = getText('homepage.pdfTools', 'PDF Araçları');
-  const imageToolsText = getText('homepage.imageTools', 'Resim Araçları');
+  // Translation variables using getText with English fallbacks
+  const aiPlatformText = getText('homepage.aiPlatform', 'AI-Powered Platform');
+  const aiFeaturesText = getText('homepage.aiFeatures', 'AI Features');
+  const pdfToolsText = getText('homepage.pdfTools', 'PDF Tools');
+  const imageToolsText = getText('homepage.imageTools', 'Image Tools');
   
   // Enhanced debug logging with translation values
   console.log('🏠 HOMEPAGE DEBUG - Locale Detection:');
