@@ -598,6 +598,28 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
     });
   }, [headerTitle, mainTitle, configureTitle, processingTitle, resultTitle, downloadText, currentStep]);
 
+  // Enhanced progress step debugging
+  useEffect(() => {
+    if (currentStep === 'processing') {
+      const currentStepText = processingProgress < 15 ? 
+        getText('imageCrop.processing.step1', getFallbackText('Kırpma alanı analiz ediliyor...', 'Analyzing crop area...')) :
+       processingProgress < 35 ? 
+        getText('imageCrop.processing.step2', getFallbackText('Kırpma hazırlanıyor...', 'Preparing crop...')) :
+       processingProgress < 60 ? 
+        getText('imageCrop.processing.step3', getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...')) :
+       processingProgress < 85 ? 
+        getText('imageCrop.processing.step4', getFallbackText('Resim kırpılıyor...', 'Cropping image...')) : 
+        getText('imageCrop.processing.step5', getFallbackText('Tamamlanıyor...', 'Finalizing...'));
+      
+      console.log('✂️ IMAGE CROP DEBUG - Processing Step:', {
+        currentLocale: locale,
+        processingProgress,
+        currentStepText,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [processingProgress, currentStep, locale, getText, getFallbackText]);
+
   // Browser language auto-detection system
   useEffect(() => {
     const detectAndRedirectLanguage = () => {
@@ -980,14 +1002,14 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
                       <span className="text-purple-700 font-medium">
                         {processingProgress < 15 ? 
-                          getText('imageCrop.processing.step1', 'Kırpma alanı analiz ediliyor...') :
+                          getText('imageCrop.processing.step1', getFallbackText('Kırpma alanı analiz ediliyor...', 'Analyzing crop area...')) :
                          processingProgress < 35 ? 
-                          getText('imageCrop.processing.step2', 'Kırpma hazırlanıyor...') :
+                          getText('imageCrop.processing.step2', getFallbackText('Kırpma hazırlanıyor...', 'Preparing crop...')) :
                          processingProgress < 60 ? 
-                          getText('imageCrop.processing.step3', 'Boyutlar hesaplanıyor...') :
+                          getText('imageCrop.processing.step3', getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...')) :
                          processingProgress < 85 ? 
-                          getText('imageCrop.processing.step4', 'Resim kırpılıyor...') : 
-                          getText('imageCrop.processing.step5', 'Tamamlanıyor...')}
+                          getText('imageCrop.processing.step4', getFallbackText('Resim kırpılıyor...', 'Cropping image...')) : 
+                          getText('imageCrop.processing.step5', getFallbackText('Tamamlanıyor...', 'Finalizing...'))}
                       </span>
                     </div>
                   </div>
