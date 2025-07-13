@@ -63,22 +63,42 @@ function ImageRotateContent({ locale }: { locale: string }) {
 
   // Dynamic fallbacks based on locale with Spanish support
   const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
+    const isCompletionMessage = trText.includes('döndürme işlemi');
+    
+    if (isCompletionMessage) {
+      console.log(`🔄 IMAGE ROTATE DEBUG - getFallbackText for COMPLETION MESSAGE:`, {
+        locale,
+        trText,
+        enText,
+        esText: esText || 'not provided',
+        frText: frText || 'not provided',
+        deText: deText || 'not provided'
+      });
+    }
+    
     console.log(`🔄 IMAGE ROTATE DEBUG - getFallbackText called for locale: ${locale}`);
     console.log(`  - TR: ${trText}`);
     console.log(`  - EN: ${enText}`);
     console.log(`  - ES: ${esText || 'not provided'}`);
     
+    let result;
     switch (locale) {
-      case 'tr': return trText;
-      case 'en': return enText;
-      case 'es': return esText || enText;
-      case 'fr': return frText || enText;
-      case 'de': return deText || enText;
-      case 'ar': return enText; // Arabic fallback to English
-      case 'ja': return enText; // Japanese fallback to English
-      case 'ko': return enText; // Korean fallback to English
-      default: return enText;
+      case 'tr': result = trText; break;
+      case 'en': result = enText; break;
+      case 'es': result = esText || enText; break;
+      case 'fr': result = frText || enText; break;
+      case 'de': result = deText || enText; break;
+      case 'ar': result = enText; break; // Arabic fallback to English
+      case 'ja': result = enText; break; // Japanese fallback to English
+      case 'ko': result = enText; break; // Korean fallback to English
+      default: result = enText; break;
     }
+    
+    if (isCompletionMessage) {
+      console.log(`🔄 IMAGE ROTATE DEBUG - COMPLETION MESSAGE RESULT for locale ${locale}:`, result);
+    }
+    
+    return result;
   };
   
   const { user } = useAuth();
@@ -725,7 +745,27 @@ function ImageRotateContent({ locale }: { locale: string }) {
                     {successSubtitle}
                   </h3>
                   <p className="text-gray-600">
-                    {getText('imageRotate.result.completionMessage', getFallbackText(`${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`, `${rotateResult.rotationAngle}° rotation completed without quality loss`, `Rotación de ${rotateResult.rotationAngle}° completada sin pérdida de calidad`))}
+                    {(() => {
+                      const completionText = getText('imageRotate.result.completionMessage', getFallbackText(
+                        `${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`, 
+                        `${rotateResult.rotationAngle}° rotation completed without quality loss`, 
+                        `Rotación de ${rotateResult.rotationAngle}° completada sin pérdida de calidad`
+                      ));
+                      
+                      // Enhanced debug logging for completion message
+                      console.log('🔄 IMAGE ROTATE DEBUG - Completion Message:', {
+                        locale,
+                        rotationAngle: rotateResult.rotationAngle,
+                        completionText,
+                        getFallbackResult: getFallbackText(
+                          `${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`, 
+                          `${rotateResult.rotationAngle}° rotation completed without quality loss`, 
+                          `Rotación de ${rotateResult.rotationAngle}° completada sin pérdida de calidad`
+                        )
+                      });
+                      
+                      return completionText;
+                    })()}
                   </p>
                 </div>
 
