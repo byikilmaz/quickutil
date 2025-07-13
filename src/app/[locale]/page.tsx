@@ -106,13 +106,35 @@ export default function HomePage() {
   const imageToolsText = getText('homepage.imageTools', 'Resim Araçları');
   
   // Enhanced debug logging with translation values
-  console.log('🐛 DEBUG - Translation Values:');
+  console.log('🏠 HOMEPAGE DEBUG - Locale Detection:');
+  console.log('  - Current locale:', locale);
+  console.log('  - Browser language:', typeof navigator !== 'undefined' ? navigator.language : 'server-side');
+  console.log('  - Browser languages:', typeof navigator !== 'undefined' ? navigator.languages : 'server-side');
+  console.log('  - URL pathname:', typeof window !== 'undefined' ? window.location.pathname : 'server-side');
+  console.log('  - Has locale in path:', hasLocaleInPath(pathname));
+  console.log('  - Is language detected:', isLanguageDetected);
+  
+  console.log('🏠 HOMEPAGE DEBUG - Translation Values:');
   console.log('  - AI Platform Text:', aiPlatformText);
-  console.log('  - AI Features Text:', aiFeaturesText);
+  console.log('  - AI Features Text:', aiFeaturesText);  
   console.log('  - PDF Tools Text:', pdfToolsText);
   console.log('  - Image Tools Text:', imageToolsText);
   console.log('  - Title translation:', t('title'));
   console.log('  - Subtitle translation:', t('subtitle'));
+  console.log('  - AI Subtitle translation:', t('aiSubtitle'));
+  console.log('  - Start Button translation:', t('startButton'));
+  console.log('  - Sign Up Button translation:', t('signupButton'));
+  
+  console.log('🏠 HOMEPAGE DEBUG - AI Feature Translations:');
+  console.log('  - PDF Optimization:', getText('homepage.aiFeature.pdfOptimization', '⚡ AI Optimization'));
+  console.log('  - Smart Format:', getText('homepage.aiFeature.smartFormat', '🎯 Smart Format'));
+  console.log('  - Auto Position:', getText('homepage.aiFeature.autoPosition', '📍 Auto Position'));
+  console.log('  - Content Analysis:', getText('homepage.aiFeature.contentAnalysis', '🔍 Content Analysis'));
+  console.log('  - Smart Ratio:', getText('homepage.aiFeature.smartRatio', '⚖️ Smart Ratio'));
+  console.log('  - Object Detection:', getText('homepage.aiFeature.objectDetection', '👁️ Object Detection'));
+  console.log('  - Auto Correct:', getText('homepage.aiFeature.autoCorrect', '📐 Auto Correct'));
+  console.log('  - Format AI:', getText('homepage.aiFeature.formatAI', '🎯 Format AI'));
+  console.log('  - Intelligent Filters:', getText('homepage.aiFeature.intelligentFilters', '🎨 Intelligent Filters'));
 
   // Dil algılanıncaya kadar loading göster
   if (!isLanguageDetected) {
@@ -134,7 +156,7 @@ export default function HomePage() {
       title: tTools('pdfCompress'),
       description: tTools('pdfCompressDesc'),
       href: `/${locale}/pdf-compress`,
-      aiFeature: '⚡ AI Optimization',
+      aiFeature: getText('homepage.aiFeature.pdfOptimization', '⚡ AI Optimization'),
       gradient: 'from-blue-500 to-cyan-500'
     },
     {
@@ -142,7 +164,7 @@ export default function HomePage() {
       title: tTools('pdfConvert'),
       description: tTools('pdfConvertDesc'),
       href: `/${locale}/pdf-convert`,
-      aiFeature: '🎯 Smart Format',
+      aiFeature: getText('homepage.aiFeature.smartFormat', '🎯 Smart Format'),
       gradient: 'from-purple-500 to-pink-500'
     },
     {
@@ -150,7 +172,7 @@ export default function HomePage() {
       title: tTools('pdfEsign'),
       description: tTools('pdfEsignDesc'),
       href: `/${locale}/pdf-esign`,
-      aiFeature: '📍 Auto Position',
+      aiFeature: getText('homepage.aiFeature.autoPosition', '📍 Auto Position'),
       gradient: 'from-green-500 to-emerald-500'
     }
   ];
@@ -161,7 +183,7 @@ export default function HomePage() {
       title: tTools('imageCompress'),
       description: tTools('imageCompressDesc'),
       href: `/${locale}/image-compress`,
-      aiFeature: '🔍 Content Analysis',
+      aiFeature: getText('homepage.aiFeature.contentAnalysis', '🔍 Content Analysis'),
       gradient: 'from-orange-500 to-red-500'
     },
     {
@@ -169,7 +191,7 @@ export default function HomePage() {
       title: tTools('imageResize'),
       description: tTools('imageResizeDesc'),
       href: `/${locale}/image-resize`,
-      aiFeature: '⚖️ Smart Ratio',
+      aiFeature: getText('homepage.aiFeature.smartRatio', '⚖️ Smart Ratio'),
       gradient: 'from-indigo-500 to-purple-500'
     },
     {
@@ -177,7 +199,7 @@ export default function HomePage() {
       title: tTools('imageCrop'),
       description: tTools('imageCropDesc'),
       href: `/${locale}/image-crop`,
-      aiFeature: '👁️ Object Detection',
+      aiFeature: getText('homepage.aiFeature.objectDetection', '👁️ Object Detection'),
       gradient: 'from-pink-500 to-rose-500'
     },
     {
@@ -185,7 +207,7 @@ export default function HomePage() {
       title: tTools('imageRotate'),
       description: tTools('imageRotateDesc'),
       href: `/${locale}/image-rotate`,
-      aiFeature: '📐 Auto Correct',
+      aiFeature: getText('homepage.aiFeature.autoCorrect', '📐 Auto Correct'),
       gradient: 'from-teal-500 to-cyan-500'
     },
     {
@@ -193,7 +215,7 @@ export default function HomePage() {
       title: tTools('imageFormat'),
       description: tTools('imageFormatDesc'),
       href: `/${locale}/image-format-convert`,
-      aiFeature: '🎯 Format AI',
+      aiFeature: getText('homepage.aiFeature.formatAI', '🎯 Format AI'),
       gradient: 'from-violet-500 to-purple-500'
     },
     {
@@ -201,7 +223,7 @@ export default function HomePage() {
       title: tTools('imageFilters'),
       description: tTools('imageFiltersDesc'),
       href: `/${locale}/image-filters`,
-      aiFeature: '✨ AI Effects',
+      aiFeature: getText('homepage.aiFeature.intelligentFilters', '🎨 Intelligent Filters'),
       gradient: 'from-amber-500 to-orange-500'
     }
   ];

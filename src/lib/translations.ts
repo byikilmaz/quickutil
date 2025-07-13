@@ -2250,6 +2250,18 @@ const translations = {
     'homepage.imageTools': 'Image Tools',
     'homepage.languageDetecting': 'Detecting language...',
     'homepage.pdfProcessingDescription': 'Transform your PDF processing experience with AI',
+    'homepage.imageProcessingDescription': 'The art of intelligent image processing with smart algorithms',
+    
+    // AI Feature texts for tools
+    'homepage.aiFeature.pdfOptimization': '⚡ AI Optimization',
+    'homepage.aiFeature.smartFormat': '🎯 Smart Format',  
+    'homepage.aiFeature.autoPosition': '📍 Auto Position',
+    'homepage.aiFeature.contentAnalysis': '🔍 Content Analysis',
+    'homepage.aiFeature.smartRatio': '⚖️ Smart Ratio',
+    'homepage.aiFeature.objectDetection': '👁️ Object Detection',
+    'homepage.aiFeature.autoCorrect': '📐 Auto Correct',
+    'homepage.aiFeature.formatAI': '🎯 Format AI',
+    'homepage.aiFeature.intelligentFilters': '🎨 Intelligent Filters',
     
     // Homepage CTA
     'homepage.ctaTitle': 'Start with AI now',
