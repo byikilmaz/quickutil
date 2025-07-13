@@ -18,6 +18,7 @@ import {
   type ConversionResult,
   type ConversionOptions 
 } from '@/lib/imageUtils';
+import { getTranslations } from '@/lib/translations';
 
 interface ConvertResult {
   originalFile: File;
@@ -28,11 +29,21 @@ interface ConvertResult {
   format: string;
 }
 
-export default function ImageConvert() {
+export default async function ImageConvert({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return <ImageConvertContent locale={locale} />;
+}
+
+function ImageConvertContent({ locale }: { locale: string }) {
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const t = getTranslations(locale);
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
 
   // Component state - Step-based
   const [currentStep, setCurrentStep] = useState<'upload' | 'configure' | 'processing' | 'result'>('upload');
@@ -74,7 +85,7 @@ export default function ImageConvert() {
     }
 
     if (!validateImageFile(file)) {
-      setError('Lütfen geçerli bir resim dosyası seçin (PNG, JPEG, WebP)');
+      setError(getText('imageConvert.error.invalidFile', 'Lütfen geçerli bir resim dosyası seçin (PNG, JPEG, WebP)'));
       return;
     }
 
@@ -195,7 +206,7 @@ export default function ImageConvert() {
       }, 500);
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Dönüştürme sırasında hata oluştu');
+      setError(err instanceof Error ? err.message : getText('imageConvert.error.conversionFailed', 'Dönüştürme sırasında hata oluştu'));
       setIsProcessing(false);
       setCurrentStep('configure');
       console.error('Image conversion error:', err);
@@ -268,17 +279,17 @@ export default function ImageConvert() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
                 <SparklesIcon className="h-4 w-4 mr-2 text-purple-600 animate-pulse" />
-                ✨ 5M+ Format Dönüştürme • AI Destekli
+{getText('imageConvert.badge.stats', '✨ 5M+ Format Dönüştürme • AI Destekli')}
               </div>
             </div>
 
             {/* Enhanced Title */}
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent mb-4">
-                🔄 Resim Format Dönüştürme
+                {getText('imageConvert.title', '🔄 Resim Format Dönüştürme')}
               </h1>
               <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-                PNG, JPEG ve WebP formatları arasında kaliteli dönüştürme yapın
+                {getText('imageConvert.description', 'PNG, JPEG ve WebP formatları arasında kaliteli dönüştürme yapın')}
               </p>
             </div>
 
@@ -306,10 +317,10 @@ export default function ImageConvert() {
                   {/* Dynamic Text */}
                   <div className="text-center">
                     <div className="text-lg font-bold mb-2">
-                      📸 Resim Dosyasını Seç
+                      {getText('imageConvert.upload.selectFile', '📸 Resim Dosyasını Seç')}
                     </div>
                     <div className="text-sm opacity-90">
-                      🔄 Format Dönüştürme için
+                      {getText('imageConvert.upload.purpose', '🔄 Format Dönüştürme için')}
                     </div>
                   </div>
 
@@ -348,24 +359,24 @@ export default function ImageConvert() {
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <ArrowPathIcon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Çoklu Format</h3>
-                <p className="text-gray-600 text-sm">PNG, JPEG ve WebP formatları arasında hızlı dönüştürme</p>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{getText('imageConvert.features.multiFormat', 'Çoklu Format')}</h3>
+                <p className="text-gray-600 text-sm">{getText('imageConvert.features.multiFormatDesc', 'PNG, JPEG ve WebP formatları arasında hızlı dönüştürme')}</p>
               </div>
               
               <div className="text-center group">
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <SparklesIcon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Kalite Korunur</h3>
-                <p className="text-gray-600 text-sm">Görsel kaliteyi koruyarak format değişimi</p>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{getText('imageConvert.features.qualityPreserved', 'Kalite Korunur')}</h3>
+                <p className="text-gray-600 text-sm">{getText('imageConvert.features.qualityPreservedDesc', 'Görsel kaliteyi koruyarak format değişimi')}</p>
               </div>
               
               <div className="text-center group">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <PhotoIcon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Anında İşlem</h3>
-                <p className="text-gray-600 text-sm">Browser'da hızlı dönüştürme, upload gerektirmez</p>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{getText('imageConvert.features.instantProcessing', 'Anında İşlem')}</h3>
+                <p className="text-gray-600 text-sm">{getText('imageConvert.features.instantProcessingDesc', 'Browser\'da hızlı dönüştürme, upload gerektirmez')}</p>
               </div>
             </div>
           </div>
@@ -380,7 +391,7 @@ export default function ImageConvert() {
                 onClick={() => setError(null)}
                 className="mt-2 text-red-600 hover:text-red-800 text-sm underline"
               >
-                Kapat
+                {getText('common.close', 'Kapat')}
               </button>
             </div>
           </div>
@@ -396,7 +407,7 @@ export default function ImageConvert() {
               {/* Header */}
               <div className="text-center mb-12">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                  🎯 Dönüştürme Ayarları
+                  {getText('imageConvert.configure.title', '🎯 Dönüştürme Ayarları')}
                 </h1>
               </div>
 
@@ -408,7 +419,7 @@ export default function ImageConvert() {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                       <PhotoIcon className="h-5 w-5 mr-2 text-purple-600" />
-                      📸 Önizleme
+                      {getText('imageConvert.configure.preview', '📸 Önizleme')}
                     </h3>
                     
                     <div className="space-y-4">
@@ -427,26 +438,26 @@ export default function ImageConvert() {
                       {/* File Info */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">📄 Dosya:</span>
+                          <span className="text-sm text-gray-600">{getText('imageConvert.fileInfo.file', '📄 Dosya:')}</span>
                           <span className="text-sm font-medium text-gray-900 truncate max-w-32" title={selectedFile.name}>
                             {selectedFile.name}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">📊 Boyut:</span>
+                          <span className="text-sm text-gray-600">{getText('imageConvert.fileInfo.size', '📊 Boyut:')}</span>
                           <span className="text-sm font-medium text-gray-900">
                             {formatFileSize(selectedFile.size)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">🎨 Format:</span>
+                          <span className="text-sm text-gray-600">{getText('imageConvert.fileInfo.format', '🎨 Format:')}</span>
                           <span className="text-sm font-medium text-gray-900 uppercase">
                             {selectedFile.type.split('/')[1]}
                           </span>
                         </div>
                         {originalDimensions && (
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">📐 Boyutlar:</span>
+                            <span className="text-sm text-gray-600">{getText('imageConvert.fileInfo.dimensions', '📐 Boyutlar:')}</span>
                             <span className="text-sm font-medium text-gray-900">
                               {originalDimensions.width} × {originalDimensions.height}
                             </span>
@@ -464,14 +475,14 @@ export default function ImageConvert() {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
                       <ArrowPathIcon className="h-5 w-5 mr-2 text-purple-600" />
-                      🔄 Dönüştürme Ayarları
+                      {getText('imageConvert.configure.settings', '🔄 Dönüştürme Ayarları')}
                     </h3>
                     
                     <div className="space-y-6">
                       {/* Format Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">
-                          📄 Hedef Format
+                          {getText('imageConvert.configure.targetFormat', '📄 Hedef Format')}
                         </label>
                         <div className="grid grid-cols-3 gap-3">
                           {(['jpeg', 'png', 'webp'] as const).map((fmt) => (
@@ -486,9 +497,9 @@ export default function ImageConvert() {
                             >
                               <div className="font-medium text-sm uppercase">{fmt}</div>
                               <div className="text-xs text-gray-500 mt-1">
-                                {fmt === 'jpeg' && 'En uyumlu'}
-                                {fmt === 'png' && 'Şeffaflık'}
-                                {fmt === 'webp' && 'Modern'}
+                                {fmt === 'jpeg' && getText('imageConvert.formats.jpeg', 'En uyumlu')}
+                                {fmt === 'png' && getText('imageConvert.formats.png', 'Şeffaflık')}
+                                {fmt === 'webp' && getText('imageConvert.formats.webp', 'Modern')}
                               </div>
                             </button>
                           ))}
@@ -499,7 +510,7 @@ export default function ImageConvert() {
                       {format !== 'png' && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-3">
-                            🎯 Kalite Seviyesi: {Math.round(quality * 100)}%
+                            {getText('imageConvert.configure.qualityLevel', '🎯 Kalite Seviyesi:')} {Math.round(quality * 100)}%
                           </label>
                           <input
                             type="range"
@@ -511,9 +522,9 @@ export default function ImageConvert() {
                             className="w-full h-3 bg-gradient-to-r from-red-200 via-yellow-200 to-green-200 rounded-lg appearance-none cursor-pointer"
                           />
                           <div className="flex justify-between text-xs text-gray-500 mt-1">
-                            <span>Küçük dosya</span>
-                            <span>Dengeli</span>
-                            <span>Yüksek kalite</span>
+                            <span>{getText('imageConvert.quality.small', 'Küçük dosya')}</span>
+                            <span>{getText('imageConvert.quality.balanced', 'Dengeli')}</span>
+                            <span>{getText('imageConvert.quality.high', 'Yüksek kalite')}</span>
                           </div>
                         </div>
                       )}
@@ -522,25 +533,25 @@ export default function ImageConvert() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            📐 Maks. Genişlik (px)
+                            {getText('imageConvert.configure.maxWidth', '📐 Maks. Genişlik (px)')}
                           </label>
                           <input
                             type="number"
                             value={maxWidth || ''}
                             onChange={(e) => setMaxWidth(e.target.value ? parseInt(e.target.value) : undefined)}
-                            placeholder="Orijinal"
+                            placeholder={getText('imageConvert.configure.original', 'Orijinal')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            📐 Maks. Yükseklik (px)
+                            {getText('imageConvert.configure.maxHeight', '📐 Maks. Yükseklik (px)')}
                           </label>
                           <input
                             type="number"
                             value={maxHeight || ''}
                             onChange={(e) => setMaxHeight(e.target.value ? parseInt(e.target.value) : undefined)}
-                            placeholder="Orijinal"
+                            placeholder={getText('imageConvert.configure.original', 'Orijinal')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                           />
                         </div>
@@ -559,14 +570,14 @@ export default function ImageConvert() {
                       {isProcessing ? (
                         <div className="flex items-center space-x-3">
                           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                          <span>Dönüştürülüyor...</span>
+                          <span>{getText('imageConvert.processing.converting', 'Dönüştürülüyor...')}</span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <ArrowPathIcon className="h-5 w-5 text-white animate-pulse" />
                           </div>
-                          <span>🔄 Dönüştürmeyi Başlat</span>
+                          <span>{getText('imageConvert.configure.startConversion', '🔄 Dönüştürmeyi Başlat')}</span>
                           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                             <ArrowLeftIcon className="h-5 w-5 text-white rotate-180" />
                           </div>
@@ -608,17 +619,17 @@ export default function ImageConvert() {
               {/* Processing Status */}
               <div className="mb-8">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                  🔄 Format Dönüştürme İşlemi
+                  {getText('imageConvert.processing.title', '🔄 Format Dönüştürme İşlemi')}
                 </h2>
                 <p className="text-gray-600 text-lg">
-                  Resminizi {format.toUpperCase()} formatına dönüştürüyoruz...
+                  {getText('imageConvert.processing.description', `Resminizi ${format.toUpperCase()} formatına dönüştürüyoruz...`)}
                 </p>
               </div>
 
               {/* Enhanced Progress Bar */}
               <div className="mb-8">
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>İlerleme</span>
+                  <span>{getText('imageConvert.processing.progress', 'İlerleme')}</span>
                   <span>{Math.round(processingProgress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
@@ -635,10 +646,10 @@ export default function ImageConvert() {
               {/* Processing Steps */}
               <div className="space-y-3 text-left max-w-md mx-auto">
                 {[
-                  { text: '📸 Resim dosyası analiz ediliyor...', delay: 0 },
-                  { text: '🔄 Format dönüştürme işlemi başlatılıyor...', delay: 1000 },
-                  { text: '⚙️ Kalite ayarları uygulanıyor...', delay: 2000 },
-                  { text: '✨ Son işlemler tamamlanıyor...', delay: 2500 }
+                  { text: getText('imageConvert.processing.step1', '📸 Resim dosyası analiz ediliyor...'), delay: 0 },
+                  { text: getText('imageConvert.processing.step2', '🔄 Format dönüştürme işlemi başlatılıyor...'), delay: 1000 },
+                  { text: getText('imageConvert.processing.step3', '⚙️ Kalite ayarları uygulanıyor...'), delay: 2000 },
+                  { text: getText('imageConvert.processing.step4', '✨ Son işlemler tamamlanıyor...'), delay: 2500 }
                 ].map((step, index) => (
                   <div
                     key={index}
@@ -676,10 +687,10 @@ export default function ImageConvert() {
                   <CheckCircleIcon className="h-10 w-10 text-white" />
                 </div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
-                  🎉 Dönüştürme Tamamlandı!
+                  {getText('imageConvert.result.title', '🎉 Dönüştürme Tamamlandı!')}
                 </h1>
                 <p className="text-xl text-gray-600">
-                  Resminiz başarıyla {convertResult.format} formatına dönüştürüldü
+                  {getText('imageConvert.result.description', `Resminiz başarıyla ${convertResult.format} formatına dönüştürüldü`)}
                 </p>
               </div>
 
@@ -690,13 +701,13 @@ export default function ImageConvert() {
                   <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <PhotoIcon className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Orijinal</h3>
+                  <h3 className="font-bold text-gray-900 mb-2">{getText('imageConvert.result.original', 'Orijinal')}</h3>
                   <p className="text-2xl font-bold text-blue-600 mb-1">
                     {formatFileSize(convertResult.originalSize)}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {selectedFile?.type.split('/')[1].toUpperCase()} Formatı
-                  </p>
+                                      <p className="text-sm text-gray-500">
+                      {selectedFile?.type.split('/')[1].toUpperCase()} {getText('imageConvert.result.format', 'Formatı')}
+                    </p>
                 </div>
 
                 {/* Arrow */}
@@ -711,13 +722,13 @@ export default function ImageConvert() {
                   <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <CheckCircleIcon className="h-6 w-6 text-green-600" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Dönüştürülmüş</h3>
+                  <h3 className="font-bold text-gray-900 mb-2">{getText('imageConvert.result.converted', 'Dönüştürülmüş')}</h3>
                   <p className="text-2xl font-bold text-green-600 mb-1">
                     {formatFileSize(convertResult.convertedSize)}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {convertResult.format} Formatı
-                  </p>
+                                      <p className="text-sm text-gray-500">
+                      {convertResult.format} {getText('imageConvert.result.format', 'Formatı')}
+                    </p>
                 </div>
               </div>
 
@@ -731,7 +742,7 @@ export default function ImageConvert() {
                     <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                       <CloudArrowUpIcon className="h-5 w-5 text-white rotate-180" />
                     </div>
-                    <span>💾 Dönüştürülmüş Resmi İndir</span>
+                    <span>{getText('imageConvert.result.downloadButton', '💾 Dönüştürülmüş Resmi İndir')}</span>
                     <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                       <CheckCircleIcon className="h-5 w-5 text-white" />
                     </div>
@@ -746,7 +757,7 @@ export default function ImageConvert() {
                   className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl px-8 py-3 font-medium transition-all duration-300 shadow-lg hover:shadow-gray-500/30 flex items-center justify-center mx-auto"
                 >
                   <ArrowPathIcon className="h-5 w-5 mr-2" />
-                  🔄 Yeni Dönüştürme
+                  {getText('imageConvert.result.newConversion', '🔄 Yeni Dönüştürme')}
                 </button>
               </div>
             </div>
@@ -759,19 +770,19 @@ export default function ImageConvert() {
             <div className="max-w-6xl mx-auto px-4">
               <div className="text-center mb-12">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                  🛠️ Diğer Resim Araçları
+                  {getText('imageConvert.otherTools.title', '🛠️ Diğer Resim Araçları')}
                 </h2>
-                <p className="text-gray-600">Resimlerinizi daha da güzelleştirin</p>
+                <p className="text-gray-600">{getText('imageConvert.otherTools.description', 'Resimlerinizi daha da güzelleştirin')}</p>
               </div>
               
               <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                 {[
-                  { href: '/image-compress', icon: '🗜️', title: 'Sıkıştır' },
-                  { href: '/image-resize', icon: '📐', title: 'Boyutlandır' },
-                  { href: '/image-crop', icon: '✂️', title: 'Kırp' },
-                  { href: '/image-rotate', icon: '🔄', title: 'Döndür' },
-                  { href: '/image-filters', icon: '🎨', title: 'Filtreler' },
-                  { href: '/pdf-convert', icon: '📄', title: 'PDF Dönüştür' }
+                  { href: '/image-compress', icon: '🗜️', title: getText('imageConvert.tools.compress', 'Sıkıştır') },
+                  { href: '/image-resize', icon: '📐', title: getText('imageConvert.tools.resize', 'Boyutlandır') },
+                  { href: '/image-crop', icon: '✂️', title: getText('imageConvert.tools.crop', 'Kırp') },
+                  { href: '/image-rotate', icon: '🔄', title: getText('imageConvert.tools.rotate', 'Döndür') },
+                  { href: '/image-filters', icon: '🎨', title: getText('imageConvert.tools.filters', 'Filtreler') },
+                  { href: '/pdf-convert', icon: '📄', title: getText('imageConvert.tools.pdfConvert', 'PDF Dönüştür') }
                 ].map((tool, index) => (
                   <a
                     key={index}

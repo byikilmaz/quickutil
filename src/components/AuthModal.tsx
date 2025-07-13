@@ -3,111 +3,11 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { XMarkIcon, EyeIcon, EyeSlashIcon, SparklesIcon, UserPlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslations } from '@/lib/translations';
+import { getTranslations } from '@/lib/translations';
 
 interface AuthModalProps {
   onClose: () => void;
 }
-
-// Firebase error code'larını locale'e göre çeviren fonksiyon
-const getFirebaseErrorMessage = (error: unknown, locale: string = 'tr'): string => {
-  const errorCode = (error as { code?: string; message?: string })?.code || 
-                   (error as { code?: string; message?: string })?.message || '';
-  
-  const errorMessages: Record<string, Record<string, string>> = {
-    es: {
-      'auth/email-already-in-use': 'Esta dirección de email ya está en uso. Prueba a iniciar sesión.',
-      'auth/weak-password': 'La contraseña es muy débil. Usa al menos 6 caracteres.',
-      'auth/invalid-email': 'Dirección de email inválida. Por favor verifica.',
-      'auth/user-disabled': 'Esta cuenta ha sido desactivada.',
-      'auth/user-not-found': 'No se encontró usuario registrado con esta dirección de email.',
-      'auth/wrong-password': 'Contraseña incorrecta. Por favor inténtalo de nuevo.',
-      'auth/too-many-requests': 'Demasiados intentos fallidos. Por favor inténtalo más tarde.',
-      'auth/network-request-failed': 'Verifica tu conexión a internet.',
-      'auth/invalid-credential': 'Credenciales inválidas. Verifica tu email y contraseña.',
-      'auth/missing-password': 'El campo de contraseña no puede estar vacío.',
-      'auth/missing-email': 'La dirección de email no puede estar vacía.',
-      'auth/requires-recent-login': 'Necesitas iniciar sesión nuevamente para esta operación.',
-      'auth/operation-not-allowed': 'Esta operación no está disponible actualmente.',
-      'auth/popup-closed-by-user': 'Operación cancelada.',
-      'auth/unauthorized-domain': 'Este dominio no está autorizado.',
-      'Firebase: Error (auth/email-already-in-use).': 'Esta dirección de email ya está en uso. Prueba a iniciar sesión.',
-      'Firebase: Error (auth/weak-password).': 'La contraseña es muy débil. Usa al menos 6 caracteres.',
-      'Firebase: Error (auth/invalid-email).': 'Dirección de email inválida. Por favor verifica.',
-      'Firebase: Error (auth/user-not-found).': 'No se encontró usuario registrado con esta dirección de email.',
-      'Firebase: Error (auth/wrong-password).': 'Contraseña incorrecta. Por favor inténtalo de nuevo.',
-      'Firebase: Error (auth/too-many-requests).': 'Demasiados intentos fallidos. Por favor inténtalo más tarde.'
-    },
-    tr: {
-      'auth/email-already-in-use': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
-      'auth/weak-password': 'Şifre çok zayıf. En az 6 karakter kullanın.',
-      'auth/invalid-email': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
-      'auth/user-disabled': 'Bu hesap devre dışı bırakılmış.',
-      'auth/user-not-found': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
-      'auth/wrong-password': 'Hatalı şifre. Lütfen tekrar deneyin.',
-      'auth/too-many-requests': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.',
-      'auth/network-request-failed': 'İnternet bağlantınızı kontrol edin.',
-      'auth/invalid-credential': 'Geçersiz giriş bilgileri. E-posta ve şifrenizi kontrol edin.',
-      'auth/missing-password': 'Şifre alanı boş bırakılamaz.',
-      'auth/missing-email': 'E-posta adresi boş bırakılamaz.',
-      'auth/requires-recent-login': 'Bu işlem için tekrar giriş yapmanız gerekiyor.',
-      'auth/operation-not-allowed': 'Bu işlem şu anda kullanılamıyor.',
-      'auth/popup-closed-by-user': 'İşlem iptal edildi.',
-      'auth/unauthorized-domain': 'Bu domain yetkili değil.',
-      'Firebase: Error (auth/email-already-in-use).': 'Bu e-posta adresi zaten kullanımda. Giriş yapmayı deneyin.',
-      'Firebase: Error (auth/weak-password).': 'Şifre çok zayıf. En az 6 karakter kullanın.',
-      'Firebase: Error (auth/invalid-email).': 'Geçersiz e-posta adresi. Lütfen kontrol edin.',
-      'Firebase: Error (auth/user-not-found).': 'Bu e-posta adresine kayıtlı kullanıcı bulunamadı.',
-      'Firebase: Error (auth/wrong-password).': 'Hatalı şifre. Lütfen tekrar deneyin.',
-      'Firebase: Error (auth/too-many-requests).': 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.'
-    },
-    en: {
-      'auth/email-already-in-use': 'This email address is already in use. Try signing in.',
-      'auth/weak-password': 'Password is too weak. Use at least 6 characters.',
-      'auth/invalid-email': 'Invalid email address. Please check.',
-      'auth/user-disabled': 'This account has been disabled.',
-      'auth/user-not-found': 'No user found registered with this email address.',
-      'auth/wrong-password': 'Incorrect password. Please try again.',
-      'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
-      'auth/network-request-failed': 'Check your internet connection.',
-      'auth/invalid-credential': 'Invalid credentials. Check your email and password.',
-      'auth/missing-password': 'Password field cannot be empty.',
-      'auth/missing-email': 'Email address cannot be empty.',
-      'auth/requires-recent-login': 'You need to sign in again for this operation.',
-      'auth/operation-not-allowed': 'This operation is not currently available.',
-      'auth/popup-closed-by-user': 'Operation cancelled.',
-      'auth/unauthorized-domain': 'This domain is not authorized.',
-      'Firebase: Error (auth/email-already-in-use).': 'This email address is already in use. Try signing in.',
-      'Firebase: Error (auth/weak-password).': 'Password is too weak. Use at least 6 characters.',
-      'Firebase: Error (auth/invalid-email).': 'Invalid email address. Please check.',
-      'Firebase: Error (auth/user-not-found).': 'No user found registered with this email address.',
-      'Firebase: Error (auth/wrong-password).': 'Incorrect password. Please try again.',
-      'Firebase: Error (auth/too-many-requests).': 'Too many failed attempts. Please try again later.'
-    }
-  };
-
-  const localeMessages = errorMessages[locale] || errorMessages.tr;
-
-  // Önce exact match ara
-  if (localeMessages[errorCode]) {
-    return localeMessages[errorCode];
-  }
-
-  // Error message'da code varsa extract et
-  const codeMatch = errorCode.match(/auth\/[\w-]+/);
-  if (codeMatch && localeMessages[codeMatch[0]]) {
-    return localeMessages[codeMatch[0]];
-  }
-
-  // Default message by locale
-  const defaultMessages: Record<string, string> = {
-    es: 'Ha ocurrido un error. Por favor inténtalo de nuevo.',
-    tr: 'Bir hata oluştu. Lütfen tekrar deneyin.',
-    en: 'An error occurred. Please try again.'
-  };
-
-  return defaultMessages[locale] || defaultMessages.tr;
-};
 
 export default function AuthModal({ onClose }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true);
@@ -123,10 +23,61 @@ export default function AuthModal({ onClose }: AuthModalProps) {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'tr';
   
-  // Translation hook
-  const t = useTranslations('auth', locale);
+  // Translation helper
+  const t = getTranslations(locale);
+  const getText = (key: string, fallback: string = '') => {
+    try {
+      const keys = key.split('.');
+      let value: any = t;
+      for (const k of keys) {
+        value = value?.[k];
+      }
+      return value || fallback;
+    } catch {
+      return fallback;
+    }
+  };
 
   const { login, register } = useAuth();
+
+  // Firebase error mapping function
+  const getFirebaseErrorMessage = (error: unknown): string => {
+    const errorCode = (error as { code?: string; message?: string })?.code || 
+                     (error as { code?: string; message?: string })?.message || '';
+    
+    // Map Firebase error codes to translation keys
+    const errorMap: Record<string, string> = {
+      'auth/email-already-in-use': 'auth.errors.emailAlreadyInUse',
+      'auth/weak-password': 'auth.errors.weakPassword',
+      'auth/invalid-email': 'auth.errors.invalidEmail',
+      'auth/user-disabled': 'auth.errors.userDisabled',
+      'auth/user-not-found': 'auth.errors.userNotFound',
+      'auth/wrong-password': 'auth.errors.wrongPassword',
+      'auth/too-many-requests': 'auth.errors.tooManyRequests',
+      'auth/network-request-failed': 'auth.errors.networkRequestFailed',
+      'auth/invalid-credential': 'auth.errors.invalidCredential',
+      'auth/missing-password': 'auth.errors.missingPassword',
+      'auth/missing-email': 'auth.errors.missingEmail',
+      'auth/requires-recent-login': 'auth.errors.requiresRecentLogin',
+      'auth/operation-not-allowed': 'auth.errors.operationNotAllowed',
+      'auth/popup-closed-by-user': 'auth.errors.popupClosedByUser',
+      'auth/unauthorized-domain': 'auth.errors.unauthorizedDomain'
+    };
+
+    // Extract error code from error message if needed
+    const codeMatch = errorCode.match(/auth\/[\w-]+/);
+    const finalCode = codeMatch ? codeMatch[0] : errorCode;
+    
+    // Get translated error message
+    const errorKey = errorMap[finalCode];
+    if (errorKey) {
+      const translatedError = getText(errorKey);
+      if (translatedError) return translatedError;
+    }
+
+    // Fallback to default error message
+    return getText('auth.errors.default', 'Bir hata oluştu. Lütfen tekrar deneyin.');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,7 +92,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
       }
       onClose();
     } catch (err) {
-      setError(getFirebaseErrorMessage(err, locale));
+      setError(getFirebaseErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -206,18 +157,18 @@ export default function AuthModal({ onClose }: AuthModalProps) {
               {/* Title */}
               <h2 className="text-3xl font-bold mb-3">
                 <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent">
-                  {isLogin ? t('welcomeTitle') : t('createAccountTitle')}
+                  {isLogin ? getText('auth.welcomeTitle', 'Hoş Geldiniz') : getText('auth.createAccountTitle', 'Hesap Oluşturun')}
                 </span>
               </h2>
               
               <p className="text-gray-600 text-lg">
-                {isLogin ? t('loginSubtitle') : t('registerSubtitle')}
+                {isLogin ? getText('auth.loginSubtitle', 'QuickUtil hesabınıza giriş yapın') : getText('auth.registerSubtitle', 'QuickUtil ailesine katılın')}
               </p>
               
               {/* Trust Badge */}
               <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mt-4">
                 <SparklesIcon className="h-4 w-4 text-purple-600 mr-2" />
-                {t('freeStorageBadge')}
+                {getText('auth.freeStorageBadge', '30 Gün Ücretsiz Depolama')}
               </div>
             </div>
 
@@ -227,7 +178,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="firstName" className="block text-sm font-semibold text-gray-800 mb-2">
-                      {t('firstName')} *
+                      {getText('auth.firstName', 'Ad')} *
                     </label>
                     <input
                       type="text"
@@ -235,13 +186,13 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                      placeholder={t('firstNamePlaceholder')}
+                      placeholder={getText('auth.firstNamePlaceholder', 'Adınız')}
                       required={!isLogin}
                     />
                   </div>
                   <div>
                     <label htmlFor="lastName" className="block text-sm font-semibold text-gray-800 mb-2">
-                      {t('lastName')} *
+                      {getText('auth.lastName', 'Soyad')} *
                     </label>
                     <input
                       type="text"
@@ -249,7 +200,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                      placeholder={t('lastNamePlaceholder')}
+                      placeholder={getText('auth.lastNamePlaceholder', 'Soyadınız')}
                       required={!isLogin}
                     />
                   </div>
@@ -258,7 +209,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">
-                  {t('email')} *
+                  {getText('auth.email', 'E-posta Adresi')} *
                 </label>
                 <input
                   type="email"
@@ -266,14 +217,14 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                  placeholder={t('emailPlaceholder')}
+                  placeholder={getText('auth.emailPlaceholder', 'ornek@email.com')}
                   required
                 />
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-semibold text-gray-800 mb-2">
-                  {t('password')} *
+                  {getText('auth.password', 'Şifre')} *
                 </label>
                 <div className="relative">
                   <input
@@ -282,7 +233,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-4 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-purple-300"
-                    placeholder={t('passwordPlaceholder')}
+                    placeholder={getText('auth.passwordPlaceholder', 'En az 6 karakter')}
                     required
                     minLength={6}
                   />
@@ -319,19 +270,19 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
-                    {t('processing')}
+                    {getText('auth.processing', 'İşleniyor...')}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
                     {isLogin ? (
                       <>
                         <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                        {t('login')}
+                        {getText('auth.login', 'Giriş Yap')}
                       </>
                     ) : (
                       <>
                         <UserPlusIcon className="h-5 w-5 mr-2" />
-                        {t('createAccount')}
+                        {getText('auth.createAccount', 'Hesap Oluştur')}
                       </>
                     )}
                   </div>
@@ -343,7 +294,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
             <div className="mt-8 text-center relative z-10">
               <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
                 <p className="text-gray-700 text-base font-medium mb-3">
-                  {isLogin ? t('noAccount') : t('hasAccount')}
+                  {isLogin ? getText('auth.noAccount', 'Henüz hesabınız yok mu?') : getText('auth.hasAccount', 'Zaten hesabınız var mı?')}
                 </p>
                 <button
                   onClick={() => {
@@ -359,12 +310,12 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                   {isLogin ? (
                     <>
                       <UserPlusIcon className="h-5 w-5 mr-2" />
-                      {t('register')}
+                      {getText('auth.register', 'Kayıt Ol')}
                     </>
                   ) : (
                     <>
                       <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                      {t('login')}
+                      {getText('auth.login', 'Giriş Yap')}
                     </>
                   )}
                 </button>
@@ -377,15 +328,15 @@ export default function AuthModal({ onClose }: AuthModalProps) {
                 <div className="flex items-center justify-center space-x-6 text-sm text-purple-800">
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                    <span className="font-medium">{t('benefit1')}</span>
+                    <span className="font-medium">{getText('auth.benefit1', '30 Gün Depolama')}</span>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-pink-500 rounded-full mr-2"></div>
-                    <span className="font-medium">{t('benefit2')}</span>
+                    <span className="font-medium">{getText('auth.benefit2', 'Güvenli İşlem')}</span>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                    <span className="font-medium">{t('benefit3')}</span>
+                    <span className="font-medium">{getText('auth.benefit3', 'Hızlı Erişim')}</span>
                   </div>
                 </div>
               </div>

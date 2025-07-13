@@ -100,50 +100,12 @@ function PDFToImages({ locale }: { locale: string }) {
     setError(null);
     
     if (file.size > 20 * 1024 * 1024) {
-      setError(getErrorMessage('fileSizeLimit', locale));
+      setError(getText('errors.pdfToImages.fileSizeLimit', 'Dosya boyutu 20MB\'dan büyük olamaz.'));
       return;
     }
     
     setSelectedFile(file);
     setCurrentStep('configure');
-  };
-
-  // Get error messages based on locale
-  const getErrorMessage = (type: string, locale: string) => {
-    const messages = {
-      tr: {
-        fileSizeLimit: 'Dosya boyutu 20MB\'dan büyük olamaz.',
-        conversionFailed: 'Dönüştürme sırasında hata oluştu.',
-        invalidFile: 'Geçersiz PDF dosyası.',
-        zipCreationFailed: 'ZIP dosyası oluşturulurken hata oluştu.'
-      },
-      en: {
-        fileSizeLimit: 'File size cannot exceed 20MB.',
-        conversionFailed: 'Conversion failed.',
-        invalidFile: 'Invalid PDF file.',
-        zipCreationFailed: 'Failed to create ZIP file.'
-      },
-      es: {
-        fileSizeLimit: 'El tamaño del archivo no puede exceder 20MB.',
-        conversionFailed: 'Error en la conversión.',
-        invalidFile: 'Archivo PDF inválido.',
-        zipCreationFailed: 'Error al crear archivo ZIP.'
-      },
-      fr: {
-        fileSizeLimit: 'La taille du fichier ne peut pas dépasser 20 Mo.',
-        conversionFailed: 'Échec de la conversion.',
-        invalidFile: 'Fichier PDF invalide.',
-        zipCreationFailed: 'Échec de la création du fichier ZIP.'
-      },
-      de: {
-        fileSizeLimit: 'Die Dateigröße darf 20MB nicht überschreiten.',
-        conversionFailed: 'Konvertierung fehlgeschlagen.',
-        invalidFile: 'Ungültige PDF-Datei.',
-        zipCreationFailed: 'Fehler beim Erstellen der ZIP-Datei.'
-      }
-    };
-    
-    return messages[locale as keyof typeof messages]?.[type as keyof typeof messages.tr] || messages.tr[type as keyof typeof messages.tr];
   };
 
   // Get localized text
@@ -196,7 +158,7 @@ function PDFToImages({ locale }: { locale: string }) {
       
     } catch (err: any) {
       console.error('Conversion error:', err);
-      setError(getErrorMessage('conversionFailed', locale));
+      setError(getText('errors.pdfToImages.conversionFailed', 'Dönüştürme sırasında hata oluştu.'));
       setCurrentStep('configure');
       setConversionProgress(0);
     } finally {
@@ -244,7 +206,7 @@ function PDFToImages({ locale }: { locale: string }) {
       URL.revokeObjectURL(zipUrl);
     } catch (error) {
       console.error('ZIP creation error:', error);
-      setError(getErrorMessage('zipCreationFailed', locale));
+      setError(getText('errors.pdfToImages.zipCreationFailed', 'ZIP dosyası oluşturulurken hata oluştu.'));
     } finally {
       setIsDownloadingAll(false);
     }

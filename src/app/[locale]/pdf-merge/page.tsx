@@ -99,19 +99,19 @@ function PDFMerge({ locale }: { locale: string }) {
     
     // Validate file count
     if (fileArray.length < 2) {
-      setError(getErrorMessage('minFiles', locale));
+      setError(getText('errors.pdfMerge.minFiles', 'En az 2 PDF dosyası seçmelisiniz'));
       return;
     }
     
     if (fileArray.length > 10) {
-      setError(getErrorMessage('maxFiles', locale));
+      setError(getText('errors.pdfMerge.maxFiles', 'En fazla 10 PDF dosyası birleştirebilirsiniz'));
       return;
     }
     
     // Validate total size
     const totalSize = fileArray.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > 100 * 1024 * 1024) {
-      setError(getErrorMessage('totalSizeLimit', locale));
+              setError(getText('errors.pdfMerge.totalSizeLimit', 'Toplam dosya boyutu 100MB\'dan büyük olamaz'));
       return;
     }
     
@@ -119,52 +119,27 @@ function PDFMerge({ locale }: { locale: string }) {
     setCurrentStep('configure');
   };
 
-  // Get error messages based on locale
-  const getErrorMessage = (type: string, locale: string) => {
-    const messages = {
-      tr: {
-        minFiles: 'En az 2 PDF dosyası seçmelisiniz.',
-        maxFiles: 'En fazla 10 PDF dosyası birleştirebilirsiniz.',
-        totalSizeLimit: 'Toplam dosya boyutu 100MB\'dan büyük olamaz.',
-        mergeFailed: 'PDF birleştirme sırasında hata oluştu.',
-        invalidFile: 'Geçersiz PDF dosyası.'
-      },
-      en: {
-        minFiles: 'Please select at least 2 PDF files.',
-        maxFiles: 'Maximum 10 PDF files can be merged.',
-        totalSizeLimit: 'Total file size cannot exceed 100MB.',
-        mergeFailed: 'PDF merging failed.',
-        invalidFile: 'Invalid PDF file.'
-      },
-      es: {
-        minFiles: 'Seleccione al menos 2 archivos PDF.',
-        maxFiles: 'Se pueden combinar máximo 10 archivos PDF.',
-        totalSizeLimit: 'El tamaño total del archivo no puede exceder 100MB.',
-        mergeFailed: 'Error al combinar PDF.',
-        invalidFile: 'Archivo PDF inválido.'
-      },
-      fr: {
-        minFiles: 'Veuillez sélectionner au moins 2 fichiers PDF.',
-        maxFiles: 'Maximum 10 fichiers PDF peuvent être fusionnés.',
-        totalSizeLimit: 'La taille totale du fichier ne peut pas dépasser 100 Mo.',
-        mergeFailed: 'Échec de la fusion PDF.',
-        invalidFile: 'Fichier PDF invalide.'
-      },
-      de: {
-        minFiles: 'Bitte wählen Sie mindestens 2 PDF-Dateien aus.',
-        maxFiles: 'Maximal 10 PDF-Dateien können zusammengefügt werden.',
-        totalSizeLimit: 'Die Gesamtdateigröße darf 100MB nicht überschreiten.',
-        mergeFailed: 'PDF-Zusammenführung fehlgeschlagen.',
-        invalidFile: 'Ungültige PDF-Datei.'
-      }
-    };
-    
-    return messages[locale as keyof typeof messages]?.[type as keyof typeof messages.tr] || messages.tr[type as keyof typeof messages.tr];
-  };
-
   // Get localized text
   const getText = (key: string, fallback: string) => {
     return (t as any)?.[key] || fallback;
+  };
+
+  // Get error messages with getText system
+  const getErrorMessage = (type: string) => {
+    switch (type) {
+      case 'minFiles':
+        return getText('errors.pdfMerge.minFiles', 'En az 2 PDF dosyası seçmelisiniz.');
+      case 'maxFiles':
+        return getText('errors.pdfMerge.maxFiles', 'En fazla 10 PDF dosyası birleştirebilirsiniz.');
+      case 'totalSizeLimit':
+        return getText('errors.pdfMerge.totalSizeLimit', 'Toplam dosya boyutu 100MB\'dan büyük olamaz.');
+      case 'mergeFailed':
+        return getText('errors.pdfMerge.mergeFailed', 'PDF birleştirme sırasında hata oluştu.');
+      case 'invalidFile':
+        return getText('errors.pdfMerge.invalidFile', 'Geçersiz PDF dosyası.');
+      default:
+        return getText('errors.general.unknown', 'Bilinmeyen hata oluştu.');
+    }
   };
 
   // Handle PDF merge (placeholder implementation)
@@ -204,7 +179,7 @@ function PDFMerge({ locale }: { locale: string }) {
       
     } catch (err: any) {
       console.error('Merge error:', err);
-      setError(getErrorMessage('mergeFailed', locale));
+      setError(getErrorMessage('mergeFailed'));
       setCurrentStep('configure');
       setMergeProgress(0);
     } finally {

@@ -1,16 +1,14 @@
 import StructuredData from '@/components/StructuredData';
 import { getTranslations } from '@/lib/translations';
-import Image from 'next/image';
 import { 
   UserGroupIcon,
+  ClockIcon,
   HeartIcon,
-  BoltIcon,
-  ChartBarIcon,
-  UserIcon,
-  BuildingOfficeIcon,
-  MapPinIcon,
-  ArrowTopRightOnSquareIcon
+  ChatBubbleLeftRightIcon,
+  BriefcaseIcon,
+  GlobeAltIcon
 } from '@heroicons/react/24/outline';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -23,90 +21,69 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   
   const titles = {
-    tr: 'Ekibimiz | QuickUtil.app - Innovatif PDF ve Dosya İşleme Araçları',
-    en: 'Our Team | QuickUtil.app - Innovative PDF and File Processing Tools',
-    es: 'Nuestro Equipo | QuickUtil.app - Herramientas Innovadoras de PDF y Archivos',
-    fr: 'Notre Équipe | QuickUtil.app - Outils PDF et Fichiers Innovants',
-    de: 'Unser Team | QuickUtil.app - Innovative PDF- und Dateiverarbeitungstools',
-    ar: 'فريقنا | QuickUtil.app - أدوات مبتكرة لمعالجة PDF والملفات',
-    ja: 'チーム | QuickUtil.app - 革新的なPDFおよびファイル処理ツール',
-    ko: '팀 | QuickUtil.app - 혁신적인 PDF 및 파일 처리 도구'
+    tr: 'Ekibimiz | QuickUtil.app - Takım Üyelerimiz',
+    en: 'Our Team | QuickUtil.app - Meet Our Team',
+    es: 'Nuestro Equipo | QuickUtil.app - Conoce a Nuestro Equipo',
+    fr: 'Notre Équipe | QuickUtil.app - Rencontrez Notre Équipe',
+    de: 'Unser Team | QuickUtil.app - Lernen Sie Unser Team Kennen',
+    ar: 'فريقنا | QuickUtil.app',
+    ja: '私たちのチーム | QuickUtil.app',
+    ko: '우리 팀 | QuickUtil.app'
   };
 
   return {
     title: titles[locale as keyof typeof titles] || titles.tr,
-    description: locale === 'tr' ? 'QuickUtil.app ekibimizle tanışın - deneyimli ve tutkulu profesyoneller' : 
-                 locale === 'en' ? 'Meet the QuickUtil.app team - experienced and passionate professionals' :
-                 'Conoce al equipo de QuickUtil.app - profesionales experimentados y apasionados',
-    openGraph: {
-      title: titles[locale as keyof typeof titles] || titles.tr,
-      description: locale === 'tr' ? 'Innovatif çözümler üreten ekibimiz' : 'Our team creating innovative solutions',
-      type: 'website',
-    }
+    description: 'Meet our experienced team at QuickUtil.app focused on creating innovative file processing solutions.',
   };
 }
 
 export default async function TeamPage({ params }: Props) {
   const { locale } = await params;
-  const finalLocale = locale || 'tr';
+  const finalLocale = locale || 'en';
   const t = getTranslations(finalLocale);
 
-  // Safe access to team data with fallbacks
-  const teamData = t && typeof t === 'object' && 'team' in t ? (t as any).team : null;
+  // Helper function for translations
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
 
   const stats = [
     {
-      icon: <UserGroupIcon className="w-8 h-8" />,
       number: '3+',
-      label: finalLocale === 'tr' ? 'Ekip Üyesi' : finalLocale === 'en' ? 'Team Members' : finalLocale === 'fr' ? 'Membres de l\'Équipe' : 'Miembros del Equipo'
+      label: getText('team.stats.teamMembers', 'Ekip Üyesi')
     },
     {
-      icon: <ChartBarIcon className="w-8 h-8" />,
-      number: '10+',
-      label: finalLocale === 'tr' ? 'Yıl Deneyim' : finalLocale === 'en' ? 'Years Experience' : finalLocale === 'fr' ? 'Années d\'Expérience' : 'Años de Experiencia'
+      number: '30+',
+      label: getText('team.stats.yearsExperience', 'Yıl Deneyim')
     },
     {
-      icon: <HeartIcon className="w-8 h-8" />,
-      number: '100K+',
-      label: finalLocale === 'tr' ? 'Mutlu Kullanıcı' : finalLocale === 'en' ? 'Happy Users' : finalLocale === 'fr' ? 'Utilisateurs Satisfaits' : 'Usuarios Felices'
+      number: '10K+',
+      label: getText('team.stats.happyUsers', 'Mutlu Kullanıcı')
     },
     {
-      icon: <BoltIcon className="w-8 h-8" />,
       number: '24/7',
-      label: finalLocale === 'tr' ? 'Destek' : finalLocale === 'en' ? 'Support' : finalLocale === 'fr' ? 'Support 24/7' : 'Soporte'
+      label: getText('team.stats.support', 'Destek')
     }
   ];
 
   const teamMembers = [
     {
-      name: teamData?.alexandra?.name || 'Alexandra Thompson',
-      role: teamData?.alexandra?.role || 'Founder & CEO',
-      bio: teamData?.alexandra?.bio || 'Computer Engineering graduate from Stanford. Founded QuickUtil.app with 10+ years of technology experience.',
-      image: '/images/team/alexandra-thompson.webp',
-      social: {
-        linkedin: '#',
-        twitter: '#'
-      }
+      name: getText('team.alexandra.name', 'Alexandra Thompson'),
+      role: getText('team.alexandra.role', 'Kurucu & CEO'),
+      bio: getText('team.alexandra.bio', 'Stanford Bilgisayar Mühendisliği mezunu. 10+ yıl teknoloji deneyimi ile QuickUtil.app\'i kurdu.'),
+      image: '/images/team/alexandra.jpg'
     },
     {
-      name: teamData?.michael?.name || 'Michael Rodriguez',
-      role: teamData?.michael?.role || 'Chief Technology Officer (CTO)',
-      bio: teamData?.michael?.bio || 'Software Engineering graduate from MIT. 12 years of enterprise software development experience.',
-      image: '/images/team/michael-rodriguez.webp',
-      social: {
-        linkedin: '#',
-        github: '#'
-      }
+      name: getText('team.michael.name', 'Michael Rodriguez'),
+      role: getText('team.michael.role', 'Teknik Direktör (CTO)'),
+      bio: getText('team.michael.bio', 'MIT Yazılım Mühendisliği mezunu. 12 yıl kurumsal yazılım geliştirme deneyimi.'),
+      image: '/images/team/michael.jpg'
     },
     {
-      name: teamData?.sarah?.name || 'Sarah Williams',
-      role: teamData?.sarah?.role || 'Lead Designer',
-      bio: teamData?.sarah?.bio || 'Graduate of Parsons School of Design. 8 years of experience in UX/UI design.',
-      image: '/images/team/sarah-williams.webp',
-      social: {
-        linkedin: '#',
-        dribbble: '#'
-      }
+      name: getText('team.sarah.name', 'Sarah Williams'),
+      role: getText('team.sarah.role', 'Baş Tasarımcı'),
+      bio: getText('team.sarah.bio', 'Parsons School of Design mezunu. 8 yıl UX/UI tasarım deneyimi.'),
+      image: '/images/team/sarah.jpg'
     }
   ];
 
@@ -114,37 +91,33 @@ export default async function TeamPage({ params }: Props) {
     <>
       <StructuredData type="website" />
       
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="relative container mx-auto px-4 py-20">
+        <div className="relative bg-white shadow-sm">
+          <div className="container mx-auto px-4 py-16">
             <div className="text-center max-w-4xl mx-auto">
-              <UserGroupIcon className="w-20 h-20 text-blue-200 mx-auto mb-6" />
-              <h1 className="text-5xl font-bold mb-6">
-                {teamData?.title || (finalLocale === 'tr' ? 'Ekibimiz' : finalLocale === 'en' ? 'Our Team' : 'Nuestro Equipo')}
+              <UserGroupIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                👥 {getText('team.title', 'Ekibimiz')}
               </h1>
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                {teamData?.subtitle || (finalLocale === 'tr' ? 'İnovatif çözümler üretmeye odaklanan deneyimli ekibimiz' : finalLocale === 'en' ? 'Meet our experienced and passionate team focused on creating innovative solutions' : 'Conoce nuestro equipo experimentado y apasionado')}
+              <p className="text-xl text-gray-600 mb-8">
+                {getText('team.subtitle', 'İnovatif çözümler üretmeye odaklanan deneyimli ekibimiz')}
               </p>
-              <p className="text-lg text-blue-50 max-w-3xl mx-auto">
-                {teamData?.intro || (finalLocale === 'tr' ? 'QuickUtil.app\'i güçlü kılan şey, sürekli gelişim ve yenilik odaklı yaklaşımımızdır.' : finalLocale === 'en' ? 'What makes QuickUtil.app powerful is our approach focused on continuous development and innovation.' : 'Lo que hace poderoso a QuickUtil.app es nuestro enfoque centrado en el desarrollo continuo.')}
+              <p className="text-lg text-gray-700 leading-relaxed">
+                {getText('team.intro', 'QuickUtil.app\'i güçlü kılan şey, sürekli gelişim ve yenilik odaklı yaklaşımımızdır.')}
               </p>
             </div>
           </div>
         </div>
 
         {/* Stats Section */}
-        <div className="bg-white py-16 border-b">
+        <div className="py-16">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
-                <div key={index} className="text-center group">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
-                    {stat.icon}
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.number}</h3>
-                  <p className="text-gray-600 font-medium">{stat.label}</p>
+                <div key={index} className="text-center bg-white rounded-xl p-6 shadow-lg">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">{stat.number}</div>
+                  <div className="text-gray-700 font-medium">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -152,63 +125,28 @@ export default async function TeamPage({ params }: Props) {
         </div>
 
         {/* Team Members Section */}
-        <div className="py-20">
+        <div className="py-16">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                {finalLocale === 'tr' ? 'Takım Üyelerimiz' : 
-                 finalLocale === 'en' ? 'Meet Our Team' :
-                 finalLocale === 'fr' ? 'Rencontrez Notre Équipe' :
-                 'Conoce a Nuestro Equipo'}
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                {getText('team.meetOurTeam', 'Takım Üyelerimiz')}
               </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
             </div>
-
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {teamMembers.map((member, index) => (
-                <div key={index} className="group">
-                  <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200">
-                    {/* Photo Container */}
-                    <div className="relative h-80 overflow-hidden">
-                      <Image
-                        src={member.image}
-                        alt={member.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      {/* Social Links Overlay */}
-                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="flex space-x-3">
-                          {Object.entries(member.social || {}).map(([platform, url]) => (
-                            <a
-                              key={platform}
-                              href={url as string}
-                              className="w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-8">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                        {member.name}
-                      </h3>
-                      <p className="text-blue-600 font-semibold mb-4 uppercase tracking-wide text-sm">
-                        {member.role}
-                      </p>
-                      <p className="text-gray-600 leading-relaxed text-sm">
-                        {member.bio}
-                      </p>
-                    </div>
+                <div key={index} className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative w-32 h-32 mx-auto mb-4">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      fill
+                      className="rounded-full object-cover"
+                    />
                   </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h3>
+                  <p className="text-blue-600 font-medium mb-3">{member.role}</p>
+                  <p className="text-gray-700 leading-relaxed text-sm">{member.bio}</p>
                 </div>
               ))}
             </div>
@@ -216,64 +154,53 @@ export default async function TeamPage({ params }: Props) {
         </div>
 
         {/* Join Team Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
+        <div className="py-16 bg-gradient-to-r from-blue-600 to-purple-700">
           <div className="container mx-auto px-4 text-center">
-            <BuildingOfficeIcon className="w-16 h-16 text-blue-200 mx-auto mb-6" />
-            <h2 className="text-4xl font-bold mb-6">
-              {teamData?.joinTeam || (finalLocale === 'tr' ? 'Ekibimize Katılın' : finalLocale === 'en' ? 'Join Our Team' : 'Únete a Nuestro Equipo')}
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              {teamData?.joinDescription || (finalLocale === 'tr' ? 'Büyüyen ekibimizin bir parçası olmak ister misiniz?' : finalLocale === 'en' ? 'Would you like to be part of our growing team and make a difference?' : '¿Te gustaría ser parte de nuestro equipo en crecimiento?')}
-            </p>
-            
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
-              <div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
-                <MapPinIcon className="w-8 h-8 text-blue-200 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">
-                  {finalLocale === 'tr' ? 'Uzaktan Çalışma' : 
-                   finalLocale === 'en' ? 'Remote Work' :
-                   finalLocale === 'fr' ? 'Travail à Distance' :
-                   'Trabajo Remoto'}
-                </h3>
-                <p className="text-blue-100">
-                  {finalLocale === 'tr' ? 'Dünyanın her yerinden çalışabilme imkanı' : 
-                   finalLocale === 'en' ? 'Work from anywhere in the world' :
-                   finalLocale === 'fr' ? 'Travaillez de n\'importe où dans le monde' :
-                   'Trabaja desde cualquier lugar del mundo'}
-                </p>
-              </div>
+            <div className="max-w-3xl mx-auto">
+              <BriefcaseIcon className="w-16 h-16 text-white mx-auto mb-6" />
+              <h2 className="text-3xl font-bold text-white mb-4">
+                {getText('team.joinTeam', 'Ekibimize Katılın')}
+              </h2>
+              <p className="text-xl text-blue-100 mb-8">
+                {getText('team.joinDescription', 'Büyüyen ekibimizin bir parçası olmak ister misiniz?')}
+              </p>
               
-              <div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
-                <HeartIcon className="w-8 h-8 text-blue-200 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">
-                  {finalLocale === 'tr' ? 'Harika Kültür' : 
-                   finalLocale === 'en' ? 'Great Culture' :
-                   finalLocale === 'fr' ? 'Grande Culture' :
-                   'Gran Cultura'}
-                </h3>
-                <p className="text-blue-100">
-                  {finalLocale === 'tr' ? 'İnovasyonu destekleyen pozitif çalışma ortamı' : 
-                   finalLocale === 'en' ? 'Positive work environment supporting innovation' :
-                   finalLocale === 'fr' ? 'Environnement de travail positif favorisant l\'innovation' :
-                   'Ambiente de trabajo positivo que apoya la innovación'}
-                </p>
+              <div className="grid md:grid-cols-2 gap-8 mb-8">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                  <GlobeAltIcon className="w-12 h-12 text-white mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {getText('team.remoteWork', 'Uzaktan Çalışma')}
+                  </h3>
+                  <p className="text-blue-100">
+                    {getText('team.remoteWorkDesc', 'Dünyanın her yerinden çalışabilme imkanı')}
+                  </p>
+                </div>
+                
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                  <HeartIcon className="w-12 h-12 text-white mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {getText('team.greatCulture', 'Harika Kültür')}
+                  </h3>
+                  <p className="text-blue-100">
+                    {getText('team.greatCultureDesc', 'İnovasyonu destekleyen pozitif çalışma ortamı')}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="mailto:careers@quickutil.app"
-                className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors duration-300 shadow-lg hover:shadow-xl"
-              >
-                <UserIcon className="w-5 h-5 mr-2" />
-                {teamData?.openPositions || (finalLocale === 'tr' ? 'Açık Pozisyonlar' : finalLocale === 'en' ? 'View Open Positions' : 'Posiciones Abiertas')}
-              </a>
-              <a
-                href="mailto:hello@quickutil.app"
-                className="inline-flex items-center px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-colors duration-300"
-              >
-                {teamData?.contact || (finalLocale === 'tr' ? 'İletişim' : finalLocale === 'en' ? 'Contact Us' : 'Contacto')}
-              </a>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="mailto:hello@quickutil.app"
+                  className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200"
+                >
+                  {getText('team.openPositions', 'Açık Pozisyonlar')}
+                </a>
+                <a
+                  href="mailto:hello@quickutil.app"
+                  className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors duration-200"
+                >
+                  {getText('team.contact', 'İletişim')}
+                </a>
+              </div>
             </div>
           </div>
         </div>

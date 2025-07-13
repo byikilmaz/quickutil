@@ -39,6 +39,11 @@ export default async function AboutPage({ params }: Props) {
   const finalLocale = locale || 'en'; // Default to English for this page
   const t = getTranslations(finalLocale);
 
+  // Helper function for translations
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
+
   return (
     <>
       <StructuredData type="website" />
@@ -50,10 +55,10 @@ export default async function AboutPage({ params }: Props) {
             <div className="text-center">
               <HeartIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                💙 {(t as any)['about.title']}
+                💙 {getText('about.title', 'Hakkımızda')}
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {(t as any)['about.subtitle']}
+                {getText('about.subtitle', 'QuickUtil.app olarak dijital dosya işleme alanında yenilikçi çözümler sunuyoruz')}
               </p>
             </div>
           </div>
@@ -64,22 +69,16 @@ export default async function AboutPage({ params }: Props) {
           {/* Mission & Vision */}
           <div className="grid md:grid-cols-2 gap-12">
             <div className="bg-white rounded-xl shadow-lg p-8">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{(t as any)['about.mission']}</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{getText('about.mission', 'Misyonumuz')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                {finalLocale === 'tr' ? 
-                  'Dijital dünyada dosya işleme süreçlerini herkes için erişilebilir, hızlı ve güvenli hale getirmek. QuickUtil.app olarak, karmaşık teknik süreçleri basit ve kullanıcı dostu araçlara dönüştürüyoruz.' :
-                  'Making file processing accessible, fast and secure for everyone in the digital world. As QuickUtil.app, we transform complex technical processes into simple and user-friendly tools.'
-                }
+                {getText('about.missionContent', 'Dijital dünyada dosya işleme süreçlerini herkes için erişilebilir, hızlı ve güvenli hale getirmek. QuickUtil.app olarak, karmaşık teknik süreçleri basit ve kullanıcı dostu araçlara dönüştürüyoruz.')}
               </p>
             </div>
             
             <div className="bg-white rounded-xl shadow-lg p-8">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{(t as any)['about.vision']}</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">{getText('about.vision', 'Vizyonumuz')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                {finalLocale === 'tr' ? 
-                  'Dünya genelinde dosya işleme alanında lider platform olmak ve milyonlarca kullanıcının dijital hayatını kolaylaştırmak. Sürekli yenilik ve kullanıcı deneyimi odaklı gelişim ile sektörde standartları belirlemek.' :
-                  'To become the leading platform in file processing worldwide and simplify the digital lives of millions of users. Setting industry standards through continuous innovation and user experience-focused development.'
-                }
+                {getText('about.visionContent', 'Dünya genelinde dosya işleme alanında lider platform olmak ve milyonlarca kullanıcının dijital hayatını kolaylaştırmak. Sürekli yenilik ve kullanıcı deneyimi odaklı gelişim ile sektörde standartları belirlemek.')}
               </p>
             </div>
           </div>
@@ -87,14 +86,14 @@ export default async function AboutPage({ params }: Props) {
           {/* Statistics */}
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 {(t as any)['about.statistics']}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">📊 {getText('about.statistics', 'İstatistiklerimiz')}</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { value: '1M+', label: finalLocale === 'tr' ? 'Kullanıcı' : 'Users' },
-                { value: '50M+', label: finalLocale === 'tr' ? 'İşlenen Dosya' : 'Files Processed' },
-                { value: '99.9%', label: finalLocale === 'tr' ? 'Uptime' : 'Uptime' },
-                { value: '24/7', label: finalLocale === 'tr' ? 'Destek' : 'Support' }
+                { value: '1M+', label: getText('about.stats.users', 'Kullanıcı') },
+                { value: '50M+', label: getText('about.stats.filesProcessed', 'İşlenen Dosya') },
+                { value: '99.9%', label: getText('about.stats.uptime', 'Uptime') },
+                { value: '24/7', label: getText('about.stats.support', 'Destek') }
               ].map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">{stat.value}</div>
@@ -107,29 +106,29 @@ export default async function AboutPage({ params }: Props) {
           {/* Values */}
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 {(t as any)['about.values']}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">🎯 {getText('about.values', 'Değerlerimiz')}</h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
                   icon: <HeartIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Kullanıcı Odaklı' : 'User Focused',
-                  desc: finalLocale === 'tr' ? 'Her zaman kullanıcı deneyimini ön planda tutuyoruz' : 'We always prioritize user experience'
+                  title: getText('about.values.userFocused.title', 'Kullanıcı Odaklı'),
+                  desc: getText('about.values.userFocused.desc', 'Her zaman kullanıcı deneyimini ön planda tutuyoruz')
                 },
                 {
                   icon: <ShieldCheckIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Güvenlik' : 'Security',
-                  desc: finalLocale === 'tr' ? 'Verilerinizin güvenliği en yüksek önceliğimiz' : 'Data security is our highest priority'
+                  title: getText('about.values.security.title', 'Güvenlik'),
+                  desc: getText('about.values.security.desc', 'Verilerinizin güvenliği en yüksek önceliğimiz')
                 },
                 {
                   icon: <BoltIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Hızlı' : 'Fast',
-                  desc: finalLocale === 'tr' ? 'Maksimum performans ve hız sunuyoruz' : 'We provide maximum performance and speed'
+                  title: getText('about.values.fast.title', 'Hızlı'),
+                  desc: getText('about.values.fast.desc', 'Maksimum performans ve hız sunuyoruz')
                 },
                 {
                   icon: <CheckCircleIcon className="h-8 w-8" />,
-                  title: finalLocale === 'tr' ? 'Kalite' : 'Quality',
-                  desc: finalLocale === 'tr' ? 'Yüksek kaliteli çıktılar garanti ediyoruz' : 'We guarantee high-quality outputs'
+                  title: getText('about.values.quality.title', 'Kalite'),
+                  desc: getText('about.values.quality.desc', 'Yüksek kaliteli çıktılar garanti ediyoruz')
                 }
               ].map((value, index) => (
                 <div key={index} className="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors">

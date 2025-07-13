@@ -131,10 +131,15 @@ async function callPythonCompressionService(
       'light': 'printer',
       'medium': 'ebook', 
       'high': 'ebook',
-      'maximum': 'screen'  // Screen = maximum compression (80-90%)
+      'maximum': 'ebook'  // FALLBACK: screen causing HTTP 500, use ebook instead
     };
     
-    const quality = qualityMap[compressionLevel] || 'screen';
+    const quality = qualityMap[compressionLevel] || 'ebook'; // Safe fallback
+    
+    // Log fallback for maximum quality
+    if (compressionLevel === 'maximum') {
+      functions.logger.warn('⚠️ YÜKSEK SIKIŞTIRMA fallback: using ebook instead of screen to avoid HTTP 500 error - v2.0');
+    }
 
     // Create form data for Python API
     const formData = new FormData();

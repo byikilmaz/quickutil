@@ -96,50 +96,12 @@ function PDFToText({ locale }: { locale: string }) {
     setError(null);
     
     if (file.size > 20 * 1024 * 1024) {
-      setError(getErrorMessage('fileSizeLimit', locale));
+      setError(getText('errors.pdfToText.fileSizeLimit', 'Dosya boyutu 20MB\'dan büyük olamaz.'));
       return;
     }
     
     setSelectedFile(file);
     setCurrentStep('configure');
-  };
-
-  // Get error messages based on locale
-  const getErrorMessage = (type: string, locale: string) => {
-    const messages = {
-      tr: {
-        fileSizeLimit: 'Dosya boyutu 20MB\'dan büyük olamaz.',
-        extractionFailed: 'Metin çıkarma sırasında hata oluştu.',
-        invalidFile: 'Geçersiz PDF dosyası.',
-        noTextFound: 'PDF\'de metin bulunamadı.'
-      },
-      en: {
-        fileSizeLimit: 'File size cannot exceed 20MB.',
-        extractionFailed: 'Text extraction failed.',
-        invalidFile: 'Invalid PDF file.',
-        noTextFound: 'No text found in PDF.'
-      },
-      es: {
-        fileSizeLimit: 'El tamaño del archivo no puede exceder 20MB.',
-        extractionFailed: 'Error en la extracción de texto.',
-        invalidFile: 'Archivo PDF inválido.',
-        noTextFound: 'No se encontró texto en el PDF.'
-      },
-      fr: {
-        fileSizeLimit: 'La taille du fichier ne peut pas dépasser 20 Mo.',
-        extractionFailed: 'Échec de l\'extraction de texte.',
-        invalidFile: 'Fichier PDF invalide.',
-        noTextFound: 'Aucun texte trouvé dans le PDF.'
-      },
-      de: {
-        fileSizeLimit: 'Die Dateigröße darf 20MB nicht überschreiten.',
-        extractionFailed: 'Textextraktion fehlgeschlagen.',
-        invalidFile: 'Ungültige PDF-Datei.',
-        noTextFound: 'Kein Text in PDF gefunden.'
-      }
-    };
-    
-    return messages[locale as keyof typeof messages]?.[type as keyof typeof messages.tr] || messages.tr[type as keyof typeof messages.tr];
   };
 
   // Get localized text
@@ -201,7 +163,7 @@ Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dic
       
     } catch (err: any) {
       console.error('Extraction error:', err);
-      setError(getErrorMessage('extractionFailed', locale));
+      setError(getText('errors.pdfToText.extractionFailed', 'Metin çıkarma sırasında hata oluştu.'));
       setCurrentStep('configure');
       setExtractionProgress(0);
     } finally {

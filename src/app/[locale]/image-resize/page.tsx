@@ -47,11 +47,16 @@ function SimplePreviewBox({
   const previewWidth = width || originalDimensions.width;
   const previewHeight = height || originalDimensions.height;
   
+  const t = getTranslations(locale);
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
+  
   const sizeText = previewWidth === originalDimensions.width && previewHeight === originalDimensions.height 
-    ? (locale === 'fr' ? 'Taille Originale' : 'Original Size')
+    ? getText('imageResize.preview.originalSize', 'Original Size')
     : previewWidth < originalDimensions.width || previewHeight < originalDimensions.height
-    ? (locale === 'fr' ? 'Réduction' : 'Shrinking')
-    : (locale === 'fr' ? 'Agrandissement' : 'Enlarging');
+    ? getText('imageResize.preview.shrinking', 'Shrinking')
+    : getText('imageResize.preview.enlarging', 'Enlarging');
   
   return (
     <div className="relative bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-[400px] flex items-center justify-center">
@@ -295,87 +300,77 @@ function ImageResizeContent({ locale }: { locale: string }) {
     }
   };
 
-  // Processing status with Spanish support
+  // Processing status - converted to getText system
   const getProcessingStatus = () => {
-    const isTurkish = locale === 'tr';
-    const isFrench = locale === 'fr';
-    const isSpanish = locale === 'es';
-    
     if (processingProgress < 15) {
-      return isTurkish ? 'Resim analiz ediliyor...' : (isFrench ? 'Analyse de image...' : (isSpanish ? 'Analizando imagen...' : 'Analyzing image...'));
+      return getText('imageResize.processing.step1', 'Resim analiz ediliyor...');
     } else if (processingProgress < 35) {
-      return isTurkish ? 'Boyutlandırma hazırlanıyor...' : (isFrench ? 'Preparation du redimensionnement...' : (isSpanish ? 'Preparando redimensionado...' : 'Preparing resize...'));
+      return getText('imageResize.processing.step2', 'Boyutlandırma hazırlanıyor...');
     } else if (processingProgress < 60) {
-      return isTurkish ? 'Boyutlar hesaplanıyor...' : (isFrench ? 'Calcul des dimensions...' : (isSpanish ? 'Calculando dimensiones...' : 'Calculating dimensions...'));
+      return getText('imageResize.processing.step3', 'Boyutlar hesaplanıyor...');
     } else if (processingProgress < 85) {
-      return isTurkish ? 'Resim boyutlandırılıyor...' : (isFrench ? 'Redimensionnement de image...' : (isSpanish ? 'Redimensionando imagen...' : 'Resizing image...'));
+      return getText('imageResize.processing.step4', 'Resim boyutlandırılıyor...');
     } else {
-      return isTurkish ? 'Sonlandırılıyor...' : (isFrench ? 'Finalisation...' : (isSpanish ? 'Finalizando...' : 'Finalizing...'));
+      return getText('imageResize.processing.step5', 'Sonlandırılıyor...');
     }
   };
 
-  // Language detection with Spanish support
-  const isTurkish = locale === 'tr';
-  const isFrench = locale === 'fr';
-  const isSpanish = locale === 'es';
+  // Locale variables no longer needed - using getText system
   
-  // Header texts with Spanish support
-  const statsText = isTurkish ? '5M+ Resim Boyutlandırıldı • AI Destekli' : (isFrench ? '5M+ Images Redimensionnees • IA' : (isSpanish ? '5M+ Imágenes Redimensionadas • Alimentado por IA' : '5M+ Images Resized • AI Powered'));
-  const mainTitle = isTurkish ? '📐 Resim Boyutlandırma' : (isFrench ? '📐 Redimensionner Image' : (isSpanish ? '📐 Redimensionar Imagen' : '📐 Image Resize'));
-  const description = isTurkish ? 'Resimlerinizi hassas ve kaliteli bir şekilde istediğiniz boyuta getirin' : (isFrench ? 'Redimensionnez vos images a toute dimension avec precision et qualite' : (isSpanish ? 'Redimensiona tus imágenes a cualquier tamaño con precisión y calidad' : 'Resize your images to any dimension with precision and quality'));
-  const headerTitle = isTurkish ? 'Resim Boyutlandırma' : (isFrench ? 'Redimensionner Image' : (isSpanish ? 'Redimensionar Imagen' : 'Image Resize'));
-  const stepText = isTurkish ? 'Adım' : (isFrench ? 'Etape' : (isSpanish ? 'Paso' : 'Step'));
-  const ofText = isTurkish ? '/ 4' : (isFrench ? 'sur 4' : (isSpanish ? 'de 4' : 'of 4'));
+  // Header texts - converted to getText system
+  const statsText = getText('imageResize.badge', '5M+ Resim Boyutlandırıldı • AI Destekli');
+  const mainTitle = getText('imageResize.title', '📐 Resim Boyutlandırma');
+  const description = getText('imageResize.description', 'Resimlerinizi hassas ve kaliteli bir şekilde istediğiniz boyuta getirin');
+  const headerTitle = getText('imageResize.headerTitle', 'Resim Boyutlandırma');
+  const stepText = getText('imageResize.step', 'Adım');
+  const ofText = getText('imageResize.stepOf', '/ 4');
   const stepNumber = currentStep === 'upload' ? '1' : currentStep === 'configure' ? '2' : currentStep === 'processing' ? '3' : '4';
-  const newImageText = isTurkish ? 'Yeni Resim' : (isFrench ? 'Nouvelle Image' : (isSpanish ? 'Nueva Imagen' : 'New Image'));
+  const newImageText = getText('imageResize.newImage', 'Yeni Resim');
   
-  // Upload step with Spanish support
+  // Upload step - converted to getText system
   const uploadTitle = isDragActive 
-    ? (isTurkish ? 'Resminizi buraya bırakın' : (isFrench ? 'Deposez votre image ici' : (isSpanish ? 'Arrastra tu imagen aquí' : 'Drop your image here')))
-    : (isTurkish ? 'Boyutlandırılacak Resim Seç' : (isFrench ? 'Selectionner Image a Redimensionner' : (isSpanish ? 'Seleccionar Imagen para Redimensionar' : 'Select Image to Resize')));
-  const formatText = isTurkish ? 'PNG, JPEG, WebP, GIF • 50MB\'a kadar' : (isFrench ? 'PNG, JPEG, WebP, GIF • Jusqu a 50MB' : (isSpanish ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB'));
-  const chooseFileText = isTurkish ? 'Dosya Seç' : (isFrench ? 'Choisir Fichier' : (isSpanish ? 'Elegir Archivo' : 'Choose File'));
-  const secureText = isTurkish ? 'Güvenli İşlem' : (isFrench ? 'Traitement Securise' : (isSpanish ? 'Procesamiento Seguro' : 'Secure Processing'));
-  const fastText = isTurkish ? 'Çok Hızlı' : (isFrench ? 'Tres Rapide' : (isSpanish ? 'Muy Rápido' : 'Lightning Fast'));
-  const pixelText = isTurkish ? 'Piksel Mükemmel' : (isFrench ? 'Pixel Parfait' : (isSpanish ? 'Píxel Perfecto' : 'Pixel Perfect'));
+    ? getText('imageResize.upload.dropImage', 'Resminizi buraya bırakın')
+    : getText('imageResize.upload.selectImage', 'Boyutlandırılacak Resim Seç');
+  const formatText = getText('imageResize.upload.supportedFormats', 'PNG, JPEG, WebP, GIF • 50MB\'a kadar');
+  const chooseFileText = getText('imageResize.upload.chooseFile', 'Dosya Seç');
+  const secureText = getText('imageResize.upload.secure', 'Güvenli İşlem');
+  const fastText = getText('imageResize.upload.fast', 'Çok Hızlı');
+  const pixelText = getText('imageResize.upload.pixelPerfect', 'Piksel Mükemmel');
   
-  // Configure step with Spanish support
-  const configureTitle = isTurkish ? 'Boyutlandırma Ayarlarını Yapılandır' : (isFrench ? 'Configurer Parametres Redimensionnement' : (isSpanish ? 'Configurar Ajustes de Redimensionado' : 'Configure Resize Settings'));
-  const configureDesc = isTurkish ? 'İstediğiniz boyutları ve seçenekleri ayarlayın' : (isFrench ? 'Definissez vos dimensions et options souhaitees' : (isSpanish ? 'Configura las dimensiones y opciones deseadas' : 'Set your desired dimensions and options'));
-  const previewTitle = isTurkish ? 'Canlı Önizleme' : (isFrench ? 'Apercu en Direct' : (isSpanish ? 'Vista Previa en Vivo' : 'Live Preview'));
-  const previewInstructions = isTurkish ? '🎯 Sağdaki kontrollerle boyutları ayarlayın ve canlı önizlemeyi görün' : (isFrench ? '🎯 Ajustez les dimensions avec les controles de droite et voyez apercu en direct' : (isSpanish ? '🎯 Ajusta las dimensiones con los controles de la derecha y ve la vista previa en vivo' : '🎯 Adjust dimensions using controls on the right and see live preview'));
-  const resizeModeText = isTurkish ? 'Boyutlandırma Modu' : (isFrench ? 'Mode de Redimensionnement' : (isSpanish ? 'Modo de Redimensionado' : 'Resize Mode'));
-  const byPixelsText = isTurkish ? 'Piksel Bazında' : (isFrench ? 'Par Pixels' : (isSpanish ? 'Por Píxeles' : 'By Pixels'));
-  const byPercentageText = isTurkish ? 'Yüzde Bazında' : (isFrench ? 'Par Pourcentage' : (isSpanish ? 'Por Porcentaje' : 'By Percentage'));
-  const widthText = isTurkish ? 'Genişlik (px)' : (isFrench ? 'Largeur (px)' : (isSpanish ? 'Ancho (px)' : 'Width (px)'));
-  const heightText = isTurkish ? 'Yükseklik (px)' : (isFrench ? 'Hauteur (px)' : (isSpanish ? 'Alto (px)' : 'Height (px)'));
-  const widthPlaceholder = isTurkish ? 'Genişlik girin...' : (isFrench ? 'Entrez la largeur...' : (isSpanish ? 'Ingresa el ancho...' : 'Enter width...'));
-  const heightPlaceholder = isTurkish ? 'Yükseklik girin...' : (isFrench ? 'Entrez la hauteur...' : (isSpanish ? 'Ingresa la altura...' : 'Enter height...'));
-  const percentageText = isTurkish ? 'Orijinalin %\'sine boyutlandır' : (isFrench ? 'Redimensionner a % de original' : (isSpanish ? 'Redimensionar al % del original' : 'Resize to % of original'));
-  const percentagePlaceholder = isTurkish ? 'Yüzde girin...' : (isFrench ? 'Entrez le pourcentage...' : (isSpanish ? 'Ingresa el porcentaje...' : 'Enter percentage...'));
-  const resultText = isTurkish ? 'Sonuç:' : (isFrench ? 'Resultat:' : (isSpanish ? 'Resultado:' : 'Result:'));
-  const aspectRatioText = isTurkish ? 'En-boy oranını koru' : (isFrench ? 'Maintenir le ratio aspect' : (isSpanish ? 'Mantener relación de aspecto' : 'Maintain aspect ratio'));
-  const noEnlargeText = isTurkish ? 'Küçükse büyütme' : (isFrench ? 'Ne pas agrandir si plus petit' : (isSpanish ? 'No ampliar si es más pequeño' : 'Do not enlarge if smaller'));
-  const startText = isTurkish ? '🚀 Boyutlandırmayı Başlat' : (isFrench ? '🚀 Commencer le Redimensionnement' : (isSpanish ? '🚀 Iniciar Redimensionado' : '🚀 Start Resizing'));
+  // Configure step - converted to getText system
+  const configureTitle = getText('imageResize.configure.title', 'Boyutlandırma Ayarlarını Yapılandır');
+  const configureDesc = getText('imageResize.configure.description', 'İstediğiniz boyutları ve seçenekleri ayarlayın');
+  const previewTitle = getText('imageResize.configure.previewTitle', 'Canlı Önizleme');
+  const previewInstructions = getText('imageResize.configure.previewInstructions', '🎯 Sağdaki kontrollerle boyutları ayarlayın ve canlı önizlemeyi görün');
+  const resizeModeText = getText('imageResize.configure.resizeMode', 'Boyutlandırma Modu');
+  const byPixelsText = getText('imageResize.configure.byPixels', 'Piksel Bazında');
+  const byPercentageText = getText('imageResize.configure.byPercentage', 'Yüzde Bazında');
+  const widthText = getText('imageResize.configure.width', 'Genişlik (px)');
+  const heightText = getText('imageResize.configure.height', 'Yükseklik (px)');
+  const widthPlaceholder = getText('imageResize.configure.widthPlaceholder', 'Genişlik girin...');
+  const heightPlaceholder = getText('imageResize.configure.heightPlaceholder', 'Yükseklik girin...');
+  const percentageText = getText('imageResize.configure.percentage', 'Orijinalin %\'sine boyutlandır');
+  const percentagePlaceholder = getText('imageResize.configure.percentagePlaceholder', 'Yüzde girin...');
+  const resultText = getText('imageResize.configure.result', 'Sonuç:');
+  const aspectRatioText = getText('imageResize.configure.aspectRatio', 'En-boy oranını koru');
+  const noEnlargeText = getText('imageResize.configure.noEnlarge', 'Küçükse büyütme');
+  const startText = getText('imageResize.configure.startResize', '🚀 Boyutlandırmayı Başlat');
   
-  // Processing step with Spanish support
-  const processingTitle = isTurkish ? '🤖 AI Resminizi Boyutlandırıyor' : (isFrench ? '🤖 IA Redimensionne Votre Image' : (isSpanish ? '🤖 IA Redimensionando tu Imagen' : '🤖 AI Resizing Your Image'));
-  const processingDesc = isTurkish ? 'Resminizi hassas bir şekilde işlerken lütfen bekleyin...' : (isFrench ? 'Veuillez patienter pendant que nous traitons votre image avec precision...' : (isSpanish ? 'Por favor espera mientras procesamos tu imagen con precisión...' : 'Please wait while we process your image with precision...'));
-  const completeText = isTurkish ? 'Tamamlandı' : (isFrench ? 'Termine' : (isSpanish ? 'Completado' : 'Complete'));
+  // Processing step - converted to getText system
+  const processingTitle = getText('imageResize.processing.title', '🤖 AI Resminizi Boyutlandırıyor');
+  const processingDesc = getText('imageResize.processing.description', 'Resminizi hassas bir şekilde işlerken lütfen bekleyin...');
+  const completeText = getText('imageResize.processing.complete', 'Tamamlandı');
   
-  // Result step with Spanish support
-  const resultTitle = isTurkish ? '✅ Boyutlandırma Tamamlandı!' : (isFrench ? '✅ Redimensionnement Termine !' : (isSpanish ? '✅ ¡Redimensionado Completado!' : '✅ Resize Complete!'));
-  const resultDescText = isTurkish ? 'Resminiz başarıyla boyutlandırıldı' : (isFrench ? 'Votre image a ete redimensionnee avec succes' : (isSpanish ? 'Tu imagen ha sido redimensionada exitosamente' : 'Your image has been resized successfully'));
-  const originalText = isTurkish ? 'Orijinal' : (isFrench ? 'Original' : (isSpanish ? 'Original' : 'Original'));
-  const resizedText = isTurkish ? 'Boyutlandırılmış' : (isFrench ? 'Redimensionnee' : (isSpanish ? 'Redimensionada' : 'Resized'));
-  const downloadText = isTurkish ? '📥 Boyutlandırılmış Resmi İndir' : (isFrench ? '📥 Telecharger Image Redimensionnee' : (isSpanish ? '📥 Descargar Imagen Redimensionada' : '📥 Download Resized Image'));
-  const anotherText = isTurkish ? 'Başka Resim Boyutlandır' : (isFrench ? 'Redimensionner une Autre Image' : (isSpanish ? 'Redimensionar Otra Imagen' : 'Resize Another Image'));
+  // Result step - converted to getText system
+  const resultTitle = getText('imageResize.result.title', '✅ Boyutlandırma Tamamlandı!');
+  const resultDescText = getText('imageResize.result.description', 'Resminiz başarıyla boyutlandırıldı');
+  const originalText = getText('imageResize.result.original', 'Orijinal');
+  const resizedText = getText('imageResize.result.resized', 'Boyutlandırılmış');
+  const downloadText = getText('imageResize.result.download', '📥 Boyutlandırılmış Resmi İndir');
+  const anotherText = getText('imageResize.result.another', 'Başka Resim Boyutlandır');
 
   // Debug logging
   console.log('🐛 Current Step:', currentStep);
-  console.log('🐛 Is Turkish:', isTurkish);
-  console.log('🐛 Is French:', isFrench);
-  console.log('🐛 Is Spanish:', isSpanish);
   console.log('🐛 Main Title:', mainTitle);
   console.log('🐛 Result Title:', resultTitle);
   console.log('🐛 Download Text:', downloadText);

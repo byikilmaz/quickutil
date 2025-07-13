@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuota } from '@/contexts/QuotaContext';
 import { useStorage } from '@/contexts/StorageContext';
 import { ActivityTracker } from '@/lib/activityTracker';
+import { getTranslations } from '@/lib/translations';
 import { 
   cropImage,
   getImageDimensions,
@@ -276,6 +277,18 @@ function InteractiveCropBox({
 
 export default function ImageCrop({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = React.use(params);
+  const translations = getTranslations(locale);
+  
+  // getText function for translations
+  const getText = (key: string, fallback: string) => {
+    const keys = key.split('.');
+    let value: any = translations;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || fallback;
+  };
+
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
   const { uploadFile } = useStorage();
@@ -489,70 +502,64 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
     }
   };
 
-  // ÇOK DİLLİ ÇEVİRİLER - TR, FR, ES, EN desteği
-  const isTurkish = locale === 'tr';
-  const isFrench = locale === 'fr';
-  const isSpanish = locale === 'es';
+  // Multi-language support via getText system
   
   // Header texts
-  const headerTitle = isTurkish ? 'Resim Kırpma' : (isFrench ? 'Recadrage d\'Image' : (isSpanish ? 'Recortar Imagen' : 'Image Crop'));
-  const stepText = isTurkish ? 'Adım' : (isFrench ? 'Étape' : (isSpanish ? 'Paso' : 'Step'));
-  const ofText = isTurkish ? '/ 4' : (isFrench ? 'sur 4' : (isSpanish ? 'de 4' : 'of 4'));
+  const headerTitle = getText('imageCrop.title', 'Resim Kırpma');
+  const stepText = getText('imageCrop.step', 'Adım');
+  const ofText = getText('imageCrop.stepOf', '/ 4');
   const stepNumber = currentStep === 'upload' ? '1' : currentStep === 'configure' ? '2' : currentStep === 'processing' ? '3' : '4';
-  const newImageText = isTurkish ? 'Yeni Resim' : (isFrench ? 'Nouvelle Image' : (isSpanish ? 'Nueva Imagen' : 'New Image'));
+  const newImageText = getText('imageCrop.newImage', 'Yeni Resim');
   
   // Upload step
-  const statsText = isTurkish ? '3M+ Resim Kırpıldı • Yapay Zeka Destekli' : (isFrench ? '3M+ Images Recadrees • Alimente par l\'IA' : (isSpanish ? '3M+ Imágenes Recortadas • Impulsado por IA' : '3M+ Images Cropped • AI-Powered'));
-  const mainTitle = isTurkish ? '✂️ Resim Kırpma' : (isFrench ? '✂️ Recadrage d\'Image' : (isSpanish ? '✂️ Recortar Imagen' : '✂️ Image Crop'));
-  const description = isTurkish ? 'Resimlerinizi mükemmel boyutta kırpın ve en önemli alanlara odaklanın' : (isFrench ? 'Recadrez vos images a la taille parfaite et concentrez-vous sur ce qui compte le plus' : (isSpanish ? 'Recorta tus imágenes al tamaño perfecto y enfócate en lo más importante' : 'Crop your images to the perfect size and focus on what matters most'));
+  const statsText = getText('imageCrop.badge', '3M+ Resim Kırpıldı • Yapay Zeka Destekli');
+  const mainTitle = getText('imageCrop.mainTitle', '✂️ Resim Kırpma');
+  const description = getText('imageCrop.description', 'Resimlerinizi mükemmel boyutta kırpın ve en önemli alanlara odaklanın');
   const uploadTitle = isDragActive 
-    ? (isTurkish ? 'Resminizi buraya bırakın' : (isFrench ? 'Deposez votre image ici' : (isSpanish ? 'Suelta tu imagen aquí' : 'Drop your image here')))
-    : (isTurkish ? 'Kırpılacak Resmi Seçin' : (isFrench ? 'Selectionner Image a Recadrer' : (isSpanish ? 'Seleccionar Imagen para Recortar' : 'Select Image to Crop')));
-  const formatText = isTurkish ? 'PNG, JPEG, WebP, GIF • 50MB\'a kadar' : (isFrench ? 'PNG, JPEG, WebP, GIF • Jusqu\'a 50MB' : (isSpanish ? 'PNG, JPEG, WebP, GIF • Hasta 50MB' : 'PNG, JPEG, WebP, GIF • Up to 50MB'));
-  const chooseFileText = isTurkish ? 'Dosya Seç' : (isFrench ? 'Choisir Fichier' : (isSpanish ? 'Elegir Archivo' : 'Choose File'));
-  const secureText = isTurkish ? 'Güvenli İşleme' : (isFrench ? 'Traitement Securise' : (isSpanish ? 'Procesamiento Seguro' : 'Secure Processing'));
-  const fastText = isTurkish ? 'Hızlı İşlem' : (isFrench ? 'Tres Rapide' : (isSpanish ? 'Súper Rápido' : 'Lightning Fast'));
-  const preciseText = isTurkish ? 'Hassas Kırpma' : (isFrench ? 'Recadrage Precis' : (isSpanish ? 'Recorte Preciso' : 'Precise Cropping'));
+    ? getText('imageCrop.upload.dropImage', 'Resminizi buraya bırakın')
+    : getText('imageCrop.upload.selectImage', 'Kırpılacak Resmi Seçin');
+  const formatText = getText('imageCrop.upload.supportedFormats', 'PNG, JPEG, WebP, GIF • 50MB\'a kadar');
+  const chooseFileText = getText('imageCrop.upload.chooseFile', 'Dosya Seç');
+  const secureText = getText('imageCrop.upload.secure', 'Güvenli İşleme');
+  const fastText = getText('imageCrop.upload.fast', 'Hızlı İşlem');
+  const preciseText = getText('imageCrop.upload.precise', 'Hassas Kırpma');
   
   // Configure step
-  const configureTitle = isTurkish ? 'Kırpma Alanını Yapılandır' : (isFrench ? 'Configurer Zone de Recadrage' : (isSpanish ? 'Configurar Área de Recorte' : 'Configure Crop Area'));
-  const configureDesc = isTurkish ? 'Saklamak istediğiniz alanı seçin' : (isFrench ? 'Selectionnez la zone que vous souhaitez conserver' : (isSpanish ? 'Selecciona el área que quieres conservar' : 'Select the area you want to keep'));
-  const previewTitle = isTurkish ? 'İnteraktif Kırpma Önizlemesi' : (isFrench ? 'Apercu de Recadrage Interactif' : (isSpanish ? 'Vista Previa de Recorte Interactivo' : 'Interactive Crop Preview'));
-  const previewInstructions = isTurkish ? '🎯 Kırpma alanını ayarlamak için tutamaçları sürükleyin veya taşımak için merkeze tıklayın' : (isFrench ? '🎯 Faites glisser les poignees pour ajuster la zone de recadrage ou cliquez au centre pour deplacer' : (isSpanish ? '🎯 Arrastra las asas para ajustar el área de recorte o haz clic en el centro para mover' : '🎯 Drag the handles to adjust crop area or click center to move'));
-  const presetsText = isTurkish ? 'Hızlı Hazır Ayarlar' : (isFrench ? 'Prereglages Rapides' : (isSpanish ? 'Ajustes Rápidos' : 'Quick Presets'));
-  const squareText = isTurkish ? '🔲 Kare' : (isFrench ? '🔲 Carre' : (isSpanish ? '🔲 Cuadrado' : '🔲 Square'));
-  const centerText = isTurkish ? '🎯 Merkez' : (isFrench ? '🎯 Centre' : (isSpanish ? '🎯 Centro' : '🎯 Center'));
-  const wideText = isTurkish ? '📐 Geniş' : (isFrench ? '📐 Large' : (isSpanish ? '📐 Ancho' : '📐 Wide'));
-  const tallText = isTurkish ? '📏 Uzun' : (isFrench ? '📏 Haut' : (isSpanish ? '📏 Alto' : '📏 Tall'));
-  const dimensionsText = isTurkish ? 'Kırpma Boyutları' : (isFrench ? 'Dimensions de Recadrage' : (isSpanish ? 'Dimensiones de Recorte' : 'Crop Dimensions'));
-  const xPosText = isTurkish ? 'X Konumu' : (isFrench ? 'Position X' : (isSpanish ? 'Posición X' : 'X Position'));
-  const yPosText = isTurkish ? 'Y Konumu' : (isFrench ? 'Position Y' : (isSpanish ? 'Posición Y' : 'Y Position'));
-  const widthText = isTurkish ? 'Genişlik' : (isFrench ? 'Largeur' : (isSpanish ? 'Ancho' : 'Width'));
-  const heightText = isTurkish ? 'Yükseklik' : (isFrench ? 'Hauteur' : (isSpanish ? 'Alto' : 'Height'));
-  const xPlaceholder = isTurkish ? 'X girin...' : (isFrench ? 'Entrez X...' : (isSpanish ? 'Ingresar X...' : 'Enter X...'));
-  const yPlaceholder = isTurkish ? 'Y girin...' : (isFrench ? 'Entrez Y...' : (isSpanish ? 'Ingresar Y...' : 'Enter Y...'));
-  const widthPlaceholder = isTurkish ? 'Genişlik girin...' : (isFrench ? 'Entrez la largeur...' : (isSpanish ? 'Ingresar ancho...' : 'Enter width...'));
-  const heightPlaceholder = isTurkish ? 'Yükseklik girin...' : (isFrench ? 'Entrez la hauteur...' : (isSpanish ? 'Ingresar alto...' : 'Enter height...'));
-  const startText = isTurkish ? '✂️ Kırpmayı Başlat' : (isFrench ? '✂️ Commencer le Recadrage' : (isSpanish ? '✂️ Comenzar Recorte' : '✂️ Start Cropping'));
+  const configureTitle = getText('imageCrop.configure.title', 'Kırpma Alanını Yapılandır');
+  const configureDesc = getText('imageCrop.configure.description', 'Saklamak istediğiniz alanı seçin');
+  const previewTitle = getText('imageCrop.configure.previewTitle', 'İnteraktif Kırpma Önizlemesi');
+  const previewInstructions = getText('imageCrop.configure.previewInstructions', '🎯 Kırpma alanını ayarlamak için tutamaçları sürükleyin veya taşımak için merkeze tıklayın');
+  const presetsText = getText('imageCrop.configure.presets', 'Hızlı Hazır Ayarlar');
+  const squareText = getText('imageCrop.configure.presetSquare', '🔲 Kare');
+  const centerText = getText('imageCrop.configure.presetCenter', '🎯 Merkez');
+  const wideText = getText('imageCrop.configure.presetWide', '📐 Geniş');
+  const tallText = getText('imageCrop.configure.presetTall', '📏 Uzun');
+  const dimensionsText = getText('imageCrop.configure.dimensions', 'Kırpma Boyutları');
+  const xPosText = getText('imageCrop.configure.xPosition', 'X Konumu');
+  const yPosText = getText('imageCrop.configure.yPosition', 'Y Konumu');
+  const widthText = getText('imageCrop.configure.width', 'Genişlik');
+  const heightText = getText('imageCrop.configure.height', 'Yükseklik');
+  const xPlaceholder = getText('imageCrop.configure.xPlaceholder', 'X girin...');
+  const yPlaceholder = getText('imageCrop.configure.yPlaceholder', 'Y girin...');
+  const widthPlaceholder = getText('imageCrop.configure.widthPlaceholder', 'Genişlik girin...');
+  const heightPlaceholder = getText('imageCrop.configure.heightPlaceholder', 'Yükseklik girin...');
+  const startText = getText('imageCrop.configure.startCropping', '✂️ Kırpmayı Başlat');
   
   // Processing step
-  const processingTitle = isTurkish ? '✂️ Yapay Zeka Resminizi Kırpıyor' : (isFrench ? '✂️ IA Recadre Votre Image' : (isSpanish ? '✂️ IA Recortando Tu Imagen' : '✂️ AI Cropping Your Image'));
-  const processingDesc = isTurkish ? 'Resminizi hassas bir şekilde kırparken lütfen bekleyin...' : (isFrench ? 'Veuillez patienter pendant que nous recadrons votre image avec precision...' : (isSpanish ? 'Por favor espera mientras recortamos tu imagen con precisión...' : 'Please wait while we precisely crop your image...'));
-  const completeText = isTurkish ? 'Tamamlandı' : (isFrench ? 'Termine' : (isSpanish ? 'Completo' : 'Complete'));
+  const processingTitle = getText('imageCrop.processing.title', '✂️ Yapay Zeka Resminizi Kırpıyor');
+  const processingDesc = getText('imageCrop.processing.description', 'Resminizi hassas bir şekilde kırparken lütfen bekleyin...');
+  const completeText = getText('imageCrop.processing.complete', 'Tamamlandı');
   
   // Result step
-  const resultTitle = isTurkish ? '✂️ Kırpma Tamamlandı!' : (isFrench ? '✂️ Recadrage Termine !' : (isSpanish ? '✂️ Recorte Completado!' : '✂️ Crop Complete!'));
-  const resultDescText = isTurkish ? 'Resminiz başarıyla kırpıldı' : (isFrench ? 'Votre image a ete recadree avec succes' : (isSpanish ? 'Tu imagen ha sido recortada exitosamente' : 'Your image has been cropped successfully'));
-  const originalText = isTurkish ? 'Orijinal' : (isFrench ? 'Original' : (isSpanish ? 'Original' : 'Original'));
-  const croppedText = isTurkish ? 'Kırpılmış' : (isFrench ? 'Recadree' : (isSpanish ? 'Recortada' : 'Cropped'));
-  const downloadText = isTurkish ? '✂️ Kırpılmış Resmi İndir' : (isFrench ? '✂️ Telecharger Image Recadree' : (isSpanish ? '✂️ Descargar Imagen Recortada' : '✂️ Download Cropped Image'));
-  const anotherText = isTurkish ? 'Başka Bir Resim Kırp' : (isFrench ? 'Recadrer une Autre Image' : (isSpanish ? 'Recortar Otra Imagen' : 'Crop Another Image'));
+  const resultTitle = getText('imageCrop.result.title', '✂️ Kırpma Tamamlandı!');
+  const resultDescText = getText('imageCrop.result.description', 'Resminiz başarıyla kırpıldı');
+  const originalText = getText('imageCrop.result.original', 'Orijinal');
+  const croppedText = getText('imageCrop.result.cropped', 'Kırpılmış');
+  const downloadText = getText('imageCrop.result.downloadButton', '✂️ Kırpılmış Resmi İndir');
+  const anotherText = getText('imageCrop.result.newCrop', 'Başka Bir Resim Kırp');
 
   // Debug logging  
   console.log('🐛 DEBUG - Image Crop Locale:', locale);
-  console.log('🐛 DEBUG - Is Turkish:', isTurkish);
-  console.log('🐛 DEBUG - Is French:', isFrench);
-  console.log('🐛 DEBUG - Is Spanish:', isSpanish);
   console.log('🐛 DEBUG - Current Step:', currentStep);
   console.log('🐛 DEBUG - Header Title:', headerTitle);
   console.log('🐛 DEBUG - Main Title:', mainTitle);
@@ -894,14 +901,14 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
                       <span className="text-purple-700 font-medium">
                         {processingProgress < 15 ? 
-                          (isTurkish ? 'Kırpma alanı analiz ediliyor...' : (isFrench ? 'Analyse de la zone de recadrage...' : (isSpanish ? 'Analizando área de recorte...' : 'Analyzing crop area...'))) :
+                          getText('imageCrop.processing.step1', 'Kırpma alanı analiz ediliyor...') :
                          processingProgress < 35 ? 
-                          (isTurkish ? 'Kırpma hazırlanıyor...' : (isFrench ? 'Preparation du recadrage...' : (isSpanish ? 'Preparando recorte...' : 'Preparing crop...'))) :
+                          getText('imageCrop.processing.step2', 'Kırpma hazırlanıyor...') :
                          processingProgress < 60 ? 
-                          (isTurkish ? 'Boyutlar hesaplanıyor...' : (isFrench ? 'Calcul des dimensions...' : (isSpanish ? 'Calculando dimensiones...' : 'Calculating dimensions...'))) :
+                          getText('imageCrop.processing.step3', 'Boyutlar hesaplanıyor...') :
                          processingProgress < 85 ? 
-                          (isTurkish ? 'Resim kırpılıyor...' : (isFrench ? 'Recadrage de l\'image...' : (isSpanish ? 'Recortando imagen...' : 'Cropping image...'))) : 
-                          (isTurkish ? 'Tamamlanıyor...' : (isFrench ? 'Finalisation...' : (isSpanish ? 'Finalizando...' : 'Finalizing...')))}
+                          getText('imageCrop.processing.step4', 'Resim kırpılıyor...') : 
+                          getText('imageCrop.processing.step5', 'Tamamlanıyor...')}
                       </span>
                     </div>
                   </div>

@@ -41,6 +41,11 @@ export default async function PrivacyPage({ params }: Props) {
   const finalLocale = locale || 'en'; // Default to English for this page
   const t = getTranslations(finalLocale);
 
+  // Helper function for translations
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
+
   return (
     <>
       <StructuredData type="website" />
@@ -52,10 +57,10 @@ export default async function PrivacyPage({ params }: Props) {
             <div className="text-center">
               <ShieldCheckIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                🔒 {(t as any)['privacy.title']}
+                🔒 {getText('privacy.title', 'Gizlilik Sözleşmesi')}
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {(t as any)['privacy.subtitle']}
+                {getText('privacy.subtitle', 'QuickUtil.app\'te kişisel verilerin korunması ve işlenmesi hakkında bilgiler')}
               </p>
             </div>
           </div>
@@ -67,13 +72,10 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <DocumentTextIcon className="w-8 h-8 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.dataController']}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{getText('privacy.dataController', 'Veri Sorumlusu')}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
-              {finalLocale === 'tr' ? 
-                'Bu Gizlilik Sözleşmesi, QuickUtil.app platformu kullanıcılarının kişisel verilerinin korunması ve işlenmesi hakkında bilgi vermek amacıyla hazırlanmıştır. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında veri sorumlusu sıfatıyla faaliyet göstermekteyiz.' :
-                'This Privacy Policy is prepared to inform QuickUtil.app platform users about the protection and processing of personal data. We operate as a data controller under applicable privacy laws including GDPR.'
-              }
+              {getText('privacy.introContent', 'Bu Gizlilik Sözleşmesi, QuickUtil.app platformu kullanıcılarının kişisel verilerinin korunması ve işlenmesi hakkında bilgi vermek amacıyla hazırlanmıştır. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında veri sorumlusu sıfatıyla faaliyet göstermekteyiz.')}
             </p>
           </div>
 
@@ -81,29 +83,23 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <UserCircleIcon className="w-8 h-8 text-green-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.collectedData']}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{getText('privacy.collectedData', 'Toplanan Veriler')}</h2>
             </div>
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {finalLocale === 'tr' ? 'Hesap Bilgileri:' : 'Account Information:'}
+                  {getText('privacy.accountInfo.title', 'Hesap Bilgileri:')}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  {finalLocale === 'tr' ? 
-                    'E-posta adresi, ad-soyad, hesap oluşturma tarihi ve son giriş bilgileri.' :
-                    'Email address, first and last name, account creation date and last login information.'
-                  }
+                  {getText('privacy.accountInfo.desc', 'E-posta adresi, ad-soyad, hesap oluşturma tarihi ve son giriş bilgileri.')}
                 </p>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {finalLocale === 'tr' ? 'Dosya Bilgileri:' : 'File Information:'}
+                  {getText('privacy.fileInfo.title', 'Dosya Bilgileri:')}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  {finalLocale === 'tr' ? 
-                    'Yüklenen dosyaların boyutu, türü, işleme tarihi ve süreleri. Dosya içerikleri işlem sonrası otomatik olarak silinir.' :
-                    'Size, type, processing date and duration of uploaded files. File contents are automatically deleted after processing.'
-                  }
+                  {getText('privacy.fileInfo.desc', 'Yüklenen dosyaların boyutu, türü, işleme tarihi ve süreleri. Dosya içerikleri işlem sonrası otomatik olarak silinir.')}
                 </p>
               </div>
             </div>
@@ -113,36 +109,24 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <ClockIcon className="w-8 h-8 text-orange-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.processingPurpose']}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{getText('privacy.processingPurpose', 'İşleme Amacı')}</h2>
             </div>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start">
                 <span className="text-green-500 mr-2">✓</span>
-                {finalLocale === 'tr' ? 
-                  'Platform hizmetlerinin sunulması ve kullanıcı deneyiminin iyileştirilmesi' :
-                  'Providing platform services and improving user experience'
-                }
+                {getText('privacy.purpose1', 'Platform hizmetlerinin sunulması ve kullanıcı deneyiminin iyileştirilmesi')}
               </li>
               <li className="flex items-start">
                 <span className="text-green-500 mr-2">✓</span>
-                {finalLocale === 'tr' ? 
-                  'Teknik destek sağlanması ve sorunların çözülmesi' :
-                  'Providing technical support and solving problems'
-                }
+                {getText('privacy.purpose2', 'Teknik destek sağlanması ve sorunların çözülmesi')}
               </li>
               <li className="flex items-start">
                 <span className="text-green-500 mr-2">✓</span>
-                {finalLocale === 'tr' ? 
-                  'Platform güvenliğinin sağlanması ve kötüye kullanımın önlenmesi' :
-                  'Ensuring platform security and preventing misuse'
-                }
+                {getText('privacy.purpose3', 'Platform güvenliğinin sağlanması ve kötüye kullanımın önlenmesi')}
               </li>
               <li className="flex items-start">
                 <span className="text-green-500 mr-2">✓</span>
-                {finalLocale === 'tr' ? 
-                  'Yasal yükümlülüklerin yerine getirilmesi' :
-                  'Fulfilling legal obligations'
-                }
+                {getText('privacy.purpose4', 'Yasal yükümlülüklerin yerine getirilmesi')}
               </li>
             </ul>
           </div>
@@ -151,27 +135,24 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <LockClosedIcon className="w-8 h-8 text-red-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.dataSecurity']}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{getText('privacy.dataSecurity', 'Veri Güvenliği')}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
-              {finalLocale === 'tr' ? 
-                'Kişisel verilerinizin güvenliği en yüksek önceliğimizdir. 256-bit SSL şifreleme, güvenli sunucular ve düzenli güvenlik denetimleri ile verilerinizi koruyoruz.' :
-                'The security of your personal data is our highest priority. We protect your data with 256-bit SSL encryption, secure servers and regular security audits.'
-              }
+              {getText('privacy.securityContent', 'Kişisel verilerinizin güvenliği en yüksek önceliğimizdir. 256-bit SSL şifreleme, güvenli sunucular ve düzenli güvenlik denetimleri ile verilerinizi koruyoruz.')}
             </p>
             <div className="grid md:grid-cols-3 gap-4">
               {[
                 {
-                  title: finalLocale === 'tr' ? 'SSL Şifreleme' : 'SSL Encryption',
-                  desc: finalLocale === 'tr' ? '256-bit güvenlik' : '256-bit security'
+                  title: getText('privacy.sslTitle', 'SSL Şifreleme'),
+                  desc: getText('privacy.sslDesc', '256-bit güvenlik')
                 },
                 {
-                  title: finalLocale === 'tr' ? 'Güvenli Sunucular' : 'Secure Servers',
-                  desc: finalLocale === 'tr' ? 'Firebase altyapısı' : 'Firebase infrastructure'
+                  title: getText('privacy.serversTitle', 'Güvenli Sunucular'),
+                  desc: getText('privacy.serversDesc', 'Firebase altyapısı')
                 },
                 {
-                  title: finalLocale === 'tr' ? 'Otomatik Silme' : 'Auto Deletion',
-                  desc: finalLocale === 'tr' ? '30 gün sonra' : 'After 30 days'
+                  title: getText('privacy.deletionTitle', 'Otomatik Silme'),
+                  desc: getText('privacy.deletionDesc', '30 gün sonra')
                 }
               ].map((item, index) => (
                 <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
@@ -186,42 +167,27 @@ export default async function PrivacyPage({ params }: Props) {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex items-center mb-6">
               <ExclamationTriangleIcon className="w-8 h-8 text-purple-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900">{(t as any)['privacy.userRights']}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{getText('privacy.userRights', 'Kullanıcı Hakları')}</h2>
             </div>
             <p className="text-gray-700 leading-relaxed mb-6">
-              {finalLocale === 'tr' ? 
-                'KVKK kapsamında sahip olduğunuz haklar:' :
-                'Your rights under privacy laws:'
-              }
+              {getText('privacy.rightsContent', 'KVKK kapsamında sahip olduğunuz haklar:')}
             </p>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start">
                 <span className="text-blue-500 mr-2">•</span>
-                {finalLocale === 'tr' ? 
-                  'Kişisel verilerinizin işlenip işlenmediğini öğrenme' :
-                  'Learning whether your personal data is processed'
-                }
+                {getText('privacy.right1', 'Kişisel verilerinizin işlenip işlenmediğini öğrenme')}
               </li>
               <li className="flex items-start">
                 <span className="text-blue-500 mr-2">•</span>
-                {finalLocale === 'tr' ? 
-                  'İşlenen verileriniz hakkında bilgi talep etme' :
-                  'Requesting information about your processed data'
-                }
+                {getText('privacy.right2', 'İşlenen verileriniz hakkında bilgi talep etme')}
               </li>
               <li className="flex items-start">
                 <span className="text-blue-500 mr-2">•</span>
-                {finalLocale === 'tr' ? 
-                  'Verilerinizin düzeltilmesini veya silinmesini isteme' :
-                  'Requesting correction or deletion of your data'
-                }
+                {getText('privacy.right3', 'Verilerinizin düzeltilmesini veya silinmesini isteme')}
               </li>
               <li className="flex items-start">
                 <span className="text-blue-500 mr-2">•</span>
-                {finalLocale === 'tr' ? 
-                  'Veri işlemeye itiraz etme ve şikayet başvurusu yapma' :
-                  'Objecting to data processing and filing complaints'
-                }
+                {getText('privacy.right4', 'Veri işlemeye itiraz etme ve şikayet başvurusu yapma')}
               </li>
             </ul>
           </div>
@@ -229,13 +195,10 @@ export default async function PrivacyPage({ params }: Props) {
           {/* Contact */}
           <div className="bg-blue-50 rounded-xl p-8 text-center">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              {finalLocale === 'tr' ? 'İletişim' : 'Contact'}
+              {getText('privacy.contactTitle', 'İletişim')}
             </h3>
             <p className="text-gray-700 mb-4">
-              {finalLocale === 'tr' ? 
-                'Gizlilik sözleşmesi hakkında sorularınız için:' :
-                'For questions about our privacy policy:'
-              }
+              {getText('privacy.contactContent', 'Gizlilik sözleşmesi hakkında sorularınız için:')}
             </p>
             <div className="inline-flex items-center bg-white rounded-lg px-6 py-3 shadow-sm">
               <span className="text-blue-600 font-medium">hello@quickutil.app</span>

@@ -94,30 +94,16 @@ export default function HomePage() {
   console.log('  - Current pathname:', pathname);
   console.log('  - Has locale in path:', hasLocaleInPath(pathname));
   
-  // Translation variables for debugging (created after flags are set)
-  const aiPlatformText = isTurkish ? 'AI Destekli Platform' : 
-                        isFrench ? "Plateforme Alimentée par l'IA" : 
-                        isSpanish ? 'Plataforma Impulsada por IA' : 
-                        isGerman ? 'KI-Plattform' : 
-                        'AI Powered Platform';
-                        
-  const aiFeaturesText = isTurkish ? 'AI Ozellikleri' : 
-                        isFrench ? 'Fonctionnalités IA' : 
-                        isSpanish ? 'Funciones de IA' : 
-                        isGerman ? 'KI-Features' : 
-                        'AI Features';
-                        
-  const pdfToolsText = isTurkish ? 'PDF Araclari' : 
-                      isFrench ? 'Outils PDF' : 
-                      isSpanish ? 'Herramientas PDF' : 
-                      isGerman ? 'PDF-Tools' : 
-                      'PDF Tools';
-                      
-  const imageToolsText = isTurkish ? 'Resim Araclari' : 
-                        isFrench ? 'Outils Image' : 
-                        isSpanish ? 'Herramientas de Imagen' : 
-                        isGerman ? 'Bild-Tools' : 
-                        'Image Tools';
+  // Helper function for translations
+  const getText = (key: string, fallback: string) => {
+    return (t as any)?.[key] || fallback;
+  };
+
+  // Translation variables using getText
+  const aiPlatformText = getText('homepage.aiPlatform', 'AI Destekli Platform');
+  const aiFeaturesText = getText('homepage.aiFeatures', 'AI Özellikleri');
+  const pdfToolsText = getText('homepage.pdfTools', 'PDF Araçları');
+  const imageToolsText = getText('homepage.imageTools', 'Resim Araçları');
   
   // Enhanced debug logging with translation values
   console.log('🐛 DEBUG - Translation Values:');
@@ -135,11 +121,7 @@ export default function HomePage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg">
-            {isTurkish ? 'Dil algılanıyor...' : 
-             isFrench ? 'Détection de la langue...' : 
-             isSpanish ? 'Detectando idioma...' : 
-             isGerman ? 'Sprache wird erkannt...' : 
-             'Detecting language...'}
+            {getText('homepage.languageDetecting', 'Dil algılanıyor...')}
           </p>
         </div>
       </div>
@@ -449,11 +431,7 @@ export default function HomePage() {
                 {t('pdfSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {isTurkish ? 'Yapay zeka ile PDF isleme deneyiminizi donusturun' : 
-                 isFrench ? "Transformez votre expérience de traitement PDF avec l'IA" : 
-                 isSpanish ? 'Transforma tu experiencia de procesamiento de PDF con IA' : 
-                 isGerman ? 'PDF-Verarbeitung mit KI' : 
-                 'Transform your PDF processing experience with AI'}
+                {getText('homepage.pdfProcessingDescription', 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün')}
               </p>
             </div>
 
@@ -509,11 +487,7 @@ export default function HomePage() {
                 {t('imageSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {isTurkish ? 'Akilli algoritmalar ile resim isleme sanati' : 
-                 isFrench ? "L'art du traitement d'images avec des algorithmes intelligents" : 
-                 isSpanish ? 'El arte del procesamiento de imágenes con algoritmos inteligentes' : 
-                 isGerman ? 'Bildverarbeitung mit KI-Algorithmen' : 
-                 'The art of image processing with smart algorithms'}
+                {getText('homepage.imageProcessingDescription', 'Akıllı algoritmalar ile resim işleme sanatı')}
               </p>
             </div>
 

@@ -102,7 +102,7 @@ function PDFSplit({ locale }: { locale: string }) {
     setError(null);
     
     if (file.size > 50 * 1024 * 1024) {
-      setError(getErrorMessage('fileSizeLimit', locale));
+      setError(getText('errors.pdfSplit.fileSizeLimit', 'Dosya boyutu 50MB\'dan büyük olamaz'));
       return;
     }
     
@@ -110,42 +110,20 @@ function PDFSplit({ locale }: { locale: string }) {
     setCurrentStep('configure');
   };
 
-  // Get error messages based on locale
-  const getErrorMessage = (type: string, locale: string) => {
-    const messages = {
-      tr: {
-        fileSizeLimit: 'Dosya boyutu 50MB\'dan büyük olamaz.',
-        splitFailed: 'PDF ayırma sırasında hata oluştu.',
-        invalidFile: 'Geçersiz PDF dosyası.',
-        zipCreationFailed: 'ZIP dosyası oluşturulurken hata oluştu.'
-      },
-      en: {
-        fileSizeLimit: 'File size cannot exceed 50MB.',
-        splitFailed: 'PDF splitting failed.',
-        invalidFile: 'Invalid PDF file.',
-        zipCreationFailed: 'Failed to create ZIP file.'
-      },
-      es: {
-        fileSizeLimit: 'El tamaño del archivo no puede exceder 50MB.',
-        splitFailed: 'Error al dividir PDF.',
-        invalidFile: 'Archivo PDF inválido.',
-        zipCreationFailed: 'Error al crear archivo ZIP.'
-      },
-      fr: {
-        fileSizeLimit: 'La taille du fichier ne peut pas dépasser 50 Mo.',
-        splitFailed: 'Échec de la division PDF.',
-        invalidFile: 'Fichier PDF invalide.',
-        zipCreationFailed: 'Échec de la création du fichier ZIP.'
-      },
-      de: {
-        fileSizeLimit: 'Die Dateigröße darf 50MB nicht überschreiten.',
-        splitFailed: 'PDF-Aufteilung fehlgeschlagen.',
-        invalidFile: 'Ungültige PDF-Datei.',
-        zipCreationFailed: 'Fehler beim Erstellen der ZIP-Datei.'
-      }
-    };
-    
-    return messages[locale as keyof typeof messages]?.[type as keyof typeof messages.tr] || messages.tr[type as keyof typeof messages.tr];
+  // Get error messages with getText system
+  const getErrorMessage = (type: string) => {
+    switch (type) {
+      case 'fileSizeLimit':
+        return getText('errors.pdfSplit.fileSizeLimit', 'Dosya boyutu 50MB\'dan büyük olamaz.');
+      case 'splitFailed':
+        return getText('errors.pdfSplit.splitFailed', 'PDF ayırma sırasında hata oluştu.');
+      case 'invalidFile':
+        return getText('errors.pdfSplit.invalidFile', 'Geçersiz PDF dosyası.');
+      case 'zipCreationFailed':
+        return getText('errors.pdfSplit.zipCreationFailed', 'ZIP dosyası oluşturulurken hata oluştu.');
+      default:
+        return getText('errors.general.unknown', 'Bilinmeyen hata oluştu.');
+    }
   };
 
   // Get localized text
@@ -220,7 +198,7 @@ function PDFSplit({ locale }: { locale: string }) {
       
     } catch (err: any) {
       console.error('Split error:', err);
-      setError(getErrorMessage('splitFailed', locale));
+      setError(getErrorMessage('splitFailed'));
       setCurrentStep('configure');
       setSplitProgress(0);
     } finally {
@@ -268,7 +246,7 @@ function PDFSplit({ locale }: { locale: string }) {
       URL.revokeObjectURL(zipUrl);
     } catch (error) {
       console.error('ZIP creation error:', error);
-      setError(getErrorMessage('zipCreationFailed', locale));
+      setError(getErrorMessage('zipCreationFailed'));
     } finally {
       setIsDownloadingAll(false);
     }
