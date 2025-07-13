@@ -369,11 +369,38 @@ function ImageResizeContent({ locale }: { locale: string }) {
   const downloadText = getText('imageResize.result.download', '📥 Boyutlandırılmış Resmi İndir');
   const anotherText = getText('imageResize.result.another', 'Başka Resim Boyutlandır');
 
-  // Debug logging
-  console.log('🐛 Current Step:', currentStep);
-  console.log('🐛 Main Title:', mainTitle);
-  console.log('🐛 Result Title:', resultTitle);
-  console.log('🐛 Download Text:', downloadText);
+  // Enhanced Debug logging for translations and locale detection
+  console.log('🔤 IMAGE RESIZE DEBUG - Locale Detection:');
+  console.log('  - Current locale:', locale);
+  console.log('  - Browser language:', typeof navigator !== 'undefined' ? navigator.language : 'server-side');
+  console.log('  - Browser languages:', typeof navigator !== 'undefined' ? navigator.languages : 'server-side');
+  console.log('  - URL pathname:', typeof window !== 'undefined' ? window.location.pathname : 'server-side');
+  
+  console.log('🔤 IMAGE RESIZE DEBUG - Translation Values:');
+  console.log('  - Step Text:', stepText);
+  console.log('  - Main Title:', mainTitle);
+  console.log('  - Upload Title:', uploadTitle);
+  console.log('  - Configure Title:', configureTitle);
+  console.log('  - Processing Title:', processingTitle);
+  console.log('  - Result Title:', resultTitle);
+  console.log('  - Download Text:', downloadText);
+  console.log('  - Choose File Text:', chooseFileText);
+  console.log('  - Pixel Perfect Text:', pixelText);
+  
+  console.log('🔤 IMAGE RESIZE DEBUG - Step Status:');
+  console.log('  - Current Step:', currentStep);
+  console.log('  - Step Number:', stepNumber);
+  console.log('  - Processing Progress:', processingProgress);
+  
+  console.log('🔤 IMAGE RESIZE DEBUG - Translations Test:');
+  const testKeys = [
+    'imageResize.upload.chooseFile',
+    'imageResize.upload.pixelPerfect', 
+    'imageResize.preview.originalSize'
+  ];
+  testKeys.forEach(key => {
+    console.log(`  - ${key}:`, getText(key, 'NOT_FOUND'));
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">

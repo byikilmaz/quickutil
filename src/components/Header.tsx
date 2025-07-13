@@ -30,6 +30,67 @@ export default function Header({ onAuthClick }: HeaderProps) {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'tr';
   
+  // Browser language auto-detection system
+  useEffect(() => {
+    // Skip on server-side
+    if (typeof window === 'undefined') return;
+    
+    const SUPPORTED_LOCALES = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+    const LOCALE_STORAGE_KEY = 'quickutil_preferred_locale';
+    
+    // Check if user already has a saved preference
+    const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
+    
+    console.log('🌍 BROWSER LANGUAGE AUTO-DETECTION:');
+    console.log('  - Current URL locale:', locale);
+    console.log('  - Saved locale preference:', savedLocale);
+    console.log('  - Browser language:', navigator.language);
+    console.log('  - Browser languages:', navigator.languages);
+    
+    // If user already has a saved preference, respect it
+    if (savedLocale && SUPPORTED_LOCALES.includes(savedLocale)) {
+      console.log('  - Using saved locale preference:', savedLocale);
+      return;
+    }
+    
+    // Detect browser language
+    const browserLanguages = navigator.languages || [navigator.language];
+    let detectedLocale = 'tr'; // Default fallback
+    
+    for (const browserLang of browserLanguages) {
+      const langCode = browserLang.split('-')[0].toLowerCase();
+      
+      if (SUPPORTED_LOCALES.includes(langCode)) {
+        detectedLocale = langCode;
+        console.log(`  - Detected supported language: ${browserLang} → ${langCode}`);
+        break;
+      }
+    }
+    
+    console.log('  - Final detected locale:', detectedLocale);
+    
+    // Only redirect if current locale is different from detected locale
+    if (locale !== detectedLocale) {
+      console.log(`  - Redirecting from /${locale}/ to /${detectedLocale}/`);
+      
+      // Save preference to localStorage
+      localStorage.setItem(LOCALE_STORAGE_KEY, detectedLocale);
+      
+      // Construct new URL with detected locale
+      const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
+      const newUrl = `/${detectedLocale}${pathWithoutLocale}`;
+      
+      console.log('  - New URL:', newUrl);
+      
+      // Redirect to detected language
+      window.location.href = newUrl;
+    } else {
+      console.log('  - Current locale matches detected locale, no redirect needed');
+      // Save current locale as preference
+      localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+    }
+  }, [pathname, locale]);
+  
   // Translation hooks
   const t = useTranslations('navigation', locale);
   const tProfile = useTranslations('profile', locale);
