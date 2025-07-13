@@ -99,23 +99,46 @@ export default function HomePage() {
     return (t as any)?.[key] || fallback;
   };
 
-  // Dynamic fallbacks based on locale
-  const getFallbackText = (trText: string, enText: string, esText?: string): string => {
+  // Helper function for multi-language fallbacks including French
+  const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
+    console.log(`🏠 HOMEPAGE DEBUG - getFallbackText called for locale: ${locale}`);
+    console.log(`  - TR: ${trText}`);
+    console.log(`  - EN: ${enText}`);
+    console.log(`  - ES: ${esText || 'not provided'}`);
+    console.log(`  - FR: ${frText || 'not provided'}`);
+    console.log(`  - DE: ${deText || 'not provided'}`);
+    
+    let result: string;
     switch (locale) {
-      case 'tr': return trText;
-      case 'en': return enText;
-      case 'es': return esText || enText; // Spanish with fallback to English
-      case 'fr': return enText; // French fallback to English  
-      case 'de': return enText; // German fallback to English
-      default: return enText; // Default to English for unsupported locales
+      case 'tr': 
+        result = trText;
+        break;
+      case 'en': 
+        result = enText;
+        break;
+      case 'es': 
+        result = esText || enText;
+        break;
+      case 'fr': 
+        result = frText || enText;
+        break;
+      case 'de': 
+        result = deText || enText;
+        break;
+      default: 
+        result = enText; // Default to English for any other locales
+        break;
     }
+    
+    console.log(`  - Final result for ${locale}: ${result}`);
+    return result;
   };
 
-  // Translation variables using dynamic fallbacks with Spanish support
-  const aiPlatformText = getText('homepage.aiPlatform', getFallbackText('AI Destekli Platform', 'AI-Powered Platform', 'Plataforma con IA'));
-  const aiFeaturesText = getText('homepage.aiFeatures', getFallbackText('AI Özellikleri', 'AI Features', 'Características de IA'));
-  const pdfToolsText = getText('homepage.pdfTools', getFallbackText('PDF Araçları', 'PDF Tools', 'Herramientas PDF'));
-  const imageToolsText = getText('homepage.imageTools', getFallbackText('Resim Araçları', 'Image Tools', 'Herramientas de Imagen'));
+  // Translation variables using dynamic fallbacks with French support
+  const aiPlatformText = getText('homepage.aiPlatform', getFallbackText('AI Destekli Platform', 'AI-Powered Platform', 'Plataforma con IA', 'Plateforme IA'));
+  const aiFeaturesText = getText('homepage.aiFeatures', getFallbackText('AI Özellikleri', 'AI Features', 'Características de IA', 'Fonctionnalités IA'));
+  const pdfToolsText = getText('homepage.pdfTools', getFallbackText('PDF Araçları', 'PDF Tools', 'Herramientas PDF', 'Outils PDF'));
+  const imageToolsText = getText('homepage.imageTools', getFallbackText('Resim Araçları', 'Image Tools', 'Herramientas de Imagen', 'Outils Image'));
   
   // Enhanced debug logging with translation values
   console.log('🏠 HOMEPAGE DEBUG - Locale Detection:');
@@ -124,6 +147,35 @@ export default function HomePage() {
   console.log('  - AI Features text:', aiFeaturesText);
   console.log('  - PDF Tools text:', pdfToolsText);
   console.log('  - Image Tools text:', imageToolsText);
+
+  // Enhanced debug logging with browser detection for French support
+  useEffect(() => {
+    console.log('🏠 HOMEPAGE DEBUG - Enhanced Translation Values:');
+    console.log('  - Current locale:', locale);
+    console.log('  - Language flags:', { isTurkish, isFrench, isSpanish, isGerman, isEnglish });
+    console.log('  - AI Platform Text:', aiPlatformText);
+    console.log('  - AI Features Text:', aiFeaturesText);
+    console.log('  - PDF Tools Text:', pdfToolsText);
+    console.log('  - Image Tools Text:', imageToolsText);
+    console.log('  - Browser Info:', {
+      userAgent: navigator.userAgent,
+      browserLanguage: navigator.language,
+      browserLanguages: navigator.languages,
+      isFrenchDetected: navigator.language.startsWith('fr'),
+      timestamp: new Date().toISOString()
+    });
+    
+    // French-specific debug information
+    if (locale === 'fr') {
+      console.log('🇫🇷 FRENCH DEBUG - French Language Translations:');
+      console.log('  - AI Platform:', aiPlatformText);
+      console.log('  - PDF Tools:', pdfToolsText);
+      console.log('  - Image Tools:', imageToolsText);
+      console.log('  - Title:', t('title'));
+      console.log('  - Subtitle:', t('subtitle'));
+      console.log('  - Start Button:', t('startButton'));
+    }
+  }, [locale, aiPlatformText, aiFeaturesText, pdfToolsText, imageToolsText, isTurkish, isFrench, isSpanish, isGerman, isEnglish, t]);
 
   // Browser language auto-detection system
   useEffect(() => {
@@ -515,7 +567,12 @@ export default function HomePage() {
                 {t('pdfSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {getText('homepage.pdfProcessingDescription', 'Yapay zeka ile PDF işleme deneyiminizi dönüştürün')}
+                {getText('homepage.pdfProcessingDescription', getFallbackText(
+                  'Yapay zeka ile PDF işleme deneyiminizi dönüştürün',
+                  'Transform your PDF processing experience with AI',
+                  'Transforma tu experiencia de procesamiento de PDF con IA',
+                  'Transformez votre expérience de traitement PDF avec IA'
+                ))}
               </p>
             </div>
 
@@ -571,7 +628,12 @@ export default function HomePage() {
                 {t('imageSection')}
               </h2>
               <p className="text-xl text-gray-700">
-                {getText('homepage.imageProcessingDescription', 'Akıllı algoritmalar ile resim işleme sanatı')}
+                {getText('homepage.imageProcessingDescription', getFallbackText(
+                  'Akıllı algoritmalar ile resim işleme sanatı',
+                  'The art of image processing with intelligent algorithms',
+                  'El arte del procesamiento de imágenes con algoritmos inteligentes',
+                  'L\'art du traitement d\'image avec des algorithmes intelligents'
+                ))}
               </p>
             </div>
 
