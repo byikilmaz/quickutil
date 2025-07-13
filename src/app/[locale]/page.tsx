@@ -100,31 +100,81 @@ export default function HomePage() {
   };
 
   // Dynamic fallbacks based on locale
-  const getFallbackText = (trText: string, enText: string): string => {
+  const getFallbackText = (trText: string, enText: string, esText?: string): string => {
     switch (locale) {
       case 'tr': return trText;
       case 'en': return enText;
-      case 'es': return enText; // Spanish fallback to English
+      case 'es': return esText || enText; // Spanish with fallback to English
       case 'fr': return enText; // French fallback to English  
       case 'de': return enText; // German fallback to English
-      default: return enText; // Default to English
+      default: return enText; // Default to English for unsupported locales
     }
   };
 
-  // Translation variables using dynamic fallbacks
-  const aiPlatformText = getText('homepage.aiPlatform', getFallbackText('AI Destekli Platform', 'AI-Powered Platform'));
-  const aiFeaturesText = getText('homepage.aiFeatures', getFallbackText('AI Özellikleri', 'AI Features'));
-  const pdfToolsText = getText('homepage.pdfTools', getFallbackText('PDF Araçları', 'PDF Tools'));
-  const imageToolsText = getText('homepage.imageTools', getFallbackText('Resim Araçları', 'Image Tools'));
+  // Translation variables using dynamic fallbacks with Spanish support
+  const aiPlatformText = getText('homepage.aiPlatform', getFallbackText('AI Destekli Platform', 'AI-Powered Platform', 'Plataforma con IA'));
+  const aiFeaturesText = getText('homepage.aiFeatures', getFallbackText('AI Özellikleri', 'AI Features', 'Características de IA'));
+  const pdfToolsText = getText('homepage.pdfTools', getFallbackText('PDF Araçları', 'PDF Tools', 'Herramientas PDF'));
+  const imageToolsText = getText('homepage.imageTools', getFallbackText('Resim Araçları', 'Image Tools', 'Herramientas de Imagen'));
   
   // Enhanced debug logging with translation values
   console.log('🏠 HOMEPAGE DEBUG - Locale Detection:');
   console.log('  - Current locale:', locale);
-  console.log('  - Browser language:', typeof navigator !== 'undefined' ? navigator.language : 'server-side');
-  console.log('  - Browser languages:', typeof navigator !== 'undefined' ? navigator.languages : 'server-side');
-  console.log('  - URL pathname:', typeof window !== 'undefined' ? window.location.pathname : 'server-side');
-  console.log('  - Has locale in path:', hasLocaleInPath(pathname));
-  console.log('  - Is language detected:', isLanguageDetected);
+  console.log('  - AI Platform text:', aiPlatformText);
+  console.log('  - AI Features text:', aiFeaturesText);
+  console.log('  - PDF Tools text:', pdfToolsText);
+  console.log('  - Image Tools text:', imageToolsText);
+
+  // Browser language auto-detection system
+  useEffect(() => {
+    const detectAndRedirectLanguage = () => {
+      if (typeof window === 'undefined') return;
+
+      const currentPath = window.location.pathname;
+      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de']; // Using SupportedLocale compatible list
+      
+      // Check if URL already has locale
+      const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`) || currentPath === `/${lang}`);
+      
+      if (!hasLocaleInPath && currentPath === '/') {
+        const browserLanguage = navigator.language.slice(0, 2).toLowerCase();
+        const preferredLanguage = localStorage.getItem('quickutil_preferred_locale');
+        
+        console.log('🌍 HOMEPAGE DEBUG - Browser Language Auto-Detection:', {
+          currentPath,
+          browserLanguage,
+          preferredLanguage,
+          supportedLanguages,
+          hasLocaleInPath
+        });
+        
+        let targetLanguage = 'en'; // Default to English
+        
+        if (preferredLanguage && supportedLanguages.includes(preferredLanguage)) {
+          targetLanguage = preferredLanguage;
+        } else if (supportedLanguages.includes(browserLanguage)) {
+          targetLanguage = browserLanguage;
+          localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+        }
+        
+        // Redirect to appropriate language
+        const newPath = `/${targetLanguage}`;
+        console.log('🌍 HOMEPAGE DEBUG - Redirecting to:', newPath);
+        window.location.href = newPath;
+      }
+    };
+
+    detectAndRedirectLanguage();
+  }, []);
+
+  console.log('🏠 HOMEPAGE DEBUG - Spanish Translation Test:', {
+    locale,
+    aiPlatformText,
+    aiFeaturesText,
+    pdfToolsText,
+    imageToolsText,
+    timestamp: new Date().toISOString()
+  });
   
   console.log('🏠 HOMEPAGE DEBUG - Translation Values:');
   console.log('  - AI Platform Text:', aiPlatformText);
