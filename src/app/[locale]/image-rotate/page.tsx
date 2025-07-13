@@ -61,14 +61,19 @@ function ImageRotateContent({ locale }: { locale: string }) {
     return value || fallback;
   };
 
-  // Dynamic fallbacks based on locale
-  const getFallbackText = (trText: string, enText: string): string => {
+  // Dynamic fallbacks based on locale with Spanish support
+  const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
+    console.log(`🔄 IMAGE ROTATE DEBUG - getFallbackText called for locale: ${locale}`);
+    console.log(`  - TR: ${trText}`);
+    console.log(`  - EN: ${enText}`);
+    console.log(`  - ES: ${esText || 'not provided'}`);
+    
     switch (locale) {
       case 'tr': return trText;
       case 'en': return enText;
-      case 'es': return enText; // Spanish fallback to English
-      case 'fr': return enText; // French fallback to English  
-      case 'de': return enText; // German fallback to English
+      case 'es': return esText || enText;
+      case 'fr': return frText || enText;
+      case 'de': return deText || enText;
       case 'ar': return enText; // Arabic fallback to English
       case 'ja': return enText; // Japanese fallback to English
       case 'ko': return enText; // Korean fallback to English
@@ -242,53 +247,73 @@ function ImageRotateContent({ locale }: { locale: string }) {
   };
 
   // Multi-language text variables (TR, FR, ES, EN) with dynamic fallbacks
-  const badgeText = getText('imageRotate.badge', getFallbackText('500K+ Resim Döndürüldü • AI Destekli', '500K+ Images Rotated • AI Powered'));
-  const titleText = getText('imageRotate.title', getFallbackText('🔄 Resim Döndürme', '🔄 Image Rotate'));
-  const descriptionText = getText('imageRotate.description', getFallbackText('Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.', 'Easily rotate your images to any angle. Rotate without quality loss using our powerful processing technology.'));
-  const trustNoQualityLoss = getText('imageRotate.trust.noQualityLoss', getFallbackText('Kalite Kaybı Yok', 'No Quality Loss'));
-  const trustAllFormats = getText('imageRotate.trust.allFormats', getFallbackText('Tüm Formatlar', 'All Formats'));
-  const trustSecureFast = getText('imageRotate.trust.secureFast', getFallbackText('Güvenli & Hızlı', 'Secure & Fast'));
+  const badgeText = getText('imageRotate.badge', getFallbackText('500K+ Resim Döndürüldü • AI Destekli', '500K+ Images Rotated • AI Powered', '500K+ Imágenes Rotadas • AI Soportado', '500K+ Images Rotated • AI Powered', '500K+ Imágenes Rotadas • AI Soportado'));
+  const titleText = getText('imageRotate.title', getFallbackText('🔄 Resim Döndürme', '🔄 Image Rotate', '🔄 Rotar Imagen', '🔄 Rotar Imagen', '🔄 Rotar Imagen'));
+  const descriptionText = getText('imageRotate.description', getFallbackText('Resimlerinizi istediğiniz açıda kolayca döndürün. Güçlü işleme teknolojimizle kalite kaybı olmadan döndürme yapın.', 'Easily rotate your images to any angle. Rotate without quality loss using our powerful processing technology.', 'Gira tus imágenes a cualquier ángulo con facilidad. Gira sin pérdida de calidad usando nuestra tecnología de procesamiento potente.', 'Gira tus imágenes a cualquier ángulo con facilidad. Gira sin pérdida de calidad usando nuestra tecnología de procesamiento potente.', 'Gira tus imágenes a cualquier ángulo con facilidad. Gira sin pérdida de calidad usando nuestra tecnología de procesamiento potente.'));
+  const trustNoQualityLoss = getText('imageRotate.trust.noQualityLoss', getFallbackText('Kalite Kaybı Yok', 'No Quality Loss', 'Sin pérdida de calidad', 'Sin pérdida de calidad', 'Sin pérdida de calidad'));
+  const trustAllFormats = getText('imageRotate.trust.allFormats', getFallbackText('Tüm Formatlar', 'All Formats', 'Todos los formatos', 'Todos los formatos', 'Todos los formatos'));
+  const trustSecureFast = getText('imageRotate.trust.secureFast', getFallbackText('Güvenli & Hızlı', 'Secure & Fast', 'Seguro y rápido', 'Seguro y rápido', 'Seguro y rápido'));
 
   // Step 1 - Upload
-  const uploadTitle = getText('imageRotate.upload.title', 'Resim Yükleyin');
-  const uploadDescription = getText('imageRotate.upload.description', 'JPEG, PNG, WebP formatlarında resimlerinizi yükleyin');
-  const dropText = getText('imageRotate.upload.dropText', 'Dosyayı Bırakın');
-  const uploadText = getText('imageRotate.upload.uploadText', 'Resim Yükleyin');
-  const dragOrSelect = getText('imageRotate.upload.dragOrSelect', 'Dosyayı sürükleyip bırakın veya seçin');
-  const selectFile = getText('imageRotate.upload.selectFile', 'Dosya Seçin');
-  const fileTypes = getText('imageRotate.upload.fileTypes', 'JPEG, PNG, WebP • Max 50MB');
+  const uploadTitle = getText('imageRotate.upload.title', getFallbackText('Resim Yükleyin', 'Upload Image', 'Subir Imagen'));
+  const uploadDescription = getText('imageRotate.upload.description', getFallbackText('JPEG, PNG, WebP formatlarında resimlerinizi yükleyin', 'Upload your images in JPEG, PNG, WebP formats', 'Sube tus imágenes en formatos JPEG, PNG, WebP'));
+  const dropText = getText('imageRotate.upload.dropText', getFallbackText('Dosyayı Bırakın', 'Drop File', 'Soltar Archivo'));
+  const uploadText = getText('imageRotate.upload.uploadText', getFallbackText('Resim Yükleyin', 'Upload Image', 'Subir Imagen'));
+  const dragOrSelect = getText('imageRotate.upload.dragOrSelect', getFallbackText('Dosyayı sürükleyip bırakın veya seçin', 'Drag and drop or select file', 'Arrastra y suelta o selecciona archivo'));
+  const selectFile = getText('imageRotate.upload.selectFile', getFallbackText('Dosya Seçin', 'Select File', 'Seleccionar Archivo'));
+  const fileTypes = getText('imageRotate.upload.fileTypes', getFallbackText('JPEG, PNG, WebP • Max 50MB', 'JPEG, PNG, WebP • Max 50MB', 'JPEG, PNG, WebP • Max 50MB'));
 
   // Step 2 - Configure
-  const previewTitle = getText('imageRotate.configure.previewTitle', 'Önizleme');
-  const settingsTitle = getText('imageRotate.configure.settingsTitle', 'Döndürme Ayarları');
-  const backButton = getText('imageRotate.configure.backButton', 'Geri');
-  const quickRotationTitle = getText('imageRotate.configure.quickRotationTitle', 'Hızlı Döndürme');
-  const rotate90Right = getText('imageRotate.configure.rotate90Right', '90° Sağa');
-  const rotate180 = getText('imageRotate.configure.rotate180', '180° Ters');
-  const rotate90Left = getText('imageRotate.configure.rotate90Left', '90° Sola');
-  const resetAngle = getText('imageRotate.configure.resetAngle', 'Sıfırla');
-  const customAngleTitle = getText('imageRotate.configure.customAngleTitle', 'Özel Açı');
-  const currentAngle = getText('imageRotate.configure.currentAngle', 'Döndürme Açısı:');
-  const anglePlaceholder = getText('imageRotate.configure.anglePlaceholder', 'Açı (0-360°)');
-  const startRotation = getText('imageRotate.configure.startRotation', '🚀 Döndürmeyi Başlat');
+  const previewTitle = getText('imageRotate.configure.previewTitle', getFallbackText('Önizleme', 'Preview', 'Vista Previa'));
+  const settingsTitle = getText('imageRotate.configure.settingsTitle', getFallbackText('Döndürme Ayarları', 'Rotation Settings', 'Configuraciones de Rotación'));
+  const backButton = getText('imageRotate.configure.backButton', getFallbackText('Geri', 'Back', 'Atrás'));
+  const quickRotationTitle = getText('imageRotate.configure.quickRotationTitle', getFallbackText('Hızlı Döndürme', 'Quick Rotation', 'Rotación Rápida'));
+  const rotate90Right = getText('imageRotate.configure.rotate90Right', getFallbackText('90° Sağa', '90° Right', '90° Derecha'));
+  const rotate180 = getText('imageRotate.configure.rotate180', getFallbackText('180° Ters', '180° Flip', '180° Voltear'));
+  const rotate90Left = getText('imageRotate.configure.rotate90Left', getFallbackText('90° Sola', '90° Left', '90° Izquierda'));
+  const resetAngle = getText('imageRotate.configure.resetAngle', getFallbackText('Sıfırla', 'Reset', 'Resetear'));
+  const customAngleTitle = getText('imageRotate.configure.customAngleTitle', getFallbackText('Özel Açı', 'Custom Angle', 'Ángulo Personalizado'));
+  const currentAngle = getText('imageRotate.configure.currentAngle', getFallbackText('Döndürme Açısı:', 'Rotation Angle:', 'Ángulo de Rotación:'));
+  const anglePlaceholder = getText('imageRotate.configure.anglePlaceholder', getFallbackText('Açı (0-360°)', 'Angle (0-360°)', 'Ángulo (0-360°)'));
+  const startRotation = getText('imageRotate.configure.startRotation', getFallbackText('🚀 Döndürmeyi Başlat', '🚀 Start Rotation', '🚀 Iniciar Rotación'));
 
   // Step 3 - Processing
-  const processingTitle = getText('imageRotate.processing.title', getFallbackText('Resim Döndürülüyor...', 'Rotating Image...'));
-  const processingDescription = getText('imageRotate.processing.description', getFallbackText('AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor', 'Your image is being rotated without quality loss using our AI-powered technology'));
-  const completed = getText('imageRotate.processing.completed', getFallbackText('tamamlandı', 'completed'));
-  const stepAnalysis = getText('imageRotate.processing.stepAnalysis', getFallbackText('Resim Analizi', 'Image Analysis'));
-  const stepRotating = getText('imageRotate.processing.stepRotating', getFallbackText('Döndürülüyor', 'Rotating'));
-  const stepOptimizing = getText('imageRotate.processing.stepOptimizing', getFallbackText('Optimize Ediliyor', 'Optimizing'));
+  const processingTitle = getText('imageRotate.processing.title', getFallbackText('Resim Döndürülüyor...', 'Rotating Image...', 'Rotando Imagen...', 'Rotando Imagen...', 'Rotando Imagen...'));
+  const processingDescription = getText('imageRotate.processing.description', getFallbackText('AI destekli teknolojimizle resminiz kalite kaybı olmadan döndürülüyor', 'Your image is being rotated without quality loss using our AI-powered technology', 'Tu imagen está siendo rotada sin pérdida de calidad usando nuestra tecnología de procesamiento potente.', 'Tu imagen está siendo rotada sin pérdida de calidad usando nuestra tecnología de procesamiento potente.', 'Tu imagen está siendo rotada sin pérdida de calidad usando nuestra tecnología de procesamiento potente.'));
+  const completed = getText('imageRotate.processing.completed', getFallbackText('tamamlandı', 'completed', 'completado', 'completado', 'completado'));
+  const stepAnalysis = getText('imageRotate.processing.stepAnalysis', getFallbackText('Resim Analizi', 'Image Analysis', 'Análisis de imagen', 'Análisis de imagen', 'Análisis de imagen'));
+  const stepRotating = getText('imageRotate.processing.stepRotating', getFallbackText('Döndürülüyor', 'Rotating', 'Rotando', 'Rotando', 'Rotando'));
+  const stepOptimizing = getText('imageRotate.processing.stepOptimizing', getFallbackText('Optimize Ediliyor', 'Optimizing', 'Optimizando', 'Optimizando', 'Optimizando'));
 
   // Step 4 - Result
-  const successTitle = getText('imageRotate.result.successTitle', 'Döndürme Tamamlandı');
-  const successSubtitle = getText('imageRotate.result.successSubtitle', 'Resminiz Başarıyla Döndürüldü!');
-  const beforeTitle = getText('imageRotate.result.beforeTitle', 'Öncesi');
-  const afterTitle = getText('imageRotate.result.afterTitle', 'Sonrası');
-  const rotatedImageTitle = getText('imageRotate.result.rotatedImageTitle', 'Döndürülmüş Resim');
-  const rotatedAngle = getText('imageRotate.result.rotatedAngle', 'döndürüldü');
-  const downloadButton = getText('imageRotate.result.downloadButton', 'Döndürülmüş Resmi İndir');
-  const newImageButton = getText('imageRotate.result.newImageButton', 'Yeni Resim Döndür');
+  const successTitle = getText('imageRotate.result.successTitle', getFallbackText('Döndürme Tamamlandı', 'Rotation Complete', 'Rotación Completa'));
+  const successSubtitle = getText('imageRotate.result.successSubtitle', getFallbackText('Resminiz Başarıyla Döndürüldü!', 'Your Image Has Been Successfully Rotated!', '¡Tu Imagen Ha Sido Rotada Exitosamente!'));
+  const beforeTitle = getText('imageRotate.result.beforeTitle', getFallbackText('Öncesi', 'Before', 'Antes'));
+  const afterTitle = getText('imageRotate.result.afterTitle', getFallbackText('Sonrası', 'After', 'Después'));
+  const rotatedImageTitle = getText('imageRotate.result.rotatedImageTitle', getFallbackText('Döndürülmüş Resim', 'Rotated Image', 'Imagen Rotada'));
+  const rotatedAngle = getText('imageRotate.result.rotatedAngle', getFallbackText('döndürüldü', 'rotated', 'rotada'));
+  const downloadButton = getText('imageRotate.result.downloadButton', getFallbackText('Döndürülmüş Resmi İndir', 'Download Rotated Image', 'Descargar Imagen Rotada'));
+  const newImageButton = getText('imageRotate.result.newImageButton', getFallbackText('Yeni Resim Döndür', 'Rotate New Image', 'Rotar Nueva Imagen'));
+
+  // Enhanced debug logging with browser detection
+  useEffect(() => {
+    console.log('🔄 IMAGE ROTATE DEBUG - Sample Translation Values:');
+    console.log('  - Current locale:', locale);
+    console.log('  - Badge Text:', badgeText);
+    console.log('  - Title:', titleText);
+    console.log('  - Upload Title:', uploadTitle);
+    console.log('  - Configure Settings:', settingsTitle);
+    console.log('  - Processing Title:', processingTitle);
+    console.log('  - Success Title:', successTitle);
+    console.log('  - Download Button:', downloadButton);
+    console.log('  - Current Step:', currentStep);
+    console.log('  - Browser Info:', {
+      userAgent: navigator.userAgent,
+      browserLanguage: navigator.language,
+      browserLanguages: navigator.languages,
+      timestamp: new Date().toISOString()
+    });
+  }, [locale, currentStep, badgeText, titleText, uploadTitle, settingsTitle, processingTitle, successTitle, downloadButton]);
 
   // Browser language auto-detection system
   useEffect(() => {
@@ -331,23 +356,6 @@ function ImageRotateContent({ locale }: { locale: string }) {
 
     detectAndRedirectLanguage();
   }, []);
-
-  // Enhanced debug logging after all variables are defined
-  console.log('🐛 DEBUG - Image Rotate Locale:', locale);
-  console.log('🐛 DEBUG - Current step:', currentStep);
-  console.log('🐛 DEBUG - Badge text:', badgeText);
-  console.log('🐛 DEBUG - Title text:', titleText);
-  console.log('🐛 DEBUG - Description text:', descriptionText);
-  console.log('🐛 DEBUG - Upload title:', uploadTitle);
-  console.log('🐛 DEBUG - Processing title:', processingTitle);
-  console.log('🐛 DEBUG - Success title:', successTitle);
-  console.log('🐛 DEBUG - Download button:', downloadButton);
-  console.log('🔍 IMAGE ROTATE DEBUG - Processing Steps:', {
-    stepAnalysis,
-    stepRotating,
-    stepOptimizing,
-    locale
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
@@ -717,7 +725,7 @@ function ImageRotateContent({ locale }: { locale: string }) {
                     {successSubtitle}
                   </h3>
                   <p className="text-gray-600">
-                    {getText('imageRotate.result.completionMessage', `${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`)}
+                    {getText('imageRotate.result.completionMessage', getFallbackText(`${rotateResult.rotationAngle}° döndürme işlemi kalite kaybı olmadan tamamlandı`, `${rotateResult.rotationAngle}° rotation completed without quality loss`, `Rotación de ${rotateResult.rotationAngle}° completada sin pérdida de calidad`))}
                   </p>
                 </div>
 
