@@ -61,21 +61,30 @@ function SimplePreviewBox({
       // Fall through to manual translations
     }
     
-    // Helper function for multi-language fallbacks including Spanish  
-    const getFallbackText = (trText: string, enText: string, esText?: string) => {
+    // Helper function for multi-language fallbacks including French  
+    const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
+      console.log(`🖼️ SIMPLE PREVIEW DEBUG - getFallbackText called for locale: ${locale}`);
+      console.log(`  - TR: ${trText}`);
+      console.log(`  - EN: ${enText}`);
+      console.log(`  - ES: ${esText || 'not provided'}`);
+      console.log(`  - FR: ${frText || 'not provided'}`);
+      console.log(`  - DE: ${deText || 'not provided'}`);
+      
       switch (locale) {
         case 'tr': return trText;
         case 'en': return enText;
         case 'es': return esText || enText;
+        case 'fr': return frText || enText;
+        case 'de': return deText || enText;
         default: return enText;
       }
     };
     
-    // Manual translations with Spanish support
+    // Manual translations with French support
     const translations: { [key: string]: () => string } = {
-      'imageResize.preview.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original'),
-      'imageResize.preview.shrinking': () => getFallbackText('Küçültülüyor', 'Shrinking', 'Reduciendo'),
-      'imageResize.preview.enlarging': () => getFallbackText('Büyütülüyor', 'Enlarging', 'Ampliando')
+      'imageResize.preview.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale', 'Taille Originale'),
+      'imageResize.preview.shrinking': () => getFallbackText('Küçültülüyor', 'Shrinking', 'Reduciendo', 'Réduction', 'Réduction'),
+      'imageResize.preview.enlarging': () => getFallbackText('Büyütülüyor', 'Enlarging', 'Ampliando', 'Agrandissement', 'Agrandissement')
     };
     
     if (translations[key]) {
@@ -140,15 +149,32 @@ function ImageResizeContent({ locale }: { locale: string }) {
     console.log(`  - TR: ${trText}`);
     console.log(`  - EN: ${enText}`);
     console.log(`  - ES: ${esText || 'not provided'}`);
+    console.log(`  - FR: ${frText || 'not provided'}`);
+    console.log(`  - DE: ${deText || 'not provided'}`);
     
+    let result: string;
     switch (locale) {
-      case 'tr': return trText;
-      case 'en': return enText;
-      case 'es': return esText || enText;
-      case 'fr': return frText || enText;
-      case 'de': return deText || enText;
-      default: return enText;
+      case 'tr': 
+        result = trText;
+        break;
+      case 'en': 
+        result = enText;
+        break;
+      case 'es': 
+        result = esText || enText;
+        break;
+      case 'fr': 
+        result = frText || enText;
+        break;
+      case 'de': 
+        result = deText || enText;
+        break;
+      default: 
+        result = enText;
     }
+    
+    console.log(`  - FINAL RESULT: ${result}`);
+    return result;
   };
   
   const getText = (key: string, fallback: string) => {
@@ -167,64 +193,64 @@ function ImageResizeContent({ locale }: { locale: string }) {
     // Manual translations with Spanish support
     const translations: { [key: string]: () => string } = {
       // Header and navigation
-      'imageResize.badge': () => getFallbackText('5M+ Resim Boyutlandırıldı • AI Destekli', '5M+ Images Resized • AI-Powered', '5M+ Imágenes Redimensionadas • Con IA'),
-      'imageResize.title': () => getFallbackText('📐 Resim Boyutlandırma', '📐 Image Resize', '📐 Redimensionar Imagen'),
-      'imageResize.description': () => getFallbackText('Resimlerinizi hassas ve kaliteli bir şekilde istediğiniz boyuta getirin', 'Resize your images precisely and with high quality', 'Redimensiona tus imágenes con precisión y alta calidad'),
-      'imageResize.headerTitle': () => getFallbackText('Resim Boyutlandırma', 'Image Resize', 'Redimensionar Imagen'),
-      'imageResize.step': () => getFallbackText('Adım', 'Step', 'Paso'),
-      'imageResize.stepOf': () => getFallbackText('/ 4', '/ 4', '/ 4'),
-      'imageResize.newImage': () => getFallbackText('Yeni Resim', 'New Image', 'Nueva Imagen'),
+      'imageResize.badge': () => getFallbackText('5M+ Resim Boyutlandırıldı • AI Destekli', '5M+ Images Resized • AI-Powered', '5M+ Imágenes Redimensionadas • Con IA', '5M+ Images Redimensionnées • Alimenté par IA'),
+      'imageResize.title': () => getFallbackText('📐 Resim Boyutlandırma', '📐 Image Resize', '📐 Redimensionar Imagen', '📐 Redimensionner Image'),
+      'imageResize.description': () => getFallbackText('Resimlerinizi hassas ve kaliteli bir şekilde istediğiniz boyuta getirin', 'Resize your images precisely and with high quality', 'Redimensiona tus imágenes con precisión y alta calidad', 'Redimensionnez vos images avec précision et haute qualité'),
+      'imageResize.headerTitle': () => getFallbackText('Resim Boyutlandırma', 'Image Resize', 'Redimensionar Imagen', 'Redimensionner Image'),
+      'imageResize.step': () => getFallbackText('Adım', 'Step', 'Paso', 'Étape'),
+      'imageResize.stepOf': () => getFallbackText('/ 4', '/ 4', '/ 4', '/ 4'),
+      'imageResize.newImage': () => getFallbackText('Yeni Resim', 'New Image', 'Nueva Imagen', 'Nouvelle Image'),
       
       // Upload step
-      'imageResize.upload.dropImage': () => getFallbackText('Resminizi buraya bırakın', 'Drop your image here', 'Suelta tu imagen aquí'),
-      'imageResize.upload.selectImage': () => getFallbackText('Boyutlandırılacak Resim Seç', 'Select Image to Resize', 'Seleccionar Imagen para Redimensionar'),
-      'imageResize.upload.supportedFormats': () => getFallbackText('PNG, JPEG, WebP, GIF • 50MB\'a kadar', 'PNG, JPEG, WebP, GIF • Up to 50MB', 'PNG, JPEG, WebP, GIF • Hasta 50MB'),
-      'imageResize.upload.chooseFile': () => getFallbackText('Dosya Seç', 'Choose File', 'Elegir Archivo'),
-      'imageResize.upload.secure': () => getFallbackText('Güvenli İşlem', 'Secure Processing', 'Procesamiento Seguro'),
-      'imageResize.upload.fast': () => getFallbackText('Çok Hızlı', 'Very Fast', 'Muy Rápido'),
-      'imageResize.upload.pixelPerfect': () => getFallbackText('Piksel Mükemmel', 'Pixel Perfect', 'Píxel Perfecto'),
+      'imageResize.upload.dropImage': () => getFallbackText('Resminizi buraya bırakın', 'Drop your image here', 'Suelta tu imagen aquí', 'Déposez votre image ici'),
+      'imageResize.upload.selectImage': () => getFallbackText('Boyutlandırılacak Resim Seç', 'Select Image to Resize', 'Seleccionar Imagen para Redimensionar', 'Sélectionner Image à Redimensionner'),
+      'imageResize.upload.supportedFormats': () => getFallbackText('PNG, JPEG, WebP, GIF • 50MB\'a kadar', 'PNG, JPEG, WebP, GIF • Up to 50MB', 'PNG, JPEG, WebP, GIF • Hasta 50MB', 'PNG, JPEG, WebP, GIF • Jusqu\'à 50MB'),
+      'imageResize.upload.chooseFile': () => getFallbackText('Dosya Seç', 'Choose File', 'Elegir Archivo', 'Choisir Fichier'),
+      'imageResize.upload.secure': () => getFallbackText('Güvenli İşlem', 'Secure Processing', 'Procesamiento Seguro', 'Traitement Sécurisé'),
+      'imageResize.upload.fast': () => getFallbackText('Çok Hızlı', 'Very Fast', 'Muy Rápido', 'Très Rapide'),
+      'imageResize.upload.pixelPerfect': () => getFallbackText('Piksel Mükemmel', 'Pixel Perfect', 'Píxel Perfecto', 'Pixel Parfait'),
       
       // Configure step
-      'imageResize.configure.title': () => getFallbackText('Boyutlandırma Ayarlarını Yapılandır', 'Configure Resize Settings', 'Configurar Ajustes de Redimensionamiento'),
-      'imageResize.configure.description': () => getFallbackText('İstediğiniz boyutları ve seçenekleri ayarlayın', 'Set your desired dimensions and options', 'Establece las dimensiones y opciones deseadas'),
-      'imageResize.configure.previewTitle': () => getFallbackText('Canlı Önizleme', 'Live Preview', 'Vista Previa en Vivo'),
-      'imageResize.configure.previewInstructions': () => getFallbackText('🎯 Sağdaki kontrollerle boyutları ayarlayın ve canlı önizlemeyi görün', '🎯 Adjust dimensions with controls on the right and see live preview', '🎯 Ajusta las dimensiones con los controles de la derecha y ve la vista previa en vivo'),
-      'imageResize.configure.resizeMode': () => getFallbackText('Boyutlandırma Modu', 'Resize Mode', 'Modo de Redimensionamiento'),
-      'imageResize.configure.byPixels': () => getFallbackText('Piksel Bazında', 'By Pixels', 'Por Píxeles'),
-      'imageResize.configure.byPercentage': () => getFallbackText('Yüzde Bazında', 'By Percentage', 'Por Porcentaje'),
-      'imageResize.configure.width': () => getFallbackText('Genişlik (px)', 'Width (px)', 'Ancho (px)'),
-      'imageResize.configure.height': () => getFallbackText('Yükseklik (px)', 'Height (px)', 'Alto (px)'),
-      'imageResize.configure.widthPlaceholder': () => getFallbackText('Genişlik girin...', 'Enter width...', 'Ingresa el ancho...'),
-      'imageResize.configure.heightPlaceholder': () => getFallbackText('Yükseklik girin...', 'Enter height...', 'Ingresa el alto...'),
-      'imageResize.configure.percentage': () => getFallbackText('Orijinalin %\'sine boyutlandır', 'Resize to % of original', 'Redimensionar al % del original'),
-      'imageResize.configure.percentagePlaceholder': () => getFallbackText('Yüzde girin...', 'Enter percentage...', 'Ingresa el porcentaje...'),
-      'imageResize.configure.result': () => getFallbackText('Sonuç:', 'Result:', 'Resultado:'),
-      'imageResize.configure.aspectRatio': () => getFallbackText('En-boy oranını koru', 'Maintain aspect ratio', 'Mantener relación de aspecto'),
-      'imageResize.configure.noEnlarge': () => getFallbackText('Küçükse büyütme', 'Don\'t enlarge if smaller', 'No ampliar si es más pequeña'),
-      'imageResize.configure.startResize': () => getFallbackText('🚀 Boyutlandırmayı Başlat', '🚀 Start Resize', '🚀 Iniciar Redimensionamiento'),
+      'imageResize.configure.title': () => getFallbackText('Boyutlandırma Ayarlarını Yapılandır', 'Configure Resize Settings', 'Configurar Ajustes de Redimensionamiento', 'Configurer les paramètres de redimensionnement'),
+      'imageResize.configure.description': () => getFallbackText('İstediğiniz boyutları ve seçenekleri ayarlayın', 'Set your desired dimensions and options', 'Establece las dimensiones y opciones deseadas', 'Définissez les dimensions et les options de votre choix'),
+      'imageResize.configure.previewTitle': () => getFallbackText('Canlı Önizleme', 'Live Preview', 'Vista Previa en Vivo', 'Aperçu en direct'),
+      'imageResize.configure.previewInstructions': () => getFallbackText('🎯 Sağdaki kontrollerle boyutları ayarlayın ve canlı önizlemeyi görün', '🎯 Adjust dimensions with controls on the right and see live preview', '🎯 Ajusta las dimensiones con los controles de la derecha y ve la vista previa en vivo', '🎯 Ajustez les dimensions avec les contrôles de droite et voyez l\'aperçu en direct'),
+      'imageResize.configure.resizeMode': () => getFallbackText('Boyutlandırma Modu', 'Resize Mode', 'Modo de Redimensionamiento', 'Mode de redimensionnement'),
+      'imageResize.configure.byPixels': () => getFallbackText('Piksel Bazında', 'By Pixels', 'Por Píxeles', 'Par pixels'),
+      'imageResize.configure.byPercentage': () => getFallbackText('Yüzde Bazında', 'By Percentage', 'Por Porcentaje', 'Par pourcentage'),
+      'imageResize.configure.width': () => getFallbackText('Genişlik (px)', 'Width (px)', 'Ancho (px)', 'Largeur (px)'),
+      'imageResize.configure.height': () => getFallbackText('Yükseklik (px)', 'Height (px)', 'Alto (px)', 'Hauteur (px)'),
+      'imageResize.configure.widthPlaceholder': () => getFallbackText('Genişlik girin...', 'Enter width...', 'Ingresa el ancho...', 'Entrez la largeur...'),
+      'imageResize.configure.heightPlaceholder': () => getFallbackText('Yükseklik girin...', 'Enter height...', 'Ingresa el alto...', 'Entrez la hauteur...'),
+      'imageResize.configure.percentage': () => getFallbackText('Orijinalin %\'sine boyutlandır', 'Resize to % of original', 'Redimensionar al % del original', 'Redimensionner à % du original'),
+      'imageResize.configure.percentagePlaceholder': () => getFallbackText('Yüzde girin...', 'Enter percentage...', 'Ingresa el porcentaje...', 'Entrez le pourcentage...'),
+      'imageResize.configure.result': () => getFallbackText('Sonuç:', 'Result:', 'Resultado:', 'Résultat:'),
+      'imageResize.configure.aspectRatio': () => getFallbackText('En-boy oranını koru', 'Maintain aspect ratio', 'Mantener relación de aspecto', 'Maintenir le ratio d\'aspect'),
+      'imageResize.configure.noEnlarge': () => getFallbackText('Küçükse büyütme', 'Don\'t enlarge if smaller', 'No ampliar si es más pequeña', 'Ne pas agrandir si el plus petit'),
+      'imageResize.configure.startResize': () => getFallbackText('🚀 Boyutlandırmayı Başlat', '🚀 Start Resize', '🚀 Iniciar Redimensionamiento', '🚀 Démarrer le redimensionnement'),
       
       // Processing step
-      'imageResize.processing.title': () => getFallbackText('🤖 AI Resminizi Boyutlandırıyor', '🤖 AI is Resizing Your Image', '🤖 IA Redimensionando tu Imagen'),
-      'imageResize.processing.description': () => getFallbackText('Resminizi hassas bir şekilde işlerken lütfen bekleyin...', 'Please wait while we precisely process your image...', 'Por favor espera mientras procesamos tu imagen con precisión...'),
-      'imageResize.processing.complete': () => getFallbackText('Tamamlandı', 'Complete', 'Completado'),
-      'imageResize.processing.step1': () => getFallbackText('Resim analiz ediliyor...', 'Analyzing image...', 'Analizando imagen...'),
-      'imageResize.processing.step2': () => getFallbackText('Boyutlandırma hazırlanıyor...', 'Preparing resize...', 'Preparando redimensionamiento...'),
-      'imageResize.processing.step3': () => getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...', 'Calculando dimensiones...'),
-      'imageResize.processing.step4': () => getFallbackText('Resim boyutlandırılıyor...', 'Resizing image...', 'Redimensionando imagen...'),
-      'imageResize.processing.step5': () => getFallbackText('Sonlandırılıyor...', 'Finalizing...', 'Finalizando...'),
+      'imageResize.processing.title': () => getFallbackText('🤖 AI Resminizi Boyutlandırıyor', '🤖 AI is Resizing Your Image', '🤖 IA Redimensionando tu Imagen', '🤖 IA vous redimensionne votre image'),
+      'imageResize.processing.description': () => getFallbackText('Resminizi hassas bir şekilde işlerken lütfen bekleyin...', 'Please wait while we precisely process your image...', 'Por favor espera mientras procesamos tu imagen con precisión...', 'Veuillez patienter pendant le traitement précis de votre image...'),
+      'imageResize.processing.complete': () => getFallbackText('Tamamlandı', 'Complete', 'Completado', 'Terminé'),
+      'imageResize.processing.step1': () => getFallbackText('Resim analiz ediliyor...', 'Analyzing image...', 'Analizando imagen...', 'Analyse de l\'image...'),
+      'imageResize.processing.step2': () => getFallbackText('Boyutlandırma hazırlanıyor...', 'Preparing resize...', 'Preparando redimensionamiento...', 'Préparation du redimensionnement...'),
+      'imageResize.processing.step3': () => getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...', 'Calculando dimensiones...', 'Calcul des dimensions...'),
+      'imageResize.processing.step4': () => getFallbackText('Resim boyutlandırılıyor...', 'Resizing image...', 'Redimensionando imagen...', 'Redimensionnement de l\'image...'),
+      'imageResize.processing.step5': () => getFallbackText('Sonlandırılıyor...', 'Finalizing...', 'Finalizando...', 'Finalisation...'),
       
       // Result step
-      'imageResize.result.title': () => getFallbackText('✅ Boyutlandırma Tamamlandı!', '✅ Resize Complete!', '✅ ¡Redimensionamiento Completado!'),
-      'imageResize.result.description': () => getFallbackText('Resminiz başarıyla boyutlandırıldı', 'Your image has been successfully resized', 'Tu imagen ha sido redimensionada exitosamente'),
-      'imageResize.result.original': () => getFallbackText('Orijinal', 'Original', 'Original'),
-      'imageResize.result.resized': () => getFallbackText('Boyutlandırılmış', 'Resized', 'Redimensionada'),
-      'imageResize.result.download': () => getFallbackText('📥 Boyutlandırılmış Resmi İndir', '📥 Download Resized Image', '📥 Descargar Imagen Redimensionada'),
-      'imageResize.result.another': () => getFallbackText('Başka Resim Boyutlandır', 'Resize Another Image', 'Redimensionar Otra Imagen'),
+      'imageResize.result.title': () => getFallbackText('✅ Boyutlandırma Tamamlandı!', '✅ Resize Complete!', '✅ ¡Redimensionamiento Completado!', '✅ Redimensionnement terminé!'),
+      'imageResize.result.description': () => getFallbackText('Resminiz başarıyla boyutlandırıldı', 'Your image has been successfully resized', 'Tu imagen ha sido redimensionada exitosamente', 'Votre image a été redimensionnée avec succès'),
+      'imageResize.result.original': () => getFallbackText('Orijinal', 'Original', 'Original', 'Original'),
+      'imageResize.result.resized': () => getFallbackText('Boyutlandırılmış', 'Resized', 'Redimensionada', 'Redimensionnée'),
+      'imageResize.result.download': () => getFallbackText('📥 Boyutlandırılmış Resmi İndir', '📥 Download Resized Image', '📥 Descargar Imagen Redimensionada', '📥 Télécharger l\'image redimensionnée'),
+      'imageResize.result.another': () => getFallbackText('Başka Resim Boyutlandır', 'Resize Another Image', 'Redimensionar Otra Imagen', 'Redimensionner une autre image'),
       
       // Preview texts
-      'imageResize.preview.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original'),
-      'imageResize.preview.shrinking': () => getFallbackText('Küçültülüyor', 'Shrinking', 'Reduciendo'),
-      'imageResize.preview.enlarging': () => getFallbackText('Büyütülüyor', 'Enlarging', 'Ampliando')
+      'imageResize.preview.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale', 'Taille Originale'),
+      'imageResize.preview.shrinking': () => getFallbackText('Küçültülüyor', 'Shrinking', 'Reduciendo', 'Réduction', 'Réduction'),
+      'imageResize.preview.enlarging': () => getFallbackText('Büyütülüyor', 'Enlarging', 'Ampliando', 'Agrandissement', 'Agrandissement')
     };
     
     // Check translations first, then return fallback
@@ -500,10 +526,16 @@ function ImageResizeContent({ locale }: { locale: string }) {
   const downloadText = getText('imageResize.result.download', '📥 Boyutlandırılmış Resmi İndir');
   const anotherText = getText('imageResize.result.another', 'Başka Resim Boyutlandır');
 
-  // Enhanced Debug logging for translations and locale detection
+  // Enhanced Debug logging for translations and locale detection with French support
   useEffect(() => {
-    console.log('📐 IMAGE RESIZE DEBUG - Sample Translation Values:');
+    console.log('📐 IMAGE RESIZE DEBUG - Enhanced Translation System:');
     console.log('  - Current locale:', locale);
+    console.log('  - Browser language:', typeof navigator !== 'undefined' ? navigator.language : 'server-side');
+    console.log('  - Browser languages:', typeof navigator !== 'undefined' ? navigator.languages : 'server-side');
+    console.log('  - URL pathname:', typeof window !== 'undefined' ? window.location.pathname : 'server-side');
+    console.log('  - Is French detected:', typeof navigator !== 'undefined' ? navigator.language.startsWith('fr') : false);
+    
+    console.log('📐 IMAGE RESIZE DEBUG - Sample Translation Values:');
     console.log('  - Title:', getText('imageResize.title', '📐 Image Resize'));
     console.log('  - Upload Title:', getText('imageResize.upload.selectImage', 'Select Image to Resize'));
     console.log('  - Configure Title:', getText('imageResize.configure.title', 'Configure Resize Settings'));
