@@ -289,14 +289,19 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
     return value || fallback;
   };
 
-  // Dynamic fallbacks based on locale
-  const getFallbackText = (trText: string, enText: string): string => {
+  // Dynamic fallbacks based on locale with Spanish support
+  const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
+    console.log(`✂️ IMAGE CROP DEBUG - getFallbackText called for locale: ${locale}`);
+    console.log(`  - TR: ${trText}`);
+    console.log(`  - EN: ${enText}`);
+    console.log(`  - ES: ${esText || 'not provided'}`);
+    
     switch (locale) {
       case 'tr': return trText;
       case 'en': return enText;
-      case 'es': return enText; // Spanish fallback to English
-      case 'fr': return enText; // French fallback to English  
-      case 'de': return enText; // German fallback to English
+      case 'es': return esText || enText;
+      case 'fr': return frText || enText;
+      case 'de': return deText || enText;
       case 'ar': return enText; // Arabic fallback to English
       case 'ja': return enText; // Japanese fallback to English
       case 'ko': return enText; // Korean fallback to English
@@ -520,96 +525,91 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
   // Multi-language support via getText system
   
   // Header texts
-  const headerTitle = getText('imageCrop.title', getFallbackText('Resim Kırpma', 'Image Crop'));
-  const stepText = getText('imageCrop.step', getFallbackText('Adım', 'Step'));
+  const headerTitle = getText('imageCrop.title', getFallbackText('Resim Kırpma', 'Image Crop', 'Imagen Recortada', 'Image Crop', 'Bildeschnitt'));
+  const stepText = getText('imageCrop.step', getFallbackText('Adım', 'Step', 'Paso', 'Étape', 'Schritt'));
   const ofText = getText('imageCrop.stepOf', '/ 4');
   const stepNumber = currentStep === 'upload' ? '1' : currentStep === 'configure' ? '2' : currentStep === 'processing' ? '3' : '4';
-  const newImageText = getText('imageCrop.newImage', getFallbackText('Yeni Resim', 'New Image'));
+  const newImageText = getText('imageCrop.newImage', getFallbackText('Yeni Resim', 'New Image', 'Nueva Imagen', 'Nouvelle Image', 'Neue Bild'));
   
   // Upload step
-  const statsText = getText('imageCrop.badge', getFallbackText('3M+ Resim Kırpıldı • Yapay Zeka Destekli', '3M+ Images Cropped • AI-Powered'));
-  const mainTitle = getText('imageCrop.mainTitle', getFallbackText('✂️ Resim Kırpma', '✂️ Image Crop'));
-  const description = getText('imageCrop.description', getFallbackText('Resimlerinizi mükemmel boyutta kırpın ve en önemli alanlara odaklanın', 'Crop your images to the perfect size and focus on the most important areas'));
+  const statsText = getText('imageCrop.badge', getFallbackText('3M+ Resim Kırpıldı • Yapay Zeka Destekli', '3M+ Images Cropped • AI-Powered', '3M+ Imágenes Recortadas • IA Soportada', '3M+ Images Recortées • IA Supportée', '3M+ Bilder zugeschnitten • Künstliche Intelligenz unterstützt'));
+  const mainTitle = getText('imageCrop.mainTitle', getFallbackText('✂️ Resim Kırpma', '✂️ Image Crop', '✂️ Imagen Recortada', '✂️ Nouvelle Image', '✂️ Bildeschnitt'));
+  const description = getText('imageCrop.description', getFallbackText('Resimlerinizi mükemmel boyutta kırpın ve en önemli alanlara odaklanın', 'Crop your images to the perfect size and focus on the most important areas', 'Recorta tus imágenes a la medida perfecta y enfócate en las áreas más importantes', 'Recoupez vos images à la taille parfaite et concentrez-vous sur les zones les plus importantes', 'Schneiden Sie Ihre Bilder auf die perfekte Größe und konzentrieren Sie sich auf die wichtigsten Bereiche'));
   const uploadTitle = isDragActive 
-    ? getText('imageCrop.upload.dropImage', getFallbackText('Resminizi buraya bırakın', 'Drop your image here'))
-    : getText('imageCrop.upload.selectImage', getFallbackText('Kırpılacak Resmi Seçin', 'Select Image to Crop'));
-  const formatText = getText('imageCrop.upload.supportedFormats', getFallbackText('PNG, JPEG, WebP, GIF • 50MB\'a kadar', 'PNG, JPEG, WebP, GIF • Up to 50MB'));
-  const chooseFileText = getText('imageCrop.upload.chooseFile', getFallbackText('Dosya Seç', 'Choose File'));
-  const secureText = getText('imageCrop.upload.secure', getFallbackText('Güvenli İşleme', 'Secure Processing'));
-  const fastText = getText('imageCrop.upload.fast', getFallbackText('Hızlı İşlem', 'Fast Processing'));
-  const preciseText = getText('imageCrop.upload.precise', getFallbackText('Hassas Kırpma', 'Precise Cropping'));
+    ? getText('imageCrop.upload.dropImage', getFallbackText('Resminizi buraya bırakın', 'Drop your image here', 'Suelta tu imagen aquí', 'Déposez votre image ici', 'Legen Sie Ihre Bild hier ab'))
+    : getText('imageCrop.upload.selectImage', getFallbackText('Kırpılacak Resmi Seçin', 'Select Image to Crop', 'Seleccione Imagen para Recortar', 'Sélectionnez une image à recouper', 'Wählen Sie ein Bild zum Zugeschnitten aus'));
+  const formatText = getText('imageCrop.upload.supportedFormats', getFallbackText('PNG, JPEG, WebP, GIF • 50MB\'a kadar', 'PNG, JPEG, WebP, GIF • Up to 50MB', 'PNG, JPEG, WebP, GIF • Hasta 50MB', 'PNG, JPEG, WebP, GIF • 50MB', 'PNG, JPEG, WebP, GIF • Bis 50MB'));
+  const chooseFileText = getText('imageCrop.upload.chooseFile', getFallbackText('Dosya Seç', 'Choose File', 'Seleccionar Archivo', 'Choisir un fichier', 'Datei auswählen'));
+  const secureText = getText('imageCrop.upload.secure', getFallbackText('Güvenli İşleme', 'Secure Processing', 'Procesamiento Seguro', 'Traitement Sécurisé', 'Sicheres Verarbeiten'));
+  const fastText = getText('imageCrop.upload.fast', getFallbackText('Hızlı İşlem', 'Fast Processing', 'Proceso Rápido', 'Traitement Rapide', 'Schnelle Verarbeitung'));
+  const preciseText = getText('imageCrop.upload.precise', getFallbackText('Hassas Kırpma', 'Precise Cropping', 'Corte Preciso', 'Recoupe Précise', 'Präzise Schnitt'));
   
   // Configure step
-  const configureTitle = getText('imageCrop.configure.title', getFallbackText('Kırpma Alanını Yapılandır', 'Configure Crop Area'));
-  const configureDesc = getText('imageCrop.configure.description', getFallbackText('Saklamak istediğiniz alanı seçin', 'Select the area you want to keep'));
-  const previewTitle = getText('imageCrop.configure.previewTitle', getFallbackText('İnteraktif Kırpma Önizlemesi', 'Interactive Crop Preview'));
-  const previewInstructions = getText('imageCrop.configure.previewInstructions', getFallbackText('🎯 Kırpma alanını ayarlamak için tutamaçları sürükleyin veya taşımak için merkeze tıklayın', '🎯 Drag the handles to adjust the crop area or click the center to move it'));
-  const presetsText = getText('imageCrop.configure.presets', getFallbackText('Hızlı Hazır Ayarlar', 'Quick Presets'));
-  const squareText = getText('imageCrop.configure.presetSquare', getFallbackText('🔲 Kare', '🔲 Square'));
-  const centerText = getText('imageCrop.configure.presetCenter', getFallbackText('🎯 Merkez', '🎯 Center'));
-  const wideText = getText('imageCrop.configure.presetWide', getFallbackText('📐 Geniş', '📐 Wide'));
-  const tallText = getText('imageCrop.configure.presetTall', getFallbackText('📏 Uzun', '📏 Tall'));
-  const dimensionsText = getText('imageCrop.configure.dimensions', getFallbackText('Kırpma Boyutları', 'Crop Dimensions'));
-  const xPosText = getText('imageCrop.configure.xPosition', getFallbackText('X Konumu', 'X Position'));
-  const yPosText = getText('imageCrop.configure.yPosition', getFallbackText('Y Konumu', 'Y Position'));
-  const widthText = getText('imageCrop.configure.width', getFallbackText('Genişlik', 'Width'));
-  const heightText = getText('imageCrop.configure.height', getFallbackText('Yükseklik', 'Height'));
-  const xPlaceholder = getText('imageCrop.configure.xPlaceholder', getFallbackText('X girin...', 'Enter X...'));
-  const yPlaceholder = getText('imageCrop.configure.yPlaceholder', getFallbackText('Y girin...', 'Enter Y...'));
-  const widthPlaceholder = getText('imageCrop.configure.widthPlaceholder', getFallbackText('Genişlik girin...', 'Enter width...'));
-  const heightPlaceholder = getText('imageCrop.configure.heightPlaceholder', getFallbackText('Yükseklik girin...', 'Enter height...'));
-  const startText = getText('imageCrop.configure.startCropping', getFallbackText('✂️ Kırpmayı Başlat', '✂️ Start Cropping'));
+  const configureTitle = getText('imageCrop.configure.title', getFallbackText('Kırpma Alanını Yapılandır', 'Configure Crop Area', 'Configurar Área de Recorte', 'Configurer la Zone de Recoupage', 'Kürzungsfläche Konfigurieren'));
+  const configureDesc = getText('imageCrop.configure.description', getFallbackText('Saklamak istediğiniz alanı seçin', 'Select the area you want to keep', 'Selecciona el área que quieres mantener', 'Sélectionnez la zone que vous souhaitez conserver', 'Wählen Sie die Zone aus, die Sie beibehalten möchten'));
+  const previewTitle = getText('imageCrop.configure.previewTitle', getFallbackText('İnteraktif Kırpma Önizlemesi', 'Interactive Crop Preview', 'Vista Previa Interactiva de Recorte', 'Aperçu Interactif de Recoupage', 'Interaktive Vorschau des Zugeschnittenen'));
+  const previewInstructions = getText('imageCrop.configure.previewInstructions', getFallbackText('🎯 Kırpma alanını ayarlamak için tutamaçları sürükleyin veya taşımak için merkeze tıklayın', '🎯 Drag the handles to adjust the crop area or click the center to move it', '🎯 Arrastra los handles para ajustar el área de recorte o haz clic en el centro para moverlo', '🎯 Faites glisser les poignées pour ajuster la zone de recoupage ou cliquez sur le centre pour la déplacer', '🎯 Ziehen Sie die Handles, um die Zugeschnittene Fläche anzupassen oder klicken Sie in die Mitte, um sie zu bewegen'));
+  const presetsText = getText('imageCrop.configure.presets', getFallbackText('Hızlı Hazır Ayarlar', 'Quick Presets', 'Ajustes Rápidos Preparados', 'Préférences Rapides', 'Schnelle Voreinstellungen'));
+  const squareText = getText('imageCrop.configure.presetSquare', getFallbackText('🔲 Kare', '🔲 Square', '🔲 Cuadrado', '🔲 Carré', '🔲 Quadrat'));
+  const centerText = getText('imageCrop.configure.presetCenter', getFallbackText('🎯 Merkez', '🎯 Center', '🎯 Centro', '🎯 Centre', '🎯 Zentrum'));
+  const wideText = getText('imageCrop.configure.presetWide', getFallbackText('📐 Geniş', '📐 Wide', '📐 Ancho', '📐 Largeur', '📐 Breit'));
+  const tallText = getText('imageCrop.configure.presetTall', getFallbackText('📏 Uzun', '📏 Tall', '📏 Alto', '📏 Hauteur', '📏 Lang'));
+  const dimensionsText = getText('imageCrop.configure.dimensions', getFallbackText('Kırpma Boyutları', 'Crop Dimensions', 'Dimensiones de Recorte', 'Dimensions de Recoupage', 'Kürzungsmaße'));
+  const xPosText = getText('imageCrop.configure.xPosition', getFallbackText('X Konumu', 'X Position', 'Posición X', 'Position X', 'X-Position'));
+  const yPosText = getText('imageCrop.configure.yPosition', getFallbackText('Y Konumu', 'Y Position', 'Posición Y', 'Position Y', 'Y-Position'));
+  const widthText = getText('imageCrop.configure.width', getFallbackText('Genişlik', 'Width', 'Ancho', 'Largeur', 'Breite'));
+  const heightText = getText('imageCrop.configure.height', getFallbackText('Yükseklik', 'Height', 'Altura', 'Hauteur', 'Höhe'));
+  const xPlaceholder = getText('imageCrop.configure.xPlaceholder', getFallbackText('X girin...', 'Enter X...', 'Ingrese X...', 'Entrez X...', 'Geben Sie X ein...'));
+  const yPlaceholder = getText('imageCrop.configure.yPlaceholder', getFallbackText('Y girin...', 'Enter Y...', 'Ingrese Y...', 'Entrez Y...', 'Geben Sie Y ein...'));
+  const widthPlaceholder = getText('imageCrop.configure.widthPlaceholder', getFallbackText('Genişlik girin...', 'Enter width...', 'Ingrese ancho...', 'Entrez largeur...', 'Geben Sie Breite ein...'));
+  const heightPlaceholder = getText('imageCrop.configure.heightPlaceholder', getFallbackText('Yükseklik girin...', 'Enter height...', 'Ingrese altura...', 'Entrez hauteur...', 'Geben Sie Höhe ein...'));
+  const startText = getText('imageCrop.configure.startCropping', getFallbackText('✂️ Kırpmayı Başlat', '✂️ Start Cropping', '✂️ Iniciar Recorte', '✂️ Démarrer le Recoupage', '✂️ Kürzung Starten'));
   
   // Processing step
-  const processingTitle = getText('imageCrop.processing.title', getFallbackText('✂️ Yapay Zeka Resminizi Kırpıyor', '✂️ AI is Cropping Your Image'));
-  const processingDesc = getText('imageCrop.processing.description', getFallbackText('Resminizi hassas bir şekilde kırparken lütfen bekleyin...', 'Please wait while we precisely crop your image...'));
-  const completeText = getText('imageCrop.processing.complete', getFallbackText('Tamamlandı', 'Complete'));
+  const processingTitle = getText('imageCrop.processing.title', getFallbackText('✂️ Yapay Zeka Resminizi Kırpıyor', '✂️ AI is Cropping Your Image', '✂️ La IA está recortando tu imagen', '✂️ L\'IA está recoupant votre image', '✂️ Die KI schneidet Ihr Bild'));
+  const processingDesc = getText('imageCrop.processing.description', getFallbackText('Resminizi hassas bir şekilde kırparken lütfen bekleyin...', 'Please wait while we precisely crop your image...', 'Por favor, espera mientras recortamos tu imagen con precisión...', 'Veuillez patienter pendant le recoupage précis de votre image...', 'Bitte warten Sie, während wir Ihr Bild genau zuschneiden...'));
+  const completeText = getText('imageCrop.processing.complete', getFallbackText('Tamamlandı', 'Complete', 'Completado', 'Terminé', 'Abgeschlossen'));
   
   // Result step
-  const resultTitle = getText('imageCrop.result.title', getFallbackText('✂️ Kırpma Tamamlandı!', '✂️ Cropping Complete!'));
-  const resultDescText = getText('imageCrop.result.description', getFallbackText('Resminiz başarıyla kırpıldı', 'Your image has been successfully cropped'));
-  const originalText = getText('imageCrop.result.original', getFallbackText('Orijinal', 'Original'));
-  const croppedText = getText('imageCrop.result.cropped', getFallbackText('Kırpılmış', 'Cropped'));
-  const downloadText = getText('imageCrop.result.downloadButton', getFallbackText('✂️ Kırpılmış Resmi İndir', '✂️ Download Cropped Image'));
-  const anotherText = getText('imageCrop.result.newCrop', getFallbackText('Başka Bir Resim Kırp', 'Crop Another Image'));
+  const resultTitle = getText('imageCrop.result.title', getFallbackText('✂️ Kırpma Tamamlandı!', '✂️ Cropping Complete!', '✂️ Recorte Completado!', '✂️ Recoupage Terminé!', '✂️ Zugeschnitten!'));
+  const resultDescText = getText('imageCrop.result.description', getFallbackText('Resminiz başarıyla kırpıldı', 'Your image has been successfully cropped', 'Tu imagen se ha recortado con éxito', 'Votre image a été recouper avec succès', 'Ihr Bild wurde erfolgreich zugeschnitten'));
+  const originalText = getText('imageCrop.result.original', getFallbackText('Orijinal', 'Original', 'Original', 'Original', 'Original'));
+  const croppedText = getText('imageCrop.result.cropped', getFallbackText('Kırpılmış', 'Cropped', 'Recortado', 'Recouper', 'Zugeschnitten'));
+  const downloadText = getText('imageCrop.result.downloadButton', getFallbackText('✂️ Kırpılmış Resmi İndir', '✂️ Download Cropped Image', '✂️ Descargar Imagen Recortada', '✂️ Télécharger l\'image recouper', '✂️ Bildeschnitt herunterladen'));
+  const anotherText = getText('imageCrop.result.newCrop', getFallbackText('Başka Bir Resim Kırp', 'Crop Another Image', 'Recortar Otra Imagen', 'Recouper une Autre Image', 'Eine Andere Bild zuschneiden'));
 
   // Enhanced debug logging with browser detection
   useEffect(() => {
-    console.log('✂️ IMAGE CROP DEBUG - Locale Detection:', {
-      currentLocale: locale,
+    console.log('✂️ IMAGE CROP DEBUG - Sample Translation Values:');
+    console.log('  - Current locale:', locale);
+    console.log('  - Header Title:', headerTitle);
+    console.log('  - Main Title:', mainTitle);
+    console.log('  - Configure Title:', configureTitle);
+    console.log('  - Processing Title:', processingTitle);
+    console.log('  - Result Title:', resultTitle);
+    console.log('  - Upload Title:', uploadTitle);
+    console.log('  - Download Text:', downloadText);
+    console.log('  - Current Step:', currentStep);
+    console.log('  - Browser Info:', {
       userAgent: navigator.userAgent,
       browserLanguage: navigator.language,
       browserLanguages: navigator.languages,
       timestamp: new Date().toISOString()
     });
-  }, [locale]);
+  }, [locale, headerTitle, mainTitle, configureTitle, processingTitle, resultTitle, uploadTitle, downloadText, currentStep]);
 
-  // Enhanced translation debugging
-  useEffect(() => {
-    console.log('✂️ IMAGE CROP DEBUG - Translation Values:', {
-      headerTitle,
-      mainTitle,
-      configureTitle,
-      processingTitle,
-      resultTitle,
-      downloadText,
-      currentStep,
-      timestamp: new Date().toISOString()
-    });
-  }, [headerTitle, mainTitle, configureTitle, processingTitle, resultTitle, downloadText, currentStep]);
-
-  // Enhanced progress step debugging
+  // Enhanced translation debugging for processing steps
   useEffect(() => {
     if (currentStep === 'processing') {
       const currentStepText = processingProgress < 15 ? 
-        getText('imageCrop.processing.step1', getFallbackText('Kırpma alanı analiz ediliyor...', 'Analyzing crop area...')) :
+        getText('imageCrop.processing.step1', getFallbackText('Kırpma alanı analiz ediliyor...', 'Analyzing crop area...', 'Analizando área de recorte...', 'Analyse de la zone de recoupage...', 'Kürzungsfläche analysiert...')) :
        processingProgress < 35 ? 
-        getText('imageCrop.processing.step2', getFallbackText('Kırpma hazırlanıyor...', 'Preparing crop...')) :
+        getText('imageCrop.processing.step2', getFallbackText('Kırpma hazırlanıyor...', 'Preparing crop...', 'Preparando recorte...', 'Préparation du recoupage...', 'Vorbereitung des Zugeschnittenen...')) :
        processingProgress < 60 ? 
-        getText('imageCrop.processing.step3', getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...')) :
+        getText('imageCrop.processing.step3', getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...', 'Calculando dimensiones...', 'Calcul des dimensions...', 'Maße berechnet...')) :
        processingProgress < 85 ? 
-        getText('imageCrop.processing.step4', getFallbackText('Resim kırpılıyor...', 'Cropping image...')) : 
-        getText('imageCrop.processing.step5', getFallbackText('Tamamlanıyor...', 'Finalizing...'));
+        getText('imageCrop.processing.step4', getFallbackText('Resim kırpılıyor...', 'Cropping image...', 'Recortando imagen...', 'Recoupant l\'image...', 'Bild zugeschnitten...')) : 
+        getText('imageCrop.processing.step5', getFallbackText('Tamamlanıyor...', 'Finalizing...', 'Finalizando...', 'Terminé...', 'Abgeschlossen...'));
       
       console.log('✂️ IMAGE CROP DEBUG - Processing Step:', {
         currentLocale: locale,
@@ -668,6 +668,17 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
     const timer = setTimeout(detectAndRedirectLanguage, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Enhanced locale detection debugging  
+  useEffect(() => {
+    console.log('✂️ IMAGE CROP DEBUG - Locale Detection:', {
+      currentLocale: locale,
+      userAgent: navigator.userAgent,
+      browserLanguage: navigator.language,
+      browserLanguages: navigator.languages,
+      timestamp: new Date().toISOString()
+    });
+  }, [locale]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">
@@ -1002,14 +1013,14 @@ export default function ImageCrop({ params }: { params: Promise<{ locale: string
                       <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
                       <span className="text-purple-700 font-medium">
                         {processingProgress < 15 ? 
-                          getText('imageCrop.processing.step1', getFallbackText('Kırpma alanı analiz ediliyor...', 'Analyzing crop area...')) :
+                          getText('imageCrop.processing.step1', getFallbackText('Kırpma alanı analiz ediliyor...', 'Analyzing crop area...', 'Analizando área de recorte...', 'Analyse de la zone de recoupage...', 'Kürzungsfläche analysiert...')) :
                          processingProgress < 35 ? 
-                          getText('imageCrop.processing.step2', getFallbackText('Kırpma hazırlanıyor...', 'Preparing crop...')) :
+                          getText('imageCrop.processing.step2', getFallbackText('Kırpma hazırlanıyor...', 'Preparing crop...', 'Preparando recorte...', 'Préparation du recoupage...', 'Vorbereitung des Zugeschnittenen...')) :
                          processingProgress < 60 ? 
-                          getText('imageCrop.processing.step3', getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...')) :
+                          getText('imageCrop.processing.step3', getFallbackText('Boyutlar hesaplanıyor...', 'Calculating dimensions...', 'Calculando dimensiones...', 'Calcul des dimensions...', 'Maße berechnet...')) :
                          processingProgress < 85 ? 
-                          getText('imageCrop.processing.step4', getFallbackText('Resim kırpılıyor...', 'Cropping image...')) : 
-                          getText('imageCrop.processing.step5', getFallbackText('Tamamlanıyor...', 'Finalizing...'))}
+                          getText('imageCrop.processing.step4', getFallbackText('Resim kırpılıyor...', 'Cropping image...', 'Recortando imagen...', 'Recoupant l\'image...', 'Bild zugeschnitten...')) : 
+                          getText('imageCrop.processing.step5', getFallbackText('Tamamlanıyor...', 'Finalizing...', 'Finalizando...', 'Terminé...', 'Abgeschlossen...'))}
                       </span>
                     </div>
                   </div>
