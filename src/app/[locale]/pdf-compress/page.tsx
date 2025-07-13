@@ -45,64 +45,45 @@ function PDFCompress({ locale }: { locale: string }) {
       if (typeof window === 'undefined') return;
 
       const currentPath = window.location.pathname;
-      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de']; // Updated to match SupportedLocale
       
       // Check if URL already has locale
-      const hasLocaleInPath = supportedLanguages.some(lang => 
-        currentPath.startsWith(`/${lang}/`) || currentPath === `/${lang}`
-      );
+      const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`) || currentPath === `/${lang}`);
       
-      console.log('🌍 PDF COMPRESS - Browser Language Auto-Detection:', {
-        currentPath,
-        hasLocaleInPath,
-        currentLocale: locale,
-        browserLanguage: navigator.language,
-        browserLanguages: navigator.languages,
-        timestamp: new Date().toISOString()
-      });
-
-      // Don't redirect if URL already has locale or if already processed
-      if (hasLocaleInPath) {
-        console.log('📄 PDF COMPRESS - URL already has locale, no redirect needed');
-        return;
+      if (!hasLocaleInPath && currentPath === '/') {
+        const browserLanguage = navigator.language.slice(0, 2).toLowerCase();
+        const preferredLanguage = localStorage.getItem('quickutil_preferred_locale');
+        
+        console.log('🌍 PDF COMPRESS DEBUG - Browser Language Auto-Detection:', {
+          currentPath,
+          browserLanguage,
+          preferredLanguage,
+          supportedLanguages,
+          willRedirect: supportedLanguages.includes(preferredLanguage || browserLanguage)
+        });
+        
+        if (preferredLanguage && supportedLanguages.includes(preferredLanguage)) {
+          console.log('🌍 Redirecting to preferred language:', preferredLanguage);
+          window.location.href = `/${preferredLanguage}/pdf-compress`;
+          return;
+        }
+        
+        if (supportedLanguages.includes(browserLanguage)) {
+          console.log('🌍 Redirecting to browser language:', browserLanguage);
+          localStorage.setItem('quickutil_preferred_locale', browserLanguage);
+          window.location.href = `/${browserLanguage}/pdf-compress`;
+          return;
+        }
+        
+        // Default to English if no match
+        console.log('🌍 Defaulting to English');
+        localStorage.setItem('quickutil_preferred_locale', 'en');
+        window.location.href = '/en/pdf-compress';
       }
-
-      // Check localStorage for saved preference
-      const savedLocale = localStorage.getItem('quickutil_preferred_locale');
-      if (savedLocale && supportedLanguages.includes(savedLocale)) {
-        console.log('📄 PDF COMPRESS - Using saved locale preference:', savedLocale);
-        window.location.href = `/${savedLocale}/pdf-compress`;
-        return;
-      }
-
-      // Detect browser language
-      const browserLang = navigator.language.toLowerCase();
-      const browserLangShort = browserLang.split('-')[0];
-      
-      let targetLocale = 'en'; // Default fallback
-      
-      if (supportedLanguages.includes(browserLangShort)) {
-        targetLocale = browserLangShort;
-      } else if (browserLang.includes('tr')) {
-        targetLocale = 'tr';
-      }
-      
-      console.log('📄 PDF COMPRESS - Auto-redirecting to detected language:', {
-        from: currentPath,
-        to: `/${targetLocale}/pdf-compress`,
-        detectedLanguage: targetLocale,
-        browserLanguage: browserLang
-      });
-      
-      // Save preference and redirect
-      localStorage.setItem('quickutil_preferred_locale', targetLocale);
-      window.location.href = `/${targetLocale}/pdf-compress`;
     };
 
-    // Only run on client side and after component mount
-    const timer = setTimeout(detectAndRedirectLanguage, 100);
-    return () => clearTimeout(timer);
-  }, [locale]);
+    detectAndRedirectLanguage();
+  }, []);
   
   // Refs for auto-scrolling
   const uploadRef = useRef<HTMLDivElement>(null);
@@ -245,11 +226,11 @@ function PDFCompress({ locale }: { locale: string }) {
   };
 
   // Dynamic fallbacks based on locale
-  const getFallbackText = (trText: string, enText: string): string => {
+  const getFallbackText = (trText: string, enText: string, esText?: string): string => {
     switch (locale) {
       case 'tr': return trText;
       case 'en': return enText;
-      case 'es': return enText; // Spanish fallback to English
+      case 'es': return esText || enText; // Spanish with fallback to English
       case 'fr': return enText; // French fallback to English  
       case 'de': return enText; // German fallback to English
       default: return enText; // Default to English
@@ -265,9 +246,9 @@ function PDFCompress({ locale }: { locale: string }) {
     console.log('  - URL pathname:', typeof window !== 'undefined' ? window.location.pathname : 'server-side');
     
     console.log('📄 PDF COMPRESS DEBUG - Sample Translation Values:');
-    console.log('  - Step 1 Text:', getText('pdfCompress.step1', getFallbackText('Dosya Yükle', 'Upload File')));
-    console.log('  - Step 2 Text:', getText('pdfCompress.step2', getFallbackText('AI Sıkıştırma', 'AI Compression')));
-    console.log('  - Step 3 Text:', getText('pdfCompress.step3', getFallbackText('İndir', 'Download')));
+    console.log('  - Step 1 Text:', getText('pdfCompress.step1', getFallbackText('Dosya Yükle', 'Upload File', 'Subir Archivo')));
+    console.log('  - Step 2 Text:', getText('pdfCompress.step2', getFallbackText('AI Sıkıştırma', 'AI Compression', 'Compresión con IA')));
+    console.log('  - Step 3 Text:', getText('pdfCompress.step3', getFallbackText('İndir', 'Download', 'Descargar')));
   }, [locale]);
 
   // Dropzone configuration
@@ -292,16 +273,16 @@ function PDFCompress({ locale }: { locale: string }) {
           <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 rounded-full px-4 py-2 mb-6">
             <SparklesIcon className="h-5 w-5 text-purple-600 mr-2" />
             <span className="text-purple-800 font-medium text-sm">
-              {getText('pdfCompress.aiCompressionBadge', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression'))}
+              {getText('pdfCompress.aiCompressionBadge', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression', 'Compresión de PDF con IA'))}
             </span>
           </div>
           
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            {getText('pdfCompress.title', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression'))}
+            {getText('pdfCompress.title', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression', 'Compresión de PDF con IA'))}
           </h1>
           
           <p className="text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed">
-            {getText('pdfCompress.subtitle', getFallbackText('Yapay zeka ile PDF dosyalarınızı optimize edin. En iyi kalite ve boyut dengesini otomatik olarak bulur.', 'Optimize your PDF files with artificial intelligence. Automatically finds the best balance between quality and size.'))}
+            {getText('pdfCompress.subtitle', getFallbackText('Yapay zeka ile PDF dosyalarınızı optimize edin. En iyi kalite ve boyut dengesini otomatik olarak bulur.', 'Optimize your PDF files with artificial intelligence. Automatically finds the best balance between quality and size.', 'Optimiza tus archivos PDF con inteligencia artificial. Encuentra automáticamente el mejor equilibrio entre calidad y tamaño.'))}
           </p>
         </div>
 
@@ -374,25 +355,25 @@ function PDFCompress({ locale }: { locale: string }) {
                 </div>
                 
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  {getText('pdfCompress.uploadTitle', getFallbackText('PDF Dosyanızı Sürükleyin', 'Drag Your PDF File'))}
+                  {getText('pdfCompress.uploadTitle', getFallbackText('PDF Dosyanızı Sürükleyin', 'Drag Your PDF File', 'Arrastra tu archivo PDF'))}
                 </h3>
                 
                 <p className="text-gray-600 mb-6 text-lg">
-                  {getText('pdfCompress.uploadDesc', getFallbackText('veya tıklayarak dosya seçin', 'or click to select file'))}
+                  {getText('pdfCompress.uploadDesc', getFallbackText('veya tıklayarak dosya seçin', 'or click to select file', 'o haz clic para seleccionar archivo'))}
                 </p>
                 
                 <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                  {getText('pdfCompress.selectFile', getFallbackText('Dosya Seç', 'Select File'))}
+                  {getText('pdfCompress.selectFile', getFallbackText('Dosya Seç', 'Select File', 'Seleccionar Archivo'))}
                 </button>
                 
                 <div className="mt-8 flex justify-center items-center space-x-8 text-sm text-gray-500">
                   <div className="flex items-center">
                     <DocumentCheckIcon className="h-5 w-5 mr-2 text-green-600" />
-                    {getText('pdfCompress.maxFileSizeText', getFallbackText('Maksimum 20MB PDF dosyası', 'Maximum 20MB PDF file'))}
+                    {getText('pdfCompress.maxFileSizeText', getFallbackText('Maksimum 20MB PDF dosyası', 'Maximum 20MB PDF file', 'Archivo PDF máximo 20MB'))}
                   </div>
                   <div className="flex items-center">
                     <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
-                    {getText('pdfCompress.aiOptimized', getFallbackText('AI Optimize Edilmiş', 'AI Optimized'))}
+                    {getText('pdfCompress.aiOptimized', getFallbackText('AI Optimize Edilmiş', 'AI Optimized', 'Optimizado con IA'))}
                   </div>
                 </div>
               </div>
@@ -410,11 +391,11 @@ function PDFCompress({ locale }: { locale: string }) {
                 </div>
                 
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  {getText('pdfCompress.processingTitle', getFallbackText('AI Sıkıştırma Devam Ediyor', 'AI Compression in Progress'))}
+                  {getText('pdfCompress.processingTitle', getFallbackText('AI Sıkıştırma Devam Ediyor', 'AI Compression in Progress', 'Compresión con IA en Progreso'))}
                 </h3>
                 
                 <p className="text-gray-600 text-lg">
-                  {getText('pdfCompress.processingDesc', getFallbackText('Yapay zeka dosyanızı optimize ediyor...', 'Artificial intelligence is optimizing your file...'))}
+                  {getText('pdfCompress.processingDesc', getFallbackText('Yapay zeka dosyanızı optimize ediyor...', 'Artificial intelligence is optimizing your file...', 'La inteligencia artificial está optimizando tu archivo...'))}
                 </p>
               </div>
               
@@ -443,11 +424,11 @@ function PDFCompress({ locale }: { locale: string }) {
                 </div>
                 
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  {getText('pdfCompress.successTitle', getFallbackText('Sıkıştırma Tamamlandı!', 'Compression Completed!'))}
+                  {getText('pdfCompress.successTitle', getFallbackText('Sıkıştırma Tamamlandı!', 'Compression Completed!', '¡Compresión Completada!'))}
                 </h3>
                 
                 <p className="text-gray-600 text-lg">
-                  {getText('pdfCompress.successDesc', getFallbackText('PDF dosyanız başarıyla optimize edildi.', 'Your PDF file has been successfully optimized.'))}
+                  {getText('pdfCompress.successDesc', getFallbackText('PDF dosyanız başarıyla optimize edildi.', 'Your PDF file has been successfully optimized.', 'Tu archivo PDF ha sido optimizado exitosamente.'))}
                 </p>
               </div>
               
@@ -455,7 +436,7 @@ function PDFCompress({ locale }: { locale: string }) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-gray-50 rounded-xl p-6 text-center">
                   <h4 className="font-semibold text-gray-700 mb-2">
-                    {getText('pdfCompress.originalSize', getFallbackText('Orijinal Boyut', 'Original Size'))}
+                    {getText('pdfCompress.originalSize', getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original'))}
                   </h4>
                   <p className="text-2xl font-bold text-gray-900">
                     {(compressionResult.originalSize / 1024 / 1024).toFixed(2)} MB
@@ -464,7 +445,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 
                 <div className="bg-gray-50 rounded-xl p-6 text-center">
                   <h4 className="font-semibold text-gray-700 mb-2">
-                    {getText('pdfCompress.compressedSize', getFallbackText('Sıkıştırılmış Boyut', 'Compressed Size'))}
+                    {getText('pdfCompress.compressedSize', getFallbackText('Sıkıştırılmış Boyut', 'Compressed Size', 'Tamaño Comprimido'))}
                   </h4>
                   <p className="text-2xl font-bold text-green-600">
                     {(compressionResult.compressedSize / 1024 / 1024).toFixed(2)} MB
@@ -473,10 +454,10 @@ function PDFCompress({ locale }: { locale: string }) {
                 
                 <div className="bg-gray-50 rounded-xl p-6 text-center">
                   <h4 className="font-semibold text-gray-700 mb-2">
-                    {getText('pdfCompress.compressionRatio', getFallbackText('Sıkıştırma Oranı', 'Compression Ratio'))}
+                    {getText('pdfCompress.savedSpace', getFallbackText('Tasarruf Edilen', 'Space Saved', 'Espacio Ahorrado'))}
                   </h4>
                   <p className="text-2xl font-bold text-purple-600">
-                    %{compressionResult.compressionRatio.toFixed(1)}
+                    %{Math.round(compressionResult.compressionRatio)}
                   </p>
                 </div>
               </div>
@@ -489,14 +470,14 @@ function PDFCompress({ locale }: { locale: string }) {
                   className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center"
                 >
                   <CloudArrowDownIcon className="h-5 w-5 mr-2" />
-                  {getText('pdfCompress.downloadCompressed', getFallbackText('Sıkıştırılmış PDF İndir', 'Download Compressed PDF'))}
+                  {getText('pdfCompress.downloadCompressed', getFallbackText('Sıkıştırılmış PDF İndir', 'Download Compressed PDF', 'Descargar PDF Comprimido'))}
                 </a>
                 
                 <button
                   onClick={handleReset}
                   className="bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  {getText('pdfCompress.compressAnother', getFallbackText('Başka Dosya Sıkıştır', 'Compress Another File'))}
+                  {getText('pdfCompress.compressAnother', getFallbackText('Başka Dosya Sıkıştır', 'Compress Another File', 'Comprimir Otro Archivo'))}
                 </button>
               </div>
             </div>
@@ -511,7 +492,7 @@ function PDFCompress({ locale }: { locale: string }) {
               onClick={() => setError(null)}
               className="mt-4 text-red-600 hover:text-red-800 font-medium"
             >
-              {getText('common.dismiss', getFallbackText('Kapat', 'Close'))}
+              {getText('common.dismiss', getFallbackText('Kapat', 'Close', 'Cerrar'))}
             </button>
           </div>
         )}
