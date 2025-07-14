@@ -152,7 +152,95 @@ function ImageCompress({ locale }: { locale: string }) {
   // Enhanced Translation helper with Spanish support
   const t = getTranslations(locale);
   
-  // Helper function for multi-language fallbacks including French  
+  // Enhanced browser language auto-detection system
+  useEffect(() => {
+    const detectAndRedirectLanguage = () => {
+      if (typeof window === 'undefined') return;
+
+      const currentPath = window.location.pathname;
+      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+      
+      // Check if URL already has locale
+      const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`));
+      
+      console.log('🖼️ IMAGE COMPRESS DEBUG - Enhanced Browser Language Auto-Detection:', {
+        currentPath,
+        currentLocale: locale,
+        browserLanguage: navigator.language,
+        browserLanguages: navigator.languages,
+        supportedLanguages,
+        hasLocaleInPath,
+        timestamp: new Date().toISOString()
+      });
+      
+      if (!hasLocaleInPath) {
+        const browserLanguage = navigator.language.slice(0, 2).toLowerCase();
+        const preferredLanguage = localStorage.getItem('quickutil_preferred_locale');
+        
+        console.log('🖼️ IMAGE COMPRESS DEBUG - Language Detection Process:', {
+          currentPath,
+          browserLanguage,
+          preferredLanguage,
+          supportedLanguages,
+          hasLocaleInPath,
+          step: 'language-detection'
+        });
+        
+        let targetLanguage = 'en'; // Default to English
+        
+        // Priority 1: User's stored preference
+        if (preferredLanguage && supportedLanguages.includes(preferredLanguage)) {
+          targetLanguage = preferredLanguage;
+          console.log('🖼️ IMAGE COMPRESS DEBUG - Using stored preference:', targetLanguage);
+        } 
+        // Priority 2: Browser language
+        else if (supportedLanguages.includes(browserLanguage)) {
+          targetLanguage = browserLanguage;
+          localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+          console.log('🖼️ IMAGE COMPRESS DEBUG - Using browser language:', targetLanguage);
+        }
+        // Priority 3: Check Accept-Language header languages
+        else {
+          const acceptLanguages = navigator.languages || [];
+          for (const lang of acceptLanguages) {
+            const shortLang = lang.slice(0, 2).toLowerCase();
+            if (supportedLanguages.includes(shortLang)) {
+              targetLanguage = shortLang;
+              localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+              console.log('🖼️ IMAGE COMPRESS DEBUG - Using Accept-Language:', targetLanguage);
+              break;
+            }
+          }
+        }
+        
+        // Redirect to appropriate language
+        const newPath = `/${targetLanguage}${currentPath}`;
+        console.log('🖼️ IMAGE COMPRESS DEBUG - Redirecting:', {
+          from: currentPath,
+          to: newPath,
+          targetLanguage,
+          reason: preferredLanguage ? 'stored-preference' : 'browser-detection'
+        });
+        window.location.href = newPath;
+      } else {
+        // Log current locale validation
+        console.log('🖼️ IMAGE COMPRESS DEBUG - Locale already in path:', {
+          currentPath,
+          detectedLocale: locale,
+          isSupported: supportedLanguages.includes(locale)
+        });
+        
+        // Store current locale as preference
+        if (supportedLanguages.includes(locale)) {
+          localStorage.setItem('quickutil_preferred_locale', locale);
+        }
+      }
+    };
+
+    detectAndRedirectLanguage();
+  }, [locale]);
+
+  // Helper function for multi-language fallbacks including French and German
   const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
     console.log(`🖼️ IMAGE COMPRESS DEBUG - getFallbackText called for locale: ${locale}`);
     console.log(`  - TR: ${trText}`);
@@ -178,6 +266,7 @@ function ImageCompress({ locale }: { locale: string }) {
         break;
       case 'de': 
         result = deText || enText;
+        console.log(`🇩🇪 GERMAN DETECTED - Using: ${result}`);
         break;
       default: 
         result = enText;
@@ -200,50 +289,51 @@ function ImageCompress({ locale }: { locale: string }) {
       // Fall through to manual translations
     }
     
-    // Manual AI-themed translations with French support
+    // Manual AI-themed translations with French and German support
     const aiTranslations: { [key: string]: () => string } = {
-      'ai.poweredBy': () => getFallbackText('Yapay Zeka Destekli', 'AI-Powered', 'Con IA', 'Alimenté par IA'),
-      'ai.smartCompression': () => getFallbackText('Akıllı Sıkıştırma', 'Smart Compression', 'Compresión Inteligente', 'Compression Intelligente'),
-      'ai.analyzing': () => getFallbackText('AI Analiz Ediyor...', 'AI Analyzing...', 'IA Analizando...', 'IA en cours d\'Analyse...'),
-      'ai.optimizing': () => getFallbackText('AI Optimize Ediyor...', 'AI Optimizing...', 'IA Optimizando...', 'IA en cours d\'Optimisation...'),
-      'ai.processing': () => getFallbackText('AI İşliyor...', 'AI Processing...', 'IA Procesando...', 'IA en cours de Traitement...'),
-      'ai.intelligent': () => getFallbackText('Akıllı Algoritma', 'Intelligent Algorithm', 'Algoritmo Inteligente', 'Algorithme Intelligent'),
-      'ai.advanced': () => getFallbackText('Gelişmiş AI', 'Advanced AI', 'IA Avanzada', 'IA Avancée'),
-      'ai.quality': () => getFallbackText('AI Kalite Kontrolü', 'AI Quality Control', 'Control de Calidad con IA', 'Contrôle Qualité IA'),
+      'ai.poweredBy': () => getFallbackText('Yapay Zeka Destekli', 'AI-Powered', 'Con IA', 'Alimenté par IA', 'KI-gestützt'),
+      'ai.smartCompression': () => getFallbackText('Akıllı Sıkıştırma', 'Smart Compression', 'Compresión Inteligente', 'Compression Intelligente', 'Intelligente Komprimierung'),
+      'ai.analyzing': () => getFallbackText('AI Analiz Ediyor...', 'AI Analyzing...', 'IA Analizando...', 'IA en cours d\'Analyse...', 'KI analysiert...'),
+      'ai.optimizing': () => getFallbackText('AI Optimize Ediyor...', 'AI Optimizing...', 'IA Optimizando...', 'IA en cours d\'Optimisation...', 'KI optimiert...'),
+      'ai.processing': () => getFallbackText('AI İşliyor...', 'AI Processing...', 'IA Procesando...', 'IA en cours de Traitement...', 'KI verarbeitet...'),
+      'ai.intelligent': () => getFallbackText('Akıllı Algoritma', 'Intelligent Algorithm', 'Algoritmo Inteligente', 'Algorithme Intelligent', 'Intelligenter Algorithmus'),
+      'ai.advanced': () => getFallbackText('Gelişmiş AI', 'Advanced AI', 'IA Avanzada', 'IA Avancée', 'Fortgeschrittene KI'),
+      'ai.quality': () => getFallbackText('AI Kalite Kontrolü', 'AI Quality Control', 'Control de Calidad con IA', 'Contrôle Qualité IA', 'KI-Qualitätskontrolle'),
       
-      // Main content with French translations
-      'imageCompress.title': () => getFallbackText('AI Destekli Resim Sıkıştırma', 'AI-Powered Image Compression', 'Compresión de Imágenes con IA', 'Compression d\'Images avec IA'),
+      // Main content with French and German translations
+      'imageCompress.title': () => getFallbackText('AI Destekli Resim Sıkıştırma', 'AI-Powered Image Compression', 'Compresión de Imágenes con IA', 'Compression d\'Images avec IA', 'KI-gestützte Bildkomprimierung'),
       'imageCompress.subtitle': () => getFallbackText(
         'Yapay zeka teknolojisi ile resimlerinizi maksimum kalitede sıkıştırın',
         'Compress your images with maximum quality using AI technology',
         'Comprime tus imágenes con máxima calidad usando tecnología de IA',
-        'Compressez vos images avec une qualité maximale en utilisant la technologie IA'
+        'Compressez vos images avec une qualité maximale en utilisant la technologie IA',
+        'Komprimieren Sie Ihre Bilder mit maximaler Qualität mithilfe von KI-Technologie'
       ),
       
       // Step titles for consistent step labeling
-      'step.upload': () => getFallbackText('1. Dosya Yükle', '1. Upload File', '1. Subir Archivo', '1. Télécharger Fichier'),
-      'step.processing': () => getFallbackText('2. AI İşleme', '2. AI Processing', '2. Procesamiento con IA', '2. Traitement IA'),
-      'step.download': () => getFallbackText('3. İndir', '3. Download', '3. Descargar', '3. Télécharger'),
+      'step.upload': () => getFallbackText('1. Dosya Yükle', '1. Upload File', '1. Subir Archivo', '1. Télécharger Fichier', '1. Datei hochladen'),
+      'step.processing': () => getFallbackText('2. AI İşleme', '2. AI Processing', '2. Procesamiento con IA', '2. Traitement IA', '2. KI-Verarbeitung'),
+      'step.download': () => getFallbackText('3. İndir', '3. Download', '3. Descargar', '3. Télécharger', '3. Herunterladen'),
       
-      'fileUpload.title': () => getFallbackText('Resminizi Seçin', 'Select Your Image', 'Selecciona tu Imagen', 'Sélectionnez votre Image'),
-      'fileUpload.description': () => getFallbackText('Sıkıştırılacak resim dosyasını seçin', 'Choose an image file to compress', 'Elige un archivo de imagen para comprimir', 'Choisissez un fichier image à compresser'),
+      'fileUpload.title': () => getFallbackText('Resminizi Seçin', 'Select Your Image', 'Selecciona tu Imagen', 'Sélectionnez votre Image', 'Wählen Sie Ihr Bild aus'),
+      'fileUpload.description': () => getFallbackText('Sıkıştırılacak resim dosyasını seçin', 'Choose an image file to compress', 'Elige un archivo de imagen para comprimir', 'Choisissez un fichier image à compresser', 'Wählen Sie eine Bilddatei zum Komprimieren aus'),
       
-      'processing.analyzing': () => getFallbackText('AI resminizi analiz ediyor...', 'AI is analyzing your image...', 'La IA está analizando tu imagen...', 'L\'IA analyse votre image...'),
-      'processing.complete': () => getFallbackText('Tamamlandı', 'Complete', 'Completado', 'Terminé'),
+      'processing.analyzing': () => getFallbackText('AI resminizi analiz ediyor...', 'AI is analyzing your image...', 'La IA está analizando tu imagen...', 'L\'IA analyse votre image...', 'KI analysiert Ihr Bild...'),
+      'processing.complete': () => getFallbackText('Tamamlandı', 'Complete', 'Completado', 'Terminé', 'Abgeschlossen'),
       
-      'result.success': () => getFallbackText('AI Sıkıştırma Tamamlandı!', 'AI Compression Complete!', '¡Compresión con IA Completada!', 'Compression IA Terminée!'),
-      'result.download': () => getFallbackText('Sıkıştırılmış Resmi İndir', 'Download Compressed Image', 'Descargar Imagen Comprimida', 'Télécharger Image Compressée'),
-      'result.newCompression': () => getFallbackText('Yeni Resim Sıkıştır', 'Compress New Image', 'Comprimir Nueva Imagen', 'Compresser Nouvelle Image'),
-      'result.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale'),
-      'result.compressedSize': () => getFallbackText('Sıkıştırılmış Boyut', 'Compressed Size', 'Tamaño Comprimido', 'Taille Compressée'),
-      'result.savings': () => getFallbackText('Tasarruf', 'Space Saved', 'Espacio Ahorrado', 'Espace Économisé'),
+      'result.success': () => getFallbackText('AI Sıkıştırma Tamamlandı!', 'AI Compression Complete!', '¡Compresión con IA Completada!', 'Compression IA Terminée!', 'KI-Komprimierung abgeschlossen!'),
+      'result.download': () => getFallbackText('Sıkıştırılmış Resmi İndir', 'Download Compressed Image', 'Descargar Imagen Comprimida', 'Télécharger Image Compressée', 'Komprimiertes Bild herunterladen'),
+      'result.newCompression': () => getFallbackText('Yeni Resim Sıkıştır', 'Compress New Image', 'Comprimir Nueva Imagen', 'Compresser Nouvelle Image', 'Neues Bild komprimieren'),
+      'result.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale', 'Originalgröße'),
+      'result.compressedSize': () => getFallbackText('Sıkıştırılmış Boyut', 'Compressed Size', 'Tamaño Comprimido', 'Taille Compressée', 'Komprimierte Größe'),
+      'result.savings': () => getFallbackText('Tasarruf', 'Space Saved', 'Espacio Ahorrado', 'Espace Économisé', 'Eingesparter Platz'),
       
-      'features.intelligent': () => getFallbackText('Akıllı Sıkıştırma', 'Intelligent Compression', 'Compresión Inteligente', 'Compression Intelligente'),
-      'features.intelligentDesc': () => getFallbackText('AI her resim için en uygun ayarları belirler', 'AI determines optimal settings for each image', 'La IA determina la configuración óptima para cada imagen', 'L\'IA détermine les paramètres optimaux pour chaque image'),
-      'features.quality': () => getFallbackText('Kalite Korunması', 'Quality Preservation', 'Preservación de Calidad', 'Préservation de la Qualité'),
-      'features.qualityDesc': () => getFallbackText('Görsel kaliteyi maksimum düzeyde korur', 'Preserves visual quality at maximum level', 'Preserva la calidad visual al máximo nivel', 'Préserve la qualité visuelle au niveau maximum'),
-      'features.speed': () => getFallbackText('Hızlı İşlem', 'Fast Processing', 'Procesamiento Rápido', 'Traitement Rapide'),
-      'features.speedDesc': () => getFallbackText('Saniyeler içinde profesyonel sonuçlar', 'Professional results in seconds', 'Resultados profesionales en segundos', 'Résultats professionnels en quelques secondes')
+      'features.intelligent': () => getFallbackText('Akıllı Sıkıştırma', 'Intelligent Compression', 'Compresión Inteligente', 'Compression Intelligente', 'Intelligente Komprimierung'),
+      'features.intelligentDesc': () => getFallbackText('AI her resim için en uygun ayarları belirler', 'AI determines optimal settings for each image', 'La IA determina la configuración óptima para cada imagen', 'L\'IA détermine les paramètres optimaux pour chaque image', 'KI bestimmt die optimalen Einstellungen für jedes Bild'),
+      'features.quality': () => getFallbackText('Kalite Korunması', 'Quality Preservation', 'Preservación de Calidad', 'Préservation de la Qualité', 'Qualitätserhaltung'),
+      'features.qualityDesc': () => getFallbackText('Görsel kaliteyi maksimum düzeyde korur', 'Preserves visual quality at maximum level', 'Preserva la calidad visual al máximo nivel', 'Préserve la qualité visuelle au niveau maximum', 'Erhält die visuelle Qualität auf höchstem Niveau'),
+      'features.speed': () => getFallbackText('Hızlı İşlem', 'Fast Processing', 'Procesamiento Rápido', 'Traitement Rapide', 'Schnelle Verarbeitung'),
+      'features.speedDesc': () => getFallbackText('Saniyeler içinde profesyonel sonuçlar', 'Professional results in seconds', 'Resultados profesionales en segundos', 'Résultats professionnels en quelques secondes', 'Professionelle Ergebnisse in Sekunden')
     };
     
     // Check AI translations first, then return fallback
@@ -269,9 +359,15 @@ function ImageCompress({ locale }: { locale: string }) {
     console.log('  - Step Processing:', getText('step.processing', '2. AI Processing'));
     console.log('  - Step Download:', getText('step.download', '3. Download'));
     console.log('  - AI Powered:', getText('ai.poweredBy', 'AI-Powered'));
+    console.log('  - Smart Compression:', getText('ai.smartCompression', 'Smart Compression'));
+    console.log('  - File Upload Title:', getText('fileUpload.title', 'Select Your Image'));
     console.log('  - Processing Text:', getText('processing.analyzing', 'AI is analyzing your image...'));
     console.log('  - Success Text:', getText('result.success', 'AI Compression Complete!'));
-    console.log('  - French support ready and active');
+    console.log('  - Download Button:', getText('result.download', 'Download Compressed Image'));
+    console.log('  - Features Intelligent:', getText('features.intelligent', 'Intelligent Compression'));
+    console.log('  - Features Quality:', getText('features.quality', 'Quality Preservation'));
+    console.log('  - Features Speed:', getText('features.speed', 'Fast Processing'));
+    console.log('  - German support ready and active');
   }, [locale]);
 
   // Browser language auto-detection system
@@ -374,7 +470,7 @@ function ImageCompress({ locale }: { locale: string }) {
     
     // Check if HEIC
     if (file.name.toLowerCase().includes('.heic') || file.name.toLowerCase().includes('.heif')) {
-      setHeicNotification(getFallbackText('HEIC dosyalar PNG formatına dönüştürülecek', 'HEIC files will be converted to PNG format', 'Los archivos HEIC se convertirán a formato PNG', 'Les fichiers HEIC seront convertis au format PNG'));
+      setHeicNotification(getFallbackText('HEIC dosyalar PNG formatına dönüştürülecek', 'HEIC files will be converted to PNG format', 'Los archivos HEIC se convertirán a formato PNG', 'Les fichiers HEIC seront convertis au format PNG', 'HEIC-Dateien werden in das PNG-Format konvertiert'));
     }
     
     // Auto-start compression after short delay
@@ -394,7 +490,7 @@ function ImageCompress({ locale }: { locale: string }) {
         setShowAuthModal(true);
         return;
       } else {
-        setError(getFallbackText('Günlük limit aşıldı. Premium hesaba geçin.', 'Daily limit exceeded. Upgrade to Premium.', 'Límite diario excedido. Actualiza a Premium.', 'Limite quotidien dépassé. Passez à Premium.'));
+        setError(getFallbackText('Günlük limit aşıldı. Premium hesaba geçin.', 'Daily limit exceeded. Upgrade to Premium.', 'Límite diario excedido. Actualiza a Premium.', 'Limite quotidien dépassé. Passez à Premium.', 'Tageslimit überschritten. Upgrade auf Premium.'));
         return;
       }
     }
@@ -449,11 +545,11 @@ function ImageCompress({ locale }: { locale: string }) {
           setCurrentStep('result');
         }, 500);
       } else {
-        throw new Error(serverResult.error || getFallbackText('Sıkıştırma başarısız', 'Compression failed', 'Compresión fallida', 'Compression échouée'));
+        throw new Error(serverResult.error || getFallbackText('Sıkıştırma başarısız', 'Compression failed', 'Compresión fallida', 'Compression échouée', 'Komprimierung fehlgeschlagen'));
       }
     } catch (err) {
       console.error('Compression error:', err);
-      setError(err instanceof Error ? err.message : getFallbackText('Bilinmeyen hata', 'Unknown error', 'Error desconocido', 'Erreur inconnue'));
+      setError(err instanceof Error ? err.message : getFallbackText('Bilinmeyen hata', 'Unknown error', 'Error desconocido', 'Erreur inconnue', 'Unbekannter Fehler'));
       setCurrentStep('upload');
     } finally {
       setIsProcessing(false);
