@@ -124,18 +124,95 @@ function ImageRotateContent({ locale }: { locale: string }) {
   const processingRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
-  // Auto-focus on upload area when page loads
+  // Auto-focus on upload area when page loads with step tracking
   useEffect(() => {
+    console.log('🔄 IMAGE ROTATE DEBUG - Page Load Auto-Focus:', {
+      currentStep,
+      locale,
+      timestamp: new Date().toISOString(),
+      action: 'auto-focus-upload'
+    });
     setTimeout(() => {
       uploadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 200);
-  }, []);
+  }, [currentStep, locale]);
 
-  // Dropzone configuration
+  // Step change tracking system
+  useEffect(() => {
+    console.log('🔄 IMAGE ROTATE DEBUG - Step Change Detected:', {
+      currentStep,
+      locale,
+      timestamp: new Date().toISOString(),
+      fileInfo: file ? {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      } : null,
+      rotationAngle: rotation,
+      processingStatus: isProcessing,
+      hasResult: !!rotateResult,
+      userAgent: navigator.userAgent,
+      referrer: document.referrer
+    });
+    
+    // Track step-specific actions
+    switch (currentStep) {
+      case 'upload':
+        console.log('🔄 IMAGE ROTATE DEBUG - Upload Step Active:', {
+          action: 'awaiting-file-selection',
+          supportedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif']
+        });
+        break;
+      case 'configure':
+        console.log('🔄 IMAGE ROTATE DEBUG - Configure Step Active:', {
+          action: 'file-configuration',
+          fileName: file?.name,
+          fileSize: file?.size,
+          originalDimensions,
+          currentRotation: rotation
+        });
+        break;
+      case 'processing':
+        console.log('🔄 IMAGE ROTATE DEBUG - Processing Step Active:', {
+          action: 'image-processing',
+          fileName: file?.name,
+          rotationAngle: rotation,
+          processingProgress: processingProgress
+        });
+        break;
+      case 'result':
+        console.log('🔄 IMAGE ROTATE DEBUG - Result Step Active:', {
+          action: 'show-result',
+          fileName: file?.name,
+          rotationApplied: rotation,
+          resultAvailable: !!rotateResult,
+          originalSize: rotateResult?.originalSize,
+          rotatedSize: rotateResult?.rotatedSize
+        });
+        break;
+    }
+  }, [currentStep, locale, file, rotation, isProcessing, rotateResult, processingProgress, originalDimensions]);
+
+  // Dropzone configuration with detailed logging
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
-      if (!file) return;
+      if (!file) {
+        console.log('🔄 IMAGE ROTATE DEBUG - No file selected in drop:', {
+          acceptedFiles,
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      console.log('🔄 IMAGE ROTATE DEBUG - File Drop Event:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        locale,
+        timestamp: new Date().toISOString(),
+        action: 'file-dropped'
+      });
 
       setFile(file);
       
@@ -146,15 +223,33 @@ function ImageRotateContent({ locale }: { locale: string }) {
         const url = URL.createObjectURL(file);
         setPreviewUrl(url);
         
+        console.log('🔄 IMAGE ROTATE DEBUG - File Processing Success:', {
+          fileName: file.name,
+          dimensions,
+          previewUrl: url,
+          nextStep: 'configure',
+          timestamp: new Date().toISOString()
+        });
+        
         setCurrentStep('configure');
         
         // Fixed: Single scroll to configure section with center positioning
         setTimeout(() => {
           configureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
           configureRef.current?.focus();
+          console.log('🔄 IMAGE ROTATE DEBUG - Auto-scroll to configure:', {
+            action: 'scroll-to-configure',
+            timestamp: new Date().toISOString()
+          });
         }, 300);
       } catch (error) {
-        console.error('Error getting image dimensions:', error);
+        console.error('🔄 IMAGE ROTATE DEBUG - Error getting image dimensions:', {
+          error,
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type,
+          timestamp: new Date().toISOString()
+        });
       }
     },
     accept: {
@@ -163,9 +258,27 @@ function ImageRotateContent({ locale }: { locale: string }) {
     multiple: false
   });
 
-  // Handle rotation
+  // Handle rotation with detailed logging
   const handleRotate = async () => {
-    if (!file || rotation === 0) return;
+    if (!file || rotation === 0) {
+      console.log('🔄 IMAGE ROTATE DEBUG - Rotation blocked:', {
+        hasFile: !!file,
+        rotation,
+        reason: !file ? 'no-file' : 'no-rotation',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
+    console.log('🔄 IMAGE ROTATE DEBUG - Starting rotation process:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      rotationAngle: rotation,
+      locale,
+      timestamp: new Date().toISOString(),
+      action: 'rotation-start'
+    });
 
     setCurrentStep('processing');
     setIsProcessing(true);
@@ -175,6 +288,10 @@ function ImageRotateContent({ locale }: { locale: string }) {
     setTimeout(() => {
       processingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       processingRef.current?.focus();
+      console.log('🔄 IMAGE ROTATE DEBUG - Auto-scroll to processing:', {
+        action: 'scroll-to-processing',
+        timestamp: new Date().toISOString()
+      });
     }, 100);
 
     const startTime = Date.now();
@@ -199,6 +316,16 @@ function ImageRotateContent({ locale }: { locale: string }) {
       clearInterval(progressInterval);
       setProcessingProgress(100);
 
+      console.log('🔄 IMAGE ROTATE DEBUG - Rotation process completed:', {
+        fileName: file.name,
+        rotationAngle: rotation,
+        originalSize: file.size,
+        rotatedSize: result.file.size,
+        processingTime: Date.now() - startTime,
+        timestamp: new Date().toISOString(),
+        action: 'rotation-completed'
+      });
+
       const rotateResult: RotateResult = {
         originalFile: file,
         rotatedBlob: result.file,
@@ -215,6 +342,10 @@ function ImageRotateContent({ locale }: { locale: string }) {
         setCurrentStep('result');
         setTimeout(() => {
           resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          console.log('🔄 IMAGE ROTATE DEBUG - Auto-scroll to result:', {
+            action: 'scroll-to-result',
+            timestamp: new Date().toISOString()
+          });
         }, 200);
       }, 500);
 
@@ -239,15 +370,42 @@ function ImageRotateContent({ locale }: { locale: string }) {
       }
 
     } catch (error) {
-      console.error('Image rotation error:', error);
+      console.error('🔄 IMAGE ROTATE DEBUG - Image rotation error:', {
+        error,
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        rotationAngle: rotation,
+        processingTime: Date.now() - startTime,
+        locale,
+        timestamp: new Date().toISOString(),
+        action: 'rotation-error'
+      });
       setCurrentStep('configure');
     } finally {
       setIsProcessing(false);
+      console.log('🔄 IMAGE ROTATE DEBUG - Rotation process finalized:', {
+        fileName: file.name,
+        rotationAngle: rotation,
+        processingTime: Date.now() - startTime,
+        timestamp: new Date().toISOString(),
+        action: 'rotation-finalized'
+      });
     }
   };
 
-  // Reset function
+  // Reset function with detailed logging
   const resetProcess = () => {
+    console.log('🔄 IMAGE ROTATE DEBUG - Reset process initiated:', {
+      currentStep,
+      fileName: file?.name,
+      rotationAngle: rotation,
+      hasResult: !!rotateResult,
+      locale,
+      timestamp: new Date().toISOString(),
+      action: 'reset-process'
+    });
+
     setCurrentStep('upload');
     setFile(null);
     setRotation(0);
@@ -258,12 +416,26 @@ function ImageRotateContent({ locale }: { locale: string }) {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
+      console.log('🔄 IMAGE ROTATE DEBUG - Preview URL revoked:', {
+        action: 'url-revoked',
+        timestamp: new Date().toISOString()
+      });
     }
 
     // Scroll back to upload
     setTimeout(() => {
       uploadRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      console.log('🔄 IMAGE ROTATE DEBUG - Auto-scroll to upload after reset:', {
+        action: 'scroll-to-upload-reset',
+        timestamp: new Date().toISOString()
+      });
     }, 100);
+    
+    console.log('🔄 IMAGE ROTATE DEBUG - Reset process completed:', {
+      newStep: 'upload',
+      timestamp: new Date().toISOString(),
+      action: 'reset-completed'
+    });
   };
 
   // Multi-language text variables (TR, FR, ES, EN) with dynamic fallbacks
@@ -315,27 +487,47 @@ function ImageRotateContent({ locale }: { locale: string }) {
   const downloadButton = getText('imageRotate.result.downloadButton', getFallbackText('Döndürülmüş Resmi İndir', 'Download Rotated Image', 'Descargar Imagen Rotada'));
   const newImageButton = getText('imageRotate.result.newImageButton', getFallbackText('Yeni Resim Döndür', 'Rotate New Image', 'Rotar Nueva Imagen'));
 
-  // Enhanced debug logging with browser detection
+  // Enhanced debug logging with browser detection and step tracking
   useEffect(() => {
-    console.log('🔄 IMAGE ROTATE DEBUG - Sample Translation Values:');
+    console.log('🔄 IMAGE ROTATE DEBUG - Complete Translation Analysis:');
+    console.log('  =====================================');
     console.log('  - Current locale:', locale);
-    console.log('  - Badge Text:', badgeText);
-    console.log('  - Title:', titleText);
-    console.log('  - Upload Title:', uploadTitle);
-    console.log('  - Configure Settings:', settingsTitle);
-    console.log('  - Processing Title:', processingTitle);
-    console.log('  - Success Title:', successTitle);
-    console.log('  - Download Button:', downloadButton);
-    console.log('  - Current Step:', currentStep);
+    console.log('  - Current step:', currentStep);
+    console.log('  - Badge Text (FR):', badgeText);
+    console.log('  - Title (FR):', titleText);
+    console.log('  - Upload Title (FR):', uploadTitle);
+    console.log('  - Upload Description (FR):', uploadDescription);
+    console.log('  - Configure Settings (FR):', settingsTitle);
+    console.log('  - Processing Title (FR):', processingTitle);
+    console.log('  - Processing Description (FR):', processingDescription);
+    console.log('  - Success Title (FR):', successTitle);
+    console.log('  - Download Button (FR):', downloadButton);
     console.log('  - Browser Info:', {
       userAgent: navigator.userAgent,
       browserLanguage: navigator.language,
       browserLanguages: navigator.languages,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      currentURL: window.location.href,
+      referrer: document.referrer
     });
-  }, [locale, currentStep, badgeText, titleText, uploadTitle, settingsTitle, processingTitle, successTitle, downloadButton]);
+    console.log('  - Step-specific texts:', {
+      stepAnalysis: stepAnalysis,
+      stepRotating: stepRotating,
+      stepOptimizing: stepOptimizing,
+      previewTitle: previewTitle,
+      settingsTitle: settingsTitle,
+      backButton: backButton
+    });
+    console.log('  - User interaction context:', {
+      fileSelected: !!file,
+      rotationSet: rotation,
+      isProcessing: isProcessing,
+      hasResult: !!rotateResult
+    });
+    console.log('  =====================================');
+  }, [locale, currentStep, badgeText, titleText, uploadTitle, uploadDescription, settingsTitle, processingTitle, processingDescription, successTitle, downloadButton, stepAnalysis, stepRotating, stepOptimizing, previewTitle, backButton, file, rotation, isProcessing, rotateResult]);
 
-  // Browser language auto-detection system
+  // Enhanced browser language auto-detection system
   useEffect(() => {
     const detectAndRedirectLanguage = () => {
       if (typeof window === 'undefined') return;
@@ -346,36 +538,82 @@ function ImageRotateContent({ locale }: { locale: string }) {
       // Check if URL already has locale
       const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`));
       
+      console.log('🌍 IMAGE ROTATE DEBUG - Enhanced Browser Language Auto-Detection:', {
+        currentPath,
+        currentLocale: locale,
+        browserLanguage: navigator.language,
+        browserLanguages: navigator.languages,
+        supportedLanguages,
+        hasLocaleInPath,
+        timestamp: new Date().toISOString()
+      });
+      
       if (!hasLocaleInPath) {
         const browserLanguage = navigator.language.slice(0, 2).toLowerCase();
         const preferredLanguage = localStorage.getItem('quickutil_preferred_locale');
         
-        console.log('🌍 IMAGE ROTATE DEBUG - Browser Language Auto-Detection:', {
+        console.log('🌍 IMAGE ROTATE DEBUG - Language Detection Process:', {
           currentPath,
           browserLanguage,
           preferredLanguage,
           supportedLanguages,
-          hasLocaleInPath
+          hasLocaleInPath,
+          step: 'language-detection'
         });
         
         let targetLanguage = 'en'; // Default to English
         
+        // Priority 1: User's stored preference
         if (preferredLanguage && supportedLanguages.includes(preferredLanguage)) {
           targetLanguage = preferredLanguage;
-        } else if (supportedLanguages.includes(browserLanguage)) {
+          console.log('🌍 IMAGE ROTATE DEBUG - Using stored preference:', targetLanguage);
+        } 
+        // Priority 2: Browser language
+        else if (supportedLanguages.includes(browserLanguage)) {
           targetLanguage = browserLanguage;
           localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+          console.log('🌍 IMAGE ROTATE DEBUG - Using browser language:', targetLanguage);
+        }
+        // Priority 3: Check Accept-Language header languages
+        else {
+          const acceptLanguages = navigator.languages || [];
+          for (const lang of acceptLanguages) {
+            const shortLang = lang.slice(0, 2).toLowerCase();
+            if (supportedLanguages.includes(shortLang)) {
+              targetLanguage = shortLang;
+              localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+              console.log('🌍 IMAGE ROTATE DEBUG - Using Accept-Language:', targetLanguage);
+              break;
+            }
+          }
         }
         
         // Redirect to appropriate language
         const newPath = `/${targetLanguage}${currentPath}`;
-        console.log('🌍 IMAGE ROTATE DEBUG - Redirecting to:', newPath);
+        console.log('🌍 IMAGE ROTATE DEBUG - Redirecting:', {
+          from: currentPath,
+          to: newPath,
+          targetLanguage,
+          reason: preferredLanguage ? 'stored-preference' : 'browser-detection'
+        });
         window.location.href = newPath;
+      } else {
+        // Log current locale validation
+        console.log('🌍 IMAGE ROTATE DEBUG - Locale already in path:', {
+          currentPath,
+          detectedLocale: locale,
+          isSupported: supportedLanguages.includes(locale)
+        });
+        
+        // Store current locale as preference
+        if (supportedLanguages.includes(locale)) {
+          localStorage.setItem('quickutil_preferred_locale', locale);
+        }
       }
     };
 
     detectAndRedirectLanguage();
-  }, []);
+  }, [locale]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 relative overflow-hidden">

@@ -3311,14 +3311,55 @@ const translations = {
     'imageResize.preview.shrinking': 'Réduction',
     'imageResize.preview.enlarging': 'Agrandissement',
     
-    // IMAGE ROTATE TRANSLATIONS
+    // IMAGE ROTATE TRANSLATIONS - COMPLETE FR
     'imageRotate.badge': '500K+ Images Pivotées • Avec IA',
     'imageRotate.title': 'Rotation d\'Image',
-    'imageRotate.description': 'Pivotez facilement vos images à n\'importe quel angle',
+    'imageRotate.description': 'Pivotez facilement vos images à n\'importe quel angle. Rotation sans perte de qualité grâce à notre puissante technologie de traitement.',
+    'imageRotate.trust.noQualityLoss': 'Pas de Perte de Qualité',
+    'imageRotate.trust.allFormats': 'Tous les Formats',
+    'imageRotate.trust.secureFast': 'Sécurisé et Rapide',
+    
+    // Step 1 - Upload
+    'imageRotate.upload.title': 'Télécharger l\'Image',
+    'imageRotate.upload.description': 'Téléchargez vos images aux formats JPEG, PNG, WebP',
+    'imageRotate.upload.uploadText': 'Télécharger l\'Image',
+    'imageRotate.upload.dropText': 'Déposer le Fichier',
+    'imageRotate.upload.dragOrSelect': 'Glissez-déposez ou sélectionnez un fichier',
+    'imageRotate.upload.selectFile': 'Sélectionner un Fichier',
+    'imageRotate.upload.fileTypes': 'JPEG, PNG, WebP • Max 50MB',
+    
+    // Step 2 - Configure
+    'imageRotate.configure.previewTitle': 'Aperçu',
+    'imageRotate.configure.settingsTitle': 'Paramètres de Rotation',
+    'imageRotate.configure.backButton': 'Retour',
+    'imageRotate.configure.quickRotationTitle': 'Rotation Rapide',
+    'imageRotate.configure.rotate90Right': '90° Droite',
+    'imageRotate.configure.rotate180': '180° Retourner',
+    'imageRotate.configure.rotate90Left': '90° Gauche',
+    'imageRotate.configure.resetAngle': 'Réinitialiser',
+    'imageRotate.configure.customAngleTitle': 'Angle Personnalisé',
+    'imageRotate.configure.currentAngle': 'Angle de Rotation :',
+    'imageRotate.configure.anglePlaceholder': 'Angle (0-360°)',
     'imageRotate.configure.startRotation': '🚀 Commencer la Rotation',
+    
+    // Step 3 - Processing
+    'imageRotate.processing.title': 'Rotation de l\'Image...',
+    'imageRotate.processing.description': 'Votre image est en cours de rotation sans perte de qualité grâce à notre technologie alimentée par l\'IA',
+    'imageRotate.processing.completed': 'terminé',
+    'imageRotate.processing.stepAnalysis': 'Analyse d\'Image',
+    'imageRotate.processing.stepRotating': 'Rotation en Cours',
+    'imageRotate.processing.stepOptimizing': 'Optimisation',
+    
+    // Step 4 - Result
     'imageRotate.result.successTitle': 'Rotation Terminée',
+    'imageRotate.result.successSubtitle': 'Votre Image a été Pivotée avec Succès !',
+    'imageRotate.result.beforeTitle': 'Avant',
+    'imageRotate.result.afterTitle': 'Après',
+    'imageRotate.result.rotatedImageTitle': 'Image Pivotée',
+    'imageRotate.result.rotatedAngle': 'pivotée',
     'imageRotate.result.downloadButton': 'Télécharger l\'Image Pivotée',
     'imageRotate.result.newImageButton': 'Pivoter une Nouvelle Image',
+    'imageRotate.result.completionMessage': 'Rotation terminée sans perte de qualité',
     
     // IMAGE FORMAT CONVERT TRANSLATIONS
     'imageFormatConvert.badge': 'Convertisseur de Formats d\'Image',
