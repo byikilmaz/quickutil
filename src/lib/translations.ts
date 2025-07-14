@@ -892,6 +892,23 @@ const translations = {
     'imageCompress.step4.title': '🚀 Komprimierungsprozess',
     'imageCompress.step5.title': '🎉 Komprimierung abgeschlossen',
     
+    // PDF ESIGN TRANSLATIONS - DEUTSCH
+    'pdfEsign.title': 'PDF E-Signatur',
+    'pdfEsign.subtitle': 'Signieren Sie Ihre PDF-Dokumente digital und senden Sie sie einfach',
+    'pdfEsign.newFeature': 'NEUE FUNKTION',
+    'pdfEsign.steps.upload': 'PDF hochladen',
+    'pdfEsign.steps.position': 'Signaturposition',
+    'pdfEsign.steps.email': 'E-Mail senden',
+    'pdfEsign.steps.complete': 'Signatur abschließen',
+    'pdfEsign.developing.title': 'E-Signatur-System in Entwicklung',
+    'pdfEsign.developing.description': 'Die PDF E-Signatur-Funktion wird bald verfügbar sein. Mit diesem leistungsstarken System können Sie Ihre PDF-Dokumente digital signieren und einfach versenden.',
+    'pdfEsign.features.viewer.title': 'PDF-Viewer',
+    'pdfEsign.features.viewer.description': 'Betrachten Sie Ihre PDF-Dateien und wählen Sie Signaturpositionen aus',
+    'pdfEsign.features.signature.title': 'Digitale Signatur',
+    'pdfEsign.features.signature.description': 'Erstellen Sie handschriftliche Signaturen auf der Leinwand',
+    'pdfEsign.features.email.title': 'E-Mail-Workflow',
+    'pdfEsign.features.email.description': 'Senden Sie Dokumente sicher per E-Mail zur Signatur',
+    
     // PDF CONVERT TEXTS - DEUTSCH
     'pdfConvert.title': 'KI PDF-Konvertierung',
     'pdfConvert.subtitle': 'Konvertieren Sie Ihre PDF-Dateien mit KI-gestützten Tools in gewünschte Formate',
