@@ -136,6 +136,43 @@ export default async function ImageResize({ params }: { params: Promise<{ locale
 
 function ImageResizeContent({ locale }: { locale: string }) {
   console.log('🌐 ImageResize - Locale:', locale);
+  console.log('📐 IMAGE RESIZE DEBUG - Component Loaded:', {
+    locale,
+    timestamp: new Date().toISOString(),
+    isGerman: locale === 'de',
+    browserLanguage: typeof window !== 'undefined' ? navigator.language : 'server'
+  });
+  
+  // Force client-side locale detection and re-render
+  const [clientLocale, setClientLocale] = useState(locale);
+  
+  useEffect(() => {
+    // Client-side locale detection for force update
+    console.log('📐 CLIENT-SIDE LOCALE DEBUG:', {
+      serverLocale: locale,
+      clientLocale,
+      windowLocation: typeof window !== 'undefined' ? window.location.pathname : 'server',
+      browserLanguage: typeof window !== 'undefined' ? navigator.language : 'server'
+    });
+    
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const pathParts = path.split('/').filter(Boolean);
+      const urlLocale = pathParts[0];
+      
+      console.log('📐 PATH ANALYSIS:', {
+        path,
+        pathParts,
+        urlLocale,
+        isGermanUrl: urlLocale === 'de'
+      });
+      
+      if (urlLocale && urlLocale !== clientLocale) {
+        console.log('📐 FORCING LOCALE UPDATE:', urlLocale);
+        setClientLocale(urlLocale);
+      }
+    }
+  }, [locale, clientLocale]);
   
   const { user } = useAuth();
   const { uploadFile } = useStorage();
@@ -231,9 +268,9 @@ function ImageResizeContent({ locale }: { locale: string }) {
     detectAndRedirectLanguage();
   }, [locale]);
   
-  // Helper function for multi-language fallbacks including Spanish and German
+  // Helper function for multi-language fallbacks including Spanish and German - Using clientLocale
   const getFallbackText = (trText: string, enText: string, esText?: string, frText?: string, deText?: string) => {
-    console.log(`📐 IMAGE RESIZE DEBUG - getFallbackText called for locale: ${locale}`);
+    console.log(`📐 IMAGE RESIZE DEBUG - getFallbackText called for clientLocale: ${clientLocale}`);
     console.log(`  - TR: ${trText}`);
     console.log(`  - EN: ${enText}`);
     console.log(`  - ES: ${esText || 'not provided'}`);
@@ -241,7 +278,7 @@ function ImageResizeContent({ locale }: { locale: string }) {
     console.log(`  - DE: ${deText || 'not provided'}`);
     
     let result: string;
-    switch (locale) {
+    switch (clientLocale) {
       case 'tr': 
         result = trText;
         break;

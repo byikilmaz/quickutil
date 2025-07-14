@@ -36,6 +36,37 @@ interface ImageFormatConvertClientProps {
 export default function ImageFormatConvertClient({ locale }: ImageFormatConvertClientProps) {
   console.log('🐛 DEBUG - Image Format Convert Client locale:', locale);
   
+  // Force client-side locale detection and re-render
+  const [clientLocale, setClientLocale] = useState(locale);
+  
+  useEffect(() => {
+    // Client-side locale detection for force update
+    console.log('🔄 CLIENT-SIDE LOCALE DEBUG:', {
+      serverLocale: locale,
+      clientLocale,
+      windowLocation: typeof window !== 'undefined' ? window.location.pathname : 'server',
+      browserLanguage: typeof window !== 'undefined' ? navigator.language : 'server'
+    });
+    
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const pathParts = path.split('/').filter(Boolean);
+      const urlLocale = pathParts[0];
+      
+      console.log('🔄 PATH ANALYSIS:', {
+        path,
+        pathParts,
+        urlLocale,
+        isGermanUrl: urlLocale === 'de'
+      });
+      
+      if (urlLocale && urlLocale !== clientLocale) {
+        console.log('🔄 FORCING LOCALE UPDATE:', urlLocale);
+        setClientLocale(urlLocale);
+      }
+    }
+  }, [locale, clientLocale]);
+  
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [results, setResults] = useState<ConversionResult[]>([]);
@@ -142,18 +173,20 @@ export default function ImageFormatConvertClient({ locale }: ImageFormatConvertC
     detectAndRedirectLanguage();
   }, [locale]);
 
-  // Language detection with German support
-  const isTurkish = locale === 'tr';
-  const isFrench = locale === 'fr';
-  const isSpanish = locale === 'es';
-  const isGerman = locale === 'de';
+  // Language detection with German support - Using clientLocale for accurate detection
+  const isTurkish = clientLocale === 'tr';
+  const isFrench = clientLocale === 'fr';
+  const isSpanish = clientLocale === 'es';
+  const isGerman = clientLocale === 'de';
   
   console.log('🔄 IMAGE FORMAT CONVERT DEBUG - Language Detection Results:', {
-    locale,
+    serverLocale: locale,
+    clientLocale,
     isTurkish,
     isFrench,
     isSpanish,
     isGerman,
+    finalLocaleUsed: clientLocale,
     timestamp: new Date().toISOString()
   });
   

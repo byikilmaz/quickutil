@@ -189,6 +189,37 @@ const resetFilters = (): FilterConfig => {
 export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) {
   console.log('Image Filters Client Component loaded with locale:', locale);
   
+  // Force client-side locale detection and re-render
+  const [clientLocale, setClientLocale] = useState(locale);
+  
+  useEffect(() => {
+    // Client-side locale detection for force update
+    console.log('🎨 CLIENT-SIDE LOCALE DEBUG:', {
+      serverLocale: locale,
+      clientLocale,
+      windowLocation: typeof window !== 'undefined' ? window.location.pathname : 'server',
+      browserLanguage: typeof window !== 'undefined' ? navigator.language : 'server'
+    });
+    
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const pathParts = path.split('/').filter(Boolean);
+      const urlLocale = pathParts[0];
+      
+      console.log('🎨 PATH ANALYSIS:', {
+        path,
+        pathParts,
+        urlLocale,
+        isGermanUrl: urlLocale === 'de'
+      });
+      
+      if (urlLocale && urlLocale !== clientLocale) {
+        console.log('🎨 FORCING LOCALE UPDATE:', urlLocale);
+        setClientLocale(urlLocale);
+      }
+    }
+  }, [locale, clientLocale]);
+  
   const router = useRouter();
   const { user } = useAuth();
   const { canUseFeature } = useQuota();
@@ -283,8 +314,16 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
     detectAndRedirectLanguage();
   }, [locale]);
 
-  // Get translations
-  const translations = getTranslations(locale);
+  // Get translations using clientLocale for accurate detection
+  const translations = getTranslations(clientLocale);
+  
+  console.log('🎨 IMAGE FILTERS TRANSLATION DEBUG:', {
+    serverLocale: locale,
+    clientLocale,
+    translationsUsing: clientLocale,
+    sampleTranslation: translations?.['imageFilters.title'] || 'not found',
+    timestamp: new Date().toISOString()
+  });
   
   // getText function - Support flat key structure  
   const getText = (key: string, fallback?: string): string => {
