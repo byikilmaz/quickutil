@@ -324,8 +324,8 @@ function ImageResizeContent({ locale }: { locale: string }) {
       'imageResize.description': () => getFallbackText('Resimlerinizi hassas ve kaliteli bir şekilde istediğiniz boyuta getirin', 'Resize your images precisely and with high quality', 'Redimensiona tus imágenes con precisión y alta calidad', 'Redimensionnez vos images avec précision et haute qualité', 'Ändern Sie die Größe Ihrer Bilder präzise und mit hoher Qualität'),
       'imageResize.headerTitle': () => getFallbackText('Resim Boyutlandırma', 'Image Resize', 'Redimensionar Imagen', 'Redimensionner Image', 'Bildgrößenänderung'),
       'imageResize.step': () => getFallbackText('Adım', 'Step', 'Paso', 'Étape', 'Schritt'),
-      'imageResize.stepOf': () => getFallbackText('/ 4', '/ 4', '/ 4', '/ 4'),
-      'imageResize.newImage': () => getFallbackText('Yeni Resim', 'New Image', 'Nueva Imagen', 'Nouvelle Image'),
+      'imageResize.stepOf': () => getFallbackText('/ 4', '/ 4', '/ 4', '/ 4', '/ 4'),
+      'imageResize.newImage': () => getFallbackText('Yeni Resim', 'New Image', 'Nueva Imagen', 'Nouvelle Image', 'Neues Bild'),
       
       // Upload step
       'imageResize.upload.dropImage': () => getFallbackText('Resminizi buraya bırakın', 'Drop your image here', 'Suelta tu imagen aquí', 'Déposez votre image ici', 'Lassen Sie Ihr Bild hier fallen'),
@@ -341,19 +341,19 @@ function ImageResizeContent({ locale }: { locale: string }) {
       'imageResize.configure.description': () => getFallbackText('İstediğiniz boyutları ve seçenekleri ayarlayın', 'Set your desired dimensions and options', 'Establece las dimensiones y opciones deseadas', 'Définissez les dimensions et les options de votre choix', 'Stellen Sie Ihre gewünschten Abmessungen und Optionen ein'),
       'imageResize.configure.previewTitle': () => getFallbackText('Canlı Önizleme', 'Live Preview', 'Vista Previa en Vivo', 'Aperçu en direct', 'Live-Vorschau'),
       'imageResize.configure.previewInstructions': () => getFallbackText('🎯 Sağdaki kontrollerle boyutları ayarlayın ve canlı önizlemeyi görün', '🎯 Adjust dimensions with controls on the right and see live preview', '🎯 Ajusta las dimensiones con los controles de la derecha y ve la vista previa en vivo', '🎯 Ajustez les dimensions avec les contrôles de droite et voyez l\'aperçu en direct', '🎯 Passen Sie die Abmessungen mit den Steuerelementen rechts an und sehen Sie die Live-Vorschau'),
-      'imageResize.configure.resizeMode': () => getFallbackText('Boyutlandırma Modu', 'Resize Mode', 'Modo de Redimensionamiento', 'Mode de redimensionnement'),
-      'imageResize.configure.byPixels': () => getFallbackText('Piksel Bazında', 'By Pixels', 'Por Píxeles', 'Par pixels'),
-      'imageResize.configure.byPercentage': () => getFallbackText('Yüzde Bazında', 'By Percentage', 'Por Porcentaje', 'Par pourcentage'),
-      'imageResize.configure.width': () => getFallbackText('Genişlik (px)', 'Width (px)', 'Ancho (px)', 'Largeur (px)'),
-      'imageResize.configure.height': () => getFallbackText('Yükseklik (px)', 'Height (px)', 'Alto (px)', 'Hauteur (px)'),
-      'imageResize.configure.widthPlaceholder': () => getFallbackText('Genişlik girin...', 'Enter width...', 'Ingresa el ancho...', 'Entrez la largeur...'),
-      'imageResize.configure.heightPlaceholder': () => getFallbackText('Yükseklik girin...', 'Enter height...', 'Ingresa el alto...', 'Entrez la hauteur...'),
-      'imageResize.configure.percentage': () => getFallbackText('Orijinalin %\'sine boyutlandır', 'Resize to % of original', 'Redimensionar al % del original', 'Redimensionner à % du original'),
-      'imageResize.configure.percentagePlaceholder': () => getFallbackText('Yüzde girin...', 'Enter percentage...', 'Ingresa el porcentaje...', 'Entrez le pourcentage...'),
-      'imageResize.configure.result': () => getFallbackText('Sonuç:', 'Result:', 'Resultado:', 'Résultat:'),
-      'imageResize.configure.aspectRatio': () => getFallbackText('En-boy oranını koru', 'Maintain aspect ratio', 'Mantener relación de aspecto', 'Maintenir le ratio d\'aspect'),
-      'imageResize.configure.noEnlarge': () => getFallbackText('Küçükse büyütme', 'Don\'t enlarge if smaller', 'No ampliar si es más pequeña', 'Ne pas agrandir si el plus petit'),
-      'imageResize.configure.startResize': () => getFallbackText('🚀 Boyutlandırmayı Başlat', '🚀 Start Resize', '🚀 Iniciar Redimensionamiento', '🚀 Démarrer le redimensionnement'),
+      'imageResize.configure.resizeMode': () => getFallbackText('Boyutlandırma Modu', 'Resize Mode', 'Modo de Redimensionamiento', 'Mode de redimensionnement', 'Größenänderungsmodus'),
+      'imageResize.configure.byPixels': () => getFallbackText('Piksel Bazında', 'By Pixels', 'Por Píxeles', 'Par pixels', 'Nach Pixeln'),
+      'imageResize.configure.byPercentage': () => getFallbackText('Yüzde Bazında', 'By Percentage', 'Por Porcentaje', 'Par pourcentage', 'Nach Prozent'),
+      'imageResize.configure.width': () => getFallbackText('Genişlik (px)', 'Width (px)', 'Ancho (px)', 'Largeur (px)', 'Breite (px)'),
+      'imageResize.configure.height': () => getFallbackText('Yükseklik (px)', 'Height (px)', 'Alto (px)', 'Hauteur (px)', 'Höhe (px)'),
+      'imageResize.configure.widthPlaceholder': () => getFallbackText('Genişlik girin...', 'Enter width...', 'Ingresa el ancho...', 'Entrez la largeur...', 'Breite eingeben...'),
+      'imageResize.configure.heightPlaceholder': () => getFallbackText('Yükseklik girin...', 'Enter height...', 'Ingresa el alto...', 'Entrez la hauteur...', 'Höhe eingeben...'),
+      'imageResize.configure.percentage': () => getFallbackText('Orijinalin %\'sine boyutlandır', 'Resize to % of original', 'Redimensionar al % del original', 'Redimensionner à % du original', 'Auf % des Originals vergrößern'),
+      'imageResize.configure.percentagePlaceholder': () => getFallbackText('Yüzde girin...', 'Enter percentage...', 'Ingresa el porcentaje...', 'Entrez le pourcentage...', 'Prozent eingeben...'),
+      'imageResize.configure.result': () => getFallbackText('Sonuç:', 'Result:', 'Resultado:', 'Résultat:', 'Ergebnis:'),
+      'imageResize.configure.aspectRatio': () => getFallbackText('En-boy oranını koru', 'Maintain aspect ratio', 'Mantener relación de aspecto', 'Maintenir le ratio d\'aspect', 'Seitenverhältnis beibehalten'),
+      'imageResize.configure.noEnlarge': () => getFallbackText('Küçükse büyütme', 'Don\'t enlarge if smaller', 'No ampliar si es más pequeña', 'Ne pas agrandir si el plus petit', 'Nicht vergrößern, wenn kleiner'),
+      'imageResize.configure.startResize': () => getFallbackText('🚀 Boyutlandırmayı Başlat', '🚀 Start Resize', '🚀 Iniciar Redimensionamiento', '🚀 Démarrer le redimensionnement', '🚀 Größenänderung starten'),
       
       // Processing step
       'imageResize.processing.title': () => getFallbackText('🤖 AI Resminizi Boyutlandırıyor', '🤖 AI is Resizing Your Image', '🤖 IA Redimensionando tu Imagen', '🤖 IA vous redimensionne votre image', '🤖 KI ändert die Größe Ihres Bildes'),
@@ -374,9 +374,9 @@ function ImageResizeContent({ locale }: { locale: string }) {
       'imageResize.result.another': () => getFallbackText('Başka Resim Boyutlandır', 'Resize Another Image', 'Redimensionar Otra Imagen', 'Redimensionner une autre image', 'Weiteres Bild vergrößern'),
       
       // Preview texts
-      'imageResize.preview.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale', 'Taille Originale'),
-      'imageResize.preview.shrinking': () => getFallbackText('Küçültülüyor', 'Shrinking', 'Reduciendo', 'Réduction', 'Réduction'),
-      'imageResize.preview.enlarging': () => getFallbackText('Büyütülüyor', 'Enlarging', 'Ampliando', 'Agrandissement', 'Agrandissement')
+      'imageResize.preview.originalSize': () => getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale', 'Originalgröße'),
+      'imageResize.preview.shrinking': () => getFallbackText('Küçültülüyor', 'Shrinking', 'Reduciendo', 'Réduction', 'Verkleinern'),
+      'imageResize.preview.enlarging': () => getFallbackText('Büyütülüyor', 'Enlarging', 'Ampliando', 'Agrandissement', 'Vergrößern')
     };
     
     // Check translations first, then return fallback
