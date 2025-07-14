@@ -30,60 +30,93 @@ function PDFCompress({ locale }: { locale: string }) {
   const { uploadFile } = useStorage();
   const { canUseFeature } = useQuota();
   
-  // Enhanced language detection logging
-  useEffect(() => {
-    console.log('📍 PDF Compress Page - AI Auto Mode:', {
-      currentLocale: locale,
-      autoCompressionEnabled: true,
-      timestamp: new Date().toISOString()
-    });
-  }, [locale]);
-
-  // Browser language auto-detection system
+  // Enhanced browser language auto-detection system
   useEffect(() => {
     const detectAndRedirectLanguage = () => {
       if (typeof window === 'undefined') return;
 
       const currentPath = window.location.pathname;
-      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de']; // Updated to match SupportedLocale
+      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
       
       // Check if URL already has locale
-      const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`) || currentPath === `/${lang}`);
+      const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`));
       
-      if (!hasLocaleInPath && currentPath === '/') {
+      console.log('🌍 PDF COMPRESS DEBUG - Enhanced Browser Language Auto-Detection:', {
+        currentPath,
+        currentLocale: locale,
+        browserLanguage: navigator.language,
+        browserLanguages: navigator.languages,
+        supportedLanguages,
+        hasLocaleInPath,
+        timestamp: new Date().toISOString()
+      });
+      
+      if (!hasLocaleInPath) {
         const browserLanguage = navigator.language.slice(0, 2).toLowerCase();
         const preferredLanguage = localStorage.getItem('quickutil_preferred_locale');
         
-        console.log('🌍 PDF COMPRESS DEBUG - Browser Language Auto-Detection:', {
+        console.log('🌍 PDF COMPRESS DEBUG - Language Detection Process:', {
           currentPath,
           browserLanguage,
           preferredLanguage,
           supportedLanguages,
-          willRedirect: supportedLanguages.includes(preferredLanguage || browserLanguage)
+          hasLocaleInPath,
+          step: 'language-detection'
         });
         
+        let targetLanguage = 'en'; // Default to English
+        
+        // Priority 1: User's stored preference
         if (preferredLanguage && supportedLanguages.includes(preferredLanguage)) {
-          console.log('🌍 Redirecting to preferred language:', preferredLanguage);
-          window.location.href = `/${preferredLanguage}/pdf-compress`;
-          return;
+          targetLanguage = preferredLanguage;
+          console.log('🌍 PDF COMPRESS DEBUG - Using stored preference:', targetLanguage);
+        } 
+        // Priority 2: Browser language
+        else if (supportedLanguages.includes(browserLanguage)) {
+          targetLanguage = browserLanguage;
+          localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+          console.log('🌍 PDF COMPRESS DEBUG - Using browser language:', targetLanguage);
+        }
+        // Priority 3: Check Accept-Language header languages
+        else {
+          const acceptLanguages = navigator.languages || [];
+          for (const lang of acceptLanguages) {
+            const shortLang = lang.slice(0, 2).toLowerCase();
+            if (supportedLanguages.includes(shortLang)) {
+              targetLanguage = shortLang;
+              localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+              console.log('🌍 PDF COMPRESS DEBUG - Using Accept-Language:', targetLanguage);
+              break;
+            }
+          }
         }
         
-        if (supportedLanguages.includes(browserLanguage)) {
-          console.log('🌍 Redirecting to browser language:', browserLanguage);
-          localStorage.setItem('quickutil_preferred_locale', browserLanguage);
-          window.location.href = `/${browserLanguage}/pdf-compress`;
-          return;
-        }
+        // Redirect to appropriate language
+        const newPath = `/${targetLanguage}${currentPath}`;
+        console.log('🌍 PDF COMPRESS DEBUG - Redirecting:', {
+          from: currentPath,
+          to: newPath,
+          targetLanguage,
+          reason: preferredLanguage ? 'stored-preference' : 'browser-detection'
+        });
+        window.location.href = newPath;
+      } else {
+        // Log current locale validation
+        console.log('🌍 PDF COMPRESS DEBUG - Locale already in path:', {
+          currentPath,
+          detectedLocale: locale,
+          isSupported: supportedLanguages.includes(locale)
+        });
         
-        // Default to English if no match
-        console.log('🌍 Defaulting to English');
-        localStorage.setItem('quickutil_preferred_locale', 'en');
-        window.location.href = '/en/pdf-compress';
+        // Store current locale as preference
+        if (supportedLanguages.includes(locale)) {
+          localStorage.setItem('quickutil_preferred_locale', locale);
+        }
       }
     };
 
     detectAndRedirectLanguage();
-  }, []);
+  }, [locale]);
   
   // Refs for auto-scrolling
   const uploadRef = useRef<HTMLDivElement>(null);
@@ -98,21 +131,79 @@ function PDFCompress({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
   const [compressionProgress, setCompressionProgress] = useState(0);
 
-  // Auto-scroll to current step
+  // Enhanced debug logging with step tracking
   useEffect(() => {
+    console.log('📄 PDF COMPRESS DEBUG - Complete Translation Analysis:');
+    console.log('  =====================================');
+    console.log('  - Current locale:', locale);
+    console.log('  - Current step:', currentStep);
+    console.log('  - Auto compression enabled:', true);
+    console.log('  - Browser Info:', {
+      userAgent: navigator.userAgent,
+      browserLanguage: navigator.language,
+      browserLanguages: navigator.languages,
+      timestamp: new Date().toISOString(),
+      currentURL: window.location.href,
+      referrer: document.referrer
+    });
+    console.log('  - Step-specific texts (DE):', {
+      step1: getText('pdfCompress.step1', getFallbackText('Dosya Yükle', 'Upload File', 'Subir Archivo', 'Télécharger Fichier', 'Datei hochladen')),
+      step2: getText('pdfCompress.step2', getFallbackText('AI Sıkıştırma', 'AI Compression', 'Compresión con IA', 'Compression IA', 'KI-Komprimierung')),
+      step3: getText('pdfCompress.step3', getFallbackText('İndir', 'Download', 'Descargar', 'Télécharger', 'Herunterladen')),
+      uploadTitle: getText('pdfCompress.uploadTitle', getFallbackText('PDF Dosyanızı Sürükleyin', 'Drag Your PDF File', 'Arrastra tu archivo PDF', 'Glissez votre fichier PDF', 'Ziehen Sie Ihre PDF-Datei hierher')),
+      processingTitle: getText('pdfCompress.processingTitle', getFallbackText('AI Sıkıştırma Devam Ediyor', 'AI Compression in Progress', 'Compresión con IA en Progreso', 'Compression IA en Cours', 'KI-Komprimierung läuft')),
+      processingDesc: getText('pdfCompress.processingDescription', getFallbackText('Yapay zeka dosyanızı optimize ediyor...', 'Artificial intelligence is optimizing your file...', 'La inteligencia artificial está optimizando tu archivo...', 'L\'intelligence artificielle optimise votre fichier...', 'Künstliche Intelligenz optimiert Ihre Datei...')),
+      successTitle: getText('pdfCompress.successTitle', getFallbackText('Sıkıştırma Tamamlandı!', 'Compression Completed!', '¡Compresión Completada!', 'Compression Terminée!', 'Erfolgreich komprimiert!'))
+    });
+    console.log('  - User interaction context:', {
+      fileSelected: !!selectedFile,
+      isCompressing: isCompressing,
+      hasResult: !!compressionResult,
+      hasError: !!error
+    });
+    console.log('  =====================================');
+  }, [locale, currentStep, selectedFile, isCompressing, compressionResult, error]);
+
+  // Auto-scroll to current step with logging
+  useEffect(() => {
+    console.log('📄 PDF COMPRESS DEBUG - Step Change Detected:', {
+      currentStep,
+      locale,
+      timestamp: new Date().toISOString(),
+      fileInfo: selectedFile ? {
+        name: selectedFile.name,
+        size: selectedFile.size,
+        type: selectedFile.type
+      } : null,
+      processingStatus: isCompressing,
+      hasResult: !!compressionResult,
+      userAgent: navigator.userAgent,
+      referrer: document.referrer
+    });
+
     const scrollToStep = () => {
       let targetRef;
+      let stepName;
       switch (currentStep) {
         case 'upload':
           targetRef = uploadRef;
+          stepName = 'upload-section';
           break;
         case 'processing':
           targetRef = processingRef;
+          stepName = 'processing-section';
           break;
         case 'result':
           targetRef = resultRef;
+          stepName = 'result-section';
           break;
       }
+      
+      console.log('📄 PDF COMPRESS DEBUG - Auto-scroll triggered:', {
+        targetStep: currentStep,
+        targetSection: stepName,
+        timestamp: new Date().toISOString()
+      });
       
       if (targetRef?.current) {
         setTimeout(() => {
@@ -122,22 +213,51 @@ function PDFCompress({ locale }: { locale: string }) {
     };
 
     scrollToStep();
-  }, [currentStep]);
+  }, [currentStep, locale, selectedFile, isCompressing, compressionResult]);
 
-  // Handle file selection with auto compression
+  // Handle file selection with auto compression and detailed logging
   const handleFileSelect = async (file: File) => {
-    if (!file) return;
+    if (!file) {
+      console.log('📄 PDF COMPRESS DEBUG - No file selected:', {
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    
+    console.log('📄 PDF COMPRESS DEBUG - File Selection Event:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      locale,
+      timestamp: new Date().toISOString(),
+      action: 'file-selected'
+    });
     
     setError(null);
     
     // File size limit
     const maxSize = 20 * 1024 * 1024; // 20MB
     if (file.size > maxSize) {
-      setError(getText('errors.pdfCompress.fileSizeLimit', 'Dosya boyutu 20MB dan büyük olamaz'));
+      const errorMsg = getText('errors.pdfCompress.fileSizeLimit', 'Dosya boyutu 20MB dan büyük olamaz');
+      console.log('📄 PDF COMPRESS DEBUG - File size limit exceeded:', {
+        fileName: file.name,
+        fileSize: file.size,
+        maxSize,
+        errorMessage: errorMsg,
+        timestamp: new Date().toISOString()
+      });
+      setError(errorMsg);
       return;
     }
     
     setSelectedFile(file);
+    
+    console.log('📄 PDF COMPRESS DEBUG - File accepted, starting auto-compression:', {
+      fileName: file.name,
+      fileSize: file.size,
+      autoCompressionDelay: 800,
+      timestamp: new Date().toISOString()
+    });
     
     // Auto-start compression with AI optimization
     setTimeout(async () => {
@@ -145,15 +265,32 @@ function PDFCompress({ locale }: { locale: string }) {
     }, 800);
   };
 
-  // Handle compression with AI auto mode
+  // Handle compression with AI auto mode and detailed logging
   const handleCompress = async (file?: File) => {
     const fileToCompress = file || selectedFile;
-    if (!fileToCompress) return;
+    if (!fileToCompress) {
+      console.log('📄 PDF COMPRESS DEBUG - Compression blocked, no file:', {
+        hasFile: !!fileToCompress,
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    
+    console.log('📄 PDF COMPRESS DEBUG - Starting compression process:', {
+      fileName: fileToCompress.name,
+      fileSize: fileToCompress.size,
+      fileType: fileToCompress.type,
+      locale,
+      timestamp: new Date().toISOString(),
+      action: 'compression-start'
+    });
     
     setIsCompressing(true);
     setError(null);
     setCurrentStep('processing');
     setCompressionProgress(0);
+    
+    const startTime = Date.now();
     
     try {
       // Progress simulation
@@ -167,8 +304,12 @@ function PDFCompress({ locale }: { locale: string }) {
       // Auto AI compression with optimized quality
       const compressionQuality = 'medium' as const; // AI optimized quality
 
-      console.log('🚀 QuickUtil AI PDF Compression v3.0 - Auto Mode');
-      console.log('📁 File:', fileToCompress.name, 'AI Quality: optimized');
+      console.log('📄 PDF COMPRESS DEBUG - AI Compression v3.0 - Auto Mode:', {
+        fileName: fileToCompress.name,
+        aiQuality: 'optimized',
+        compressionLevel: compressionQuality,
+        timestamp: new Date().toISOString()
+      });
       
       // Call PDF Compression API
       const result: CompressionResult = await compressPDF(fileToCompress, {
@@ -179,6 +320,16 @@ function PDFCompress({ locale }: { locale: string }) {
       // Clear progress and set to 100%
       clearInterval(progressInterval);
       setCompressionProgress(100);
+      
+      console.log('📄 PDF COMPRESS DEBUG - Compression completed successfully:', {
+        fileName: fileToCompress.name,
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        compressionRatio: ((result.originalSize - result.compressedSize) / result.originalSize) * 100,
+        processingTime: Date.now() - startTime,
+        timestamp: new Date().toISOString(),
+        action: 'compression-completed'
+      });
       
       // Set result data
       const compressionRatio = ((result.originalSize - result.compressedSize) / result.originalSize) * 100;
@@ -196,20 +347,51 @@ function PDFCompress({ locale }: { locale: string }) {
       setCurrentStep('result');
       
     } catch (error: any) {
-      console.error('❌ PDF compression failed:', error);
+      console.error('📄 PDF COMPRESS DEBUG - Compression failed:', {
+        error,
+        fileName: fileToCompress.name,
+        fileSize: fileToCompress.size,
+        fileType: fileToCompress.type,
+        processingTime: Date.now() - startTime,
+        locale,
+        timestamp: new Date().toISOString(),
+        action: 'compression-error'
+      });
       setError(getText('errors.pdfCompress.compressionFailed', 'Sıkıştırma sırasında hata oluştu. Lütfen tekrar deneyin.'));
     } finally {
       setIsCompressing(false);
+      console.log('📄 PDF COMPRESS DEBUG - Compression process finalized:', {
+        fileName: fileToCompress.name,
+        processingTime: Date.now() - startTime,
+        timestamp: new Date().toISOString(),
+        action: 'compression-finalized'
+      });
     }
   };
 
   const handleReset = () => {
+    console.log('📄 PDF COMPRESS DEBUG - Reset process initiated:', {
+      currentStep,
+      fileName: selectedFile?.name,
+      hasResult: !!compressionResult,
+      hasError: !!error,
+      locale,
+      timestamp: new Date().toISOString(),
+      action: 'reset-process'
+    });
+
     setCurrentStep('upload');
     setSelectedFile(null);
     setCompressionResult(null);
     setError(null);
     setCompressionProgress(0);
     setIsCompressing(false);
+    
+    console.log('📄 PDF COMPRESS DEBUG - Reset process completed:', {
+      newStep: 'upload',
+      timestamp: new Date().toISOString(),
+      action: 'reset-completed'
+    });
   };
 
   const getText = (key: string, fallback: string) => {
@@ -278,12 +460,53 @@ function PDFCompress({ locale }: { locale: string }) {
     console.log('  - Download Text:', getText('pdfCompress.downloadCompressed', getFallbackText('Sıkıştırılmış PDF İndir', 'Download Compressed PDF', 'Descargar PDF Comprimido', 'Télécharger PDF Comprimé')));
   }, [locale]);
 
-  // Dropzone configuration
+  // Dropzone configuration with detailed logging
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (acceptedFiles) => {
+    onDrop: (acceptedFiles, rejectedFiles) => {
+      console.log('📄 PDF COMPRESS DEBUG - Dropzone Event:', {
+        acceptedFiles: acceptedFiles.length,
+        rejectedFiles: rejectedFiles.length,
+        isDragActive,
+        locale,
+        timestamp: new Date().toISOString(),
+        action: 'file-drop'
+      });
+
+      if (rejectedFiles.length > 0) {
+        console.log('📄 PDF COMPRESS DEBUG - Files rejected:', {
+          rejectedFiles: rejectedFiles.map(file => ({
+            name: file.file.name,
+            size: file.file.size,
+            type: file.file.type,
+            errors: file.errors.map(err => err.message)
+          })),
+          timestamp: new Date().toISOString()
+        });
+      }
+
       if (acceptedFiles[0]) {
+        console.log('📄 PDF COMPRESS DEBUG - File accepted via dropzone:', {
+          fileName: acceptedFiles[0].name,
+          fileSize: acceptedFiles[0].size,
+          fileType: acceptedFiles[0].type,
+          timestamp: new Date().toISOString()
+        });
         handleFileSelect(acceptedFiles[0]);
       }
+    },
+    onDragEnter: () => {
+      console.log('📄 PDF COMPRESS DEBUG - Drag enter:', {
+        locale,
+        timestamp: new Date().toISOString(),
+        action: 'drag-enter'
+      });
+    },
+    onDragLeave: () => {
+      console.log('📄 PDF COMPRESS DEBUG - Drag leave:', {
+        locale,
+        timestamp: new Date().toISOString(),
+        action: 'drag-leave'
+      });
     },
     accept: {
       'application/pdf': ['.pdf'],
@@ -427,7 +650,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 </h3>
                 
                 <p className="text-gray-600 text-lg">
-                  {getText('pdfCompress.processingDesc', getFallbackText('Yapay zeka dosyanızı optimize ediyor...', 'Artificial intelligence is optimizing your file...', 'La inteligencia artificial está optimizando tu archivo...', 'L\'intelligence artificielle optimise votre fichier...'))}
+                  {getText('pdfCompress.processingDescription', getFallbackText('Yapay zeka dosyanızı optimize ediyor...', 'Artificial intelligence is optimizing your file...', 'La inteligencia artificial está optimizando tu archivo...', 'L\'intelligence artificielle optimise votre fichier...', 'Künstliche Intelligenz optimiert Ihre Datei...'))}
                 </p>
               </div>
               

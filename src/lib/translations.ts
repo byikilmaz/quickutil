@@ -863,6 +863,20 @@ const translations = {
     'pdfCompress.mediumCompressionName': 'EMPFOHLENE KOMPRIMIERUNG',
     'pdfCompress.lightCompressionName': 'GERINGE KOMPRIMIERUNG',
     
+    // PDF COMPRESS STEPS - MISSING KEYS DEUTSCH
+    'pdfCompress.step1': 'Datei hochladen',
+    'pdfCompress.step2': 'KI-Komprimierung',
+    'pdfCompress.step3': 'Herunterladen',
+    'pdfCompress.uploadTitle': 'Ziehen Sie Ihre PDF-Datei hierher',
+    'pdfCompress.uploadDesc': 'oder klicken Sie, um eine Datei auszuwählen',
+    'pdfCompress.selectFile': 'Datei auswählen',
+    'pdfCompress.processingTitle': 'KI-Komprimierung läuft',
+    'pdfCompress.processingDescription': 'Künstliche Intelligenz optimiert Ihre Datei...',
+    'pdfCompress.successTitle': 'Erfolgreich komprimiert!',
+    'pdfCompress.successDesc': 'Ihre PDF-Datei wurde erfolgreich optimiert.',
+    'pdfCompress.downloadCompressed': 'Komprimierte PDF herunterladen',
+    'pdfCompress.compressAnother': 'Weitere Datei komprimieren',
+    
     // IMAGE COMPRESS TRANSLATIONS - UNIQUE KEYS DEUTSCH  
     'imageCompress.step1.title': '📸 Bildauswahl',
     'imageCompress.step2.title': '📤 Bild wird hochgeladen...',
