@@ -679,11 +679,11 @@ function PDFCompress({ locale }: { locale: string }) {
                 </div>
                 
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  {getText('pdfCompress.successTitle', getFallbackText('Sıkıştırma Tamamlandı!', 'Compression Completed!', '¡Compresión Completada!', 'Compression Terminée!'))}
+                  {getText('pdfCompress.successTitle', getFallbackText('Sıkıştırma Tamamlandı!', 'Compression Completed!', '¡Compresión Completada!', 'Compression Terminée!', 'Erfolgreich komprimiert!'))}
                 </h3>
                 
                 <p className="text-gray-600 text-lg">
-                  {getText('pdfCompress.successDesc', getFallbackText('PDF dosyanız başarıyla optimize edildi.', 'Your PDF file has been successfully optimized.', 'Tu archivo PDF ha sido optimizado exitosamente.', 'Votre fichier PDF a été optimisé avec succès.'))}
+                  {getText('pdfCompress.successDesc', getFallbackText('PDF dosyanız başarıyla optimize edildi.', 'Your PDF file has been successfully optimized.', 'Tu archivo PDF ha sido optimizado exitosamente.', 'Votre fichier PDF a été optimisé avec succès.', 'Ihre PDF-Datei wurde erfolgreich optimiert.'))}
                 </p>
               </div>
               
@@ -691,7 +691,7 @@ function PDFCompress({ locale }: { locale: string }) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-gray-50 rounded-xl p-6 text-center">
                   <h4 className="font-semibold text-gray-700 mb-2">
-                    {getText('pdfCompress.originalSize', getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale'))}
+                    {getText('pdfCompress.originalSize', getFallbackText('Orijinal Boyut', 'Original Size', 'Tamaño Original', 'Taille Originale', 'Originalgröße'))}
                   </h4>
                   <p className="text-2xl font-bold text-gray-900">
                     {(compressionResult.originalSize / 1024 / 1024).toFixed(2)} MB
@@ -700,7 +700,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 
                 <div className="bg-gray-50 rounded-xl p-6 text-center">
                   <h4 className="font-semibold text-gray-700 mb-2">
-                    {getText('pdfCompress.compressedSize', getFallbackText('Sıkıştırılmış Boyut', 'Compressed Size', 'Tamaño Comprimido', 'Taille Comprimée'))}
+                    {getText('pdfCompress.compressedSize', getFallbackText('Sıkıştırılmış Boyut', 'Compressed Size', 'Tamaño Comprimido', 'Taille Comprimée', 'Komprimierte Größe'))}
                   </h4>
                   <p className="text-2xl font-bold text-green-600">
                     {(compressionResult.compressedSize / 1024 / 1024).toFixed(2)} MB
@@ -709,7 +709,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 
                 <div className="bg-gray-50 rounded-xl p-6 text-center">
                   <h4 className="font-semibold text-gray-700 mb-2">
-                    {getText('pdfCompress.savedSpace', getFallbackText('Tasarruf Edilen', 'Space Saved', 'Espacio Ahorrado', 'Espace Économisé'))}
+                    {getText('pdfCompress.savedSpace', getFallbackText('Tasarruf Edilen', 'Space Saved', 'Espacio Ahorrado', 'Espace Économisé', 'Eingesparter Platz'))}
                   </h4>
                   <p className="text-2xl font-bold text-purple-600">
                     %{Math.round(compressionResult.compressionRatio)}
@@ -725,14 +725,14 @@ function PDFCompress({ locale }: { locale: string }) {
                   className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center"
                 >
                   <CloudArrowDownIcon className="h-5 w-5 mr-2" />
-                  {getText('pdfCompress.downloadCompressed', getFallbackText('Sıkıştırılmış PDF İndir', 'Download Compressed PDF', 'Descargar PDF Comprimido', 'Télécharger PDF Comprimé'))}
+                  {getText('pdfCompress.downloadCompressed', getFallbackText('Sıkıştırılmış PDF İndir', 'Download Compressed PDF', 'Descargar PDF Comprimido', 'Télécharger PDF Comprimé', 'Komprimierte PDF herunterladen'))}
                 </a>
                 
                 <button
                   onClick={handleReset}
                   className="bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  {getText('pdfCompress.compressAnother', getFallbackText('Başka Dosya Sıkıştır', 'Compress Another File', 'Comprimir Otro Archivo', 'Compresser un Autre Fichier'))}
+                  {getText('pdfCompress.compressAnother', getFallbackText('Başka Dosya Sıkıştır', 'Compress Another File', 'Comprimir Otro Archivo', 'Compresser un Autre Fichier', 'Weitere Datei komprimieren'))}
                 </button>
               </div>
             </div>
@@ -747,7 +747,7 @@ function PDFCompress({ locale }: { locale: string }) {
               onClick={() => setError(null)}
               className="mt-4 text-red-600 hover:text-red-800 font-medium"
             >
-              {getText('common.dismiss', getFallbackText('Kapat', 'Close', 'Cerrar', 'Fermer'))}
+              {getText('common.dismiss', getFallbackText('Kapat', 'Close', 'Cerrar', 'Fermer', 'Schließen'))}
             </button>
           </div>
         )}
