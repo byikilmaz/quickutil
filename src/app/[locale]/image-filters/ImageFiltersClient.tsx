@@ -195,6 +195,94 @@ export default function ImageFiltersClient({ locale }: ImageFiltersClientProps) 
   const { uploadFile } = useStorage();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
+  // Enhanced browser language auto-detection system
+  useEffect(() => {
+    const detectAndRedirectLanguage = () => {
+      if (typeof window === 'undefined') return;
+
+      const currentPath = window.location.pathname;
+      const supportedLanguages = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+      
+      // Check if URL already has locale
+      const hasLocaleInPath = supportedLanguages.some(lang => currentPath.startsWith(`/${lang}/`));
+      
+      console.log('🎨 IMAGE FILTERS DEBUG - Enhanced Browser Language Auto-Detection:', {
+        currentPath,
+        currentLocale: locale,
+        browserLanguage: navigator.language,
+        browserLanguages: navigator.languages,
+        supportedLanguages,
+        hasLocaleInPath,
+        timestamp: new Date().toISOString()
+      });
+      
+      if (!hasLocaleInPath) {
+        const browserLanguage = navigator.language.slice(0, 2).toLowerCase();
+        const preferredLanguage = localStorage.getItem('quickutil_preferred_locale');
+        
+        console.log('🎨 IMAGE FILTERS DEBUG - Language Detection Process:', {
+          currentPath,
+          browserLanguage,
+          preferredLanguage,
+          supportedLanguages,
+          hasLocaleInPath,
+          step: 'language-detection'
+        });
+        
+        let targetLanguage = 'en'; // Default to English
+        
+        // Priority 1: User's stored preference
+        if (preferredLanguage && supportedLanguages.includes(preferredLanguage)) {
+          targetLanguage = preferredLanguage;
+          console.log('🎨 IMAGE FILTERS DEBUG - Using stored preference:', targetLanguage);
+        } 
+        // Priority 2: Browser language
+        else if (supportedLanguages.includes(browserLanguage)) {
+          targetLanguage = browserLanguage;
+          localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+          console.log('🎨 IMAGE FILTERS DEBUG - Using browser language:', targetLanguage);
+        }
+        // Priority 3: Check Accept-Language header languages
+        else {
+          const acceptLanguages = navigator.languages || [];
+          for (const lang of acceptLanguages) {
+            const shortLang = lang.slice(0, 2).toLowerCase();
+            if (supportedLanguages.includes(shortLang)) {
+              targetLanguage = shortLang;
+              localStorage.setItem('quickutil_preferred_locale', targetLanguage);
+              console.log('🎨 IMAGE FILTERS DEBUG - Using Accept-Language:', targetLanguage);
+              break;
+            }
+          }
+        }
+        
+        // Redirect to appropriate language
+        const newPath = `/${targetLanguage}${currentPath}`;
+        console.log('🎨 IMAGE FILTERS DEBUG - Redirecting:', {
+          from: currentPath,
+          to: newPath,
+          targetLanguage,
+          reason: preferredLanguage ? 'stored-preference' : 'browser-detection'
+        });
+        window.location.href = newPath;
+      } else {
+        // Log current locale validation
+        console.log('🎨 IMAGE FILTERS DEBUG - Locale already in path:', {
+          currentPath,
+          detectedLocale: locale,
+          isSupported: supportedLanguages.includes(locale)
+        });
+        
+        // Store current locale as preference
+        if (supportedLanguages.includes(locale)) {
+          localStorage.setItem('quickutil_preferred_locale', locale);
+        }
+      }
+    };
+
+    detectAndRedirectLanguage();
+  }, [locale]);
+
   // Get translations
   const translations = getTranslations(locale);
   

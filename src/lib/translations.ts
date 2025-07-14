@@ -1074,6 +1074,8 @@ const translations = {
     'imageFilters.configure.coolness': 'Kühle',
     'imageFilters.configure.tint': 'Tönung',
     'imageFilters.configure.presets': 'Voreinstellungen',
+    'imageFilters.configure.reset': 'Zurücksetzen',
+    'imageFilters.configure.apply': 'Filter anwenden',
     'imageFilters.configure.resetFilters': 'Filter zurücksetzen',
     'imageFilters.configure.applyFilters': 'Filter anwenden',
     'imageFilters.configure.showComparison': 'Vergleich anzeigen',
