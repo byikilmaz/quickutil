@@ -523,12 +523,12 @@ function PDFCompress({ locale }: { locale: string }) {
           <div className="inline-flex items-center bg-gradient-to-r from-purple-100 to-pink-100 rounded-full px-4 py-2 mb-6">
             <SparklesIcon className="h-5 w-5 text-purple-600 mr-2" />
             <span className="text-purple-800 font-medium text-sm">
-              {getText('pdfCompress.aiCompressionBadge', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression', 'Compresión de PDF con IA', 'Compression PDF IA'))}
+              {getText('pdfCompress.aiCompressionBadge', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression', 'Compresión de PDF con IA', 'Compression PDF IA', 'KI PDF-Komprimierung'))}
             </span>
           </div>
           
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            {getText('pdfCompress.title', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression', 'Compresión de PDF con IA', 'Compression PDF IA'))}
+            {getText('pdfCompress.title', getFallbackText('AI PDF Sıkıştırma', 'AI PDF Compression', 'Compresión de PDF con IA', 'Compression PDF IA', 'KI PDF-Komprimierung'))}
           </h1>
           
           <p className="text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed">
@@ -554,7 +554,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 )}
               </div>
               <span className="ml-3 font-medium">
-                {getText('pdfCompress.step1', getFallbackText('Dosya Yükle', 'Upload File', 'Subir Archivo', 'Télécharger Fichier'))}
+                {getText('pdfCompress.step1', getFallbackText('Dosya Yükle', 'Upload File', 'Subir Archivo', 'Télécharger Fichier', 'Datei hochladen'))}
               </span>
             </div>
 
@@ -570,7 +570,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 )}
               </div>
               <span className="ml-3 font-medium">
-                {getText('pdfCompress.step2', getFallbackText('AI Sıkıştırma', 'AI Compression', 'Compresión con IA', 'Compression IA'))}
+                {getText('pdfCompress.step2', getFallbackText('AI Sıkıştırma', 'AI Compression', 'Compresión con IA', 'Compression IA', 'KI-Komprimierung'))}
               </span>
             </div>
 
@@ -582,7 +582,7 @@ function PDFCompress({ locale }: { locale: string }) {
                 <span className="font-semibold">3</span>
               </div>
               <span className="ml-3 font-medium">
-                {getText('pdfCompress.step3', getFallbackText('İndir', 'Download', 'Descargar', 'Télécharger'))}
+                {getText('pdfCompress.step3', getFallbackText('İndir', 'Download', 'Descargar', 'Télécharger', 'Herunterladen'))}
               </span>
             </div>
           </div>
@@ -610,25 +610,25 @@ function PDFCompress({ locale }: { locale: string }) {
                 </div>
                 
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  {getText('pdfCompress.uploadTitle', getFallbackText('PDF Dosyanızı Sürükleyin', 'Drag Your PDF File', 'Arrastra tu archivo PDF', 'Glissez votre fichier PDF'))}
+                  {getText('pdfCompress.uploadTitle', getFallbackText('PDF Dosyanızı Sürükleyin', 'Drag Your PDF File', 'Arrastra tu archivo PDF', 'Glissez votre fichier PDF', 'Ziehen Sie Ihre PDF-Datei hierher'))}
                 </h3>
                 
                 <p className="text-gray-600 mb-6 text-lg">
-                  {getText('pdfCompress.uploadDesc', getFallbackText('veya tıklayarak dosya seçin', 'or click to select file', 'o haz clic para seleccionar archivo', 'ou cliquez pour sélectionner le fichier'))}
+                  {getText('pdfCompress.uploadDesc', getFallbackText('veya tıklayarak dosya seçin', 'or click to select file', 'o haz clic para seleccionar archivo', 'ou cliquez pour sélectionner le fichier', 'oder klicken Sie, um eine Datei auszuwählen'))}
                 </p>
                 
                 <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                  {getText('pdfCompress.selectFile', getFallbackText('Dosya Seç', 'Select File', 'Seleccionar Archivo', 'Sélectionner Fichier'))}
+                  {getText('pdfCompress.selectFile', getFallbackText('Dosya Seç', 'Select File', 'Seleccionar Archivo', 'Sélectionner Fichier', 'Datei auswählen'))}
                 </button>
                 
                 <div className="mt-8 flex justify-center items-center space-x-8 text-sm text-gray-500">
                   <div className="flex items-center">
                     <DocumentCheckIcon className="h-5 w-5 mr-2 text-green-600" />
-                    {getText('pdfCompress.maxFileSizeText', getFallbackText('Maksimum 20MB PDF dosyası', 'Maximum 20MB PDF file', 'Archivo PDF máximo 20MB', 'Fichier PDF maximum 20MB'))}
+                    {getText('pdfCompress.maxFileSizeText', getFallbackText('Maksimum 20MB PDF dosyası', 'Maximum 20MB PDF file', 'Archivo PDF máximo 20MB', 'Fichier PDF maximum 20MB', 'Maximale Dateigröße 20MB PDF'))}
                   </div>
                   <div className="flex items-center">
                     <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
-                    {getText('pdfCompress.aiOptimized', getFallbackText('AI Optimize Edilmiş', 'AI Optimized', 'Optimizado con IA', 'Optimisé par IA'))}
+                    {getText('pdfCompress.aiOptimized', getFallbackText('AI Optimize Edilmiş', 'AI Optimized', 'Optimizado con IA', 'Optimisé par IA', 'KI-Optimiert'))}
                   </div>
                 </div>
               </div>
