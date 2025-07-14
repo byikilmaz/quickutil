@@ -337,6 +337,10 @@ const translations = {
     'pdfCompress.highCompressionName': 'ALTA COMPRESIÓN',
     'pdfCompress.mediumCompressionName': 'COMPRESIÓN RECOMENDADA',
     'pdfCompress.lightCompressionName': 'BAJA COMPRESIÓN',
+    'pdfCompress.aiOptimized': 'Optimizado con IA',
+    
+    // COMMON TRANSLATIONS - ESPAÑOL
+    'common.dismiss': 'Cerrar',
     
     // PDF Convert & Tools - ESPAÑOL
     'pdfConvert.title': 'Conversión PDF con IA',
@@ -856,7 +860,6 @@ const translations = {
     'pdfCompress.processing': 'PDF wird komprimiert...',
     'pdfCompress.otherTools': 'Zu diesem Tool wechseln:',
     'pdfCompress.remove.file': 'Datei entfernen',
-    'pdfCompress.aiCompressionBadge': 'KI PDF-Komprimierung',
     'pdfCompress.maxFileSizeText': 'Maximale Dateigröße 20MB PDF',
     'pdfCompress.secureProcessingText': 'Sichere und vertrauliche Verarbeitung',
     'pdfCompress.highCompressionName': 'HOHE KOMPRIMIERUNG',
@@ -876,6 +879,11 @@ const translations = {
     'pdfCompress.successDesc': 'Ihre PDF-Datei wurde erfolgreich optimiert.',
     'pdfCompress.downloadCompressed': 'Komprimierte PDF herunterladen',
     'pdfCompress.compressAnother': 'Weitere Datei komprimieren',
+    'pdfCompress.aiCompressionBadge': 'KI PDF-Komprimierung',
+    'pdfCompress.aiOptimized': 'KI-Optimiert',
+    
+    // COMMON TRANSLATIONS - ALMANCA
+    'common.dismiss': 'Schließen',
     
     // IMAGE COMPRESS TRANSLATIONS - UNIQUE KEYS DEUTSCH  
     'imageCompress.step1.title': '📸 Bildauswahl',
@@ -1717,6 +1725,10 @@ const translations = {
     'pdfCompress.highCompressionName': 'YÜKSEK SIKIŞTIRMA',
     'pdfCompress.mediumCompressionName': 'ÖNERİLEN SIKIŞTIRMA',
     'pdfCompress.lightCompressionName': 'DÜŞÜK SIKIŞTIRMA',
+    'pdfCompress.aiOptimized': 'AI Optimize Edilmiş',
+    
+    // COMMON TRANSLATIONS - TÜRKÇE
+    'common.dismiss': 'Kapat',
     
     // IMAGE TOOLS METINLERI
     'imageTools.selectFile': 'Resim dosyasını seç',
@@ -2486,6 +2498,10 @@ const translations = {
     'pdfCompress.highCompressionName': 'HIGH COMPRESSION',
     'pdfCompress.mediumCompressionName': 'RECOMMENDED COMPRESSION',
     'pdfCompress.lightCompressionName': 'LOW COMPRESSION',
+    'pdfCompress.aiOptimized': 'AI Optimized',
+    
+    // COMMON TRANSLATIONS - ENGLISH
+    'common.dismiss': 'Close',
     
     // IMAGE TOOLS TRANSLATIONS
     'imageTools.selectFile': 'Select image file',
@@ -3215,6 +3231,10 @@ const translations = {
     'pdfCompress.highCompressionName': 'HAUTE COMPRESSION',
     'pdfCompress.mediumCompressionName': 'COMPRESSION RECOMMANDÉE',
     'pdfCompress.lightCompressionName': 'FAIBLE COMPRESSION',
+    'pdfCompress.aiOptimized': 'Optimisé par IA',
+    
+    // COMMON TRANSLATIONS - FRANÇAIS
+    'common.dismiss': 'Fermer',
     
     // PDF CONVERT TRANSLATIONS  
     'pdfConvert.title': 'Conversion PDF IA',
