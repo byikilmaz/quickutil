@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
-import { supportedLocales } from './languageDetection';
+
+// Local supported locales for SEO utils (server-side compatible)
+const supportedLocales = ['tr', 'en', 'es', 'fr', 'de'] as const;
 
 interface PageSEOData {
   title: string;
@@ -1055,14 +1057,14 @@ export const generateSitemapData = () => {
   }> = [];
 
   // Generate URL entries for each page in each locale
-  supportedLocales.forEach(locale => {
+  [...supportedLocales].forEach(locale => {
     const localePages = localeSEOData[locale];
     
     Object.keys(localePages).forEach(page => {
       const pageData = localePages[page];
       
       // Generate alternates for this page in all languages
-      const alternates = supportedLocales
+      const alternates = [...supportedLocales]
         .filter(loc => localeSEOData[loc][page]) // Only include locales that have this page
         .map(loc => ({
           href: localeSEOData[loc][page].canonicalUrl,
@@ -1094,12 +1096,12 @@ export const generateSitemapData = () => {
   try {
     const { getBlogPosts } = require('@/lib/blogUtils');
     
-    supportedLocales.forEach(locale => {
+    [...supportedLocales].forEach(locale => {
       const blogPosts = getBlogPosts(locale);
       
       blogPosts.forEach((post: any) => {
         // Generate alternates for this blog post in all languages
-        const alternates = supportedLocales.map(loc => ({
+        const alternates = [...supportedLocales].map(loc => ({
           href: `${baseUrl}/${loc}/blog/${post.slug}`,
           hreflang: loc
         }));
