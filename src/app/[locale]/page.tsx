@@ -4,6 +4,7 @@ import { useParams, useRouter, usePathname } from 'next/navigation';
 import AuthModal from '@/components/AuthModal';
 import StructuredData from '@/components/StructuredData';
 import { useTranslations } from '@/lib/translations';
+
 import { 
   handleLanguageDetection, 
   debugLanguageInfo, 
@@ -345,26 +346,26 @@ export default function HomePage() {
   const features = [
     {
       icon: CpuChipIcon,
-      title: t('features.ai'),
-      description: t('features.aiDesc'),
+      title: getText('features.ai', 'AI Destekli'),
+      description: getText('features.aiDesc', 'Yapay zeka teknolojisiyle güçlendirilmiş gelişmiş işleme'),
       gradient: 'from-blue-500 to-purple-500'
     },
     {
       icon: BoltIcon,
-      title: t('features.free'),
-      description: t('features.freeDesc'),
+      title: getText('features.free', 'Ücretsiz'),
+      description: getText('features.freeDesc', 'Hiçbir ücret ödemeden tüm araçları kullanın'),
       gradient: 'from-green-500 to-emerald-500'
     },
     {
       icon: ShieldCheckIcon,
-      title: t('features.secure'),
-      description: t('features.secureDesc'),
+      title: getText('features.secure', 'Güvenli'),
+      description: getText('features.secureDesc', 'Dosyalarınız güvenli ve şifrelenmiş olarak işlenir'),
       gradient: 'from-red-500 to-pink-500'
     },
     {
       icon: SparklesIcon,
-      title: t('features.smart'),
-      description: t('features.smartDesc'),
+      title: getText('features.smart', 'Akıllı'),
+      description: getText('features.smartDesc', 'Otomatik optimizasyon ve akıllı işleme teknolojileri'),
       gradient: 'from-yellow-500 to-orange-500'
     }
   ];
