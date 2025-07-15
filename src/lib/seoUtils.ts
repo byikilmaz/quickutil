@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { supportedLocales } from './languageDetection';
 
 interface PageSEOData {
   title: string;
@@ -1045,7 +1046,6 @@ const getHowToSteps = (page: string, locale: string) => {
 // Generate multilingual sitemap data
 export const generateSitemapData = () => {
   const baseUrl = 'https://quickutil.app';
-  const supportedLocales = Object.keys(localeSEOData);
   const urls: Array<{
     url: string;
     lastModified: Date;
@@ -1072,7 +1072,7 @@ export const generateSitemapData = () => {
       // Add x-default alternate (English if available, otherwise Turkish)
       alternates.push({
         href: localeSEOData['en']?.[page]?.canonicalUrl || localeSEOData['tr'][page].canonicalUrl,
-        hreflang: 'x-default'
+        hreflang: 'x-default' as any
       });
 
       // Turkish pages get higher priority and more frequent updates
@@ -1107,7 +1107,7 @@ export const generateSitemapData = () => {
         // Add x-default alternate
         alternates.push({
           href: `${baseUrl}/en/blog/${post.slug}`,
-          hreflang: 'x-default'
+          hreflang: 'x-default' as any
         });
 
         urls.push({
