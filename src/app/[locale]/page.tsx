@@ -345,26 +345,26 @@ export default function HomePage() {
   const features = [
     {
       icon: CpuChipIcon,
-      title: t('homepage.features.ai'),
-      description: t('homepage.features.aiDesc'),
+      title: t('features.ai'),
+      description: t('features.aiDesc'),
       gradient: 'from-blue-500 to-purple-500'
     },
     {
       icon: BoltIcon,
-      title: t('homepage.features.free'),
-      description: t('homepage.features.freeDesc'),
+      title: t('features.free'),
+      description: t('features.freeDesc'),
       gradient: 'from-green-500 to-emerald-500'
     },
     {
       icon: ShieldCheckIcon,
-      title: t('homepage.features.secure'),
-      description: t('homepage.features.secureDesc'),
+      title: t('features.secure'),
+      description: t('features.secureDesc'),
       gradient: 'from-red-500 to-pink-500'
     },
     {
       icon: SparklesIcon,
-      title: t('homepage.features.smart'),
-      description: t('homepage.features.smartDesc'),
+      title: t('features.smart'),
+      description: t('features.smartDesc'),
       gradient: 'from-yellow-500 to-orange-500'
     }
   ];
