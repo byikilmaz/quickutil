@@ -85,6 +85,7 @@ export default function HomePage() {
   
   // Translation hooks
   const t = useTranslations('homepage', locale);
+  const tGeneral = useTranslations('', locale); // Features için genel çeviriler
   const tTools = useTranslations('tools', locale);
   
   // Enhanced debug logging for locale detection and translations
@@ -346,26 +347,26 @@ export default function HomePage() {
   const features = [
     {
       icon: CpuChipIcon,
-      title: getText('features.ai', 'AI Destekli'),
-      description: getText('features.aiDesc', 'Yapay zeka teknolojisiyle güçlendirilmiş gelişmiş işleme'),
+      title: tGeneral('features.ai'),
+      description: tGeneral('features.aiDesc'),
       gradient: 'from-blue-500 to-purple-500'
     },
     {
       icon: BoltIcon,
-      title: getText('features.free', 'Ücretsiz'),
-      description: getText('features.freeDesc', 'Hiçbir ücret ödemeden tüm araçları kullanın'),
+      title: tGeneral('features.free'),
+      description: tGeneral('features.freeDesc'),
       gradient: 'from-green-500 to-emerald-500'
     },
     {
       icon: ShieldCheckIcon,
-      title: getText('features.secure', 'Güvenli'),
-      description: getText('features.secureDesc', 'Dosyalarınız güvenli ve şifrelenmiş olarak işlenir'),
+      title: tGeneral('features.secure'),
+      description: tGeneral('features.secureDesc'),
       gradient: 'from-red-500 to-pink-500'
     },
     {
       icon: SparklesIcon,
-      title: getText('features.smart', 'Akıllı'),
-      description: getText('features.smartDesc', 'Otomatik optimizasyon ve akıllı işleme teknolojileri'),
+      title: tGeneral('features.smart'),
+      description: tGeneral('features.smartDesc'),
       gradient: 'from-yellow-500 to-orange-500'
     }
   ];
