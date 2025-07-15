@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "quickutil-d2998",
     "public": "out",
     "ignore": [
       "firebase.json",

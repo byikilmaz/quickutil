@@ -21,6 +21,12 @@ export default function ClientLayout({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const pathname = usePathname();
   
+  // Extract locale from pathname
+  const locale = pathname?.split('/')[1] || 'tr';
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🌐 ClientLayout - Locale extracted:', locale, 'from pathname:', pathname);
+  }
+  
   // Admin sayfalarında Header ve Footer gizle
   const isAdminPage = pathname?.startsWith('/admin');
 
@@ -51,7 +57,10 @@ export default function ClientLayout({
             
             {showAuthModal && (
               <ErrorBoundary>
-                <AuthModal onClose={() => setShowAuthModal(false)} />
+                <AuthModal 
+                  onClose={() => setShowAuthModal(false)} 
+                  locale={locale} 
+                />
               </ErrorBoundary>
             )}
             

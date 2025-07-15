@@ -4,12 +4,65 @@ Allow: /
 # Sitemap
 Sitemap: https://quickutil.app/sitemap.xml
 
-# Disallow Firebase hosting URLs
-Disallow: /pdf-compress?
-Disallow: /pdf-convert?
-Disallow: /image-convert?
+# Turkish language pages (Primary focus)
+Allow: /tr/
+Allow: /tr/pdf-compress
+Allow: /tr/pdf-convert
+Allow: /tr/pdf-merge
+Allow: /tr/pdf-split
+Allow: /tr/pdf-to-jpg
+Allow: /tr/pdf-to-png
+Allow: /tr/jpg-to-pdf
+Allow: /tr/png-to-pdf
+Allow: /tr/image-compress
+Allow: /tr/remove-bg
+Allow: /tr/blog
+Allow: /tr/about
 
-# Allow main pages
-Allow: /pdf-compress
-Allow: /pdf-convert
-Allow: /image-convert 
+# All language pages allowed
+Allow: /en/
+Allow: /es/
+Allow: /fr/
+Allow: /de/
+Allow: /ar/
+Allow: /ja/
+Allow: /ko/
+
+# Disallow query parameters and dynamic URLs
+Disallow: *?*
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /temp/
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Specific bot instructions for better indexing
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+Request-rate: 1/1s
+
+User-agent: Bingbot  
+Allow: /
+Crawl-delay: 2
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+# Block unwanted bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Additional sitemaps for better indexing
+Sitemap: https://quickutil.app/sitemap-tr.xml
+Sitemap: https://quickutil.app/sitemap-blog.xml
+Sitemap: https://quickutil.app/sitemap-tools.xml 

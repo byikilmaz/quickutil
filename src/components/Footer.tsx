@@ -13,7 +13,7 @@ export default function Footer() {
   const getCurrentLocale = (): string => {
     if (!pathname) return 'tr';
     const segments = pathname.split('/');
-    const locales = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+    const locales = ['tr', 'en', 'es', 'fr', 'de'];
     return locales.includes(segments[1]) ? segments[1] : 'tr';
   };
   

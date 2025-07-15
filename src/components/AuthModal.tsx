@@ -7,9 +7,10 @@ import { getTranslations } from '@/lib/translations';
 
 interface AuthModalProps {
   onClose: () => void;
+  locale?: string; // Optional locale prop
 }
 
-export default function AuthModal({ onClose }: AuthModalProps) {
+export default function AuthModal({ onClose, locale: propLocale }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,21 +20,68 @@ export default function AuthModal({ onClose }: AuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Get current locale from URL
+  // Get current locale - prefer prop over URL parsing
   const pathname = usePathname();
-  const locale = pathname?.split('/')[1] || 'tr';
+  const urlParts = pathname?.split('/') || [];
+  const extractedLocale = urlParts[1] || 'tr';
+  const locale = propLocale || extractedLocale; // Use prop if provided, otherwise URL
   
-  // Translation helper
+  // ENHANCED DEBUG LOGGING - Always show in console
+  console.log('🚨 AuthModal - ENHANCED CRITICAL DEBUG START 🚨');
+  console.log('🔍 PropLocale received:', propLocale);
+  console.log('🔍 Raw pathname:', pathname);
+  console.log('🔍 URL parts:', urlParts);
+  console.log('🔍 Extracted locale from URL:', extractedLocale);
+  console.log('🔍 Final locale used:', locale);
+  console.log('🔍 Using prop locale?', !!propLocale);
+  console.log('🔍 Locale comparison:', { propLocale, extractedLocale, finalLocale: locale });
+  console.log('🔍 Window location:', typeof window !== 'undefined' ? window.location.href : 'server');
+  console.log('🔍 Document URL:', typeof document !== 'undefined' ? document.URL : 'server');
+  console.log('🚨 AuthModal - ENHANCED CRITICAL DEBUG END 🚨');
+  
+  // Translation helper with enhanced logging
+  console.log('🔤 AuthModal - Getting translations for locale:', locale);
   const t = getTranslations(locale);
+  console.log('🔤 AuthModal - Translation object received:', {
+    locale,
+    translationObjectType: typeof t,
+    isObject: typeof t === 'object',
+    isNull: t === null,
+    hasAuthWelcomeTitle: !!(t as any)?.['auth.welcomeTitle'],
+    hasAuthFirstName: !!(t as any)?.['auth.firstName'],
+    authWelcomeTitleValue: (t as any)?.['auth.welcomeTitle'],
+    authFirstNameValue: (t as any)?.['auth.firstName'],
+    translationKeys: Object.keys(t || {}).filter(k => k.startsWith('auth.')).slice(0, 10),
+    totalKeys: Object.keys(t || {}).length
+  });
+  
   const getText = (key: string, fallback: string = '') => {
     try {
-      const keys = key.split('.');
-      let value: any = t;
-      for (const k of keys) {
-        value = value?.[k];
-      }
-      return value || fallback;
-    } catch {
+      // Simple direct access to translation key
+      const value = (t as any)?.[key];
+      const result = value || fallback;
+      
+      // Debug logging for critical auth texts
+      console.log(`🔤 AuthModal Translation - ${key}:`, {
+          key,
+          result,
+          fallback,
+          locale,
+          success: !!value,
+          valueType: typeof value,
+          translationPath: key.split('.').join(' → '),
+          rawValue: value,
+          willUseFallback: !value
+        });
+    
+      return result;
+    } catch (error) {
+      console.log('❌ AuthModal - Translation ERROR:', {
+        key,
+        fallback,
+        locale,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
       return fallback;
     }
   };

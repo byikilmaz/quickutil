@@ -1,8 +1,9 @@
 import { getRequestConfig } from 'next-intl/server';
 
-// Tüm desteklenen diller
-export const locales = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'] as const;
-export type Locale = typeof locales[number];
+// Desteklenen diller (AR, JA, KO kaldırıldı)
+export const locales = ['tr', 'en', 'es', 'fr', 'de'] as const;
+
+export type Locale = (typeof locales)[number];
 
 // Dil bilgileri ve flag emoji'leri
 export const localeNames: Record<Locale, { name: string; flag: string; dir: 'ltr' | 'rtl' }> = {
@@ -11,9 +12,6 @@ export const localeNames: Record<Locale, { name: string; flag: string; dir: 'ltr
   es: { name: 'Español', flag: '🇪🇸', dir: 'ltr' },
   fr: { name: 'Français', flag: '🇫🇷', dir: 'ltr' },
   de: { name: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
-  ar: { name: 'العربية', flag: '🇸🇦', dir: 'rtl' },
-  ja: { name: '日本語', flag: '🇯🇵', dir: 'ltr' },
-  ko: { name: '한국어', flag: '🇰🇷', dir: 'ltr' },
 };
 
 // Varsayılan dil
@@ -39,9 +37,6 @@ export const languageNames = {
   es: 'Español',
   fr: 'Français',
   de: 'Deutsch',
-  ar: 'العربية',
-  ja: '日本語',
-  ko: '한국어',
 } as const;
 
 // Language flags (emoji flags)
@@ -51,7 +46,4 @@ export const languageFlags = {
   es: '🇪🇸',
   fr: '🇫🇷',
   de: '🇩🇪',
-  ar: '🇸🇦',
-  ja: '🇯🇵',
-  ko: '🇰🇷',
 } as const; 

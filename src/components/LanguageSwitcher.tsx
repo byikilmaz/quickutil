@@ -80,7 +80,7 @@ export default function LanguageSwitcher() {
     }
 
     // Update language preference using our language detection utility
-    changeLanguage(newLocale as SupportedLocale);
+    changeLanguage(newLocale as SupportedLocale, pathname);
     
     // Store language preference in cookie as well (for server-side rendering)
     try {

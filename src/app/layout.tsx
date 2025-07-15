@@ -121,7 +121,7 @@ export default function RootLayout({
                   script.onerror = function() {
                     console.log('AdSense script failed to load');
                   };
-                  documen(t as any)['head.appendChild'](script);
+                  document.head.appendChild(script);
                 }
               })();
             `,

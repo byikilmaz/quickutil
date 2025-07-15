@@ -35,7 +35,7 @@ export default function Header({ onAuthClick }: HeaderProps) {
     // Skip on server-side
     if (typeof window === 'undefined') return;
     
-    const SUPPORTED_LOCALES = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+    const SUPPORTED_LOCALES = ['tr', 'en', 'es', 'fr', 'de'];
     const LOCALE_STORAGE_KEY = 'quickutil_preferred_locale';
     
     // Check if user already has a saved preference

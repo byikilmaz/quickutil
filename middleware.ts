@@ -13,6 +13,9 @@ const languageMapping: Record<string, string> = {
   'en-GB': 'en',
   'en-CA': 'en',
   'en-AU': 'en',
+  'en-IN': 'en',
+  'en-NZ': 'en',
+  'en-ZA': 'en',
   
   // Spanish
   'es': 'es',
@@ -21,6 +24,8 @@ const languageMapping: Record<string, string> = {
   'es-AR': 'es',
   'es-CO': 'es',
   'es-CL': 'es',
+  'es-PE': 'es',
+  'es-VE': 'es',
   
   // French
   'fr': 'fr',
@@ -28,12 +33,14 @@ const languageMapping: Record<string, string> = {
   'fr-CA': 'fr',
   'fr-BE': 'fr',
   'fr-CH': 'fr',
+  'fr-LU': 'fr',
   
   // German
   'de': 'de',
   'de-DE': 'de',
   'de-AT': 'de',
-  'de-CH': 'de'
+  'de-CH': 'de',
+  'de-LU': 'de'
 };
 
 /**

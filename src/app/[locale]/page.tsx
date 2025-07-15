@@ -43,15 +43,15 @@ export default function HomePage() {
   // Browser Language Detection Effect
   useEffect(() => {
     // Debug bilgilerini yazdır
-    debugLanguageInfo();
+    debugLanguageInfo(locale, pathname);
     
     console.log('🚀 DEBUG - HomePage mounted with locale:', locale);
     console.log('🚀 DEBUG - Current pathname:', pathname);
     
     // Eğer URL'de locale yoksa, browser dilini algıla ve yönlendir
     if (!hasLocaleInPath(pathname)) {
-      const detectedLocale = handleLanguageDetection();
-      const newPath = addLocaleToPath(pathname, detectedLocale);
+      const result = handleLanguageDetection(pathname);
+      const newPath = result.redirectPath || addLocaleToPath(pathname, result.detectedLocale);
       
       console.log('🔄 DEBUG - No locale in path, redirecting to:', newPath);
       router.replace(newPath);
@@ -397,7 +397,7 @@ export default function HomePage() {
         {/* Structured Data for SEO */}
         <StructuredData type="website" />
         
-        {/* Enhanced AI Hero Section */}
+        {/* Enhanced AI Hero Section - People-First Content */}
         <section className="relative pt-32 pb-20 bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 overflow-hidden">
           
           {/* Floating Background Elements */}
@@ -778,7 +778,10 @@ export default function HomePage() {
       </div>
 
       {isAuthModalOpen && (
-        <AuthModal onClose={() => setIsAuthModalOpen(false)} />
+        <AuthModal 
+          onClose={() => setIsAuthModalOpen(false)} 
+          locale={locale} 
+        />
       )}
     </>
   );

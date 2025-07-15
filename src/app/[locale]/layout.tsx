@@ -58,8 +58,8 @@ export default async function LocaleLayout({
 }: Props) {
   const { locale } = await params;
   
-  // Validate locale
-  const validLocales = ['tr', 'en', 'es', 'fr', 'de', 'ar', 'ja', 'ko'];
+  // Validate locale (AR, JA, KO kaldırıldı)
+  const validLocales = ['tr', 'en', 'es', 'fr', 'de'];
   if (!validLocales.includes(locale)) {
     notFound();
   }
